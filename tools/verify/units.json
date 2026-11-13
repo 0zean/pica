@@ -621,13 +621,16 @@
   ],
   "A-02": [
     {
-      "check": "Against a scripted socket server, reconnect resumes at `seq + 1` with no duplicate."
+      "check": "Against a scripted socket server, reconnect resumes at `seq + 1` with no duplicate.",
+      "run": "swift test --package-path app/Packages/EngineClient --filter ReconnectTests"
     },
     {
-      "check": "Request timeout and task cancellation behave as specified."
+      "check": "Request timeout and task cancellation behave as specified.",
+      "run": "swift test --package-path app/Packages/EngineClient --filter RequestLifecycleTests"
     },
     {
-      "check": "Engine-initiated `secrets.*` requests are answered from the Keychain broker."
+      "check": "Engine-initiated `secrets.*` requests are answered from the Keychain broker.",
+      "run": "swift test --package-path app/Packages/EngineClient --filter SecretRequestTests"
     }
   ],
   "A-03": [
