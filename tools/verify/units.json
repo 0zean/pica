@@ -382,10 +382,12 @@
   ],
   "R-01": [
     {
-      "check": "Parser golden tests for status and diff output, including renames, binary files, and submodules."
+      "check": "Parser golden tests for status and diff output, including renames, binary files, and submodules.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/git/golden.test.ts packages/core/tests/git/parsers.test.ts"
     },
     {
-      "check": "Integration tests against temporary repos built by a fixture script."
+      "check": "Integration tests against temporary repos built by a fixture script.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/git/git-cli-service.test.ts"
     }
   ],
   "R-02": [

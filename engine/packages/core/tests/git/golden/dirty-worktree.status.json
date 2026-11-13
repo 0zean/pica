@@ -1,0 +1,56 @@
+{
+  "branch": {
+    "commit": "631c7ffcb5f380dd0f7fbfbec5bbfcc999c5dce6",
+    "head": "main",
+    "upstream": "origin/main",
+    "ahead": 1,
+    "behind": 0
+  },
+  "entries": [
+    {
+      "kind": "changed",
+      "path": "doomed.txt",
+      "index": "deleted",
+      "worktree": "unmodified",
+      "submodule": null
+    },
+    {
+      "kind": "changed",
+      "path": "image.bin",
+      "index": "unmodified",
+      "worktree": "modified",
+      "submodule": null
+    },
+    {
+      "kind": "renamed",
+      "path": "new-name.txt",
+      "index": "renamed",
+      "worktree": "unmodified",
+      "submodule": null,
+      "originalPath": "old-name.txt",
+      "similarity": 90
+    },
+    {
+      "kind": "changed",
+      "path": "notes.txt",
+      "index": "unmodified",
+      "worktree": "modified",
+      "submodule": null
+    },
+    {
+      "kind": "changed",
+      "path": "vendor/lib",
+      "index": "unmodified",
+      "worktree": "modified",
+      "submodule": {
+        "commitChanged": true,
+        "trackedChanges": true,
+        "untrackedChanges": false
+      }
+    },
+    {
+      "kind": "untracked",
+      "path": "untracked file.txt"
+    }
+  ]
+}

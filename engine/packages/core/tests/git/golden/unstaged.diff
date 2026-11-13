@@ -1,0 +1,22 @@
+diff --git a/image.bin b/image.bin
+index 82a730805dc10b812221b870902492c4c49ee7ce..345b0e3f8e5466b11c738c6b9702cf2878a6af0d 100644
+Binary files a/image.bin and b/image.bin differ
+diff --git a/notes.txt b/notes.txt
+index e3796c81c3b604bded12752823a9e315181a14a2..2fd99c67a3742a024a32a708ef54f4fc28298206 100644
+--- a/notes.txt
++++ b/notes.txt
+@@ -1,5 +1,6 @@
+ line 1
+ line 2 changed
+ line 3
+-line 4
++line 4 edited
+ line 5
++line 6
+diff --git a/vendor/lib b/vendor/lib
+index 030b0096ae36fbc8202c240f15b0a9ad24d2e0fc..e191b7d12e2f2423143500f7753a833085928c7f 160000
+--- a/vendor/lib
++++ b/vendor/lib
+@@ -1 +1 @@
+-Subproject commit 030b0096ae36fbc8202c240f15b0a9ad24d2e0fc
++Subproject commit e191b7d12e2f2423143500f7753a833085928c7f-dirty

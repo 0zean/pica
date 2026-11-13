@@ -1,0 +1,78 @@
+{
+  "branch": {
+    "commit": "20d8cc197bb8cf1b19a61f8b47ddd6844b7d51d7",
+    "head": "main",
+    "upstream": null,
+    "ahead": null,
+    "behind": null
+  },
+  "entries": [
+    {
+      "kind": "changed",
+      "path": ".gitmodules",
+      "index": "added",
+      "worktree": "unmodified",
+      "submodule": null
+    },
+    {
+      "kind": "changed",
+      "path": "empty.txt",
+      "index": "added",
+      "worktree": "unmodified",
+      "submodule": null
+    },
+    {
+      "kind": "changed",
+      "path": "file with spaces.txt",
+      "index": "modified",
+      "worktree": "unmodified",
+      "submodule": null
+    },
+    {
+      "kind": "changed",
+      "path": "new.bin",
+      "index": "added",
+      "worktree": "unmodified",
+      "submodule": null
+    },
+    {
+      "kind": "changed",
+      "path": "no-newline.txt",
+      "index": "added",
+      "worktree": "unmodified",
+      "submodule": null
+    },
+    {
+      "kind": "changed",
+      "path": "old.bin",
+      "index": "deleted",
+      "worktree": "unmodified",
+      "submodule": null
+    },
+    {
+      "kind": "changed",
+      "path": "script.sh",
+      "index": "modified",
+      "worktree": "unmodified",
+      "submodule": null
+    },
+    {
+      "kind": "changed",
+      "path": "tab\there \"quoted\" café.txt",
+      "index": "added",
+      "worktree": "unmodified",
+      "submodule": null
+    },
+    {
+      "kind": "changed",
+      "path": "vendor/lib",
+      "index": "added",
+      "worktree": "unmodified",
+      "submodule": {
+        "commitChanged": false,
+        "trackedChanges": false,
+        "untrackedChanges": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+diff --cc added.txt
+index 7683c252f15427a0b99caa605f87818304ae34db,99b761af96d060c24a292624353b7a24227921c1..0000000000000000000000000000000000000000
+--- a/added.txt
++++ b/added.txt
+@@@ -1,1 -1,1 +1,5 @@@
+++<<<<<<< HEAD
+ +added on main
+++=======
++ added on other
+++>>>>>>> other
+diff --cc both.txt
+index 21d65f9bcc9b45c737fa7ba476aeb90a0d296cbd,0fa2621178dfa495bb0d1b0fd329e30eb5d953bb..0000000000000000000000000000000000000000
+--- a/both.txt
++++ b/both.txt
+@@@ -1,1 -1,1 +1,5 @@@
+++<<<<<<< HEAD
+ +main side
+++=======
++ other side
+++>>>>>>> other

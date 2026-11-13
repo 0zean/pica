@@ -1,0 +1,24 @@
+[
+  {
+    "change": "unmerged",
+    "path": "added.txt",
+    "oldPath": "added.txt",
+    "oldMode": null,
+    "newMode": null,
+    "similarity": null,
+    "binary": false,
+    "submodule": null,
+    "hunks": []
+  },
+  {
+    "change": "unmerged",
+    "path": "both.txt",
+    "oldPath": "both.txt",
+    "oldMode": null,
+    "newMode": null,
+    "similarity": null,
+    "binary": false,
+    "submodule": null,
+    "hunks": []
+  }
+]

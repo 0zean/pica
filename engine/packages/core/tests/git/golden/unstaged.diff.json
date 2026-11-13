@@ -1,0 +1,104 @@
+[
+  {
+    "change": "modified",
+    "path": "image.bin",
+    "oldPath": "image.bin",
+    "oldMode": "100644",
+    "newMode": "100644",
+    "similarity": null,
+    "binary": true,
+    "submodule": null,
+    "hunks": []
+  },
+  {
+    "change": "modified",
+    "path": "notes.txt",
+    "oldPath": "notes.txt",
+    "oldMode": "100644",
+    "newMode": "100644",
+    "similarity": null,
+    "binary": false,
+    "submodule": null,
+    "hunks": [
+      {
+        "oldStart": 1,
+        "oldLines": 5,
+        "newStart": 1,
+        "newLines": 6,
+        "section": "",
+        "lines": [
+          {
+            "kind": "context",
+            "text": "line 1",
+            "noNewlineAtEnd": false
+          },
+          {
+            "kind": "context",
+            "text": "line 2 changed",
+            "noNewlineAtEnd": false
+          },
+          {
+            "kind": "context",
+            "text": "line 3",
+            "noNewlineAtEnd": false
+          },
+          {
+            "kind": "removed",
+            "text": "line 4",
+            "noNewlineAtEnd": false
+          },
+          {
+            "kind": "added",
+            "text": "line 4 edited",
+            "noNewlineAtEnd": false
+          },
+          {
+            "kind": "context",
+            "text": "line 5",
+            "noNewlineAtEnd": false
+          },
+          {
+            "kind": "added",
+            "text": "line 6",
+            "noNewlineAtEnd": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "change": "modified",
+    "path": "vendor/lib",
+    "oldPath": "vendor/lib",
+    "oldMode": "160000",
+    "newMode": "160000",
+    "similarity": null,
+    "binary": false,
+    "submodule": {
+      "oldCommit": "030b0096ae36fbc8202c240f15b0a9ad24d2e0fc",
+      "newCommit": "e191b7d12e2f2423143500f7753a833085928c7f",
+      "dirty": true
+    },
+    "hunks": [
+      {
+        "oldStart": 1,
+        "oldLines": 1,
+        "newStart": 1,
+        "newLines": 1,
+        "section": "",
+        "lines": [
+          {
+            "kind": "removed",
+            "text": "Subproject commit 030b0096ae36fbc8202c240f15b0a9ad24d2e0fc",
+            "noNewlineAtEnd": false
+          },
+          {
+            "kind": "added",
+            "text": "Subproject commit e191b7d12e2f2423143500f7753a833085928c7f-dirty",
+            "noNewlineAtEnd": false
+          }
+        ]
+      }
+    ]
+  }
+]

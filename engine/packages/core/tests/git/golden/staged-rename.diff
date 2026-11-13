@@ -1,0 +1,19 @@
+diff --git a/doomed.txt b/doomed.txt
+deleted file mode 100644
+index 10b961ad963604811a8842ba7da40feb9c077580..0000000000000000000000000000000000000000
+--- a/doomed.txt
++++ /dev/null
+@@ -1 +0,0 @@
+-remove me
+diff --git a/old-name.txt b/new-name.txt
+similarity index 90%
+rename from old-name.txt
+rename to new-name.txt
+index 1e395f2a2cc7a4eb70a20ce75a277933f71a968b..d11027fbc14acb98e91a2e3460949236b233718e 100644
+--- a/old-name.txt
++++ b/new-name.txt
+@@ -6,3 +6,4 @@ epsilon
+ zeta
+ eta
+ theta
++iota
