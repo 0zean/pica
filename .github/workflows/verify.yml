@@ -31,3 +31,4 @@ jobs:
           name: snapshot-failures
           path: app/Packages/*/.snapshot-failures/
           if-no-files-found: ignore
+          include-hidden-files: true
