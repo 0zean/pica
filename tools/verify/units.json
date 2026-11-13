@@ -1,0 +1,813 @@
+{
+  "S-01": [
+    {
+      "check": "`models.list` returns at least one model with `billing.tokenPrices`; the list is saved to `docs/spikes/S-01-models.json`.",
+      "live": true
+    },
+    {
+      "check": "A prompt reaches `session.idle` and emits at least one `assistant.usage`.",
+      "live": true
+    },
+    {
+      "check": "A1 in §2.4 is marked confirmed or its fallback is recorded as a decision."
+    }
+  ],
+  "S-02": [
+    {
+      "check": "Hook invocations for main-agent and sub-agent tool calls are distinguishable; the distinguishing field is recorded.",
+      "live": true
+    },
+    {
+      "check": "Over 20 trials asking about a 200 KB fixture file, at least 19 end with the sub-agent reading the file and the main agent never receiving its content.",
+      "live": true
+    },
+    {
+      "check": "The built-in tool names and argument shapes for read, write, edit, search, and shell are recorded in `docs/spikes/S-02-tools.json`."
+    },
+    {
+      "check": "A2 and A3 are resolved and D-08 is confirmed or changed."
+    }
+  ],
+  "S-03": [
+    {
+      "check": "`subagent.started.model` and the sub-agent's `assistant.usage.model` equal the worker model configured.",
+      "live": true
+    },
+    {
+      "check": "Each `assistant.usage` can be assigned to exactly one agent; the method is recorded.",
+      "live": true
+    },
+    {
+      "check": "A session with `maxAiCredits` set low is stopped by spending that occurs inside a sub-agent.",
+      "live": true
+    },
+    {
+      "check": "Credits computed from tokens and `tokenPrices` match `getMetrics` within 1%.",
+      "live": true
+    },
+    {
+      "check": "A4 and A5 are resolved."
+    }
+  ],
+  "S-04": [
+    {
+      "check": "A session rooted in repo A reads a file in repo B after host approval; the mechanism is recorded.",
+      "live": true
+    },
+    {
+      "check": "A write to repo B is blocked by the hook, including via a shell command.",
+      "live": true
+    },
+    {
+      "check": "Two sessions with different working directories run concurrently on one client without cross-talk.",
+      "live": true
+    },
+    {
+      "check": "A6 is resolved."
+    }
+  ],
+  "S-05": [
+    {
+      "check": "`codesign --verify --deep --strict` passes and `spctl --assess --type execute` accepts the notarized app."
+    },
+    {
+      "check": "On a second macOS user account with no developer tools, the app launches and the engine answers a ping.",
+      "manual": true
+    },
+    {
+      "check": "A7 is resolved."
+    }
+  ],
+  "S-06": [
+    {
+      "check": "GitHub, Datadog, ClickUp, and Snowflake each connect and list tools; the exact endpoint and auth method used are recorded, replacing the entries in §2.2.",
+      "live": true
+    },
+    {
+      "check": "Tool-definition token cost per server is recorded from `contextInfo`.",
+      "live": true
+    },
+    {
+      "check": "A8 is resolved."
+    }
+  ],
+  "S-07": [
+    {
+      "check": "50,000 events are received in order with none dropped at 20,000 events/s or better."
+    },
+    {
+      "check": "p99 time from write to decoded value is under 5 ms."
+    },
+    {
+      "check": "A9 is resolved."
+    }
+  ],
+  "F-01": [
+    {
+      "check": "On a clean clone, `make verify` exits 0.",
+      "run": "make verify"
+    },
+    {
+      "check": "CI runs `make verify` on pull requests and passes.",
+      "manual": true
+    }
+  ],
+  "F-02": [
+    {
+      "check": "`make lint-arch` exits 0 on the repo.",
+      "run": "make lint-arch"
+    },
+    {
+      "check": "A fixture where `core` imports an adapter makes the rule checker exit non-zero (tested).",
+      "run": "make engine-install && cd engine && pnpm exec vitest run tools/lint-arch/engine-imports.test.ts"
+    },
+    {
+      "check": "A fixture where one Swift feature imports another fails the graph check (tested).",
+      "run": "make engine-install && cd engine && pnpm exec vitest run tools/lint-arch/app-graph.test.ts"
+    }
+  ],
+  "F-03": [
+    {
+      "check": "An unknown unit ID exits non-zero with the ID in the message.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run tests/verify-runner.test.ts"
+    },
+    {
+      "check": "A test fails if any unit in §12 has no entry in `units.json`.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run tests/verify-units.test.ts"
+    }
+  ],
+  "E-01": [
+    {
+      "check": "Every method has a request and a response schema (enumeration test)."
+    },
+    {
+      "check": "The exported `protocol.schema.json` matches the committed file."
+    },
+    {
+      "check": "Each event type has a valid and an invalid fixture, accepted and rejected respectively."
+    }
+  ],
+  "E-02": [
+    {
+      "check": "`make codegen && git diff --exit-code` is clean."
+    },
+    {
+      "check": "Swift tests decode every file in `fixtures/protocol/` and re-encode to semantically equal JSON."
+    },
+    {
+      "check": "An unknown event type decodes to an `unknown` case rather than failing."
+    }
+  ],
+  "E-03": [
+    {
+      "check": "Migrations apply from empty and from each earlier schema fixture."
+    },
+    {
+      "check": "Property test: events read back in strictly increasing `seq` under concurrent appends."
+    },
+    {
+      "check": "Killing the process mid-transaction leaves a database that opens and passes an integrity check."
+    }
+  ],
+  "E-04": [
+    {
+      "check": "Table tests cover every precedence pair, including a locked key ignoring higher layers."
+    },
+    {
+      "check": "An invalid file yields an error naming the file and key path."
+    },
+    {
+      "check": "The published `config.schema.json` matches the committed file."
+    }
+  ],
+  "E-05": [
+    {
+      "check": "Conformance tests: malformed JSON, unknown method, invalid params, oversized frame each return the specified error."
+    },
+    {
+      "check": "A client with a different major protocol version is refused."
+    },
+    {
+      "check": "Two clients receive the same notifications in the same order."
+    },
+    {
+      "check": "The socket file mode is 0600 inside a 0700 directory."
+    },
+    {
+      "check": "Start to `engine.hello` reply is under 1.5 s (benchmark with threshold)."
+    }
+  ],
+  "E-06": [
+    {
+      "check": "Replaying a scenario twice produces byte-identical event logs."
+    },
+    {
+      "check": "A shared contract suite passes against FakeRuntime."
+    },
+    {
+      "check": "Scenario files validate against a schema; an invalid one fails with a line reference."
+    }
+  ],
+  "E-07": [
+    {
+      "check": "Golden tests: recorded runtime event fixtures map to expected Pica events."
+    },
+    {
+      "check": "Property test: a subscriber starting at any `afterSeq` during concurrent appends sees every later event exactly once."
+    },
+    {
+      "check": "An unmapped runtime event is logged as `runtime.unknown` and does not stop the stream."
+    }
+  ],
+  "E-08": [
+    {
+      "check": "Transition table tests accept every legal transition and reject every illegal one."
+    },
+    {
+      "check": "Killing the engine during a FakeRuntime run and restarting leaves the session `resumable`, and resuming continues from the next event."
+    },
+    {
+      "check": "An approval request is delivered to clients, and its resolution reaches the runtime exactly once."
+    },
+    {
+      "check": "Abort during a tool call ends in `idle` with an `aborted` event."
+    }
+  ],
+  "E-09": [
+    {
+      "check": "The shared contract suite passes against the adapter connected to the replay server."
+    },
+    {
+      "check": "Auth-missing, quota-exhausted, and model-unavailable transcripts map to their stable error codes."
+    },
+    {
+      "check": "A smoke run completes one prompt end to end.",
+      "live": true
+    }
+  ],
+  "E-10": [
+    {
+      "check": "End-to-end tests against an engine with FakeRuntime compare stdout to golden files."
+    },
+    {
+      "check": "`pica` starts an engine when none is running and reuses one that is."
+    },
+    {
+      "check": "Non-zero exit codes are distinct for usage error, engine error, and session failure."
+    }
+  ],
+  "C-01": [
+    {
+      "check": "Tier resolution table tests, including a preferred model missing and a model blocked by managed policy."
+    },
+    {
+      "check": "Credits computed for fixture usage (input, cached input, output) match expected values exactly."
+    },
+    {
+      "check": "A stale cache is refreshed; a failed refresh keeps the previous catalog and raises a warning event."
+    }
+  ],
+  "C-02": [
+    {
+      "check": "Precedence tests across all layers."
+    },
+    {
+      "check": "`bulk-reader` and `repo-scout` contain no write or shell tool (asserted against the S-02 tool list)."
+    },
+    {
+      "check": "Prompt snapshot tests; an agent with an unknown tool or tier fails validation with the field named."
+    }
+  ],
+  "C-03": [
+    {
+      "check": "Table-driven suite of at least 60 cases covering each rule and each ordering boundary."
+    },
+    {
+      "check": "100% branch coverage of the policy module."
+    },
+    {
+      "check": "Property test: no input makes a managed `deny` result in anything but `deny`."
+    },
+    {
+      "check": "Benchmark: p99 decision time under 1 ms."
+    }
+  ],
+  "C-04": [
+    {
+      "check": "FakeRuntime: a main-agent read of a 200 KB file is denied with a reason naming `bulk-reader`."
+    },
+    {
+      "check": "The same read from a sub-agent is allowed."
+    },
+    {
+      "check": "A 10 KB read and a 300-line ranged read of the large file are allowed."
+    },
+    {
+      "check": "Changing `read.minBytes` in workspace config changes the outcome without restarting the session."
+    }
+  ],
+  "C-05": [
+    {
+      "check": "Session-config snapshot per profile."
+    },
+    {
+      "check": "In `strict`, the main agent's tool list contains no write tool; in `balanced`, no create-file tool; in `off`, no cost gate fires in any C-03 case."
+    },
+    {
+      "check": "The delegation guide for a profile is byte-identical across sessions."
+    }
+  ],
+  "C-06": [
+    {
+      "check": "Golden tests for head and tail truncation on text, JSON, and binary-looking output."
+    },
+    {
+      "check": "The spilled artifact is byte-equal to the original result."
+    },
+    {
+      "check": "Fuzz test: the returned result never exceeds the cap."
+    }
+  ],
+  "C-07": [
+    {
+      "check": "FakeRuntime: a delegation produces child events nested under the parent's tool call."
+    },
+    {
+      "check": "A failing child emits a failure event and the parent run continues."
+    },
+    {
+      "check": "The child runs with exactly the tools in its agent definition."
+    },
+    {
+      "check": "A `bulk-reader` delegation runs on the worker-tier model.",
+      "live": true
+    }
+  ],
+  "C-08": [
+    {
+      "check": "Ledger totals equal fixture totals for a multi-agent scenario."
+    },
+    {
+      "check": "Rollup queries by session, agent, model, workspace, and day return expected rows."
+    },
+    {
+      "check": "Savings estimate matches a hand-computed fixture."
+    }
+  ],
+  "C-09": [
+    {
+      "check": "FakeRuntime: crossing the session budget blocks the next model call and emits `budget.exhausted`."
+    },
+    {
+      "check": "Raising the budget through the approval resumes the run."
+    },
+    {
+      "check": "The workspace daily cap blocks a new session and reports the reset time."
+    }
+  ],
+  "C-10": [
+    {
+      "check": "Against FakeRuntime the harness produces exactly the expected report."
+    },
+    {
+      "check": "Each task's success check passes on a reference solution and fails on an empty one."
+    },
+    {
+      "check": "On the suite, `balanced` uses at least 60% fewer reasoning-tier input tokens than `off`, with at most one fewer task succeeding. The report is committed to `docs/evals/`.",
+      "live": true
+    },
+    {
+      "check": "Default thresholds in §4.6 are updated from the report, with the change recorded in §3."
+    }
+  ],
+  "R-01": [
+    {
+      "check": "Parser golden tests for status and diff output, including renames, binary files, and submodules."
+    },
+    {
+      "check": "Integration tests against temporary repos built by a fixture script."
+    }
+  ],
+  "R-02": [
+    {
+      "check": "Edits in one worktree are not visible in another."
+    },
+    {
+      "check": "Removing a dirty worktree is refused without `force`."
+    },
+    {
+      "check": "The cleanup report for a fixture lists age, merged state, and dirty state correctly."
+    }
+  ],
+  "R-03": [
+    {
+      "check": "Two paths with the same normalized remote resolve to one `Repo`."
+    },
+    {
+      "check": "Removing an unmanaged repo never touches the filesystem."
+    },
+    {
+      "check": "Removing a managed clone with uncommitted or unpushed work is refused without `force`."
+    }
+  ],
+  "R-04": [
+    {
+      "check": "Stub-server tests for each provider and for fall-through order."
+    },
+    {
+      "check": "A SAML SSO 403 maps to an error whose `fix` is the authorization URL."
+    },
+    {
+      "check": "Missing `read:org` maps to a scope error naming the scope."
+    }
+  ],
+  "R-05": [
+    {
+      "check": "A stub with 250 repos across 3 pages is fully discovered."
+    },
+    {
+      "check": "A 304 response makes no changes and issues no further requests."
+    },
+    {
+      "check": "Archived repos and forks are excluded or included per setting."
+    },
+    {
+      "check": "Sync diff reports added and removed repos exactly."
+    }
+  ],
+  "R-06": [
+    {
+      "check": "A team source adds repos as `available`, not cloned."
+    },
+    {
+      "check": "Removing a source keeps pinned repos."
+    },
+    {
+      "check": "Workspace overrides resolve through E-04 precedence."
+    }
+  ],
+  "R-07": [
+    {
+      "check": "Policy cases: write to a reference root is denied; a symlink or `..` escaping every root is denied."
+    },
+    {
+      "check": "A shell command whose working directory or redirect target is outside the write roots yields `ask` or `deny` per permission mode."
+    },
+    {
+      "check": "Fuzzed paths never resolve outside the roots while being allowed."
+    }
+  ],
+  "R-08": [
+    {
+      "check": "On a three-repo fixture, search returns `repo:path:line` hits in a deterministic order within the result cap."
+    },
+    {
+      "check": "`repo_read` refuses paths outside workspace repos."
+    },
+    {
+      "check": "Mention parser table tests, including ambiguous and missing repos."
+    }
+  ],
+  "R-09": [
+    {
+      "check": "Golden cards for fixture repos in four ecosystems."
+    },
+    {
+      "check": "The cache is reused on the same commit and rebuilt on a new one."
+    },
+    {
+      "check": "A card never exceeds its size cap."
+    }
+  ],
+  "R-10": [
+    {
+      "check": "A two-repo change set creates two worktrees and two branches with the same name."
+    },
+    {
+      "check": "Against a stub API, both pull requests are created and each body links the other."
+    },
+    {
+      "check": "A failure creating the second pull request reports partial state without rolling back the first."
+    }
+  ],
+  "R-11": [
+    {
+      "check": "FakeRuntime: with 6 repos and a cap of 3, no more than 3 sessions run at once."
+    },
+    {
+      "check": "One failing session does not cancel the others; the aggregate reports each result."
+    },
+    {
+      "check": "Cancelling the fan-out aborts every running session."
+    }
+  ],
+  "M-01": [
+    {
+      "check": "Merge precedence tests."
+    },
+    {
+      "check": "Import golden tests for each source format."
+    },
+    {
+      "check": "A definition with an inline secret is rejected with a message pointing to secret references."
+    }
+  ],
+  "M-02": [
+    {
+      "check": "Each preset renders the expected definition for sample parameters, using the endpoints recorded by S-06."
+    },
+    {
+      "check": "Missing or malformed parameters fail validation with the parameter named."
+    }
+  ],
+  "M-03": [
+    {
+      "check": "Fuzz test: a secret value never appears in any event, log line, or database row."
+    },
+    {
+      "check": "An unresolved reference yields an error whose `fix` opens the right settings pane."
+    },
+    {
+      "check": "Token refresh failure moves the server to `needs_auth` without ending the session."
+    }
+  ],
+  "M-04": [
+    {
+      "check": "Session-config snapshot: a server scoped to one agent appears only on that agent."
+    },
+    {
+      "check": "A session with no servers attached carries no MCP tool definitions."
+    },
+    {
+      "check": "Token estimates for fixture tool lists match expected values."
+    }
+  ],
+  "M-05": [
+    {
+      "check": "Policy cases for each outcome."
+    },
+    {
+      "check": "A server absent from the managed allowlist cannot be attached, and the error names the policy."
+    }
+  ],
+  "M-06": [
+    {
+      "check": "Stub servers that are healthy, slow, crashing, and failing auth each produce the expected status."
+    },
+    {
+      "check": "A crashing stdio server is restarted with backoff and gives up after the configured attempts."
+    }
+  ],
+  "A-01": [
+    {
+      "check": "Killing the engine shows a reconnecting state and recovers within 2 s."
+    },
+    {
+      "check": "A protocol major mismatch shows a blocking error naming both versions."
+    },
+    {
+      "check": "Cold launch to interactive window is under 1.0 s (performance test with baseline)."
+    }
+  ],
+  "A-02": [
+    {
+      "check": "Against a scripted socket server, reconnect resumes at `seq + 1` with no duplicate."
+    },
+    {
+      "check": "Request timeout and task cancellation behave as specified."
+    },
+    {
+      "check": "Engine-initiated `secrets.*` requests are answered from the Keychain broker."
+    }
+  ],
+  "A-03": [
+    {
+      "check": "Snapshot tests of the component gallery in light, dark, and increased contrast."
+    },
+    {
+      "check": "`performAccessibilityAudit` passes on the gallery."
+    },
+    {
+      "check": "Reduced-motion setting disables the spark animation (tested)."
+    }
+  ],
+  "A-04": [
+    {
+      "check": "UI test: a workspace created through the engine appears in the sidebar."
+    },
+    {
+      "check": "Selection and column widths are restored after relaunch."
+    },
+    {
+      "check": "Every sidebar item is reachable and activatable by keyboard alone."
+    }
+  ],
+  "A-05": [
+    {
+      "check": "Snapshot test for each event type."
+    },
+    {
+      "check": "A 10,000-event fixture opens in under 300 ms."
+    },
+    {
+      "check": "Scroll hitch time ratio under 1% on that fixture."
+    },
+    {
+      "check": "Streaming appends do not move the scroll position when the user has scrolled up."
+    }
+  ],
+  "A-06": [
+    {
+      "check": "Mention tokenizer table tests."
+    },
+    {
+      "check": "UI tests: `@` opens completions and Return inserts; ⌘↩ sends; sending while running queues."
+    },
+    {
+      "check": "Keystroke to glyph under 16 ms with a 10,000-event session open."
+    }
+  ],
+  "A-07": [
+    {
+      "check": "UI test over a FakeRuntime scenario resolves each choice correctly."
+    },
+    {
+      "check": "\"Always allow\" writes a permission rule to config and suppresses the next identical request."
+    }
+  ],
+  "A-08": [
+    {
+      "check": "Diff snapshot tests against fixtures, including renames and binary files."
+    },
+    {
+      "check": "UI test: stage a hunk, commit, and confirm the commit in a temporary repo."
+    },
+    {
+      "check": "A 5,000-line diff renders in under 200 ms."
+    }
+  ],
+  "A-09": [
+    {
+      "check": "Fuzzy ranking table tests."
+    },
+    {
+      "check": "A query over a 100,000-file index returns in under 50 ms."
+    }
+  ],
+  "A-10": [
+    {
+      "check": "UI test: a command's output appears and its working directory is the worktree."
+    },
+    {
+      "check": "Closing the panel ends the shell process."
+    }
+  ],
+  "A-11": [
+    {
+      "check": "View-model tests from ledger fixtures."
+    },
+    {
+      "check": "Chart snapshot tests."
+    },
+    {
+      "check": "The savings figure is always labeled as an estimate (asserted in the snapshot)."
+    }
+  ],
+  "A-12": [
+    {
+      "check": "UI test against the stub GitHub server imports a team and shows its repos as available."
+    },
+    {
+      "check": "Auth errors display their `fix` action."
+    }
+  ],
+  "A-13": [
+    {
+      "check": "UI test adds a preset and sees it healthy against a stub server."
+    },
+    {
+      "check": "A saved secret is never rendered back into a field."
+    },
+    {
+      "check": "Changing servers on a running session shows the cache-invalidation warning first."
+    }
+  ],
+  "A-14": [
+    {
+      "check": "A test enumerates the action registry and finds every action in the palette."
+    },
+    {
+      "check": "A rebound shortcut persists and triggers its action."
+    },
+    {
+      "check": "A managed-locked setting is shown disabled with the policy named."
+    }
+  ],
+  "A-15": [
+    {
+      "check": "UI test: each failing precondition shows a fix action, and passing it advances."
+    }
+  ],
+  "A-16": [
+    {
+      "check": "UI test: sessions awaiting approval appear first."
+    },
+    {
+      "check": "Twenty live FakeRuntime sessions keep the board under the idle CPU budget when nothing changes."
+    }
+  ],
+  "X-01": [
+    {
+      "check": "Snapshot tests for each density and for a custom accent."
+    },
+    {
+      "check": "A theme file with an unknown token fails validation with the token named."
+    }
+  ],
+  "X-02": [
+    {
+      "check": "An agent created in the UI is written as a file that the C-02 loader accepts."
+    },
+    {
+      "check": "The UI shows which layer each item comes from and which one wins."
+    }
+  ],
+  "X-03": [
+    {
+      "check": "A hook exiting non-zero before commit blocks the commit and surfaces its output."
+    },
+    {
+      "check": "A hook exceeding its timeout is killed and reported."
+    },
+    {
+      "check": "A user hook cannot change a managed policy outcome (policy case)."
+    }
+  ],
+  "H-01": [
+    {
+      "check": "Each lockable key has a test where user config is ignored."
+    },
+    {
+      "check": "A policy file not owned by root is ignored with a warning."
+    }
+  ],
+  "H-02": [
+    {
+      "check": "Altering any line makes verification fail at that line."
+    },
+    {
+      "check": "Every policy decision in a scenario appears exactly once."
+    }
+  ],
+  "H-03": [
+    {
+      "check": "A corpus of token formats is fully redacted."
+    },
+    {
+      "check": "The diagnostics bundle for a fixture session contains no file contents and no secrets."
+    }
+  ],
+  "H-04": [
+    {
+      "check": "With export disabled, the engine opens no outbound connection other than the runtime's (asserted with a network stub)."
+    },
+    {
+      "check": "Exported metrics for a fixture match the ledger."
+    }
+  ],
+  "H-05": [
+    {
+      "check": "Corrupt-database fixture: the engine moves it aside, starts clean, and reports the backup path."
+    },
+    {
+      "check": "Disk-full simulation during event append fails the session with a stable error and leaves the log readable."
+    },
+    {
+      "check": "One hundred consecutive kill-and-resume cycles lose no event."
+    }
+  ],
+  "H-06": [
+    {
+      "check": "The release workflow produces an artifact that `spctl` accepts."
+    },
+    {
+      "check": "An update from version N to N+1 through a local appcast succeeds and the engine version matches the app."
+    },
+    {
+      "check": "An appcast entry with a bad signature is refused."
+    }
+  ],
+  "H-07": [
+    {
+      "check": "Every row in §9 has a test with a threshold, and all pass in CI on the reference runner."
+    }
+  ],
+  "H-08": [
+    {
+      "check": "Link check passes."
+    },
+    {
+      "check": "Every config key in the schema appears in the reference (generated, drift-checked)."
+    }
+  ]
+}

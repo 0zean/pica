@@ -9,6 +9,7 @@
   },
   "scripts": {
     "lint": "eslint --max-warnings 0 .",
+    "lint-arch": "node --experimental-strip-types --disable-warning=ExperimentalWarning tools/lint-arch/main.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },

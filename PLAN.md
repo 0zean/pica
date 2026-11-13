@@ -150,6 +150,7 @@ pica/
       cli/                      pica
       testkit/                  FakeRuntime, scenario DSL, replay server, repo fixtures
       evals/                    cost/success benchmark harness
+    tools/                      engine-side tooling in TypeScript: lint-arch
   app/
     Pica.xcodeproj
     Pica/                       app target: composition only
@@ -338,6 +339,7 @@ Theme (accent, density, code font and size), keybindings, inspector layout, rout
 
 - `make verify` runs lint, architecture rules, type checks, codegen drift, and all deterministic tests for engine and app.
 - `make verify UNIT=<ID>` runs exactly the checks mapped to that unit in `tools/verify/units.json`. A unit's checkboxes below are the contents of that mapping.
+- Each mapped check has a `run` command, or is marked `manual`, or `live` (run only with `PICA_LIVE=1`). A check with no command yet is reported as pending and fails the unit.
 - Checks marked **(live)** need a Copilot login. Checks marked **(manual)** need a person; they are kept to a minimum and each says exactly what to observe.
 
 ### 8.2 Definition of done for any unit
@@ -435,21 +437,21 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 - Build: git repo, pnpm workspace with empty packages, strict tsconfig, eslint, vitest, Xcode project with empty local packages, `Makefile`, CI on a macOS runner.
 - Verify:
   - [x] On a clean clone, `make verify` exits 0.
-  - [ ] CI runs `make verify` on pull requests and passes.
+  - [x] CI runs `make verify` on pull requests and passes.
 
 **F-02 · Architecture guardrails** — F-01
 - Build: import rules for the engine (§4.3) and a package-graph check for the app.
 - Verify:
-  - [ ] `make lint-arch` exits 0 on the repo.
-  - [ ] A fixture where `core` imports an adapter makes the rule checker exit non-zero (tested).
-  - [ ] A fixture where one Swift feature imports another fails the graph check (tested).
+  - [x] `make lint-arch` exits 0 on the repo.
+  - [x] A fixture where `core` imports an adapter makes the rule checker exit non-zero (tested).
+  - [x] A fixture where one Swift feature imports another fails the graph check (tested).
 
 **F-03 · Verify runner** — F-01
 - Build: `tools/verify/units.json` and the `make verify UNIT=` runner.
 - Verify:
-  - [ ] `make verify UNIT=F-03` exits 0.
-  - [ ] An unknown unit ID exits non-zero with the ID in the message.
-  - [ ] A test fails if any unit in §12 has no entry in `units.json`.
+  - [x] `make verify UNIT=F-03` exits 0.
+  - [x] An unknown unit ID exits non-zero with the ID in the message.
+  - [x] A test fails if any unit in §12 has no entry in `units.json`.
 
 **E-01 · Protocol package** — F-01
 - Build: schemas for every RPC method, event type, and DTO; JSON Schema export; protocol version constant.
@@ -952,9 +954,9 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | S-05 | Packaging | — | todo |
 | S-06 | MCP connectivity | S-01 | todo |
 | S-07 | IPC throughput | — | todo |
-| F-01 | Repository scaffold | — | doing |
-| F-02 | Architecture guardrails | F-01 | todo |
-| F-03 | Verify runner | F-01 | todo |
+| F-01 | Repository scaffold | — | done |
+| F-02 | Architecture guardrails | F-01 | done |
+| F-03 | Verify runner | F-01 | done |
 | E-01 | Protocol package | F-01 | todo |
 | E-02 | Swift code generation | E-01 | todo |
 | E-03 | Store | F-01 | todo |
