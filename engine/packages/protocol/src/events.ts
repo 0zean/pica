@@ -12,6 +12,10 @@ const ToolCall = z.object({
 });
 
 // Payload per event type. `type` values are stable; adding one is a minor protocol bump.
+//
+// Versioning: a type's payload only ever gains optional fields. An incompatible change gets a new
+// type name instead, so every event already in a session log still parses with the current schemas
+// and replay needs no per-event version field.
 export const eventPayloads = {
   "session.state_changed": z.object({ from: SessionState.nullable(), to: SessionState }),
   "user.message": z.object({ text: z.string(), mode: z.enum(["send", "steer", "queue"]) }),
@@ -47,6 +51,18 @@ export const eventPayloads = {
 
 export type EventType = keyof typeof eventPayloads;
 export const eventTypes = Object.keys(eventPayloads) as EventType[];
+
+export type EventPayload<T extends EventType> = z.output<(typeof eventPayloads)[T]>;
+
+export interface SessionEventOf<T extends EventType> {
+  readonly sessionId: string;
+  readonly seq: number;
+  readonly timestamp: string;
+  readonly type: T;
+  readonly payload: EventPayload<T>;
+}
+
+export type SessionEvent = { [T in EventType]: SessionEventOf<T> }[EventType];
 
 function eventVariant<T extends EventType>(type: T) {
   return z.object({

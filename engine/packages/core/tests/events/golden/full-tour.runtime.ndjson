@@ -1,0 +1,94 @@
+{"id":"event-1","timestamp":"2026-01-01T00:00:00.000Z","type":"session.start","data":{"sessionId":"session-1","model":"frontier-1","workingDirectory":"/repo/a"}}
+{"id":"event-2","timestamp":"2026-01-01T00:00:00.001Z","type":"user.message","data":{"messageId":"message-1","content":"summarize the repo"}}
+{"id":"event-3","timestamp":"2026-01-01T00:00:00.002Z","type":"assistant.turn_start","data":{"turnId":"turn-1"}}
+{"id":"event-4","timestamp":"2026-01-01T00:00:00.003Z","type":"assistant.message_delta","data":{"messageId":"message-2","deltaContent":"Looking "}}
+{"id":"event-5","timestamp":"2026-01-01T00:00:00.004Z","type":"assistant.message_delta","data":{"messageId":"message-2","deltaContent":"around."}}
+{"id":"event-6","timestamp":"2026-01-01T00:00:00.005Z","type":"assistant.message","data":{"messageId":"message-2","content":"Looking around."}}
+{"id":"event-7","timestamp":"2026-01-01T00:00:00.006Z","type":"tool.execution_start","data":{"toolCallId":"tool-1","toolName":"view","arguments":{"path":"README.md"}}}
+{"id":"event-8","timestamp":"2026-01-01T00:00:00.007Z","type":"tool.execution_complete","data":{"toolCallId":"tool-1","success":true,"result":{"content":"# Pica"}}}
+{"id":"event-9","timestamp":"2026-01-01T00:00:00.008Z","type":"tool.execution_start","data":{"toolCallId":"tool-2","toolName":"bash","arguments":{"command":"rm -rf /"}}}
+{"id":"event-10","timestamp":"2026-01-01T00:00:00.009Z","type":"tool.execution_complete","data":{"toolCallId":"tool-2","success":false,"result":{"content":"Denied: destructive command"}}}
+{"id":"event-11","timestamp":"2026-01-01T00:00:00.010Z","type":"subagent.started","data":{"toolCallId":"tool-3","agentId":"agent-1","agentName":"reader","model":"worker-1"}}
+{"id":"event-12","timestamp":"2026-01-01T00:00:00.011Z","type":"tool.execution_start","data":{"toolCallId":"tool-4","toolName":"view","arguments":{"path":"docs/long.md"},"agentId":"agent-1"}}
+{"id":"event-13","timestamp":"2026-01-01T00:00:00.012Z","type":"tool.execution_complete","data":{"toolCallId":"tool-4","success":true,"result":{"content":"long t"},"agentId":"agent-1"}}
+{"id":"event-14","timestamp":"2026-01-01T00:00:00.013Z","type":"assistant.usage","data":{"model":"worker-1","inputTokens":40000,"cachedInputTokens":0,"outputTokens":200,"agentId":"agent-1"}}
+{"id":"event-15","timestamp":"2026-01-01T00:00:00.014Z","type":"assistant.message","data":{"messageId":"message-3","content":"Docs cover setup.","agentId":"agent-1"}}
+{"id":"event-16","timestamp":"2026-01-01T00:00:00.015Z","type":"subagent.completed","data":{"toolCallId":"tool-3","agentId":"agent-1","agentName":"reader","model":"worker-1","totalTokens":40200}}
+{"id":"event-17","timestamp":"2026-01-01T00:00:00.016Z","type":"assistant.usage","data":{"model":"frontier-1","inputTokens":3000,"cachedInputTokens":1000,"outputTokens":120}}
+{"id":"event-18","timestamp":"2026-01-01T00:00:00.017Z","type":"session.usage_info","data":{"currentTokens":4120,"tokenLimit":200000}}
+{"id":"event-19","timestamp":"2026-01-01T00:00:00.018Z","type":"assistant.message","data":{"messageId":"message-4","content":"Pica is a native app."}}
+{"id":"event-20","timestamp":"2026-01-01T00:00:00.019Z","type":"assistant.turn_end","data":{"turnId":"turn-1"}}
+{"id":"event-21","timestamp":"2026-01-01T00:00:00.020Z","type":"session.idle","data":{}}
+{"id":"event-22","timestamp":"2026-01-01T00:00:00.021Z","type":"user.message","data":{"messageId":"message-5","content":"write notes"}}
+{"id":"event-23","timestamp":"2026-01-01T00:00:00.022Z","type":"assistant.turn_start","data":{"turnId":"turn-2"}}
+{"id":"event-24","timestamp":"2026-01-01T00:00:00.023Z","type":"tool.execution_start","data":{"toolCallId":"tool-5","toolName":"write","arguments":{"path":"NOTES.md","content":"hi"}}}
+{"id":"event-25","timestamp":"2026-01-01T00:00:00.024Z","type":"permission.requested","data":{"requestId":"permission-1","toolCallId":"tool-5","toolName":"write","arguments":{"path":"NOTES.md","content":"hi"},"reason":"writes need approval"}}
+{"id":"event-26","timestamp":"2026-01-01T00:00:00.025Z","type":"permission.completed","data":{"requestId":"permission-1","approved":true}}
+{"id":"event-27","timestamp":"2026-01-01T00:00:00.026Z","type":"tool.execution_complete","data":{"toolCallId":"tool-5","success":true,"result":{"content":"written"}}}
+{"id":"event-28","timestamp":"2026-01-01T00:00:00.027Z","type":"tool.execution_start","data":{"toolCallId":"tool-6","toolName":"write","arguments":{"path":"OTHER.md","content":"no"}}}
+{"id":"event-29","timestamp":"2026-01-01T00:00:00.028Z","type":"permission.requested","data":{"requestId":"permission-2","toolCallId":"tool-6","toolName":"write","arguments":{"path":"OTHER.md","content":"no"},"reason":"writes need approval"}}
+{"id":"event-30","timestamp":"2026-01-01T00:00:00.029Z","type":"permission.completed","data":{"requestId":"permission-2","approved":false}}
+{"id":"event-31","timestamp":"2026-01-01T00:00:00.030Z","type":"tool.execution_complete","data":{"toolCallId":"tool-6","success":false,"result":{"content":"Denied: the user declined"}}}
+{"id":"event-32","timestamp":"2026-01-01T00:00:00.031Z","type":"subagent.started","data":{"toolCallId":"tool-7","agentId":"agent-2","agentName":"fixer","model":"worker-1"}}
+{"id":"event-33","timestamp":"2026-01-01T00:00:00.032Z","type":"subagent.failed","data":{"toolCallId":"tool-7","agentId":"agent-2","agentName":"fixer","error":"worker crashed"}}
+{"id":"event-34","timestamp":"2026-01-01T00:00:00.033Z","type":"assistant.turn_end","data":{"turnId":"turn-2"}}
+{"id":"event-35","timestamp":"2026-01-01T00:00:00.034Z","type":"session.idle","data":{}}
+{"id":"event-36","timestamp":"2026-01-01T00:00:00.035Z","type":"user.message","data":{"messageId":"message-6","content":"run the tests"}}
+{"id":"event-37","timestamp":"2026-01-01T00:00:00.036Z","type":"assistant.turn_start","data":{"turnId":"turn-3"}}
+{"id":"event-38","timestamp":"2026-01-01T00:00:00.037Z","type":"tool.execution_start","data":{"toolCallId":"tool-8","toolName":"bash","arguments":{"command":"make test"}}}
+{"id":"event-39","timestamp":"2026-01-01T00:00:00.038Z","type":"tool.execution_complete","data":{"toolCallId":"tool-8","success":false,"result":{"content":"Aborted"}}}
+{"id":"event-40","timestamp":"2026-01-01T00:00:00.039Z","type":"abort","data":{"reason":"aborted by host"}}
+{"id":"event-41","timestamp":"2026-01-01T00:00:00.040Z","type":"assistant.turn_end","data":{"turnId":"turn-3"}}
+{"id":"event-42","timestamp":"2026-01-01T00:00:00.041Z","type":"session.idle","data":{}}
+{"id":"event-43","timestamp":"2026-01-01T00:00:00.042Z","type":"user.message","data":{"messageId":"message-7","content":"try again"}}
+{"id":"event-44","timestamp":"2026-01-01T00:00:00.043Z","type":"assistant.turn_start","data":{"turnId":"turn-4"}}
+{"id":"event-45","timestamp":"2026-01-01T00:00:00.044Z","type":"session.error","data":{"code":"runtime.quota_exhausted","message":"AI credit budget exhausted"}}
+{"id":"event-46","timestamp":"2026-01-01T00:00:00.045Z","type":"assistant.turn_end","data":{"turnId":"turn-4"}}
+{"id":"event-47","timestamp":"2026-01-01T00:00:00.046Z","type":"session.idle","data":{}}
+{"id":"event-48","timestamp":"2026-01-01T00:00:00.047Z","type":"session.start","data":{"sessionId":"session-2","model":"frontier-1","workingDirectory":"/repo/b"}}
+{"id":"event-49","timestamp":"2026-01-01T00:00:00.048Z","type":"user.message","data":{"messageId":"message-8","content":"summarize the repo"}}
+{"id":"event-50","timestamp":"2026-01-01T00:00:00.049Z","type":"assistant.turn_start","data":{"turnId":"turn-5"}}
+{"id":"event-51","timestamp":"2026-01-01T00:00:00.050Z","type":"assistant.message_delta","data":{"messageId":"message-9","deltaContent":"Looking "}}
+{"id":"event-52","timestamp":"2026-01-01T00:00:00.051Z","type":"assistant.message_delta","data":{"messageId":"message-9","deltaContent":"around."}}
+{"id":"event-53","timestamp":"2026-01-01T00:00:00.052Z","type":"assistant.message","data":{"messageId":"message-9","content":"Looking around."}}
+{"id":"event-54","timestamp":"2026-01-01T00:00:00.053Z","type":"tool.execution_start","data":{"toolCallId":"tool-9","toolName":"view","arguments":{"path":"README.md"}}}
+{"id":"event-55","timestamp":"2026-01-01T00:00:00.054Z","type":"tool.execution_complete","data":{"toolCallId":"tool-9","success":true,"result":{"content":"# Pica"}}}
+{"id":"event-56","timestamp":"2026-01-01T00:00:00.055Z","type":"tool.execution_start","data":{"toolCallId":"tool-10","toolName":"bash","arguments":{"command":"rm -rf /"}}}
+{"id":"event-57","timestamp":"2026-01-01T00:00:00.056Z","type":"tool.execution_complete","data":{"toolCallId":"tool-10","success":false,"result":{"content":"Denied: destructive command"}}}
+{"id":"event-58","timestamp":"2026-01-01T00:00:00.057Z","type":"subagent.started","data":{"toolCallId":"tool-11","agentId":"agent-3","agentName":"reader","model":"worker-1"}}
+{"id":"event-59","timestamp":"2026-01-01T00:00:00.058Z","type":"tool.execution_start","data":{"toolCallId":"tool-12","toolName":"view","arguments":{"path":"docs/long.md"},"agentId":"agent-3"}}
+{"id":"event-60","timestamp":"2026-01-01T00:00:00.059Z","type":"tool.execution_complete","data":{"toolCallId":"tool-12","success":true,"result":{"content":"long t"},"agentId":"agent-3"}}
+{"id":"event-61","timestamp":"2026-01-01T00:00:00.060Z","type":"assistant.usage","data":{"model":"worker-1","inputTokens":40000,"cachedInputTokens":0,"outputTokens":200,"agentId":"agent-3"}}
+{"id":"event-62","timestamp":"2026-01-01T00:00:00.061Z","type":"assistant.message","data":{"messageId":"message-10","content":"Docs cover setup.","agentId":"agent-3"}}
+{"id":"event-63","timestamp":"2026-01-01T00:00:00.062Z","type":"subagent.completed","data":{"toolCallId":"tool-11","agentId":"agent-3","agentName":"reader","model":"worker-1","totalTokens":40200}}
+{"id":"event-64","timestamp":"2026-01-01T00:00:00.063Z","type":"assistant.usage","data":{"model":"frontier-1","inputTokens":3000,"cachedInputTokens":1000,"outputTokens":120}}
+{"id":"event-65","timestamp":"2026-01-01T00:00:00.064Z","type":"session.usage_info","data":{"currentTokens":4120,"tokenLimit":200000}}
+{"id":"event-66","timestamp":"2026-01-01T00:00:00.065Z","type":"assistant.message","data":{"messageId":"message-11","content":"Pica is a native app."}}
+{"id":"event-67","timestamp":"2026-01-01T00:00:00.066Z","type":"assistant.turn_end","data":{"turnId":"turn-5"}}
+{"id":"event-68","timestamp":"2026-01-01T00:00:00.067Z","type":"session.idle","data":{}}
+{"id":"event-69","timestamp":"2026-01-01T00:00:00.068Z","type":"user.message","data":{"messageId":"message-12","content":"write notes"}}
+{"id":"event-70","timestamp":"2026-01-01T00:00:00.069Z","type":"assistant.turn_start","data":{"turnId":"turn-6"}}
+{"id":"event-71","timestamp":"2026-01-01T00:00:00.070Z","type":"tool.execution_start","data":{"toolCallId":"tool-13","toolName":"write","arguments":{"path":"NOTES.md","content":"hi"}}}
+{"id":"event-72","timestamp":"2026-01-01T00:00:00.071Z","type":"permission.requested","data":{"requestId":"permission-3","toolCallId":"tool-13","toolName":"write","arguments":{"path":"NOTES.md","content":"hi"},"reason":"writes need approval"}}
+{"id":"event-73","timestamp":"2026-01-01T00:00:00.072Z","type":"permission.completed","data":{"requestId":"permission-3","approved":true}}
+{"id":"event-74","timestamp":"2026-01-01T00:00:00.073Z","type":"tool.execution_complete","data":{"toolCallId":"tool-13","success":true,"result":{"content":"written"}}}
+{"id":"event-75","timestamp":"2026-01-01T00:00:00.074Z","type":"tool.execution_start","data":{"toolCallId":"tool-14","toolName":"write","arguments":{"path":"OTHER.md","content":"no"}}}
+{"id":"event-76","timestamp":"2026-01-01T00:00:00.075Z","type":"permission.requested","data":{"requestId":"permission-4","toolCallId":"tool-14","toolName":"write","arguments":{"path":"OTHER.md","content":"no"},"reason":"writes need approval"}}
+{"id":"event-77","timestamp":"2026-01-01T00:00:00.076Z","type":"permission.completed","data":{"requestId":"permission-4","approved":false}}
+{"id":"event-78","timestamp":"2026-01-01T00:00:00.077Z","type":"tool.execution_complete","data":{"toolCallId":"tool-14","success":false,"result":{"content":"Denied: the user declined"}}}
+{"id":"event-79","timestamp":"2026-01-01T00:00:00.078Z","type":"subagent.started","data":{"toolCallId":"tool-15","agentId":"agent-4","agentName":"fixer","model":"worker-1"}}
+{"id":"event-80","timestamp":"2026-01-01T00:00:00.079Z","type":"subagent.failed","data":{"toolCallId":"tool-15","agentId":"agent-4","agentName":"fixer","error":"worker crashed"}}
+{"id":"event-81","timestamp":"2026-01-01T00:00:00.080Z","type":"assistant.turn_end","data":{"turnId":"turn-6"}}
+{"id":"event-82","timestamp":"2026-01-01T00:00:00.081Z","type":"session.idle","data":{}}
+{"id":"event-83","timestamp":"2026-01-01T00:00:00.082Z","type":"user.message","data":{"messageId":"message-13","content":"run the tests"}}
+{"id":"event-84","timestamp":"2026-01-01T00:00:00.083Z","type":"assistant.turn_start","data":{"turnId":"turn-7"}}
+{"id":"event-85","timestamp":"2026-01-01T00:00:00.084Z","type":"tool.execution_start","data":{"toolCallId":"tool-16","toolName":"bash","arguments":{"command":"make test"}}}
+{"id":"event-86","timestamp":"2026-01-01T00:00:00.085Z","type":"tool.execution_complete","data":{"toolCallId":"tool-16","success":false,"result":{"content":"Aborted"}}}
+{"id":"event-87","timestamp":"2026-01-01T00:00:00.086Z","type":"abort","data":{"reason":"aborted by host"}}
+{"id":"event-88","timestamp":"2026-01-01T00:00:00.087Z","type":"assistant.turn_end","data":{"turnId":"turn-7"}}
+{"id":"event-89","timestamp":"2026-01-01T00:00:00.088Z","type":"session.idle","data":{}}
+{"id":"event-90","timestamp":"2026-01-01T00:00:00.089Z","type":"user.message","data":{"messageId":"message-14","content":"try again"}}
+{"id":"event-91","timestamp":"2026-01-01T00:00:00.090Z","type":"assistant.turn_start","data":{"turnId":"turn-8"}}
+{"id":"event-92","timestamp":"2026-01-01T00:00:00.091Z","type":"session.error","data":{"code":"runtime.quota_exhausted","message":"AI credit budget exhausted"}}
+{"id":"event-93","timestamp":"2026-01-01T00:00:00.092Z","type":"assistant.turn_end","data":{"turnId":"turn-8"}}
+{"id":"event-94","timestamp":"2026-01-01T00:00:00.093Z","type":"session.idle","data":{}}
