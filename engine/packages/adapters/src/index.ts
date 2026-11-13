@@ -5,3 +5,5 @@ export * from "./store/index.ts";
 export * from "./copilot/index.ts";
 export * from "./github/index.ts";
 export * from "./fs/index.ts";
+export * from "./secrets/index.ts";
+export * from "./mcp-oauth/index.ts";

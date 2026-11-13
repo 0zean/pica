@@ -1,4 +1,5 @@
 import type { Socket } from "node:net";
+import { ClientRequests, type ClientReply, type EngineMethodName, type EngineMethodParams } from "./client-requests.ts";
 import { encodeFrame, NdjsonDecoder } from "./framing.ts";
 import { errorResponse, RpcFailure } from "./errors.ts";
 import { parseMessage } from "./router.ts";
@@ -21,6 +22,7 @@ export class Connection {
   private handshaken = false;
   private beforeHandshake: Promise<void> = Promise.resolve();
   private closed = false;
+  private readonly clientRequests: ClientRequests;
 
   constructor(id: number, socket: Socket, router: MethodRouter, limits: ConnectionLimits, log: Logger) {
     this.id = id;
@@ -29,6 +31,9 @@ export class Connection {
     this.limits = limits;
     this.log = log;
     this.decoder = new NdjsonDecoder(limits.maxFrameBytes);
+    this.clientRequests = new ClientRequests((frame) => {
+      this.writeFrame(frame);
+    });
     socket.on("data", (chunk: Buffer) => {
       this.receive(chunk);
     });
@@ -40,6 +45,7 @@ export class Connection {
     });
     socket.on("close", () => {
       this.closed = true;
+      this.clientRequests.close();
     });
   }
 
@@ -53,6 +59,11 @@ export class Connection {
 
   notify(method: string, params: unknown): void {
     this.writeFrame(encodeFrame({ jsonrpc: "2.0", method, params }));
+  }
+
+  // Sends an engine-to-client request (`secrets.get`) and resolves with the client's reply. Never rejects.
+  request<M extends EngineMethodName>(method: M, params: EngineMethodParams<M>): Promise<ClientReply> {
+    return this.clientRequests.request(method, params);
   }
 
   writeFrame(frame: string): void {
@@ -98,6 +109,12 @@ export class Connection {
   private async handle(text: string): Promise<void> {
     const message = parseMessage(text);
     if (message.kind === "ignored") {
+      return;
+    }
+    if (message.kind === "response") {
+      if (!this.clientRequests.settle(message.response)) {
+        this.log.warn(`client ${String(this.id)}: dropped a response to no pending request`);
+      }
       return;
     }
     if (message.kind === "invalid") {
