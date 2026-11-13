@@ -1,0 +1,10 @@
+{
+  "sessionId": "ses_01",
+  "seq": 15,
+  "timestamp": "2026-11-12T09:30:00.000Z",
+  "type": "context.usage",
+  "payload": {
+    "currentTokens": 41000,
+    "tokenLimit": 128000
+  }
+}

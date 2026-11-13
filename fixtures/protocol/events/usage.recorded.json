@@ -1,0 +1,16 @@
+{
+  "sessionId": "ses_01",
+  "seq": 14,
+  "timestamp": "2026-11-12T09:30:00.000Z",
+  "type": "usage.recorded",
+  "payload": {
+    "sessionId": "ses_01",
+    "agent": "bulk-reader",
+    "model": "worker-model",
+    "inputTokens": 5120,
+    "cachedInputTokens": 1024,
+    "outputTokens": 310,
+    "credits": 0.42,
+    "timestamp": "2026-11-12T09:30:00.000Z"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "sessionId": "ses_01",
+  "seq": 16,
+  "timestamp": "2026-11-12T09:30:00.000Z",
+  "type": "budget.warning",
+  "payload": {
+    "spentCredits": 240,
+    "limitCredits": 300
+  }
+}
