@@ -11,8 +11,8 @@ concurrency:
 
 jobs:
   verify:
-    runs-on: macos-15
-    timeout-minutes: 20
+    runs-on: macos-26
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -23,4 +23,20 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
           cache-dependency-path: engine/pnpm-lock.yaml
-      - run: make verify
+      - run: make -k verify
+      - name: Upload snapshot failures
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapshot-failures
+          path: app/Packages/*/.snapshot-failures/
+          if-no-files-found: ignore
+          include-hidden-files: true
+      - name: Upload UI test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-test-results
+          path: app/.derived/ui-tests.xcresult
+          if-no-files-found: ignore
+          include-hidden-files: true

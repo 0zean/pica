@@ -593,13 +593,16 @@
   ],
   "A-03": [
     {
-      "check": "Snapshot tests of the component gallery in light, dark, and increased contrast."
+      "check": "Snapshot tests of the component gallery in light, dark, and increased contrast.",
+      "run": "swift test --package-path app/Packages/DesignSystem --filter GallerySnapshotTests"
     },
     {
-      "check": "`performAccessibilityAudit` passes on the gallery."
+      "check": "`performAccessibilityAudit` passes on the gallery.",
+      "run": "make app-ui-test"
     },
     {
-      "check": "Reduced-motion setting disables the spark animation (tested)."
+      "check": "Reduced-motion setting disables the spark animation (tested).",
+      "run": "swift test --package-path app/Packages/DesignSystem --filter ReducedMotionTests"
     }
   ],
   "A-04": [

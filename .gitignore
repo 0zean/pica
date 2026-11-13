@@ -6,3 +6,4 @@ dist/
 app/.derived/
 xcuserdata/
 *.xcuserstate
+.snapshot-failures/
