@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "models": [{ "id": "m", "name": "M" }],
+  "defaultModel": "m",
+  "turns": [
+    { "steps": [
+      { "type": "toolCall", "name": "view", "arguments": {}, "result": "",
+        "sucess": true }
+    ] }
+  ]
+}

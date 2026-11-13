@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "models": [{ "id": "m", "name": "M" }],
+  "defaultModel": "m",
+  "turns": [
+    {
+      "steps": [
+        {
+          "type": "subagent",
+          "agentName": "reader",
+          "model": "missing-model",
+          "steps": []
+        }
+      ]
+    }
+  ]
+}

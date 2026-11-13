@@ -1,0 +1,49 @@
+// Exercises every step type for the replay test: text, tools through every hook outcome,
+// a sub-agent, usage, context usage, a permission ask, an abort, and a runtime error.
+{
+  "version": 1,
+  "description": "Full tour of FakeRuntime behaviour",
+  "models": [
+    { "id": "frontier-1", "name": "Frontier 1", "tokenPrices": { "input": 125, "cachedInput": 12.5, "output": 1000 } },
+    { "id": "worker-1", "name": "Worker 1", "tokenPrices": { "input": 15, "cachedInput": 1.5, "output": 60 } },
+  ],
+  "defaultModel": "frontier-1",
+  "turns": [
+    {
+      "prompt": "summarize the repo",
+      "steps": [
+        { "type": "text", "content": "Looking around.", "deltas": ["Looking ", "around."] },
+        { "type": "toolCall", "name": "view", "arguments": { "path": "README.md" }, "result": "# Pica\nA native app." },
+        { "type": "toolCall", "name": "bash", "arguments": { "command": "rm -rf /" }, "result": "unreachable" },
+        {
+          "type": "subagent",
+          "agentName": "reader",
+          "model": "worker-1",
+          "steps": [
+            { "type": "toolCall", "name": "view", "arguments": { "path": "docs/long.md" }, "result": "long text" },
+            { "type": "usage", "model": "worker-1", "inputTokens": 40000, "outputTokens": 200 },
+            { "type": "text", "content": "Docs cover setup." },
+          ],
+        },
+        { "type": "usage", "model": "frontier-1", "inputTokens": 3000, "cachedInputTokens": 1000, "outputTokens": 120 },
+        { "type": "contextUsage", "currentTokens": 4120, "tokenLimit": 200000 },
+        { "type": "text", "content": "Pica is a native app." },
+      ],
+    },
+    {
+      "steps": [
+        { "type": "toolCall", "name": "write", "arguments": { "path": "NOTES.md", "content": "hi" }, "result": "written" },
+        { "type": "toolCall", "name": "write", "arguments": { "path": "OTHER.md", "content": "no" }, "result": "written" },
+        { "type": "subagent", "agentName": "fixer", "model": "worker-1", "steps": [], "failure": "worker crashed" },
+      ],
+    },
+    {
+      "steps": [
+        { "type": "toolCall", "name": "bash", "arguments": { "command": "make test" }, "result": "", "hangs": true },
+      ],
+    },
+    {
+      "steps": [{ "type": "error", "code": "runtime.quota_exhausted", "message": "AI credit budget exhausted" }],
+    },
+  ],
+}

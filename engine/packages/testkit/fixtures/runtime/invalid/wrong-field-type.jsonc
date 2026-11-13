@@ -1,0 +1,15 @@
+// A string where a token count belongs.
+{
+  "version": 1,
+  "models": [{ "id": "m", "name": "M" }],
+  "defaultModel": "m",
+  "turns": [
+    {
+      "steps": [
+        { "type": "usage", "model": "m",
+          "inputTokens": "lots",
+          "outputTokens": 1 }
+      ]
+    }
+  ]
+}
