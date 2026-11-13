@@ -247,16 +247,20 @@
   ],
   "E-08": [
     {
-      "check": "Transition table tests accept every legal transition and reject every illegal one."
+      "check": "Transition table tests accept every legal transition and reject every illegal one.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/sessions/transitions.test.ts"
     },
     {
-      "check": "Killing the engine during a FakeRuntime run and restarting leaves the session `resumable`, and resuming continues from the next event."
+      "check": "Killing the engine during a FakeRuntime run and restarting leaves the session `resumable`, and resuming continues from the next event.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/sessions/resume-after-kill.test.ts"
     },
     {
-      "check": "An approval request is delivered to clients, and its resolution reaches the runtime exactly once."
+      "check": "An approval request is delivered to clients, and its resolution reaches the runtime exactly once.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/sessions/approval.test.ts"
     },
     {
-      "check": "Abort during a tool call ends in `idle` with an `aborted` event."
+      "check": "Abort during a tool call ends in `idle` with an `aborted` event.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/sessions/abort.test.ts"
     }
   ],
   "E-09": [
@@ -287,13 +291,16 @@
   ],
   "C-01": [
     {
-      "check": "Tier resolution table tests, including a preferred model missing and a model blocked by managed policy."
+      "check": "Tier resolution table tests, including a preferred model missing and a model blocked by managed policy.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/models/tiers.test.ts"
     },
     {
-      "check": "Credits computed for fixture usage (input, cached input, output) match expected values exactly."
+      "check": "Credits computed for fixture usage (input, cached input, output) match expected values exactly.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/models/cost.test.ts"
     },
     {
-      "check": "A stale cache is refreshed; a failed refresh keeps the previous catalog and raises a warning event."
+      "check": "A stale cache is refreshed; a failed refresh keeps the previous catalog and raises a warning event.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/models/catalog.test.ts"
     }
   ],
   "C-02": [
