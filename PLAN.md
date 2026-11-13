@@ -87,7 +87,7 @@ REST endpoints: `GET /user/teams`, `GET /orgs/{org}/teams/{team_slug}/repos` (pa
 | A6 | A session can read outside its `workingDirectory` once the host approves | S-04 | Session root directory of symlinks, or cross-repo access only through engine tools |
 | A7 | Node, the engine bundle, and the Copilot CLI can be signed and notarized inside the app | S-05 | Install the engine separately (pkg or Homebrew) |
 | A8 | All four MCP servers connect through the SDK, including OAuth | S-06 | Host-managed tokens supplied by Pica |
-| A9 | Event streaming over a Unix socket meets the throughput budget | S-07 | Coalesce events per display frame in the engine |
+| A9 | Event streaming over a Unix socket meets the throughput budget. **Confirmed** by S-07: 50,000 events at 25,000/s in order, p99 write-to-decoded ≈ 0.1 ms ([findings](docs/spikes/S-07.md)) | S-07 | Coalesce events per display frame in the engine |
 
 ---
 
@@ -426,9 +426,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **S-07 · IPC throughput** — none
 - Build: Node socket server emitting synthetic events; Swift command-line client decoding them.
 - Verify:
-  - [ ] 50,000 events are received in order with none dropped at 20,000 events/s or better.
-  - [ ] p99 time from write to decoded value is under 5 ms.
-  - [ ] A9 is resolved.
+  - [x] 50,000 events are received in order with none dropped at 20,000 events/s or better.
+  - [x] p99 time from write to decoded value is under 5 ms.
+  - [x] A9 is resolved.
 
 **Gate G0:** every row in §2.4 is resolved and §3 reflects the outcomes. Phase 2 does not start before G0.
 
@@ -954,7 +954,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | S-04 | Multi-root access | S-01 | todo |
 | S-05 | Packaging | — | todo |
 | S-06 | MCP connectivity | S-01 | todo |
-| S-07 | IPC throughput | — | todo |
+| S-07 | IPC throughput | — | done |
 | F-01 | Repository scaffold | — | done |
 | F-02 | Architecture guardrails | F-01 | done |
 | F-03 | Verify runner | F-01 | done |

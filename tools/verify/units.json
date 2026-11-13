@@ -93,13 +93,16 @@
   ],
   "S-07": [
     {
-      "check": "50,000 events are received in order with none dropped at 20,000 events/s or better."
+      "check": "50,000 events are received in order with none dropped at 20,000 events/s or better.",
+      "run": "spikes/s-07-ipc/run.sh order"
     },
     {
-      "check": "p99 time from write to decoded value is under 5 ms."
+      "check": "p99 time from write to decoded value is under 5 ms.",
+      "run": "spikes/s-07-ipc/run.sh latency"
     },
     {
-      "check": "A9 is resolved."
+      "check": "A9 is resolved.",
+      "run": "test -s docs/spikes/S-07.md && grep -q '^| A9 .*Confirmed' PLAN.md"
     }
   ],
   "F-01": [
