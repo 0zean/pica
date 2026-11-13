@@ -4,6 +4,7 @@ export * from "./version.ts";
 export * from "./events.ts";
 export * from "./methods.ts";
 export * from "./json-schema.ts";
+export * from "./config-file.ts";
 export * from "./dto/agents.ts";
 export * from "./dto/config.ts";
 export * from "./dto/files.ts";

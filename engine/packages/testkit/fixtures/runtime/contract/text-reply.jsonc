@@ -1,0 +1,26 @@
+// Contract fixture: two turns of streamed text.
+{
+  "version": 1,
+  "models": [
+    { "id": "frontier-1", "name": "Frontier 1", "tokenPrices": { "input": 125, "cachedInput": 12.5, "output": 1000 }, "contextWindow": 200000 },
+    { "id": "worker-1", "name": "Worker 1", "tokenPrices": { "input": 15, "cachedInput": 1.5, "output": 60 } }
+  ],
+  "defaultModel": "frontier-1",
+  "quota": { "usedCredits": 120, "entitlementCredits": 1900, "resetDate": "2026-12-01" },
+  "turns": [
+    {
+      "steps": [
+        { "type": "text", "content": "Hello from the fake.", "deltas": ["Hello ", "from the ", "fake."] },
+        { "type": "usage", "model": "frontier-1", "inputTokens": 1200, "cachedInputTokens": 800, "outputTokens": 40 },
+        { "type": "contextUsage", "currentTokens": 2040, "tokenLimit": 200000 },
+      ],
+    },
+    {
+      "steps": [
+        { "type": "text", "content": "Second answer." },
+        { "type": "usage", "model": "frontier-1", "inputTokens": 1300, "cachedInputTokens": 2000, "outputTokens": 12 },
+        { "type": "contextUsage", "currentTokens": 3352, "tokenLimit": 200000 },
+      ],
+    },
+  ],
+}

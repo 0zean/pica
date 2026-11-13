@@ -1,0 +1,123 @@
+import { runtimeErrorCodes } from "@pica/core";
+import { z } from "zod";
+
+const tokenCount = z.int().nonnegative();
+
+const textStep = z
+  .strictObject({
+    type: z.literal("text"),
+    content: z.string(),
+    deltas: z.array(z.string()).min(1).optional(),
+  })
+  .refine((step) => step.deltas === undefined || step.deltas.join("") === step.content, {
+    message: "deltas must concatenate to content",
+    path: ["deltas"],
+  });
+
+const toolCallStep = z.strictObject({
+  type: z.literal("toolCall"),
+  name: z.string().min(1),
+  arguments: z.json(),
+  result: z.string(),
+  success: z.boolean().default(true),
+  // The tool never finishes on its own; only `abort` ends the turn.
+  hangs: z.boolean().default(false),
+});
+
+const usageStep = z.strictObject({
+  type: z.literal("usage"),
+  model: z.string().min(1),
+  inputTokens: tokenCount,
+  cachedInputTokens: tokenCount.default(0),
+  outputTokens: tokenCount,
+});
+
+const subagentStep = z.strictObject({
+  type: z.literal("subagent"),
+  agentName: z.string().min(1),
+  model: z.string().min(1),
+  steps: z.array(z.discriminatedUnion("type", [textStep, toolCallStep, usageStep])),
+  failure: z.string().min(1).optional(),
+});
+
+const contextUsageStep = z.strictObject({
+  type: z.literal("contextUsage"),
+  currentTokens: tokenCount,
+  tokenLimit: tokenCount,
+});
+
+const errorStep = z.strictObject({
+  type: z.literal("error"),
+  code: z.enum(runtimeErrorCodes),
+  message: z.string().min(1),
+});
+
+const step = z.discriminatedUnion("type", [
+  textStep,
+  toolCallStep,
+  usageStep,
+  subagentStep,
+  contextUsageStep,
+  errorStep,
+]);
+
+const model = z.strictObject({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  tokenPrices: z
+    .strictObject({ input: z.number().nonnegative(), cachedInput: z.number().nonnegative(), output: z.number().nonnegative() })
+    .optional(),
+  contextWindow: tokenCount.optional(),
+});
+
+const turn = z.strictObject({
+  // When set, a different prompt makes the turn fail with `runtime.invalid_argument`.
+  prompt: z.string().optional(),
+  steps: z.array(step),
+});
+
+export const scenarioSchema = z
+  .strictObject({
+    version: z.literal(1),
+    description: z.string().optional(),
+    models: z.array(model).min(1),
+    defaultModel: z.string().min(1),
+    quota: z
+      .strictObject({
+        usedCredits: z.number().nonnegative(),
+        entitlementCredits: z.number().nonnegative().nullable(),
+        resetDate: z.string().nullable(),
+      })
+      .default({ usedCredits: 0, entitlementCredits: null, resetDate: null }),
+    turns: z.array(turn),
+  })
+  .superRefine((scenario, context) => {
+    const known = new Set(scenario.models.map((entry) => entry.id));
+    const requireKnown = (id: string, path: (string | number)[]): void => {
+      if (!known.has(id)) {
+        context.addIssue({ code: "custom", message: `model "${id}" is not in models`, path });
+      }
+    };
+    requireKnown(scenario.defaultModel, ["defaultModel"]);
+    scenario.turns.forEach((entry, turnIndex) => {
+      entry.steps.forEach((item, stepIndex) => {
+        const path = ["turns", turnIndex, "steps", stepIndex];
+        if (item.type === "usage" || item.type === "subagent") {
+          requireKnown(item.model, [...path, "model"]);
+        }
+        if (item.type === "subagent") {
+          item.steps.forEach((inner, innerIndex) => {
+            if (inner.type === "usage") {
+              requireKnown(inner.model, [...path, "steps", innerIndex, "model"]);
+            }
+          });
+        }
+      });
+    });
+  });
+
+export type Scenario = z.output<typeof scenarioSchema>;
+export type ScenarioTurn = Scenario["turns"][number];
+export type ScenarioStep = ScenarioTurn["steps"][number];
+export type SubagentStep = Extract<ScenarioStep, { type: "subagent" }>;
+export type ToolCallStep = Extract<ScenarioStep, { type: "toolCall" }>;

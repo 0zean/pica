@@ -5,6 +5,7 @@
   "type": "module",
   "exports": "./src/index.ts",
   "dependencies": {
-    "@pica/core": "workspace:*"
+    "@pica/core": "workspace:*",
+    "jsonc-parser": "^3.3.1"
   }
 }

@@ -13,7 +13,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "protocol-schema": "node --experimental-strip-types --disable-warning=ExperimentalWarning tools/protocol-schema/main.ts",
-    "swift-codegen": "node --experimental-strip-types --disable-warning=ExperimentalWarning tools/swift-codegen/main.ts"
+    "swift-codegen": "node --experimental-strip-types --disable-warning=ExperimentalWarning tools/swift-codegen/main.ts",
+    "config-schema": "node --experimental-strip-types --disable-warning=ExperimentalWarning tools/config-schema/main.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

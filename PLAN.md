@@ -478,25 +478,25 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **E-04 · Configuration** — E-01
 - Build: layered JSONC loader, schema validation, managed locks, file watching.
 - Verify:
-  - [ ] Table tests cover every precedence pair, including a locked key ignoring higher layers.
-  - [ ] An invalid file yields an error naming the file and key path.
-  - [ ] The published `config.schema.json` matches the committed file.
+  - [x] Table tests cover every precedence pair, including a locked key ignoring higher layers.
+  - [x] An invalid file yields an error naming the file and key path.
+  - [x] The published `config.schema.json` matches the committed file.
 
 **E-05 · RPC server** — E-01
 - Build: Unix socket listener, NDJSON framing, handshake, routing, notifications, backpressure.
 - Verify:
-  - [ ] Conformance tests: malformed JSON, unknown method, invalid params, oversized frame each return the specified error.
-  - [ ] A client with a different major protocol version is refused.
-  - [ ] Two clients receive the same notifications in the same order.
-  - [ ] The socket file mode is 0600 inside a 0700 directory.
-  - [ ] Start to `engine.hello` reply is under 1.5 s (benchmark with threshold).
+  - [x] Conformance tests: malformed JSON, unknown method, invalid params, oversized frame each return the specified error.
+  - [x] A client with a different major protocol version is refused.
+  - [x] Two clients receive the same notifications in the same order.
+  - [x] The socket file mode is 0600 inside a 0700 directory.
+  - [x] Start to `engine.hello` reply is under 1.5 s (benchmark with threshold).
 
 **E-06 · Runtime port and FakeRuntime** — E-01
 - Build: `AgentRuntime` port (sessions, send, abort, events, models, quota, hooks) and a fake driven by scenario files that script text, tool calls, sub-agents, usage, and errors.
 - Verify:
-  - [ ] Replaying a scenario twice produces byte-identical event logs.
-  - [ ] A shared contract suite passes against FakeRuntime.
-  - [ ] Scenario files validate against a schema; an invalid one fails with a line reference.
+  - [x] Replaying a scenario twice produces byte-identical event logs.
+  - [x] A shared contract suite passes against FakeRuntime.
+  - [x] Scenario files validate against a schema; an invalid one fails with a line reference.
 
 **E-07 · Event normalization and log** — E-03, E-06
 - Build: mapping from runtime events to versioned `SessionEvent`s; append and subscribe.
@@ -961,9 +961,9 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | E-01 | Protocol package | F-01 | done |
 | E-02 | Swift code generation | E-01 | done |
 | E-03 | Store | F-01 | done |
-| E-04 | Configuration | E-01 | todo |
-| E-05 | RPC server | E-01 | todo |
-| E-06 | Runtime port and FakeRuntime | E-01 | todo |
+| E-04 | Configuration | E-01 | done |
+| E-05 | RPC server | E-01 | done |
+| E-06 | Runtime port and FakeRuntime | E-01 | done |
 | E-07 | Event normalization and log | E-03, E-06 | todo |
 | E-08 | Session service | E-05, E-07 | todo |
 | E-09 | Copilot adapter | E-06 | todo |

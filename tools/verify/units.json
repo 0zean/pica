@@ -183,41 +183,52 @@
   ],
   "E-04": [
     {
-      "check": "Table tests cover every precedence pair, including a locked key ignoring higher layers."
+      "check": "Table tests cover every precedence pair, including a locked key ignoring higher layers.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/config/precedence.test.ts"
     },
     {
-      "check": "An invalid file yields an error naming the file and key path."
+      "check": "An invalid file yields an error naming the file and key path.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/config/invalid-file.test.ts"
     },
     {
-      "check": "The published `config.schema.json` matches the committed file."
+      "check": "The published `config.schema.json` matches the committed file.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/protocol/tests/config-schema-export.test.ts"
     }
   ],
   "E-05": [
     {
-      "check": "Conformance tests: malformed JSON, unknown method, invalid params, oversized frame each return the specified error."
+      "check": "Conformance tests: malformed JSON, unknown method, invalid params, oversized frame each return the specified error.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/conformance.test.ts"
     },
     {
-      "check": "A client with a different major protocol version is refused."
+      "check": "A client with a different major protocol version is refused.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/handshake.test.ts"
     },
     {
-      "check": "Two clients receive the same notifications in the same order."
+      "check": "Two clients receive the same notifications in the same order.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/notifications.test.ts"
     },
     {
-      "check": "The socket file mode is 0600 inside a 0700 directory."
+      "check": "The socket file mode is 0600 inside a 0700 directory.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/socket-permissions.test.ts"
     },
     {
-      "check": "Start to `engine.hello` reply is under 1.5 s (benchmark with threshold)."
+      "check": "Start to `engine.hello` reply is under 1.5 s (benchmark with threshold).",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/startup-benchmark.test.ts"
     }
   ],
   "E-06": [
     {
-      "check": "Replaying a scenario twice produces byte-identical event logs."
+      "check": "Replaying a scenario twice produces byte-identical event logs.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/testkit/tests/runtime/replay.test.ts"
     },
     {
-      "check": "A shared contract suite passes against FakeRuntime."
+      "check": "A shared contract suite passes against FakeRuntime.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/testkit/tests/runtime/contract.test.ts"
     },
     {
-      "check": "Scenario files validate against a schema; an invalid one fails with a line reference."
+      "check": "Scenario files validate against a schema; an invalid one fails with a line reference.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/testkit/tests/runtime/scenario-schema.test.ts"
     }
   ],
   "E-07": [
