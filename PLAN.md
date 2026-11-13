@@ -972,7 +972,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | C-02 | Agent definitions | E-04 | done |
 | C-03 | Policy engine | E-04 | done |
 | C-04 | Read delegation gate | C-03, E-08 | todo |
-| C-05 | Routing profiles | C-02, C-03 | doing |
+| C-05 | Routing profiles | C-02, C-03 | done |
 | C-06 | Output guard | C-03, E-08 | todo |
 | C-07 | Delegator | C-02, C-05, G0 | todo |
 | C-08 | Usage ledger | E-07, C-01 | todo |
