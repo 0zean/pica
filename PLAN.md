@@ -434,7 +434,7 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **F-01 · Repository scaffold** — none
 - Build: git repo, pnpm workspace with empty packages, strict tsconfig, eslint, vitest, Xcode project with empty local packages, `Makefile`, CI on a macOS runner.
 - Verify:
-  - [ ] On a clean clone, `make verify` exits 0.
+  - [x] On a clean clone, `make verify` exits 0.
   - [ ] CI runs `make verify` on pull requests and passes.
 
 **F-02 · Architecture guardrails** — F-01
@@ -952,7 +952,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | S-05 | Packaging | — | todo |
 | S-06 | MCP connectivity | S-01 | todo |
 | S-07 | IPC throughput | — | todo |
-| F-01 | Repository scaffold | — | todo |
+| F-01 | Repository scaffold | — | doing |
 | F-02 | Architecture guardrails | F-01 | todo |
 | F-03 | Verify runner | F-01 | todo |
 | E-01 | Protocol package | F-01 | todo |
