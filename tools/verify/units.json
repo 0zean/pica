@@ -258,14 +258,17 @@
   ],
   "E-09": [
     {
-      "check": "The shared contract suite passes against the adapter connected to the replay server."
+      "check": "The shared contract suite passes against the adapter connected to the replay server.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/copilot/contract.test.ts"
     },
     {
-      "check": "Auth-missing, quota-exhausted, and model-unavailable transcripts map to their stable error codes."
+      "check": "Auth-missing, quota-exhausted, and model-unavailable transcripts map to their stable error codes.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/copilot/error-codes.test.ts"
     },
     {
       "check": "A smoke run completes one prompt end to end.",
-      "live": true
+      "live": true,
+      "run": "make engine-install && cd engine && PICA_LIVE=1 pnpm exec vitest run packages/adapters/tests/copilot/live-smoke.test.ts"
     }
   ],
   "E-10": [

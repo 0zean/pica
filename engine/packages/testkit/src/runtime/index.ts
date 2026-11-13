@@ -5,7 +5,7 @@ export type { Clock, IdSource } from "./deterministic.ts";
 export { contractScenarioPath, fakeRuntimeHarness } from "./fake-harness.ts";
 export { FakeRuntime } from "./fake-runtime.ts";
 export type { FakeRuntimeOptions } from "./fake-runtime.ts";
-export { formatScenarioError, loadScenarioFile, parseScenario } from "./scenario-loader.ts";
+export { formatScenarioError, loadScenarioFile, parseJsoncWithSchema, parseScenario } from "./scenario-loader.ts";
 export type { ScenarioError, ScenarioIssue } from "./scenario-loader.ts";
 export { scenarioSchema } from "./scenario-schema.ts";
 export type { Scenario, ScenarioStep, ScenarioTurn } from "./scenario-schema.ts";

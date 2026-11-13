@@ -1,0 +1,29 @@
+// Error fixture: "locked-1" is listed but disabled by policy, and the runtime refuses to start a
+// session even on the listed "frontier-1" because the account lost access to it.
+// Provenance: inferred from @github/copilot-sdk 1.0.28 types; not yet recorded (S-01). See docs/copilot-replay.md.
+{
+  "version": 1,
+  "provenance": "inferred",
+  "auth": { "isAuthenticated": true, "authType": "user", "host": "https://github.com", "login": "replay-user" },
+  "models": [
+    {
+      "id": "frontier-1", "name": "Frontier 1",
+      "capabilities": { "supports": { "vision": false, "reasoningEffort": true }, "limits": { "max_context_window_tokens": 200000 } },
+      "policy": { "state": "enabled", "terms": "" },
+      "billing": { "tokenPrices": { "inputPrice": 125, "cacheReadPrice": 12.5, "outputPrice": 1000, "batchSize": 1000000 } }
+    },
+    {
+      "id": "locked-1", "name": "Locked 1",
+      "capabilities": { "supports": { "vision": false, "reasoningEffort": false }, "limits": { "max_context_window_tokens": 128000 } },
+      "policy": { "state": "disabled", "terms": "Enable this model in your Copilot settings." }
+    }
+  ],
+  "rpcErrors": {
+    "session.create": {
+      "code": -32603,
+      "message": "Model \"frontier-1\" is not available for this account.",
+      "data": { "errorType": "policy", "errorCode": "model_not_supported", "statusCode": 400 }
+    }
+  },
+  "turns": []
+}

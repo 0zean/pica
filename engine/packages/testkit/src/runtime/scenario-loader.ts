@@ -8,6 +8,7 @@ import {
   type Node,
   type ParseError,
 } from "jsonc-parser";
+import type { ZodType } from "zod";
 import { scenarioSchema, type Scenario } from "./scenario-schema.ts";
 
 export interface ScenarioIssue {
@@ -34,6 +35,11 @@ export function loadScenarioFile(file: string): Result<Scenario, ScenarioError> 
 }
 
 export function parseScenario(text: string, file: string): Result<Scenario, ScenarioError> {
+  return parseJsoncWithSchema(text, file, scenarioSchema);
+}
+
+// Shared by scenario files and Copilot replay transcripts: JSONC in, schema-checked value out.
+export function parseJsoncWithSchema<T>(text: string, file: string, schema: ZodType<T>): Result<T, ScenarioError> {
   const syntaxErrors: ParseError[] = [];
   const tree = parseTree(text, syntaxErrors, { allowTrailingComma: true, disallowComments: false });
   if (syntaxErrors.length > 0 || tree === undefined) {
@@ -44,7 +50,7 @@ export function parseScenario(text: string, file: string): Result<Scenario, Scen
     }));
     return err({ file, issues: issues.length > 0 ? issues : [{ line: 1, column: 1, path: "(syntax)", message: "empty file" }] });
   }
-  const parsed = scenarioSchema.safeParse(getNodeValue(tree) as unknown);
+  const parsed = schema.safeParse(getNodeValue(tree) as unknown);
   if (parsed.success) {
     return ok(parsed.data);
   }

@@ -5,7 +5,13 @@
   "type": "module",
   "exports": "./src/index.ts",
   "dependencies": {
+    "@github/copilot-sdk": "1.0.28",
     "@pica/core": "workspace:*",
+    "@pica/protocol": "workspace:*",
     "jsonc-parser": "^3.3.1"
+  },
+  "devDependencies": {
+    "@pica/testkit": "workspace:*",
+    "vitest": "^5.1.0"
   }
 }

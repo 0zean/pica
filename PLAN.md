@@ -516,8 +516,8 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **E-09 · Copilot adapter** — E-06
 - Build: `AgentRuntime` over `@github/copilot-sdk`, version pinned, with error and auth-state mapping. A replay server in `testkit` emulates the runtime's JSON-RPC from recorded transcripts.
 - Verify:
-  - [ ] The shared contract suite passes against the adapter connected to the replay server.
-  - [ ] Auth-missing, quota-exhausted, and model-unavailable transcripts map to their stable error codes.
+  - [x] The shared contract suite passes against the adapter connected to the replay server.
+  - [x] Auth-missing, quota-exhausted, and model-unavailable transcripts map to their stable error codes.
   - [ ] **(live)** A smoke run completes one prompt end to end.
 
 **E-10 · CLI** — E-08
@@ -966,7 +966,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | E-06 | Runtime port and FakeRuntime | E-01 | done |
 | E-07 | Event normalization and log | E-03, E-06 | todo |
 | E-08 | Session service | E-05, E-07 | todo |
-| E-09 | Copilot adapter | E-06 | todo |
+| E-09 | Copilot adapter | E-06 | done |
 | E-10 | CLI | E-08 | todo |
 | C-01 | Model catalog and tiers | E-09 | todo |
 | C-02 | Agent definitions | E-04 | todo |
