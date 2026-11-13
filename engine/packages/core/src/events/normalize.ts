@@ -61,7 +61,7 @@ type Handler<T extends RuntimeEventType> = (
 
 type Handlers = { readonly [T in RuntimeEventType]: Handler<T> };
 
-// Lifecycle events drive the session state machine (E-08), which emits `session.state_changed`.
+// Lifecycle events drive the session state machine, which emits `session.state_changed`.
 const lifecycle = (state: NormalizerState): Normalized => ({ state, drafts: [] });
 
 const handlers: Handlers = {
@@ -157,7 +157,7 @@ const handlers: Handlers = {
     ),
   "session.error": (state, event) =>
     emit(state, draft(event, "session.error", { code: event.data.code, message: event.data.message })),
-  // TODO(E-08): use the reason the session service aborted for; the runtime only reports free text.
+  // The session service records `abort` itself with the reason it aborted for; this is the fallback.
   abort: (state, event) => emit(state, draft(event, "session.aborted", { reason: "user" })),
 };
 
