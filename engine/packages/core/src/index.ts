@@ -6,4 +6,5 @@ export { err, ok } from "./result.ts";
 export type { Result } from "./result.ts";
 export type * from "./store/index.ts";
 export * from "./runtime/index.ts";
+export * from "./policy/index.ts";
 export * from "./events/index.ts";
