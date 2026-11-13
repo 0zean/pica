@@ -749,9 +749,9 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 **A-03 · Design system** — F-01
 - Build: tokens for color, type, spacing, radius, motion; core components; brand assets derived from the logo.
 - Verify:
-  - [ ] Snapshot tests of the component gallery in light, dark, and increased contrast.
-  - [ ] `performAccessibilityAudit` passes on the gallery.
-  - [ ] Reduced-motion setting disables the spark animation (tested).
+  - [x] Snapshot tests of the component gallery in light, dark, and increased contrast.
+  - [x] `performAccessibilityAudit` passes on the gallery. Contrast issues on labels beside sample graphics are skipped: at 1x the audit's pixel sampling flags them whatever their color, size, or weight; `ContrastTests` checks those colors numerically.
+  - [x] Reduced-motion setting disables the spark animation (tested).
 
 **A-04 · Navigation shell** — A-01, A-02, A-03
 - Build: three-column layout, sidebar of workspaces, repos, and sessions, toolbar, window restoration.
@@ -996,7 +996,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | M-06 | Health and diagnostics | M-04 | todo |
 | A-01 | App shell and engine supervision | E-05, S-05 | todo |
 | A-02 | EngineClient | E-02 | todo |
-| A-03 | Design system | F-01 | doing |
+| A-03 | Design system | F-01 | done |
 | A-04 | Navigation shell | A-01, A-02, A-03 | todo |
 | A-05 | Session timeline | A-04 | todo |
 | A-06 | Composer | A-05 | todo |
