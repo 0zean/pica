@@ -478,9 +478,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **E-04 · Configuration** — E-01
 - Build: layered JSONC loader, schema validation, managed locks, file watching.
 - Verify:
-  - [ ] Table tests cover every precedence pair, including a locked key ignoring higher layers.
-  - [ ] An invalid file yields an error naming the file and key path.
-  - [ ] The published `config.schema.json` matches the committed file.
+  - [x] Table tests cover every precedence pair, including a locked key ignoring higher layers.
+  - [x] An invalid file yields an error naming the file and key path.
+  - [x] The published `config.schema.json` matches the committed file.
 
 **E-05 · RPC server** — E-01
 - Build: Unix socket listener, NDJSON framing, handshake, routing, notifications, backpressure.
@@ -961,7 +961,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | E-01 | Protocol package | F-01 | done |
 | E-02 | Swift code generation | E-01 | todo |
 | E-03 | Store | F-01 | done |
-| E-04 | Configuration | E-01 | todo |
+| E-04 | Configuration | E-01 | done |
 | E-05 | RPC server | E-01 | done |
 | E-06 | Runtime port and FakeRuntime | E-01 | done |
 | E-07 | Event normalization and log | E-03, E-06 | todo |

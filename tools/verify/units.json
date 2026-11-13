@@ -180,13 +180,16 @@
   ],
   "E-04": [
     {
-      "check": "Table tests cover every precedence pair, including a locked key ignoring higher layers."
+      "check": "Table tests cover every precedence pair, including a locked key ignoring higher layers.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/config/precedence.test.ts"
     },
     {
-      "check": "An invalid file yields an error naming the file and key path."
+      "check": "An invalid file yields an error naming the file and key path.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/config/invalid-file.test.ts"
     },
     {
-      "check": "The published `config.schema.json` matches the committed file."
+      "check": "The published `config.schema.json` matches the committed file.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/protocol/tests/config-schema-export.test.ts"
     }
   ],
   "E-05": [
