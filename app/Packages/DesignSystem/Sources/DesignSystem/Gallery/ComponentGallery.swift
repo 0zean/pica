@@ -11,6 +11,7 @@ public struct ComponentGallery: View {
                 .padding(Spacing.xLarge)
         }
         .background(Palette.background)
+        .accessibilityIdentifier("ComponentGallery")
     }
 }
 
@@ -80,15 +81,18 @@ private struct ColorSwatches: View {
                         .overlay(RoundedRectangle(cornerRadius: Radius.small, style: .continuous)
                             .strokeBorder(Palette.border, lineWidth: 1))
                         .frame(width: 28, height: 28)
+                        .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 0) {
                         Text(name).font(Typography.callout).foregroundStyle(Palette.textPrimary)
                         Text(color.rgb(for: Appearance(environment)).description)
                             .font(Typography.code).foregroundStyle(Palette.textSecondary)
                     }
+                    .accessibilityElement(children: .combine)
                 }
-                .accessibilityElement(children: .combine)
             }
         }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Color tokens")
     }
 }
 
@@ -122,9 +126,9 @@ private struct MetricSamples: View {
                 ForEach(Self.spacings, id: \.0) { name, value in
                     VStack(spacing: Spacing.xSmall) {
                         Rectangle().fill(Palette.accent).frame(width: value, height: 24)
-                        Text(name).font(Typography.caption).foregroundStyle(Palette.textSecondary)
+                            .accessibilityHidden(true)
+                        Text("\(name) spacing").font(Typography.caption).foregroundStyle(Palette.textSecondary)
                     }
-                    .accessibilityElement(children: .combine)
                 }
             }
             HStack(spacing: Spacing.large) {
@@ -133,9 +137,9 @@ private struct MetricSamples: View {
                         RoundedRectangle(cornerRadius: value, style: .continuous)
                             .strokeBorder(Palette.ring, lineWidth: 2)
                             .frame(width: 48, height: 32)
-                        Text(name).font(Typography.caption).foregroundStyle(Palette.textSecondary)
+                            .accessibilityHidden(true)
+                        Text("\(name) radius").font(Typography.caption).foregroundStyle(Palette.textSecondary)
                     }
-                    .accessibilityElement(children: .combine)
                 }
             }
         }

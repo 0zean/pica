@@ -23,7 +23,7 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
           cache-dependency-path: engine/pnpm-lock.yaml
-      - run: make verify
+      - run: make -k verify
       - name: Upload snapshot failures
         if: failure()
         uses: actions/upload-artifact@v4
