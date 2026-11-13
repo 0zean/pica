@@ -163,13 +163,16 @@
   ],
   "E-03": [
     {
-      "check": "Migrations apply from empty and from each earlier schema fixture."
+      "check": "Migrations apply from empty and from each earlier schema fixture.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/store/migrations.test.ts"
     },
     {
-      "check": "Property test: events read back in strictly increasing `seq` under concurrent appends."
+      "check": "Property test: events read back in strictly increasing `seq` under concurrent appends.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/store/event-seq.test.ts"
     },
     {
-      "check": "Killing the process mid-transaction leaves a database that opens and passes an integrity check."
+      "check": "Killing the process mid-transaction leaves a database that opens and passes an integrity check.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/store/crash.test.ts"
     }
   ],
   "E-04": [
