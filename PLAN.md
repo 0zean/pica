@@ -150,7 +150,7 @@ pica/
       cli/                      pica
       testkit/                  FakeRuntime, scenario DSL, replay server, repo fixtures
       evals/                    cost/success benchmark harness
-    tools/                      engine-side tooling in TypeScript: lint-arch
+    tools/                      engine-side tooling in TypeScript: lint-arch, protocol-schema, swift-codegen
   app/
     Pica.xcodeproj
     Pica/                       app target: composition only
@@ -464,9 +464,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **E-02 · Swift code generation** — E-01
 - Build: generator producing `PicaProtocol` Codable types from the JSON Schema.
 - Verify:
-  - [ ] `make codegen && git diff --exit-code` is clean.
-  - [ ] Swift tests decode every file in `fixtures/protocol/` and re-encode to semantically equal JSON.
-  - [ ] An unknown event type decodes to an `unknown` case rather than failing.
+  - [x] `make codegen && git diff --exit-code` is clean.
+  - [x] Swift tests decode every file in `fixtures/protocol/` and re-encode to semantically equal JSON.
+  - [x] An unknown event type decodes to an `unknown` case rather than failing.
 
 **E-03 · Store** — F-01
 - Build: SQLite schema and migrations; repositories for workspaces, repos, sessions, events, usage.
@@ -959,7 +959,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | F-02 | Architecture guardrails | F-01 | done |
 | F-03 | Verify runner | F-01 | done |
 | E-01 | Protocol package | F-01 | done |
-| E-02 | Swift code generation | E-01 | todo |
+| E-02 | Swift code generation | E-01 | done |
 | E-03 | Store | F-01 | done |
 | E-04 | Configuration | E-01 | todo |
 | E-05 | RPC server | E-01 | todo |

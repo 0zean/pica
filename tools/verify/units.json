@@ -155,13 +155,16 @@
   ],
   "E-02": [
     {
-      "check": "`make codegen && git diff --exit-code` is clean."
+      "check": "`make codegen && git diff --exit-code` is clean.",
+      "run": "make codegen && tools/codegen/check-drift.sh"
     },
     {
-      "check": "Swift tests decode every file in `fixtures/protocol/` and re-encode to semantically equal JSON."
+      "check": "Swift tests decode every file in `fixtures/protocol/` and re-encode to semantically equal JSON.",
+      "run": "swift test --package-path app/Packages/PicaProtocol --filter PicaProtocolTests.FixtureRoundTripTests"
     },
     {
-      "check": "An unknown event type decodes to an `unknown` case rather than failing."
+      "check": "An unknown event type decodes to an `unknown` case rather than failing.",
+      "run": "swift test --package-path app/Packages/PicaProtocol --filter PicaProtocolTests.UnknownEventTests"
     }
   ],
   "E-03": [

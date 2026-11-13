@@ -12,7 +12,8 @@
     "lint-arch": "node --experimental-strip-types --disable-warning=ExperimentalWarning tools/lint-arch/main.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "protocol-schema": "node --experimental-strip-types --disable-warning=ExperimentalWarning tools/protocol-schema/main.ts"
+    "protocol-schema": "node --experimental-strip-types --disable-warning=ExperimentalWarning tools/protocol-schema/main.ts",
+    "swift-codegen": "node --experimental-strip-types --disable-warning=ExperimentalWarning tools/swift-codegen/main.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

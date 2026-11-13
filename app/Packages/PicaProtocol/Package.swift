@@ -9,5 +9,6 @@ let package = Package(
     ],
     targets: [
         .target(name: "PicaProtocol"),
+        .testTarget(name: "PicaProtocolTests", dependencies: ["PicaProtocol"]),
     ]
 )
