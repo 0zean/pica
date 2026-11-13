@@ -303,16 +303,20 @@
   ],
   "C-03": [
     {
-      "check": "Table-driven suite of at least 60 cases covering each rule and each ordering boundary."
+      "check": "Table-driven suite of at least 60 cases covering each rule and each ordering boundary.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/policy/decide.test.ts"
     },
     {
-      "check": "100% branch coverage of the policy module."
+      "check": "100% branch coverage of the policy module.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run --coverage packages/core/tests/policy/decide.test.ts"
     },
     {
-      "check": "Property test: no input makes a managed `deny` result in anything but `deny`."
+      "check": "Property test: no input makes a managed `deny` result in anything but `deny`.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/policy/managed-deny.property.test.ts"
     },
     {
-      "check": "Benchmark: p99 decision time under 1 ms."
+      "check": "Benchmark: p99 decision time under 1 ms.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/policy/benchmark.test.ts"
     }
   ],
   "C-04": [

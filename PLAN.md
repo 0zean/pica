@@ -548,10 +548,10 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **C-03 · Policy engine** — E-04
 - Build: pure `decide()` with ordered rule groups and decision records.
 - Verify:
-  - [ ] Table-driven suite of at least 60 cases covering each rule and each ordering boundary.
-  - [ ] 100% branch coverage of the policy module.
-  - [ ] Property test: no input makes a managed `deny` result in anything but `deny`.
-  - [ ] Benchmark: p99 decision time under 1 ms.
+  - [x] Table-driven suite of at least 60 cases covering each rule and each ordering boundary.
+  - [x] 100% branch coverage of the policy module.
+  - [x] Property test: no input makes a managed `deny` result in anything but `deny`.
+  - [x] Benchmark: p99 decision time under 1 ms.
 
 **C-04 · Read delegation gate** — C-03, E-08
 - Build: large-read rule wired into `onPreToolUse`, with range exemption and per-path exclusions.
@@ -970,7 +970,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | E-10 | CLI | E-08 | todo |
 | C-01 | Model catalog and tiers | E-09 | todo |
 | C-02 | Agent definitions | E-04 | todo |
-| C-03 | Policy engine | E-04 | todo |
+| C-03 | Policy engine | E-04 | doing |
 | C-04 | Read delegation gate | C-03, E-08 | todo |
 | C-05 | Routing profiles | C-02, C-03 | todo |
 | C-06 | Output guard | C-03, E-08 | todo |
