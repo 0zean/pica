@@ -693,9 +693,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **M-01 · Registry and configuration** — E-04
 - Build: server definitions at global, workspace, and repo scope; import from `.vscode/mcp.json`, `.mcp.json`, and Copilot config.
 - Verify:
-  - [ ] Merge precedence tests.
-  - [ ] Import golden tests for each source format.
-  - [ ] A definition with an inline secret is rejected with a message pointing to secret references.
+  - [x] Merge precedence tests.
+  - [x] Import golden tests for each source format.
+  - [x] A definition with an inline secret is rejected with a message pointing to secret references.
 
 **M-02 · Presets** — M-01, S-06
 - Build: parameterized presets for GitHub, Datadog, ClickUp, Snowflake.
@@ -989,7 +989,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | R-09 | Repo cards | R-03 | todo |
 | R-10 | Multi-repo change sets | R-02, R-07 | todo |
 | R-11 | Fan-out runs | R-06, E-08 | todo |
-| M-01 | MCP registry and configuration | E-04 | todo |
+| M-01 | MCP registry and configuration | E-04 | done |
 | M-02 | MCP presets | M-01, S-06 | todo |
 | M-03 | Secrets and OAuth | M-01, E-05 | todo |
 | M-04 | Scoping and tool budgets | M-01, C-02 | todo |

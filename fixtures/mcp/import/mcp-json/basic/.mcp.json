@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "github": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "-e", "GITHUB_PERSONAL_ACCESS_TOKEN", "ghcr.io/github/github-mcp-server"],
+      "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PAT}", "GITHUB_TOOLSETS": "${TOOLSETS:-repos,issues}" }
+    },
+    "datadog": {
+      "type": "http",
+      "url": "https://mcp.datadoghq.com/api/unstable/mcp-server/mcp",
+      "headers": { "DD-API-KEY": "${DD_API_KEY}", "DD-APPLICATION-KEY": "${DD_APP_KEY}" }
+    },
+    "My Notes": {
+      "type": "sse",
+      "url": "https://notes.example.com/sse",
+      "headers": { "Authorization": "Bearer ${NOTES_TOKEN}" },
+      "timeout": 30000
+    }
+  }
+}

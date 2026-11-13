@@ -1,0 +1,61 @@
+{
+  "servers": [
+    {
+      "id": "Local-Events",
+      "name": "Local Events",
+      "toolAllowlist": null,
+      "scope": "repo",
+      "transport": {
+        "type": "sse",
+        "url": "http://localhost:3001/sse",
+        "headers": {}
+      }
+    },
+    {
+      "id": "filesystem",
+      "name": "filesystem",
+      "toolAllowlist": null,
+      "scope": "repo",
+      "transport": {
+        "type": "stdio",
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-filesystem",
+          "/work/repo"
+        ],
+        "env": {
+          "DEBUG": "mcp:*",
+          "HOME_DIR": "/Users/dev",
+          "API_TOKEN": {
+            "secretRef": "env:FS_TOKEN"
+          }
+        },
+        "cwd": "/work/repo/tools"
+      }
+    },
+    {
+      "id": "github",
+      "name": "github",
+      "toolAllowlist": null,
+      "scope": "repo",
+      "transport": {
+        "type": "http",
+        "url": "https://api.githubcopilot.com/mcp/",
+        "headers": {
+          "Authorization": "Bearer ${secret:keychain:github-pat}"
+        }
+      }
+    }
+  ],
+  "notes": [
+    {
+      "keyPath": "servers.filesystem.envFile",
+      "message": "ignored: Pica has no equivalent setting"
+    },
+    {
+      "keyPath": "servers.Local Events.dev",
+      "message": "ignored: Pica has no equivalent setting"
+    }
+  ]
+}

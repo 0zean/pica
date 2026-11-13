@@ -1,0 +1,72 @@
+{
+  "servers": [
+    {
+      "id": "My-Notes",
+      "name": "My Notes",
+      "toolAllowlist": null,
+      "scope": "repo",
+      "transport": {
+        "type": "sse",
+        "url": "https://notes.example.com/sse",
+        "headers": {
+          "Authorization": "Bearer ${secret:env:NOTES_TOKEN}"
+        }
+      }
+    },
+    {
+      "id": "datadog",
+      "name": "datadog",
+      "toolAllowlist": null,
+      "scope": "repo",
+      "transport": {
+        "type": "http",
+        "url": "https://mcp.datadoghq.com/api/unstable/mcp-server/mcp",
+        "headers": {
+          "DD-API-KEY": {
+            "secretRef": "env:DD_API_KEY"
+          },
+          "DD-APPLICATION-KEY": {
+            "secretRef": "env:DD_APP_KEY"
+          }
+        }
+      }
+    },
+    {
+      "id": "github",
+      "name": "github",
+      "toolAllowlist": null,
+      "scope": "repo",
+      "transport": {
+        "type": "stdio",
+        "command": "docker",
+        "args": [
+          "run",
+          "-i",
+          "--rm",
+          "-e",
+          "GITHUB_PERSONAL_ACCESS_TOKEN",
+          "ghcr.io/github/github-mcp-server"
+        ],
+        "env": {
+          "GITHUB_PERSONAL_ACCESS_TOKEN": {
+            "secretRef": "env:GITHUB_PAT"
+          },
+          "GITHUB_TOOLSETS": {
+            "secretRef": "env:TOOLSETS"
+          }
+        },
+        "cwd": null
+      }
+    }
+  ],
+  "notes": [
+    {
+      "keyPath": "mcpServers.github.env.GITHUB_TOOLSETS",
+      "message": "default for ${TOOLSETS} dropped; set TOOLSETS in the environment or the keychain"
+    },
+    {
+      "keyPath": "mcpServers.My Notes.timeout",
+      "message": "ignored: Pica has no equivalent setting"
+    }
+  ]
+}

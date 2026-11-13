@@ -1,0 +1,25 @@
+{
+  "$schema": "urn:pica:mcp",
+  "servers": {
+    // Whole-value references become { "secretRef": ... } in the protocol.
+    "github": {
+      "name": "GitHub",
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": { "Authorization": "Bearer ${secret:keychain:github/pat}", "X-MCP-Toolsets": "repos,issues" },
+      "tools": ["get_issue", "list_pull_requests"],
+    },
+    "datadog": {
+      "type": "http",
+      "url": "https://mcp.datadoghq.eu/api/unstable/mcp-server/mcp",
+      "headers": { "DD-API-KEY": "${secret:keychain:datadog-api-key}", "DD-APPLICATION-KEY": { "secretRef": "env:DD_APP_KEY" } },
+    },
+    "scripts": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["server.js", "--token", "${secret:env:SCRIPTS_TOKEN}"],
+      "env": { "LOG_LEVEL": "debug" },
+      "cwd": "tools/mcp",
+    },
+  },
+}

@@ -1,0 +1,56 @@
+{
+  "servers": [
+    {
+      "id": "clickup",
+      "name": "clickup",
+      "toolAllowlist": [
+        "get_task",
+        "search_tasks"
+      ],
+      "scope": "global",
+      "transport": {
+        "type": "http",
+        "url": "https://mcp.clickup.com/mcp",
+        "headers": {}
+      }
+    },
+    {
+      "id": "playwright",
+      "name": "playwright",
+      "toolAllowlist": null,
+      "scope": "global",
+      "transport": {
+        "type": "stdio",
+        "command": "npx",
+        "args": [
+          "@playwright/mcp@latest"
+        ],
+        "env": {},
+        "cwd": null
+      }
+    },
+    {
+      "id": "snowflake",
+      "name": "snowflake",
+      "toolAllowlist": [],
+      "scope": "global",
+      "transport": {
+        "type": "stdio",
+        "command": "uvx",
+        "args": [
+          "snowflake-labs-mcp",
+          "--service-config-file",
+          "config.yaml"
+        ],
+        "env": {
+          "SNOWFLAKE_PASSWORD": {
+            "secretRef": "env:SNOWFLAKE_PASSWORD"
+          },
+          "SNOWFLAKE_ACCOUNT": "acme-xy12345"
+        },
+        "cwd": "/opt/snowflake-mcp"
+      }
+    }
+  ],
+  "notes": []
+}
