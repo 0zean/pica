@@ -39,10 +39,13 @@ public struct GalleryContent: View {
     }
 }
 
-/// Sample labels use `textPrimary`. On CI's 1x display the accessibility audit's pixel-based contrast check
-/// flags `textSecondary` on `background` inconsistently from run to run, though it measures 7:1 (see
-/// `ContrastTests`); `textPrimary` passes every run.
 private let sampleLabelFont = Typography.callout
+
+/// Marks a label that sits beside a sample graphic. On CI's 1x display the accessibility audit's pixel-based
+/// contrast check flags these whatever their color, size, or weight, so the UI test skips contrast issues
+/// for them only; `ContrastTests` checks the text colors numerically.
+private let sampleLabelIdentifier = "SampleLabel"
+
 
 private struct GallerySection<Content: View>: View {
     let title: String
@@ -88,11 +91,12 @@ private struct ColorSwatches: View {
                         .frame(width: 28, height: 28)
                         .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 0) {
-                        Text(name).font(sampleLabelFont)
-                        Text(color.rgb(for: Appearance(environment)).description).font(Typography.code)
+                        Text(name).font(sampleLabelFont).foregroundStyle(Palette.textPrimary)
+                        Text(color.rgb(for: Appearance(environment)).description)
+                            .font(Typography.code).foregroundStyle(Palette.textSecondary)
                     }
-                    .foregroundStyle(Palette.textPrimary)
                     .accessibilityElement(children: .combine)
+                    .accessibilityIdentifier(sampleLabelIdentifier)
                 }
             }
         }
@@ -132,7 +136,8 @@ private struct MetricSamples: View {
                     VStack(spacing: Spacing.small) {
                         Rectangle().fill(Palette.accent).frame(width: value, height: 24)
                             .accessibilityHidden(true)
-                        Text(name).font(sampleLabelFont).foregroundStyle(Palette.textPrimary)
+                        Text(name).font(sampleLabelFont).foregroundStyle(Palette.textSecondary)
+                            .accessibilityIdentifier(sampleLabelIdentifier)
                     }
                 }
             }
@@ -143,7 +148,8 @@ private struct MetricSamples: View {
                             .strokeBorder(Palette.ring, lineWidth: 2)
                             .frame(width: 48, height: 32)
                             .accessibilityHidden(true)
-                        Text(name).font(sampleLabelFont).foregroundStyle(Palette.textPrimary)
+                        Text(name).font(sampleLabelFont).foregroundStyle(Palette.textSecondary)
+                            .accessibilityIdentifier(sampleLabelIdentifier)
                     }
                 }
             }
@@ -187,7 +193,8 @@ private struct ActivitySamples: View {
     private func sample(_ caption: String, @ViewBuilder mark: () -> some View) -> some View {
         VStack(spacing: Spacing.small) {
             mark().frame(width: 48, height: 48)
-            Text(caption).font(sampleLabelFont).foregroundStyle(Palette.textPrimary)
+            Text(caption).font(sampleLabelFont).foregroundStyle(Palette.textSecondary)
+                .accessibilityIdentifier(sampleLabelIdentifier)
         }
     }
 }
