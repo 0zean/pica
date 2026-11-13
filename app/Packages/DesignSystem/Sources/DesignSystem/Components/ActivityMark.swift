@@ -19,7 +19,7 @@ public struct ActivityMark: View {
         }
         .aspectRatio(1, contentMode: .fit)
         .accessibilityElement()
-        .accessibilityAddTraits(.updatesFrequently)
+        .accessibilityAddTraits([.isImage, .updatesFrequently])
         .accessibilityLabel(isWorking ? "Working" : "Idle")
         .accessibilityValue(progress.map { "\(Int(($0 * 100).rounded())) percent" } ?? "")
     }

@@ -26,6 +26,6 @@ public enum Typography {
     public static let headline = Font.system(size: 13, weight: .semibold)
     public static let body = Font.system(size: 13)
     public static let callout = Font.system(size: 12)
-    public static let caption = Font.system(size: 11)
+    public static let caption = Font.system(size: 11, weight: .medium)
     public static let code = Font.system(size: 12, weight: .medium, design: .monospaced)
 }

@@ -32,7 +32,7 @@ public enum Palette {
         light: BrandColor.ink, dark: RGB(0xF2EEE9),
         lightIncreasedContrast: RGB(0x1A1C24), darkIncreasedContrast: RGB(0xFFFFFF))
     public static let textSecondary = PicaColor(
-        light: RGB(0x5E6373), dark: RGB(0xA9AEBC),
+        light: RGB(0x50555F), dark: RGB(0xB9BDC8),
         lightIncreasedContrast: BrandColor.ink, darkIncreasedContrast: RGB(0xDADDE5))
     public static let border = PicaColor(
         light: RGB(0xDDD8D2), dark: RGB(0x3A3D4A),

@@ -19,7 +19,21 @@ final class GalleryAccessibilityTests: XCTestCase {
                 return true
             }
             gallery.scroll(byDeltaX: 0, deltaY: -galleryFrame.height * 0.8)
+            waitForScrollingToSettle(app.staticTexts["Pica design system"])
         }
         XCTAssertTrue(app.staticTexts["No sessions yet"].isHittable, "the audit passes did not reach the end of the gallery")
+    }
+
+    /// Scrolling carries momentum; auditing while content still moves reports issues at the wrong places.
+    @MainActor
+    private func waitForScrollingToSettle(_ marker: XCUIElement) {
+        var previous = marker.frame
+        for _ in 0..<30 {
+            RunLoop.current.run(until: Date().addingTimeInterval(0.1))
+            let current = marker.frame
+            if current == previous { return }
+            previous = current
+        }
+        XCTFail("the gallery kept scrolling")
     }
 }
