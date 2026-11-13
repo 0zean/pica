@@ -75,7 +75,7 @@ private struct ColorSwatches: View {
         LazyVGrid(columns: [GridItem(.adaptive(minimum: 140), spacing: Spacing.medium, alignment: .leading)],
                   alignment: .leading, spacing: Spacing.medium) {
             ForEach(Self.roles, id: \.0) { name, color in
-                HStack(spacing: Spacing.small) {
+                HStack(spacing: Spacing.medium) {
                     RoundedRectangle(cornerRadius: Radius.small, style: .continuous)
                         .fill(color)
                         .overlay(RoundedRectangle(cornerRadius: Radius.small, style: .continuous)
@@ -124,21 +124,21 @@ private struct MetricSamples: View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
             HStack(alignment: .bottom, spacing: Spacing.large) {
                 ForEach(Self.spacings, id: \.0) { name, value in
-                    VStack(spacing: Spacing.xSmall) {
+                    VStack(spacing: Spacing.small) {
                         Rectangle().fill(Palette.accent).frame(width: value, height: 24)
                             .accessibilityHidden(true)
-                        Text("\(name) spacing").font(Typography.caption).foregroundStyle(Palette.textSecondary)
+                        Text(name).font(Typography.callout).foregroundStyle(Palette.textSecondary)
                     }
                 }
             }
             HStack(spacing: Spacing.large) {
                 ForEach(Self.radii, id: \.0) { name, value in
-                    VStack(spacing: Spacing.xSmall) {
+                    VStack(spacing: Spacing.small) {
                         RoundedRectangle(cornerRadius: value, style: .continuous)
                             .strokeBorder(Palette.ring, lineWidth: 2)
                             .frame(width: 48, height: 32)
                             .accessibilityHidden(true)
-                        Text("\(name) radius").font(Typography.caption).foregroundStyle(Palette.textSecondary)
+                        Text(name).font(Typography.callout).foregroundStyle(Palette.textSecondary)
                     }
                 }
             }
@@ -180,9 +180,9 @@ private struct ActivitySamples: View {
     }
 
     private func sample(_ caption: String, @ViewBuilder mark: () -> some View) -> some View {
-        VStack(spacing: Spacing.xSmall) {
+        VStack(spacing: Spacing.small) {
             mark().frame(width: 48, height: 48)
-            Text(caption).font(Typography.caption).foregroundStyle(Palette.textSecondary)
+            Text(caption).font(Typography.callout).foregroundStyle(Palette.textSecondary)
         }
     }
 }
