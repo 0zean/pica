@@ -428,35 +428,44 @@
   ],
   "R-02": [
     {
-      "check": "Edits in one worktree are not visible in another."
+      "check": "Edits in one worktree are not visible in another.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/worktrees/isolation.test.ts"
     },
     {
-      "check": "Removing a dirty worktree is refused without `force`."
+      "check": "Removing a dirty worktree is refused without `force`.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/worktrees/remove.test.ts"
     },
     {
-      "check": "The cleanup report for a fixture lists age, merged state, and dirty state correctly."
+      "check": "The cleanup report for a fixture lists age, merged state, and dirty state correctly.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/worktrees/worktrees.test.ts packages/adapters/tests/worktrees/cleanup-report.test.ts"
     }
   ],
   "R-03": [
     {
-      "check": "Two paths with the same normalized remote resolve to one `Repo`."
+      "check": "Two paths with the same normalized remote resolve to one `Repo`.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/repo-registry/same-remote.test.ts"
     },
     {
-      "check": "Removing an unmanaged repo never touches the filesystem."
+      "check": "Removing an unmanaged repo never touches the filesystem.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/repo-registry/remove-unmanaged.test.ts"
     },
     {
-      "check": "Removing a managed clone with uncommitted or unpushed work is refused without `force`."
+      "check": "Removing a managed clone with uncommitted or unpushed work is refused without `force`.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/repo-registry/remove-managed.test.ts"
     }
   ],
   "R-04": [
     {
-      "check": "Stub-server tests for each provider and for fall-through order."
+      "check": "Stub-server tests for each provider and for fall-through order.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/github/credential-providers.test.ts packages/adapters/tests/github/fall-through.test.ts"
     },
     {
-      "check": "A SAML SSO 403 maps to an error whose `fix` is the authorization URL."
+      "check": "A SAML SSO 403 maps to an error whose `fix` is the authorization URL.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/github/sso.test.ts"
     },
     {
-      "check": "Missing `read:org` maps to a scope error naming the scope."
+      "check": "Missing `read:org` maps to a scope error naming the scope.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/github/scopes.test.ts"
     }
   ],
   "R-05": [
@@ -541,13 +550,16 @@
   ],
   "M-01": [
     {
-      "check": "Merge precedence tests."
+      "check": "Merge precedence tests.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/mcp/precedence.test.ts packages/adapters/tests/mcp/loader.test.ts"
     },
     {
-      "check": "Import golden tests for each source format."
+      "check": "Import golden tests for each source format.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/mcp/import-golden.test.ts"
     },
     {
-      "check": "A definition with an inline secret is rejected with a message pointing to secret references."
+      "check": "A definition with an inline secret is rejected with a message pointing to secret references.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/mcp/inline-secret.test.ts"
     }
   ],
   "M-02": [

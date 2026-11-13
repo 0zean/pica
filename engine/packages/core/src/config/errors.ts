@@ -1,4 +1,4 @@
-export type ConfigErrorCode = "config.read_failed" | "config.parse_error" | "config.invalid";
+export type ConfigErrorCode = "config.read_failed" | "config.parse_error" | "config.invalid" | "config.inline_secret";
 
 export interface ConfigIssue {
   readonly keyPath: string;

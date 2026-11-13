@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "type": "local",
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"],
+      "env": {},
+      "tools": ["*"]
+    },
+    "clickup": {
+      "type": "http",
+      "url": "https://mcp.clickup.com/mcp",
+      "headers": {},
+      "tools": ["get_task", "search_tasks"]
+    },
+    "snowflake": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["snowflake-labs-mcp", "--service-config-file", "config.yaml"],
+      "env": { "SNOWFLAKE_PASSWORD": "${SNOWFLAKE_PASSWORD}", "SNOWFLAKE_ACCOUNT": "acme-xy12345" },
+      "cwd": "/opt/snowflake-mcp",
+      "tools": []
+    }
+  }
+}
