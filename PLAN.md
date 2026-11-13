@@ -470,9 +470,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **E-03 · Store** — F-01
 - Build: SQLite schema and migrations; repositories for workspaces, repos, sessions, events, usage.
 - Verify:
-  - [ ] Migrations apply from empty and from each earlier schema fixture.
-  - [ ] Property test: events read back in strictly increasing `seq` under concurrent appends.
-  - [ ] Killing the process mid-transaction leaves a database that opens and passes an integrity check.
+  - [x] Migrations apply from empty and from each earlier schema fixture.
+  - [x] Property test: events read back in strictly increasing `seq` under concurrent appends.
+  - [x] Killing the process mid-transaction leaves a database that opens and passes an integrity check.
 
 **E-04 · Configuration** — E-01
 - Build: layered JSONC loader, schema validation, managed locks, file watching.
@@ -959,7 +959,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | F-03 | Verify runner | F-01 | done |
 | E-01 | Protocol package | F-01 | todo |
 | E-02 | Swift code generation | E-01 | todo |
-| E-03 | Store | F-01 | todo |
+| E-03 | Store | F-01 | done |
 | E-04 | Configuration | E-01 | todo |
 | E-05 | RPC server | E-01 | todo |
 | E-06 | Runtime port and FakeRuntime | E-01 | todo |
