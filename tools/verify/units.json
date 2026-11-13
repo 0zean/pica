@@ -194,19 +194,24 @@
   ],
   "E-05": [
     {
-      "check": "Conformance tests: malformed JSON, unknown method, invalid params, oversized frame each return the specified error."
+      "check": "Conformance tests: malformed JSON, unknown method, invalid params, oversized frame each return the specified error.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/conformance.test.ts"
     },
     {
-      "check": "A client with a different major protocol version is refused."
+      "check": "A client with a different major protocol version is refused.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/handshake.test.ts"
     },
     {
-      "check": "Two clients receive the same notifications in the same order."
+      "check": "Two clients receive the same notifications in the same order.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/notifications.test.ts"
     },
     {
-      "check": "The socket file mode is 0600 inside a 0700 directory."
+      "check": "The socket file mode is 0600 inside a 0700 directory.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/socket-permissions.test.ts"
     },
     {
-      "check": "Start to `engine.hello` reply is under 1.5 s (benchmark with threshold)."
+      "check": "Start to `engine.hello` reply is under 1.5 s (benchmark with threshold).",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/startup-benchmark.test.ts"
     }
   ],
   "E-06": [
