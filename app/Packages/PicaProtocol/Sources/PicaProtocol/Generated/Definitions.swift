@@ -877,6 +877,7 @@ public enum ErrorCode: String, CaseIterable, Codable, Hashable, Sendable {
     case authRequired = "auth_required"
     case authSsoRequired = "auth_sso_required"
     case authScopeMissing = "auth_scope_missing"
+    case githubRequestFailed = "github_request_failed"
     case quotaExhausted = "quota_exhausted"
     case modelUnavailable = "model_unavailable"
     case budgetExhausted = "budget_exhausted"

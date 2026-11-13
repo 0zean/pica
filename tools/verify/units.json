@@ -450,13 +450,16 @@
   ],
   "R-04": [
     {
-      "check": "Stub-server tests for each provider and for fall-through order."
+      "check": "Stub-server tests for each provider and for fall-through order.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/github/credential-providers.test.ts packages/adapters/tests/github/fall-through.test.ts"
     },
     {
-      "check": "A SAML SSO 403 maps to an error whose `fix` is the authorization URL."
+      "check": "A SAML SSO 403 maps to an error whose `fix` is the authorization URL.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/github/sso.test.ts"
     },
     {
-      "check": "Missing `read:org` maps to a scope error naming the scope."
+      "check": "Missing `read:org` maps to a scope error naming the scope.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/github/scopes.test.ts"
     }
   ],
   "R-05": [

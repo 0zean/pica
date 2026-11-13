@@ -632,9 +632,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **R-04 · GitHub auth** — E-05
 - Build: provider chain (`gh` credentials, device flow, PAT from the secret broker), host configuration for github.com and GitHub Enterprise.
 - Verify:
-  - [ ] Stub-server tests for each provider and for fall-through order.
-  - [ ] A SAML SSO 403 maps to an error whose `fix` is the authorization URL.
-  - [ ] Missing `read:org` maps to a scope error naming the scope.
+  - [x] Stub-server tests for each provider and for fall-through order.
+  - [x] A SAML SSO 403 maps to an error whose `fix` is the authorization URL.
+  - [x] Missing `read:org` maps to a scope error naming the scope.
 
 **R-05 · Team discovery** — R-04
 - Build: list orgs and teams, team repos, topic and custom-property selectors, sync with diff.
@@ -981,7 +981,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | R-01 | Git service | F-01 | done |
 | R-02 | Worktrees | R-01 | todo |
 | R-03 | Repo registry | E-03, R-01 | todo |
-| R-04 | GitHub auth | E-05 | todo |
+| R-04 | GitHub auth | E-05 | done |
 | R-05 | Team discovery | R-04 | todo |
 | R-06 | Workspace model | R-03, R-05 | todo |
 | R-07 | Session scope and sandbox | C-03, R-02 | todo |
