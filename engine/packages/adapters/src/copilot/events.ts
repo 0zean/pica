@@ -1,0 +1,135 @@
+import type { JsonValue, RuntimeEvent, RuntimeEventDataMap, RuntimeEventType, ToolResult } from "@pica/core";
+import type { SessionEvent } from "@github/copilot-sdk";
+import { classifyError } from "./errors.ts";
+
+export interface EventContext {
+  readonly sessionId: string;
+  readonly workingDirectory: string;
+  modifiedResult(toolCallId: string): ToolResult | undefined;
+}
+
+// Maps one SDK session event to the runtime event the port promises, or `undefined` for the many
+// SDK events the port does not model.
+//
+// Sub-agents: `subagent.*` events name the sub-agent only by the `task` tool call that started
+// it, so that call id is used as the agent id; events from inside the sub-agent are expected to
+// carry the same id in their envelope `agentId`. S-02/S-03 confirm this.
+export function toRuntimeEvent(event: SessionEvent, context: EventContext): RuntimeEvent | undefined {
+  const scope = event.agentId === undefined || event.agentId === "" ? {} : { agentId: event.agentId };
+  switch (event.type) {
+    case "session.start":
+      return wrap(event, "session.start", {
+        sessionId: event.data.sessionId,
+        model: event.data.selectedModel ?? "",
+        workingDirectory: event.data.context?.cwd ?? context.workingDirectory,
+      });
+    case "session.resume":
+      return wrap(event, "session.resume", { sessionId: context.sessionId });
+    case "user.message":
+      return wrap(event, "user.message", { messageId: event.data.messageId ?? event.id, content: event.data.content });
+    case "assistant.turn_start":
+      return wrap(event, "assistant.turn_start", { turnId: event.data.turnId });
+    case "assistant.turn_end":
+      return wrap(event, "assistant.turn_end", { turnId: event.data.turnId });
+    case "assistant.message_delta":
+      return wrap(event, "assistant.message_delta", {
+        messageId: event.data.messageId,
+        deltaContent: event.data.deltaContent,
+        ...scope,
+      });
+    case "assistant.message":
+      // A message that only carries tool requests has no text for the host to show.
+      return event.data.content === ""
+        ? undefined
+        : wrap(event, "assistant.message", { messageId: event.data.messageId, content: event.data.content, ...scope });
+    case "tool.execution_start":
+      return wrap(event, "tool.execution_start", {
+        toolCallId: event.data.toolCallId,
+        toolName: event.data.toolName,
+        arguments: event.data.arguments ?? null,
+        ...scope,
+      });
+    case "tool.execution_complete":
+      return wrap(event, "tool.execution_complete", {
+        toolCallId: event.data.toolCallId,
+        success: event.data.success,
+        result: context.modifiedResult(event.data.toolCallId) ?? {
+          content: event.data.success
+            ? (event.data.result?.content ?? "")
+            : (event.data.error?.message ?? event.data.result?.content ?? ""),
+        },
+        ...scope,
+      });
+    case "permission.requested":
+      return permissionRequested(event);
+    case "permission.completed":
+      return wrap(event, "permission.completed", {
+        requestId: event.data.requestId,
+        approved: event.data.result.kind.startsWith("approved"),
+      });
+    case "subagent.started":
+      return wrap(event, "subagent.started", {
+        toolCallId: event.data.toolCallId,
+        agentId: event.data.toolCallId,
+        agentName: event.data.agentName,
+        model: event.data.model ?? "",
+      });
+    case "subagent.completed":
+      return wrap(event, "subagent.completed", {
+        toolCallId: event.data.toolCallId,
+        agentId: event.data.toolCallId,
+        agentName: event.data.agentName,
+        model: event.data.model ?? "",
+        totalTokens: event.data.totalTokens ?? 0,
+      });
+    case "subagent.failed":
+      return wrap(event, "subagent.failed", {
+        toolCallId: event.data.toolCallId,
+        agentId: event.data.toolCallId,
+        agentName: event.data.agentName,
+        error: event.data.error,
+      });
+    case "assistant.usage":
+      return wrap(event, "assistant.usage", {
+        model: event.data.model,
+        inputTokens: event.data.inputTokens ?? 0,
+        cachedInputTokens: event.data.cacheReadTokens ?? 0,
+        outputTokens: event.data.outputTokens ?? 0,
+        ...scope,
+      });
+    case "session.usage_info":
+      return wrap(event, "session.usage_info", {
+        currentTokens: event.data.currentTokens,
+        tokenLimit: event.data.tokenLimit,
+      });
+    case "session.error":
+      return wrap(event, "session.error", { code: classifyError(event.data), message: event.data.message });
+    case "abort":
+      return wrap(event, "abort", { reason: event.data.reason });
+    case "session.idle":
+      return wrap(event, "session.idle", {});
+    default:
+      return undefined;
+  }
+}
+
+function permissionRequested(event: Extract<SessionEvent, { type: "permission.requested" }>): RuntimeEvent {
+  const request = event.data.permissionRequest as unknown as Readonly<Record<string, unknown>>;
+  const toolName = typeof request.toolName === "string" ? request.toolName : String(request.kind);
+  const reason = typeof request.hookMessage === "string" ? { reason: request.hookMessage } : {};
+  return wrap(event, "permission.requested", {
+    requestId: event.data.requestId,
+    toolCallId: typeof request.toolCallId === "string" ? request.toolCallId : "",
+    toolName,
+    arguments: (request.toolArgs ?? null) as JsonValue,
+    ...reason,
+  });
+}
+
+function wrap<T extends RuntimeEventType>(
+  event: SessionEvent,
+  type: T,
+  data: RuntimeEventDataMap[T],
+): RuntimeEvent {
+  return { id: event.id, timestamp: event.timestamp, type, data } as RuntimeEvent;
+}

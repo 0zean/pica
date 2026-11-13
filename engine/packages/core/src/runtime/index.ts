@@ -1,5 +1,5 @@
-export { isRuntimeErrorCode, runtimeErrorCodes } from "./errors.ts";
-export type { RuntimeError, RuntimeErrorCode } from "./errors.ts";
+export { isRuntimeErrorCode, protocolErrorCode, runtimeErrorCodes } from "./errors.ts";
+export type { ProtocolErrorCode, RuntimeError, RuntimeErrorCode } from "./errors.ts";
 export type {
   RuntimeEvent,
   RuntimeEventDataMap,

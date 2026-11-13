@@ -1,0 +1,14 @@
+// Error fixture: no signed-in user and no token, so the runtime refuses account and model calls.
+// Provenance: inferred from @github/copilot-sdk 1.0.28 types; not yet recorded (S-01). See docs/copilot-replay.md.
+{
+  "version": 1,
+  "provenance": "inferred",
+  "auth": { "isAuthenticated": false, "statusMessage": "Not logged in. Run `copilot login` or set COPILOT_GITHUB_TOKEN." },
+  "models": [],
+  "rpcErrors": {
+    "models.list": { "code": -32603, "message": "Not authenticated", "data": { "errorType": "authentication", "statusCode": 401 } },
+    "account.getQuota": { "code": -32603, "message": "Not authenticated", "data": { "errorType": "authentication", "statusCode": 401 } },
+    "session.create": { "code": -32603, "message": "Not authenticated", "data": { "errorType": "authentication", "statusCode": 401 } }
+  },
+  "turns": []
+}

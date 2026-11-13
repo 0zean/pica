@@ -1,0 +1,167 @@
+// Contract fixture: two turns of streamed text.
+// Provenance: inferred from @github/copilot-sdk 1.0.28 types; not yet recorded (S-01). See docs/copilot-replay.md.
+{
+  "version": 1,
+  "provenance": "inferred",
+  "auth": { "isAuthenticated": true, "authType": "user", "host": "https://github.com", "login": "replay-user" },
+  "models": [
+    {
+      "id": "frontier-1", "name": "Frontier 1",
+      "capabilities": { "supports": { "vision": false, "reasoningEffort": true }, "limits": { "max_context_window_tokens": 200000 } },
+      "policy": { "state": "enabled", "terms": "" },
+      "billing": { "multiplier": 1, "tokenPrices": { "inputPrice": 125, "cacheReadPrice": 12.5, "outputPrice": 1000, "batchSize": 1000000 } }
+    },
+    {
+      "id": "worker-1", "name": "Worker 1",
+      "capabilities": { "supports": { "vision": false, "reasoningEffort": false }, "limits": { "max_context_window_tokens": 128000 } },
+      "policy": { "state": "enabled", "terms": "" },
+      "billing": { "multiplier": 0, "tokenPrices": { "inputPrice": 0.015, "cacheReadPrice": 0.0015, "outputPrice": 0.06, "batchSize": 1000 } }
+    }
+  ],
+  "quota": {
+    "quotaSnapshots": {
+      "premium_interactions": {
+        "isUnlimitedEntitlement": false, "entitlementRequests": 1900, "usedRequests": 120,
+        "usageAllowedWithExhaustedQuota": false, "remainingPercentage": 93.7, "overage": 0,
+        "overageAllowedWithExhaustedQuota": false, "resetDate": "2026-12-01"
+      }
+    }
+  },
+
+  "turns": [
+    {
+      "frames": [
+        {
+          "event": {
+            "type": "assistant.turn_start",
+            "data": {
+              "turnId": "turn-1"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "assistant.message_delta",
+            "data": {
+              "messageId": "msg-1",
+              "deltaContent": "Hello "
+            },
+            "ephemeral": true
+          }
+        },
+        {
+          "event": {
+            "type": "assistant.message_delta",
+            "data": {
+              "messageId": "msg-1",
+              "deltaContent": "from the "
+            },
+            "ephemeral": true
+          }
+        },
+        {
+          "event": {
+            "type": "assistant.message_delta",
+            "data": {
+              "messageId": "msg-1",
+              "deltaContent": "replay."
+            },
+            "ephemeral": true
+          }
+        },
+        {
+          "event": {
+            "type": "assistant.message",
+            "data": {
+              "messageId": "msg-1",
+              "content": "Hello from the replay."
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "assistant.usage",
+            "data": {
+              "model": "frontier-1",
+              "inputTokens": 1200,
+              "outputTokens": 40,
+              "cacheReadTokens": 800
+            },
+            "ephemeral": true
+          }
+        },
+        {
+          "event": {
+            "type": "session.usage_info",
+            "data": {
+              "currentTokens": 2040,
+              "tokenLimit": 200000,
+              "messagesLength": 2
+            },
+            "ephemeral": true
+          }
+        },
+        {
+          "event": {
+            "type": "assistant.turn_end",
+            "data": {
+              "turnId": "turn-1"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "frames": [
+        {
+          "event": {
+            "type": "assistant.turn_start",
+            "data": {
+              "turnId": "turn-2"
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "assistant.message",
+            "data": {
+              "messageId": "msg-2",
+              "content": "Second answer."
+            }
+          }
+        },
+        {
+          "event": {
+            "type": "assistant.usage",
+            "data": {
+              "model": "frontier-1",
+              "inputTokens": 1300,
+              "outputTokens": 12,
+              "cacheReadTokens": 2000
+            },
+            "ephemeral": true
+          }
+        },
+        {
+          "event": {
+            "type": "session.usage_info",
+            "data": {
+              "currentTokens": 3352,
+              "tokenLimit": 200000,
+              "messagesLength": 4
+            },
+            "ephemeral": true
+          }
+        },
+        {
+          "event": {
+            "type": "assistant.turn_end",
+            "data": {
+              "turnId": "turn-2"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
