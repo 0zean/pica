@@ -572,13 +572,16 @@
   ],
   "M-03": [
     {
-      "check": "Fuzz test: a secret value never appears in any event, log line, or database row."
+      "check": "Fuzz test: a secret value never appears in any event, log line, or database row.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/mcp-auth/secret-leak-fuzz.test.ts"
     },
     {
-      "check": "An unresolved reference yields an error whose `fix` opens the right settings pane."
+      "check": "An unresolved reference yields an error whose `fix` opens the right settings pane.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/mcp-auth/unresolved-reference.test.ts"
     },
     {
-      "check": "Token refresh failure moves the server to `needs_auth` without ending the session."
+      "check": "Token refresh failure moves the server to `needs_auth` without ending the session.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/mcp-auth/refresh-needs-auth.test.ts"
     }
   ],
   "M-04": [

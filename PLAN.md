@@ -706,9 +706,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **M-03 · Secrets and OAuth** — M-01, E-05
 - Build: secret references resolved through the client broker or environment; OAuth login orchestration.
 - Verify:
-  - [ ] Fuzz test: a secret value never appears in any event, log line, or database row.
-  - [ ] An unresolved reference yields an error whose `fix` opens the right settings pane.
-  - [ ] Token refresh failure moves the server to `needs_auth` without ending the session.
+  - [x] Fuzz test: a secret value never appears in any event, log line, or database row.
+  - [x] An unresolved reference yields an error whose `fix` opens the right settings pane.
+  - [x] Token refresh failure moves the server to `needs_auth` without ending the session.
 
 **M-04 · Scoping and tool budgets** — M-01, C-02
 - Build: per-session and per-agent attachment, per-server tool allowlists, tool-definition token estimates.
@@ -991,7 +991,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | R-11 | Fan-out runs | R-06, E-08 | todo |
 | M-01 | MCP registry and configuration | E-04 | done |
 | M-02 | MCP presets | M-01, S-06 | todo |
-| M-03 | Secrets and OAuth | M-01, E-05 | todo |
+| M-03 | Secrets and OAuth | M-01, E-05 | done |
 | M-04 | Scoping and tool budgets | M-01, C-02 | todo |
 | M-05 | MCP permissions | C-03, M-04 | todo |
 | M-06 | Health and diagnostics | M-04 | todo |

@@ -1,6 +1,7 @@
 import type * as z from "zod";
 import { methods, RpcRequest } from "@pica/protocol";
 import type { MethodName, RequestId, RpcSuccessResponse } from "@pica/protocol";
+import { parseClientResponse, type ClientResponse } from "./client-requests.ts";
 import { RpcFailure } from "./errors.ts";
 
 export type MethodParams<M extends MethodName> = z.output<(typeof methods)[M]["params"]>;
@@ -21,6 +22,7 @@ type SuccessResponse = z.infer<typeof RpcSuccessResponse>;
 
 export type ParsedMessage =
   | { kind: "request"; id: Id; method: string; params: unknown }
+  | { kind: "response"; response: ClientResponse }
   | { kind: "ignored" }
   | { kind: "invalid"; id: Id | null; failure: RpcFailure };
 
@@ -35,6 +37,10 @@ export function parseMessage(text: string): ParsedMessage {
   if (request.success) {
     return { kind: "request", id: request.data.id, method: request.data.method, params: request.data.params };
   }
+  const response = parseClientResponse(value);
+  if (response !== undefined) {
+    return { kind: "response", response };
+  }
   if (isNotificationOrResponse(value)) {
     return { kind: "ignored" };
   }
@@ -45,7 +51,7 @@ export function parseMessage(text: string): ParsedMessage {
   };
 }
 
-// Client notifications and responses to engine-to-client requests have no handler yet; JSON-RPC forbids answering them.
+// Client notifications, and malformed responses, have no handler; JSON-RPC forbids answering them.
 function isNotificationOrResponse(value: unknown): boolean {
   if (typeof value !== "object" || value === null || Array.isArray(value)) {
     return false;

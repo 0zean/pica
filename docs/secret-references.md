@@ -42,4 +42,4 @@ Importers translate other tools' variable syntax into references, so imported de
 | `.vscode/mcp.json` | `${input:id}` | `${secret:keychain:id}`: the app asks once and keeps the answer in the Keychain, as VS Code's prompt would |
 | `.mcp.json`, Copilot CLI `mcp-config.json` | `${NAME}`, `${NAME:-default}` | `${secret:env:NAME}`; a default is dropped and reported as an import note |
 
-See [mcp-configuration.md](mcp-configuration.md) for the file formats and precedence.
+See [mcp-configuration.md](mcp-configuration.md) for the file formats and precedence, and [mcp-secrets.md](mcp-secrets.md) for how references are resolved and how OAuth servers sign in.
