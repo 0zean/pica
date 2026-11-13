@@ -12,3 +12,7 @@ export const AgentDef = z.object({
   sourceLayer: AgentSourceLayer,
   sourcePath: z.string().nullable(),
 });
+
+export type Tier = z.infer<typeof Tier>;
+export type AgentSourceLayer = z.infer<typeof AgentSourceLayer>;
+export type AgentDef = z.infer<typeof AgentDef>;

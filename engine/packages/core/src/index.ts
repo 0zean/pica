@@ -1,3 +1,4 @@
+export * from "./agents/index.ts";
 export * from "./config/index.ts";
 export * from "./git/index.ts";
 export type { JsonObject, JsonValue } from "./json.ts";
@@ -6,3 +7,4 @@ export type { Result } from "./result.ts";
 export type * from "./store/index.ts";
 export * from "./runtime/index.ts";
 export * from "./policy/index.ts";
+export * from "./events/index.ts";

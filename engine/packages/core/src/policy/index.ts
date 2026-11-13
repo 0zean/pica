@@ -13,7 +13,7 @@ export {
   type RuleGroup,
   type RuleId,
   type ToolCall,
-  type ToolKind,
+  type PolicyToolKind,
   type ToolTarget,
   type TruncateRewrite,
 } from "./types.ts";

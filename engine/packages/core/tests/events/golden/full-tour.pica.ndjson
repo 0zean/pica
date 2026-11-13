@@ -1,0 +1,68 @@
+{"type":"user.message","payload":{"text":"summarize the repo","mode":"send"},"timestamp":"2026-01-01T00:00:00.001Z"}
+{"type":"assistant.delta","payload":{"messageId":"message-2","agent":"main","text":"Looking "},"timestamp":"2026-01-01T00:00:00.003Z"}
+{"type":"assistant.delta","payload":{"messageId":"message-2","agent":"main","text":"around."},"timestamp":"2026-01-01T00:00:00.004Z"}
+{"type":"assistant.message","payload":{"messageId":"message-2","agent":"main","text":"Looking around."},"timestamp":"2026-01-01T00:00:00.005Z"}
+{"type":"tool.started","payload":{"toolCallId":"tool-1","toolName":"view","agent":"main","parentToolCallId":null,"arguments":{"path":"README.md"}},"timestamp":"2026-01-01T00:00:00.006Z"}
+{"type":"tool.completed","payload":{"toolCallId":"tool-1","toolName":"view","agent":"main","parentToolCallId":null,"resultPreview":"# Pica","resultBytes":6,"spilledArtifactPath":null},"timestamp":"2026-01-01T00:00:00.007Z"}
+{"type":"tool.started","payload":{"toolCallId":"tool-2","toolName":"bash","agent":"main","parentToolCallId":null,"arguments":{"command":"rm -rf /"}},"timestamp":"2026-01-01T00:00:00.008Z"}
+{"type":"tool.failed","payload":{"toolCallId":"tool-2","toolName":"bash","agent":"main","parentToolCallId":null,"error":"Denied: destructive command"},"timestamp":"2026-01-01T00:00:00.009Z"}
+{"type":"subagent.started","payload":{"toolCallId":"tool-3","agent":"reader","model":"worker-1"},"timestamp":"2026-01-01T00:00:00.010Z"}
+{"type":"tool.started","payload":{"toolCallId":"tool-4","toolName":"view","agent":"reader","parentToolCallId":"tool-3","arguments":{"path":"docs/long.md"}},"timestamp":"2026-01-01T00:00:00.011Z"}
+{"type":"tool.completed","payload":{"toolCallId":"tool-4","toolName":"view","agent":"reader","parentToolCallId":"tool-3","resultPreview":"long t","resultBytes":6,"spilledArtifactPath":null},"timestamp":"2026-01-01T00:00:00.012Z"}
+{"type":"usage.recorded","payload":{"sessionId":"pica-session-1","agent":"reader","model":"worker-1","inputTokens":40000,"cachedInputTokens":0,"outputTokens":200,"credits":0,"timestamp":"2026-01-01T00:00:00.013Z"},"timestamp":"2026-01-01T00:00:00.013Z"}
+{"type":"assistant.message","payload":{"messageId":"message-3","agent":"reader","text":"Docs cover setup."},"timestamp":"2026-01-01T00:00:00.014Z"}
+{"type":"subagent.completed","payload":{"toolCallId":"tool-3","agent":"reader","model":"worker-1","totalTokens":40200,"durationMs":5},"timestamp":"2026-01-01T00:00:00.015Z"}
+{"type":"usage.recorded","payload":{"sessionId":"pica-session-1","agent":"main","model":"frontier-1","inputTokens":3000,"cachedInputTokens":1000,"outputTokens":120,"credits":0,"timestamp":"2026-01-01T00:00:00.016Z"},"timestamp":"2026-01-01T00:00:00.016Z"}
+{"type":"context.usage","payload":{"currentTokens":4120,"tokenLimit":200000},"timestamp":"2026-01-01T00:00:00.017Z"}
+{"type":"assistant.message","payload":{"messageId":"message-4","agent":"main","text":"Pica is a native app."},"timestamp":"2026-01-01T00:00:00.018Z"}
+{"type":"user.message","payload":{"text":"write notes","mode":"send"},"timestamp":"2026-01-01T00:00:00.021Z"}
+{"type":"tool.started","payload":{"toolCallId":"tool-5","toolName":"write","agent":"main","parentToolCallId":null,"arguments":{"path":"NOTES.md","content":"hi"}},"timestamp":"2026-01-01T00:00:00.023Z"}
+{"type":"approval.requested","payload":{"id":"permission-1","sessionId":"pica-session-1","kind":"tool_call","toolCallId":"tool-5","summary":"writes need approval"},"timestamp":"2026-01-01T00:00:00.024Z"}
+{"type":"approval.resolved","payload":{"approvalId":"permission-1","choice":"allow_once"},"timestamp":"2026-01-01T00:00:00.025Z"}
+{"type":"tool.completed","payload":{"toolCallId":"tool-5","toolName":"write","agent":"main","parentToolCallId":null,"resultPreview":"written","resultBytes":7,"spilledArtifactPath":null},"timestamp":"2026-01-01T00:00:00.026Z"}
+{"type":"tool.started","payload":{"toolCallId":"tool-6","toolName":"write","agent":"main","parentToolCallId":null,"arguments":{"path":"OTHER.md","content":"no"}},"timestamp":"2026-01-01T00:00:00.027Z"}
+{"type":"approval.requested","payload":{"id":"permission-2","sessionId":"pica-session-1","kind":"tool_call","toolCallId":"tool-6","summary":"writes need approval"},"timestamp":"2026-01-01T00:00:00.028Z"}
+{"type":"approval.resolved","payload":{"approvalId":"permission-2","choice":"deny"},"timestamp":"2026-01-01T00:00:00.029Z"}
+{"type":"tool.failed","payload":{"toolCallId":"tool-6","toolName":"write","agent":"main","parentToolCallId":null,"error":"Denied: the user declined"},"timestamp":"2026-01-01T00:00:00.030Z"}
+{"type":"subagent.started","payload":{"toolCallId":"tool-7","agent":"fixer","model":"worker-1"},"timestamp":"2026-01-01T00:00:00.031Z"}
+{"type":"subagent.failed","payload":{"toolCallId":"tool-7","agent":"fixer","error":"worker crashed"},"timestamp":"2026-01-01T00:00:00.032Z"}
+{"type":"user.message","payload":{"text":"run the tests","mode":"send"},"timestamp":"2026-01-01T00:00:00.035Z"}
+{"type":"tool.started","payload":{"toolCallId":"tool-8","toolName":"bash","agent":"main","parentToolCallId":null,"arguments":{"command":"make test"}},"timestamp":"2026-01-01T00:00:00.037Z"}
+{"type":"tool.failed","payload":{"toolCallId":"tool-8","toolName":"bash","agent":"main","parentToolCallId":null,"error":"Aborted"},"timestamp":"2026-01-01T00:00:00.038Z"}
+{"type":"session.aborted","payload":{"reason":"user"},"timestamp":"2026-01-01T00:00:00.039Z"}
+{"type":"user.message","payload":{"text":"try again","mode":"send"},"timestamp":"2026-01-01T00:00:00.042Z"}
+{"type":"session.error","payload":{"code":"runtime.quota_exhausted","message":"AI credit budget exhausted"},"timestamp":"2026-01-01T00:00:00.044Z"}
+{"type":"user.message","payload":{"text":"summarize the repo","mode":"send"},"timestamp":"2026-01-01T00:00:00.048Z"}
+{"type":"assistant.delta","payload":{"messageId":"message-9","agent":"main","text":"Looking "},"timestamp":"2026-01-01T00:00:00.050Z"}
+{"type":"assistant.delta","payload":{"messageId":"message-9","agent":"main","text":"around."},"timestamp":"2026-01-01T00:00:00.051Z"}
+{"type":"assistant.message","payload":{"messageId":"message-9","agent":"main","text":"Looking around."},"timestamp":"2026-01-01T00:00:00.052Z"}
+{"type":"tool.started","payload":{"toolCallId":"tool-9","toolName":"view","agent":"main","parentToolCallId":null,"arguments":{"path":"README.md"}},"timestamp":"2026-01-01T00:00:00.053Z"}
+{"type":"tool.completed","payload":{"toolCallId":"tool-9","toolName":"view","agent":"main","parentToolCallId":null,"resultPreview":"# Pica","resultBytes":6,"spilledArtifactPath":null},"timestamp":"2026-01-01T00:00:00.054Z"}
+{"type":"tool.started","payload":{"toolCallId":"tool-10","toolName":"bash","agent":"main","parentToolCallId":null,"arguments":{"command":"rm -rf /"}},"timestamp":"2026-01-01T00:00:00.055Z"}
+{"type":"tool.failed","payload":{"toolCallId":"tool-10","toolName":"bash","agent":"main","parentToolCallId":null,"error":"Denied: destructive command"},"timestamp":"2026-01-01T00:00:00.056Z"}
+{"type":"subagent.started","payload":{"toolCallId":"tool-11","agent":"reader","model":"worker-1"},"timestamp":"2026-01-01T00:00:00.057Z"}
+{"type":"tool.started","payload":{"toolCallId":"tool-12","toolName":"view","agent":"reader","parentToolCallId":"tool-11","arguments":{"path":"docs/long.md"}},"timestamp":"2026-01-01T00:00:00.058Z"}
+{"type":"tool.completed","payload":{"toolCallId":"tool-12","toolName":"view","agent":"reader","parentToolCallId":"tool-11","resultPreview":"long t","resultBytes":6,"spilledArtifactPath":null},"timestamp":"2026-01-01T00:00:00.059Z"}
+{"type":"usage.recorded","payload":{"sessionId":"pica-session-1","agent":"reader","model":"worker-1","inputTokens":40000,"cachedInputTokens":0,"outputTokens":200,"credits":0,"timestamp":"2026-01-01T00:00:00.060Z"},"timestamp":"2026-01-01T00:00:00.060Z"}
+{"type":"assistant.message","payload":{"messageId":"message-10","agent":"reader","text":"Docs cover setup."},"timestamp":"2026-01-01T00:00:00.061Z"}
+{"type":"subagent.completed","payload":{"toolCallId":"tool-11","agent":"reader","model":"worker-1","totalTokens":40200,"durationMs":5},"timestamp":"2026-01-01T00:00:00.062Z"}
+{"type":"usage.recorded","payload":{"sessionId":"pica-session-1","agent":"main","model":"frontier-1","inputTokens":3000,"cachedInputTokens":1000,"outputTokens":120,"credits":0,"timestamp":"2026-01-01T00:00:00.063Z"},"timestamp":"2026-01-01T00:00:00.063Z"}
+{"type":"context.usage","payload":{"currentTokens":4120,"tokenLimit":200000},"timestamp":"2026-01-01T00:00:00.064Z"}
+{"type":"assistant.message","payload":{"messageId":"message-11","agent":"main","text":"Pica is a native app."},"timestamp":"2026-01-01T00:00:00.065Z"}
+{"type":"user.message","payload":{"text":"write notes","mode":"send"},"timestamp":"2026-01-01T00:00:00.068Z"}
+{"type":"tool.started","payload":{"toolCallId":"tool-13","toolName":"write","agent":"main","parentToolCallId":null,"arguments":{"path":"NOTES.md","content":"hi"}},"timestamp":"2026-01-01T00:00:00.070Z"}
+{"type":"approval.requested","payload":{"id":"permission-3","sessionId":"pica-session-1","kind":"tool_call","toolCallId":"tool-13","summary":"writes need approval"},"timestamp":"2026-01-01T00:00:00.071Z"}
+{"type":"approval.resolved","payload":{"approvalId":"permission-3","choice":"allow_once"},"timestamp":"2026-01-01T00:00:00.072Z"}
+{"type":"tool.completed","payload":{"toolCallId":"tool-13","toolName":"write","agent":"main","parentToolCallId":null,"resultPreview":"written","resultBytes":7,"spilledArtifactPath":null},"timestamp":"2026-01-01T00:00:00.073Z"}
+{"type":"tool.started","payload":{"toolCallId":"tool-14","toolName":"write","agent":"main","parentToolCallId":null,"arguments":{"path":"OTHER.md","content":"no"}},"timestamp":"2026-01-01T00:00:00.074Z"}
+{"type":"approval.requested","payload":{"id":"permission-4","sessionId":"pica-session-1","kind":"tool_call","toolCallId":"tool-14","summary":"writes need approval"},"timestamp":"2026-01-01T00:00:00.075Z"}
+{"type":"approval.resolved","payload":{"approvalId":"permission-4","choice":"deny"},"timestamp":"2026-01-01T00:00:00.076Z"}
+{"type":"tool.failed","payload":{"toolCallId":"tool-14","toolName":"write","agent":"main","parentToolCallId":null,"error":"Denied: the user declined"},"timestamp":"2026-01-01T00:00:00.077Z"}
+{"type":"subagent.started","payload":{"toolCallId":"tool-15","agent":"fixer","model":"worker-1"},"timestamp":"2026-01-01T00:00:00.078Z"}
+{"type":"subagent.failed","payload":{"toolCallId":"tool-15","agent":"fixer","error":"worker crashed"},"timestamp":"2026-01-01T00:00:00.079Z"}
+{"type":"user.message","payload":{"text":"run the tests","mode":"send"},"timestamp":"2026-01-01T00:00:00.082Z"}
+{"type":"tool.started","payload":{"toolCallId":"tool-16","toolName":"bash","agent":"main","parentToolCallId":null,"arguments":{"command":"make test"}},"timestamp":"2026-01-01T00:00:00.084Z"}
+{"type":"tool.failed","payload":{"toolCallId":"tool-16","toolName":"bash","agent":"main","parentToolCallId":null,"error":"Aborted"},"timestamp":"2026-01-01T00:00:00.085Z"}
+{"type":"session.aborted","payload":{"reason":"user"},"timestamp":"2026-01-01T00:00:00.086Z"}
+{"type":"user.message","payload":{"text":"try again","mode":"send"},"timestamp":"2026-01-01T00:00:00.089Z"}
+{"type":"session.error","payload":{"code":"runtime.quota_exhausted","message":"AI credit budget exhausted"},"timestamp":"2026-01-01T00:00:00.091Z"}

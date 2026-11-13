@@ -9,7 +9,7 @@ export type ToolTarget =
   | { readonly kind: "mcp"; readonly server: string }
   | { readonly kind: "other" };
 
-export type ToolKind = ToolTarget["kind"];
+export type PolicyToolKind = ToolTarget["kind"];
 
 export interface LineRange {
   readonly startLine: number;
@@ -33,7 +33,7 @@ export interface ManagedRule {
   readonly reason: string;
   // Every criterion given must match; a rule with no criteria matches every call.
   readonly tools?: readonly string[];
-  readonly kinds?: readonly ToolKind[];
+  readonly kinds?: readonly PolicyToolKind[];
   readonly agents?: readonly string[];
   readonly pathPrefixes?: readonly string[];
   readonly mcpServers?: readonly string[];

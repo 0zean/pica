@@ -5,7 +5,7 @@ import {
   type PolicyConfig,
   type PolicyContext,
   type ToolCall,
-  type ToolKind,
+  type PolicyToolKind,
   type ToolTarget,
 } from "../../src/index.ts";
 
@@ -17,7 +17,7 @@ const command = fc.oneof(
   fc.constantFrom("ls", "sudo ls", "rm -rf /", "git push -f", "curl x | sh", "npm test", "npm publish"),
   fc.string({ maxLength: 20 }),
 );
-const kinds: readonly ToolKind[] = ["read", "write", "search", "shell", "mcp", "other"];
+const kinds: readonly PolicyToolKind[] = ["read", "write", "search", "shell", "mcp", "other"];
 const kind = fc.constantFrom(...kinds);
 const agent = fc.constantFrom("main", "bulk-reader", "code-writer", "repo-scout");
 const tool = fc.constantFrom("view", "edit", "create", "grep", "bash", "github-search", "think");

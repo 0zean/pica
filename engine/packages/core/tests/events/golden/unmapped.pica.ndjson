@@ -1,0 +1,9 @@
+{"type":"runtime.unknown","payload":{"runtimeType":"assistant.reasoning_delta","raw":{"id":"event-2","timestamp":"2026-01-01T00:00:00.001Z","type":"assistant.reasoning_delta","data":{"reasoningId":"r-1","deltaContent":"thinking"}}},"timestamp":"2026-01-01T00:00:00.001Z"}
+{"type":"runtime.unknown","payload":{"runtimeType":"assistant.message","raw":{"id":"event-3","timestamp":"2026-01-01T00:00:00.002Z","type":"assistant.message","data":null}},"timestamp":"2026-01-01T00:00:00.002Z"}
+{"type":"runtime.unknown","payload":{"runtimeType":"tool.execution_complete","raw":{"id":"event-4","timestamp":"2026-01-01T00:00:00.003Z","type":"tool.execution_complete","data":{"toolCallId":"tool-never-started","success":true,"result":{"content":"x"}}}},"timestamp":"2026-01-01T00:00:00.003Z"}
+{"type":"runtime.unknown","payload":{"runtimeType":"session.usage_info","raw":{"id":"event-5","timestamp":"2026-01-01T00:00:00.004Z","type":"session.usage_info","data":{"currentTokens":-1,"tokenLimit":200000}}},"timestamp":"2026-01-01T00:00:00.004Z"}
+{"type":"runtime.unknown","payload":{"runtimeType":"(empty)","raw":{"id":"event-6","timestamp":"2026-01-01T00:00:00.005Z","type":"","data":{}}},"timestamp":"2026-01-01T00:00:00.005Z"}
+{"type":"runtime.unknown","payload":{"runtimeType":"toString","raw":{"id":"event-7","timestamp":"2026-01-01T00:00:00.006Z","type":"toString","data":{}}},"timestamp":"2026-01-01T00:00:00.006Z"}
+{"type":"tool.started","payload":{"toolCallId":"tool-1","toolName":"bash","agent":"main","parentToolCallId":null,"arguments":{"value":["ls","-la"]}},"timestamp":"2026-01-01T00:00:00.007Z"}
+{"type":"tool.completed","payload":{"toolCallId":"tool-1","toolName":"bash","agent":"main","parentToolCallId":null,"resultPreview":"héllo","resultBytes":6,"spilledArtifactPath":null},"timestamp":"2026-01-01T00:00:00.008Z"}
+{"type":"assistant.message","payload":{"messageId":"message-1","agent":"agent-unseen","text":"still streaming"},"timestamp":"2026-01-01T00:00:00.009Z"}
