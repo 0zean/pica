@@ -39,6 +39,10 @@ public struct GalleryContent: View {
     }
 }
 
+/// Labels for the samples are set at body size: the accessibility audit samples rendered pixels, and on a
+/// 1x display (CI's) it cannot measure the contrast of thinner 11–12 point strokes reliably.
+private let sampleLabelFont = Typography.body
+
 private struct GallerySection<Content: View>: View {
     let title: String
     let content: Content
@@ -83,9 +87,9 @@ private struct ColorSwatches: View {
                         .frame(width: 28, height: 28)
                         .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 0) {
-                        Text(name).font(Typography.callout).foregroundStyle(Palette.textPrimary)
+                        Text(name).font(Typography.body).foregroundStyle(Palette.textPrimary)
                         Text(color.rgb(for: Appearance(environment)).description)
-                            .font(Typography.code).foregroundStyle(Palette.textSecondary)
+                            .font(Typography.body.monospaced()).foregroundStyle(Palette.textSecondary)
                     }
                     .accessibilityElement(children: .combine)
                 }
@@ -127,7 +131,7 @@ private struct MetricSamples: View {
                     VStack(spacing: Spacing.small) {
                         Rectangle().fill(Palette.accent).frame(width: value, height: 24)
                             .accessibilityHidden(true)
-                        Text(name).font(Typography.callout).foregroundStyle(Palette.textSecondary)
+                        Text(name).font(sampleLabelFont).foregroundStyle(Palette.textSecondary)
                     }
                 }
             }
@@ -138,7 +142,7 @@ private struct MetricSamples: View {
                             .strokeBorder(Palette.ring, lineWidth: 2)
                             .frame(width: 48, height: 32)
                             .accessibilityHidden(true)
-                        Text(name).font(Typography.callout).foregroundStyle(Palette.textSecondary)
+                        Text(name).font(sampleLabelFont).foregroundStyle(Palette.textSecondary)
                     }
                 }
             }
@@ -182,7 +186,7 @@ private struct ActivitySamples: View {
     private func sample(_ caption: String, @ViewBuilder mark: () -> some View) -> some View {
         VStack(spacing: Spacing.small) {
             mark().frame(width: 48, height: 48)
-            Text(caption).font(Typography.callout).foregroundStyle(Palette.textSecondary)
+            Text(caption).font(sampleLabelFont).foregroundStyle(Palette.textSecondary)
         }
     }
 }
