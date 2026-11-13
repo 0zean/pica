@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "routing": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "profile": {
+          "default": "balanced",
+          "type": "string",
+          "enum": [
+            "off",
+            "balanced",
+            "strict"
+          ]
+        },
+        "tiers": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "reasoning": {
+              "default": "auto",
+              "type": "string",
+              "minLength": 1,
+              "description": "\"auto\" or a model id"
+            },
+            "worker": {
+              "default": "auto",
+              "type": "string",
+              "minLength": 1,
+              "description": "\"auto\" or a model id"
+            }
+          },
+          "additionalProperties": false
+        },
+        "delegation": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "read": {
+              "default": {},
+              "type": "object",
+              "properties": {
+                "minBytes": {
+                  "default": 32768,
+                  "description": "Main-agent reads at or above this size go to bulk-reader",
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "rangeExemptLines": {
+                  "default": 400,
+                  "description": "Ranged reads up to this many lines stay with the main agent",
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                }
+              },
+              "additionalProperties": false
+            },
+            "output": {
+              "default": {},
+              "type": "object",
+              "properties": {
+                "maxBytes": {
+                  "default": 16384,
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "budget": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "sessionCredits": {
+          "default": 300,
+          "type": "number",
+          "minimum": 0
+        },
+        "workspaceDailyCredits": {
+          "default": 3000,
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "permissions": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "mode": {
+          "default": "ask",
+          "type": "string",
+          "enum": [
+            "ask",
+            "auto"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$id": "urn:pica:config",
+  "title": "Pica configuration (config.jsonc)"
+}
