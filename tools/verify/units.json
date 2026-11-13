@@ -292,13 +292,16 @@
   ],
   "C-02": [
     {
-      "check": "Precedence tests across all layers."
+      "check": "Precedence tests across all layers.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/agents/precedence.test.ts packages/adapters/tests/agents/loader.test.ts"
     },
     {
-      "check": "`bulk-reader` and `repo-scout` contain no write or shell tool (asserted against the S-02 tool list)."
+      "check": "`bulk-reader` and `repo-scout` contain no write or shell tool (asserted against the S-02 tool list).",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/agents/builtin-tools.test.ts"
     },
     {
-      "check": "Prompt snapshot tests; an agent with an unknown tool or tier fails validation with the field named."
+      "check": "Prompt snapshot tests; an agent with an unknown tool or tier fails validation with the field named.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/agents/builtin-prompts.test.ts packages/core/tests/agents/validation.test.ts"
     }
   ],
   "C-03": [
