@@ -41,4 +41,4 @@ app-build:
 # `automationmodetool enable-automationmode-without-authentication` once, or approve the prompt.
 app-ui-test:
 	xcodebuild -project app/Pica.xcodeproj -scheme PicaGallery -destination 'platform=macOS,arch=$(shell uname -m)' \
-		-derivedDataPath app/.derived -quiet test
+		-derivedDataPath app/.derived test
