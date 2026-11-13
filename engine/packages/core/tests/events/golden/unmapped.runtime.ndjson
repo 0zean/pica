@@ -1,0 +1,11 @@
+{"id":"event-1","timestamp":"2026-01-01T00:00:00.000Z","type":"session.start","data":{"sessionId":"session-1","model":"frontier-1","workingDirectory":"/repo/a"}}
+{"id":"event-2","timestamp":"2026-01-01T00:00:00.001Z","type":"assistant.reasoning_delta","data":{"reasoningId":"r-1","deltaContent":"thinking"}}
+{"id":"event-3","timestamp":"2026-01-01T00:00:00.002Z","type":"assistant.message","data":null}
+{"id":"event-4","timestamp":"2026-01-01T00:00:00.003Z","type":"tool.execution_complete","data":{"toolCallId":"tool-never-started","success":true,"result":{"content":"x"}}}
+{"id":"event-5","timestamp":"2026-01-01T00:00:00.004Z","type":"session.usage_info","data":{"currentTokens":-1,"tokenLimit":200000}}
+{"id":"event-6","timestamp":"2026-01-01T00:00:00.005Z","type":"","data":{}}
+{"id":"event-7","timestamp":"2026-01-01T00:00:00.006Z","type":"toString","data":{}}
+{"id":"event-8","timestamp":"2026-01-01T00:00:00.007Z","type":"tool.execution_start","data":{"toolCallId":"tool-1","toolName":"bash","arguments":["ls","-la"]}}
+{"id":"event-9","timestamp":"2026-01-01T00:00:00.008Z","type":"tool.execution_complete","data":{"toolCallId":"tool-1","success":true,"result":{"content":"héllo"}}}
+{"id":"event-10","timestamp":"2026-01-01T00:00:00.009Z","type":"assistant.message","data":{"messageId":"message-1","content":"still streaming","agentId":"agent-unseen"}}
+{"id":"event-11","timestamp":"2026-01-01T00:00:00.010Z","type":"session.idle","data":{}}

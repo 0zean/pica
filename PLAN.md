@@ -501,9 +501,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **E-07 · Event normalization and log** — E-03, E-06
 - Build: mapping from runtime events to versioned `SessionEvent`s; append and subscribe.
 - Verify:
-  - [ ] Golden tests: recorded runtime event fixtures map to expected Pica events.
-  - [ ] Property test: a subscriber starting at any `afterSeq` during concurrent appends sees every later event exactly once.
-  - [ ] An unmapped runtime event is logged as `runtime.unknown` and does not stop the stream.
+  - [x] Golden tests: recorded runtime event fixtures map to expected Pica events.
+  - [x] Property test: a subscriber starting at any `afterSeq` during concurrent appends sees every later event exactly once.
+  - [x] An unmapped runtime event is logged as `runtime.unknown` and does not stop the stream.
 
 **E-08 · Session service** — E-05, E-07
 - Build: lifecycle state machine, send, steer, queue, abort, approval round trip, resume.
@@ -964,7 +964,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | E-04 | Configuration | E-01 | done |
 | E-05 | RPC server | E-01 | done |
 | E-06 | Runtime port and FakeRuntime | E-01 | done |
-| E-07 | Event normalization and log | E-03, E-06 | todo |
+| E-07 | Event normalization and log | E-03, E-06 | done |
 | E-08 | Session service | E-05, E-07 | todo |
 | E-09 | Copilot adapter | E-06 | todo |
 | E-10 | CLI | E-08 | todo |

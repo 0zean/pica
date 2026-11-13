@@ -233,13 +233,16 @@
   ],
   "E-07": [
     {
-      "check": "Golden tests: recorded runtime event fixtures map to expected Pica events."
+      "check": "Golden tests: recorded runtime event fixtures map to expected Pica events.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/events/golden.test.ts"
     },
     {
-      "check": "Property test: a subscriber starting at any `afterSeq` during concurrent appends sees every later event exactly once."
+      "check": "Property test: a subscriber starting at any `afterSeq` during concurrent appends sees every later event exactly once.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/store/event-log.test.ts"
     },
     {
-      "check": "An unmapped runtime event is logged as `runtime.unknown` and does not stop the stream."
+      "check": "An unmapped runtime event is logged as `runtime.unknown` and does not stop the stream.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/store/runtime-unknown.test.ts"
     }
   ],
   "E-08": [
