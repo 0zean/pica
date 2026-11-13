@@ -1,0 +1,4586 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:pica:protocol",
+  "title": "Pica engine protocol",
+  "x-pica-protocol-version": {
+    "major": 1,
+    "minor": 0
+  },
+  "x-pica-methods": {
+    "engine.hello": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/EngineHelloParams"
+      },
+      "result": {
+        "$ref": "#/$defs/EngineHelloResult"
+      }
+    },
+    "engine.health": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/Empty"
+      },
+      "result": {
+        "$ref": "#/$defs/EngineHealthResult"
+      }
+    },
+    "workspace.list": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/Empty"
+      },
+      "result": {
+        "$ref": "#/$defs/WorkspaceListResult"
+      }
+    },
+    "workspace.get": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/ById"
+      },
+      "result": {
+        "$ref": "#/$defs/WorkspaceGetResult"
+      }
+    },
+    "workspace.create": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/WorkspaceCreateParams"
+      },
+      "result": {
+        "$ref": "#/$defs/WorkspaceCreateResult"
+      }
+    },
+    "workspace.update": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/WorkspaceUpdateParams"
+      },
+      "result": {
+        "$ref": "#/$defs/WorkspaceUpdateResult"
+      }
+    },
+    "workspace.delete": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/ById"
+      },
+      "result": {
+        "$ref": "#/$defs/Ok"
+      }
+    },
+    "workspace.addSource": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/WorkspaceAddSourceParams"
+      },
+      "result": {
+        "$ref": "#/$defs/WorkspaceAddSourceResult"
+      }
+    },
+    "workspace.removeSource": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/WorkspaceRemoveSourceParams"
+      },
+      "result": {
+        "$ref": "#/$defs/Ok"
+      }
+    },
+    "workspace.pinRepo": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/WorkspacePinRepoParams"
+      },
+      "result": {
+        "$ref": "#/$defs/Ok"
+      }
+    },
+    "workspace.unpinRepo": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/WorkspaceUnpinRepoParams"
+      },
+      "result": {
+        "$ref": "#/$defs/Ok"
+      }
+    },
+    "workspace.sync": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/WorkspaceSyncParams"
+      },
+      "result": {
+        "$ref": "#/$defs/WorkspaceSyncResult"
+      }
+    },
+    "repo.list": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/RepoListParams"
+      },
+      "result": {
+        "$ref": "#/$defs/RepoListResult"
+      }
+    },
+    "repo.get": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/ById"
+      },
+      "result": {
+        "$ref": "#/$defs/RepoGetResult"
+      }
+    },
+    "repo.addPath": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/RepoAddPathParams"
+      },
+      "result": {
+        "$ref": "#/$defs/RepoAddPathResult"
+      }
+    },
+    "repo.addUrl": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/RepoAddUrlParams"
+      },
+      "result": {
+        "$ref": "#/$defs/RepoAddUrlResult"
+      }
+    },
+    "repo.remove": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/RepoRemoveParams"
+      },
+      "result": {
+        "$ref": "#/$defs/Ok"
+      }
+    },
+    "repo.card": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/ById"
+      },
+      "result": {
+        "$ref": "#/$defs/RepoCardResult"
+      }
+    },
+    "github.authStatus": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/GithubAuthStatusParams"
+      },
+      "result": {
+        "$ref": "#/$defs/GitHubAuthStatus"
+      }
+    },
+    "github.listTeams": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/GithubListTeamsParams"
+      },
+      "result": {
+        "$ref": "#/$defs/GithubListTeamsResult"
+      }
+    },
+    "github.listTeamRepos": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/GithubListTeamReposParams"
+      },
+      "result": {
+        "$ref": "#/$defs/GithubListTeamReposResult"
+      }
+    },
+    "session.create": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/SessionCreateParams"
+      },
+      "result": {
+        "$ref": "#/$defs/SessionCreateResult"
+      }
+    },
+    "session.list": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/SessionListParams"
+      },
+      "result": {
+        "$ref": "#/$defs/SessionListResult"
+      }
+    },
+    "session.get": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/BySession"
+      },
+      "result": {
+        "$ref": "#/$defs/SessionGetResult"
+      }
+    },
+    "session.send": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/SessionSendParams"
+      },
+      "result": {
+        "$ref": "#/$defs/SessionSendResult"
+      }
+    },
+    "session.abort": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/BySession"
+      },
+      "result": {
+        "$ref": "#/$defs/Ok"
+      }
+    },
+    "session.resume": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/BySession"
+      },
+      "result": {
+        "$ref": "#/$defs/SessionResumeResult"
+      }
+    },
+    "session.end": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/BySession"
+      },
+      "result": {
+        "$ref": "#/$defs/Ok"
+      }
+    },
+    "events.subscribe": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/EventsSubscribeParams"
+      },
+      "result": {
+        "$ref": "#/$defs/EventsSubscribeResult"
+      }
+    },
+    "events.unsubscribe": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/EventsUnsubscribeParams"
+      },
+      "result": {
+        "$ref": "#/$defs/Ok"
+      }
+    },
+    "approval.list": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/BySession"
+      },
+      "result": {
+        "$ref": "#/$defs/ApprovalListResult"
+      }
+    },
+    "approval.resolve": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/ApprovalResolveParams"
+      },
+      "result": {
+        "$ref": "#/$defs/Ok"
+      }
+    },
+    "git.status": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/ByWorktree"
+      },
+      "result": {
+        "$ref": "#/$defs/GitStatusResult"
+      }
+    },
+    "git.diff": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/GitDiffParams"
+      },
+      "result": {
+        "$ref": "#/$defs/GitDiffResult"
+      }
+    },
+    "git.stage": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/GitStageParams"
+      },
+      "result": {
+        "$ref": "#/$defs/Ok"
+      }
+    },
+    "git.unstage": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/GitUnstageParams"
+      },
+      "result": {
+        "$ref": "#/$defs/Ok"
+      }
+    },
+    "git.discard": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/GitDiscardParams"
+      },
+      "result": {
+        "$ref": "#/$defs/Ok"
+      }
+    },
+    "git.commit": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/GitCommitParams"
+      },
+      "result": {
+        "$ref": "#/$defs/GitCommitResult"
+      }
+    },
+    "git.push": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/ByWorktree"
+      },
+      "result": {
+        "$ref": "#/$defs/Ok"
+      }
+    },
+    "git.branches": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/ByRepo"
+      },
+      "result": {
+        "$ref": "#/$defs/GitBranchesResult"
+      }
+    },
+    "git.log": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/GitLogParams"
+      },
+      "result": {
+        "$ref": "#/$defs/GitLogResult"
+      }
+    },
+    "files.list": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/FilesListParams"
+      },
+      "result": {
+        "$ref": "#/$defs/FilesListResult"
+      }
+    },
+    "files.read": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/FilesReadParams"
+      },
+      "result": {
+        "$ref": "#/$defs/FilesReadResult"
+      }
+    },
+    "files.quickOpen": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/FilesQuickOpenParams"
+      },
+      "result": {
+        "$ref": "#/$defs/FilesQuickOpenResult"
+      }
+    },
+    "mcp.list": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/McpListParams"
+      },
+      "result": {
+        "$ref": "#/$defs/McpListResult"
+      }
+    },
+    "mcp.add": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/McpAddParams"
+      },
+      "result": {
+        "$ref": "#/$defs/McpAddResult"
+      }
+    },
+    "mcp.update": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/McpUpdateParams"
+      },
+      "result": {
+        "$ref": "#/$defs/McpUpdateResult"
+      }
+    },
+    "mcp.remove": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/ById"
+      },
+      "result": {
+        "$ref": "#/$defs/Ok"
+      }
+    },
+    "mcp.attach": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/McpAttachParams"
+      },
+      "result": {
+        "$ref": "#/$defs/McpAttachResult"
+      }
+    },
+    "mcp.detach": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/McpDetachParams"
+      },
+      "result": {
+        "$ref": "#/$defs/Ok"
+      }
+    },
+    "mcp.status": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/ById"
+      },
+      "result": {
+        "$ref": "#/$defs/McpStatusResult"
+      }
+    },
+    "mcp.login": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/ById"
+      },
+      "result": {
+        "$ref": "#/$defs/Ok"
+      }
+    },
+    "agents.list": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/AgentsListParams"
+      },
+      "result": {
+        "$ref": "#/$defs/AgentsListResult"
+      }
+    },
+    "models.list": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/Empty"
+      },
+      "result": {
+        "$ref": "#/$defs/ModelsListResult"
+      }
+    },
+    "models.tiers": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/Empty"
+      },
+      "result": {
+        "$ref": "#/$defs/ModelsTiersResult"
+      }
+    },
+    "usage.rollup": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/UsageRollupParams"
+      },
+      "result": {
+        "$ref": "#/$defs/UsageRollupResult"
+      }
+    },
+    "config.get": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/ConfigGetParams"
+      },
+      "result": {
+        "$ref": "#/$defs/ConfigGetResult"
+      }
+    },
+    "config.set": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/ConfigSetParams"
+      },
+      "result": {
+        "$ref": "#/$defs/Ok"
+      }
+    },
+    "secrets.get": {
+      "direction": "engine",
+      "params": {
+        "$ref": "#/$defs/SecretsGetParams"
+      },
+      "result": {
+        "$ref": "#/$defs/SecretsGetResult"
+      }
+    }
+  },
+  "x-pica-notifications": {
+    "events.event": {
+      "params": {
+        "$ref": "#/$defs/EventsEventNotification"
+      }
+    },
+    "session.changed": {
+      "params": {
+        "$ref": "#/$defs/SessionChangedNotification"
+      }
+    },
+    "workspace.changed": {
+      "params": {
+        "$ref": "#/$defs/WorkspaceChangedNotification"
+      }
+    },
+    "mcp.statusChanged": {
+      "params": {
+        "$ref": "#/$defs/McpStatusChangedNotification"
+      }
+    },
+    "engine.warning": {
+      "params": {
+        "$ref": "#/$defs/EngineWarningNotification"
+      }
+    }
+  },
+  "x-pica-events": {
+    "session.state_changed": {
+      "$ref": "#/$defs/SessionStateChangedEvent"
+    },
+    "user.message": {
+      "$ref": "#/$defs/UserMessageEvent"
+    },
+    "assistant.delta": {
+      "$ref": "#/$defs/AssistantDeltaEvent"
+    },
+    "assistant.message": {
+      "$ref": "#/$defs/AssistantMessageEvent"
+    },
+    "tool.started": {
+      "$ref": "#/$defs/ToolStartedEvent"
+    },
+    "tool.completed": {
+      "$ref": "#/$defs/ToolCompletedEvent"
+    },
+    "tool.failed": {
+      "$ref": "#/$defs/ToolFailedEvent"
+    },
+    "subagent.started": {
+      "$ref": "#/$defs/SubagentStartedEvent"
+    },
+    "subagent.completed": {
+      "$ref": "#/$defs/SubagentCompletedEvent"
+    },
+    "subagent.failed": {
+      "$ref": "#/$defs/SubagentFailedEvent"
+    },
+    "policy.decision": {
+      "$ref": "#/$defs/PolicyDecisionEvent"
+    },
+    "approval.requested": {
+      "$ref": "#/$defs/ApprovalRequestedEvent"
+    },
+    "approval.resolved": {
+      "$ref": "#/$defs/ApprovalResolvedEvent"
+    },
+    "usage.recorded": {
+      "$ref": "#/$defs/UsageRecordedEvent"
+    },
+    "context.usage": {
+      "$ref": "#/$defs/ContextUsageEvent"
+    },
+    "budget.warning": {
+      "$ref": "#/$defs/BudgetWarningEvent"
+    },
+    "budget.exhausted": {
+      "$ref": "#/$defs/BudgetExhaustedEvent"
+    },
+    "session.aborted": {
+      "$ref": "#/$defs/SessionAbortedEvent"
+    },
+    "session.error": {
+      "$ref": "#/$defs/SessionErrorEvent"
+    },
+    "runtime.unknown": {
+      "$ref": "#/$defs/RuntimeUnknownEvent"
+    }
+  },
+  "$defs": {
+    "AbsolutePath": {
+      "type": "string",
+      "format": "starts_with",
+      "pattern": "^\\/.*"
+    },
+    "AgentDef": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string"
+        },
+        "tier": {
+          "$ref": "#/$defs/Tier"
+        },
+        "tools": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "prompt": {
+          "type": "string"
+        },
+        "sourceLayer": {
+          "$ref": "#/$defs/AgentSourceLayer"
+        },
+        "sourcePath": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "name",
+        "description",
+        "tier",
+        "tools",
+        "prompt",
+        "sourceLayer",
+        "sourcePath"
+      ]
+    },
+    "AgentSourceLayer": {
+      "type": "string",
+      "enum": [
+        "builtin",
+        "user",
+        "workspace",
+        "repo",
+        "github_agents"
+      ]
+    },
+    "AgentsListParams": {
+      "type": "object",
+      "properties": {
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        },
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        }
+      }
+    },
+    "AgentsListResult": {
+      "type": "object",
+      "properties": {
+        "agents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AgentDef"
+          }
+        }
+      },
+      "required": [
+        "agents"
+      ]
+    },
+    "ApprovalChoice": {
+      "type": "string",
+      "enum": [
+        "allow_once",
+        "allow_always",
+        "deny"
+      ]
+    },
+    "ApprovalListResult": {
+      "type": "object",
+      "properties": {
+        "approvals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ApprovalRequest"
+          }
+        }
+      },
+      "required": [
+        "approvals"
+      ]
+    },
+    "ApprovalRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "tool_call",
+            "budget"
+          ]
+        },
+        "toolCallId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "summary": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "sessionId",
+        "kind",
+        "toolCallId",
+        "summary"
+      ]
+    },
+    "ApprovalRequestedEvent": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "seq": {
+          "$ref": "#/$defs/Seq"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "type": {
+          "type": "string",
+          "const": "approval.requested"
+        },
+        "payload": {
+          "$ref": "#/$defs/ApprovalRequest"
+        }
+      },
+      "required": [
+        "sessionId",
+        "seq",
+        "timestamp",
+        "type",
+        "payload"
+      ]
+    },
+    "ApprovalResolveParams": {
+      "type": "object",
+      "properties": {
+        "approvalId": {
+          "$ref": "#/$defs/Id"
+        },
+        "choice": {
+          "$ref": "#/$defs/ApprovalChoice"
+        },
+        "budgetCredits": {
+          "$ref": "#/$defs/Credits"
+        }
+      },
+      "required": [
+        "approvalId",
+        "choice"
+      ]
+    },
+    "ApprovalResolvedEvent": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "seq": {
+          "$ref": "#/$defs/Seq"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "type": {
+          "type": "string",
+          "const": "approval.resolved"
+        },
+        "payload": {
+          "$ref": "#/$defs/ApprovalResolvedPayload"
+        }
+      },
+      "required": [
+        "sessionId",
+        "seq",
+        "timestamp",
+        "type",
+        "payload"
+      ]
+    },
+    "ApprovalResolvedPayload": {
+      "type": "object",
+      "properties": {
+        "approvalId": {
+          "$ref": "#/$defs/Id"
+        },
+        "choice": {
+          "$ref": "#/$defs/ApprovalChoice"
+        }
+      },
+      "required": [
+        "approvalId",
+        "choice"
+      ]
+    },
+    "AssistantDeltaEvent": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "seq": {
+          "$ref": "#/$defs/Seq"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "type": {
+          "type": "string",
+          "const": "assistant.delta"
+        },
+        "payload": {
+          "$ref": "#/$defs/AssistantDeltaPayload"
+        }
+      },
+      "required": [
+        "sessionId",
+        "seq",
+        "timestamp",
+        "type",
+        "payload"
+      ]
+    },
+    "AssistantDeltaPayload": {
+      "type": "object",
+      "properties": {
+        "messageId": {
+          "$ref": "#/$defs/Id"
+        },
+        "agent": {
+          "type": "string",
+          "minLength": 1
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "messageId",
+        "agent",
+        "text"
+      ]
+    },
+    "AssistantMessageEvent": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "seq": {
+          "$ref": "#/$defs/Seq"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "type": {
+          "type": "string",
+          "const": "assistant.message"
+        },
+        "payload": {
+          "$ref": "#/$defs/AssistantMessagePayload"
+        }
+      },
+      "required": [
+        "sessionId",
+        "seq",
+        "timestamp",
+        "type",
+        "payload"
+      ]
+    },
+    "AssistantMessagePayload": {
+      "type": "object",
+      "properties": {
+        "messageId": {
+          "$ref": "#/$defs/Id"
+        },
+        "agent": {
+          "type": "string",
+          "minLength": 1
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "messageId",
+        "agent",
+        "text"
+      ]
+    },
+    "Branch": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "current": {
+          "type": "boolean"
+        },
+        "upstream": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "headCommit": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "name",
+        "current",
+        "upstream",
+        "headCommit"
+      ]
+    },
+    "BudgetExhaustedEvent": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "seq": {
+          "$ref": "#/$defs/Seq"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "type": {
+          "type": "string",
+          "const": "budget.exhausted"
+        },
+        "payload": {
+          "$ref": "#/$defs/BudgetExhaustedPayload"
+        }
+      },
+      "required": [
+        "sessionId",
+        "seq",
+        "timestamp",
+        "type",
+        "payload"
+      ]
+    },
+    "BudgetExhaustedPayload": {
+      "type": "object",
+      "properties": {
+        "spentCredits": {
+          "$ref": "#/$defs/Credits"
+        },
+        "limitCredits": {
+          "$ref": "#/$defs/Credits"
+        },
+        "approvalId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "spentCredits",
+        "limitCredits",
+        "approvalId"
+      ]
+    },
+    "BudgetWarningEvent": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "seq": {
+          "$ref": "#/$defs/Seq"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "type": {
+          "type": "string",
+          "const": "budget.warning"
+        },
+        "payload": {
+          "$ref": "#/$defs/BudgetWarningPayload"
+        }
+      },
+      "required": [
+        "sessionId",
+        "seq",
+        "timestamp",
+        "type",
+        "payload"
+      ]
+    },
+    "BudgetWarningPayload": {
+      "type": "object",
+      "properties": {
+        "spentCredits": {
+          "$ref": "#/$defs/Credits"
+        },
+        "limitCredits": {
+          "$ref": "#/$defs/Credits"
+        }
+      },
+      "required": [
+        "spentCredits",
+        "limitCredits"
+      ]
+    },
+    "ById": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "ByRepo": {
+      "type": "object",
+      "properties": {
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "repoId"
+      ]
+    },
+    "BySession": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "sessionId"
+      ]
+    },
+    "ByWorktree": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "sessionId",
+        "repoId"
+      ]
+    },
+    "CloneState": {
+      "type": "string",
+      "enum": [
+        "available",
+        "cloning",
+        "cloned",
+        "failed"
+      ]
+    },
+    "Commit": {
+      "type": "object",
+      "properties": {
+        "sha": {
+          "type": "string",
+          "minLength": 1
+        },
+        "author": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+        },
+        "subject": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "sha",
+        "author",
+        "timestamp",
+        "subject"
+      ]
+    },
+    "ConfigGetParams": {
+      "type": "object",
+      "properties": {
+        "keyPath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        },
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "keyPath"
+      ]
+    },
+    "ConfigGetResult": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "$ref": "#/$defs/ConfigValue"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "ConfigLayer": {
+      "type": "string",
+      "enum": [
+        "default",
+        "user",
+        "workspace",
+        "repo",
+        "managed"
+      ]
+    },
+    "ConfigSetParams": {
+      "type": "object",
+      "properties": {
+        "keyPath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {},
+        "layer": {
+          "type": "string",
+          "enum": [
+            "user",
+            "workspace",
+            "repo"
+          ]
+        },
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        },
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "keyPath",
+        "value",
+        "layer"
+      ]
+    },
+    "ConfigValue": {
+      "type": "object",
+      "properties": {
+        "keyPath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {},
+        "layer": {
+          "$ref": "#/$defs/ConfigLayer"
+        },
+        "locked": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "keyPath",
+        "value",
+        "layer",
+        "locked"
+      ]
+    },
+    "ContextUsageEvent": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "seq": {
+          "$ref": "#/$defs/Seq"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "type": {
+          "type": "string",
+          "const": "context.usage"
+        },
+        "payload": {
+          "$ref": "#/$defs/ContextUsagePayload"
+        }
+      },
+      "required": [
+        "sessionId",
+        "seq",
+        "timestamp",
+        "type",
+        "payload"
+      ]
+    },
+    "ContextUsagePayload": {
+      "type": "object",
+      "properties": {
+        "currentTokens": {
+          "$ref": "#/$defs/Count"
+        },
+        "tokenLimit": {
+          "$ref": "#/$defs/Count"
+        }
+      },
+      "required": [
+        "currentTokens",
+        "tokenLimit"
+      ]
+    },
+    "Count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "Credits": {
+      "type": "number",
+      "minimum": 0
+    },
+    "DiffHunk": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "string"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DiffLine"
+          }
+        }
+      },
+      "required": [
+        "header",
+        "lines"
+      ]
+    },
+    "DiffLine": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "context",
+            "added",
+            "removed"
+          ]
+        },
+        "text": {
+          "type": "string"
+        },
+        "oldLine": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Count"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "newLine": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Count"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "text",
+        "oldLine",
+        "newLine"
+      ]
+    },
+    "Empty": {
+      "type": "object",
+      "properties": {}
+    },
+    "EngineHealthResult": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "ok",
+            "degraded"
+          ]
+        },
+        "uptimeMs": {
+          "$ref": "#/$defs/Count"
+        },
+        "sessionsRunning": {
+          "$ref": "#/$defs/Count"
+        }
+      },
+      "required": [
+        "status",
+        "uptimeMs",
+        "sessionsRunning"
+      ]
+    },
+    "EngineHelloParams": {
+      "type": "object",
+      "properties": {
+        "protocolVersion": {
+          "$ref": "#/$defs/ProtocolVersion"
+        },
+        "client": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "version": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "name",
+            "version"
+          ]
+        }
+      },
+      "required": [
+        "protocolVersion",
+        "client"
+      ]
+    },
+    "EngineHelloResult": {
+      "type": "object",
+      "properties": {
+        "protocolVersion": {
+          "$ref": "#/$defs/ProtocolVersion"
+        },
+        "engineVersion": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "protocolVersion",
+        "engineVersion"
+      ]
+    },
+    "EngineWarningNotification": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message": {
+          "type": "string"
+        },
+        "at": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "at"
+      ]
+    },
+    "ErrorCode": {
+      "type": "string",
+      "enum": [
+        "parse_error",
+        "invalid_request",
+        "method_not_found",
+        "invalid_params",
+        "internal_error",
+        "frame_too_large",
+        "protocol_version_mismatch",
+        "not_found",
+        "already_exists",
+        "conflict",
+        "refused_without_force",
+        "invalid_state",
+        "auth_required",
+        "auth_sso_required",
+        "auth_scope_missing",
+        "quota_exhausted",
+        "model_unavailable",
+        "budget_exhausted",
+        "policy_denied",
+        "config_invalid",
+        "secret_unresolved",
+        "git_failed",
+        "runtime_failed"
+      ]
+    },
+    "ErrorData": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/ErrorCode"
+        },
+        "fix": {
+          "$ref": "#/$defs/FixAction"
+        },
+        "details": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {}
+        }
+      },
+      "required": [
+        "code"
+      ]
+    },
+    "EventsEventNotification": {
+      "type": "object",
+      "properties": {
+        "subscriptionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "event": {
+          "$ref": "#/$defs/SessionEvent"
+        }
+      },
+      "required": [
+        "subscriptionId",
+        "event"
+      ]
+    },
+    "EventsSubscribeParams": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "afterSeq": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "sessionId",
+        "afterSeq"
+      ]
+    },
+    "EventsSubscribeResult": {
+      "type": "object",
+      "properties": {
+        "subscriptionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "lastSeq": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "subscriptionId",
+        "lastSeq"
+      ]
+    },
+    "EventsUnsubscribeParams": {
+      "type": "object",
+      "properties": {
+        "subscriptionId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "subscriptionId"
+      ]
+    },
+    "FileChangeKind": {
+      "type": "string",
+      "enum": [
+        "added",
+        "modified",
+        "deleted",
+        "renamed",
+        "copied",
+        "type_changed",
+        "unmerged",
+        "untracked"
+      ]
+    },
+    "FileDiff": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "originalPath": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "change": {
+          "$ref": "#/$defs/FileChangeKind"
+        },
+        "binary": {
+          "type": "boolean"
+        },
+        "hunks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DiffHunk"
+          }
+        }
+      },
+      "required": [
+        "path",
+        "originalPath",
+        "change",
+        "binary",
+        "hunks"
+      ]
+    },
+    "FileEntry": {
+      "type": "object",
+      "properties": {
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "file",
+            "directory",
+            "symlink"
+          ]
+        },
+        "sizeBytes": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Count"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "repoId",
+        "path",
+        "kind",
+        "sizeBytes"
+      ]
+    },
+    "FilesListParams": {
+      "type": "object",
+      "properties": {
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        },
+        "directory": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "repoId",
+        "directory"
+      ]
+    },
+    "FilesListResult": {
+      "type": "object",
+      "properties": {
+        "entries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FileEntry"
+          }
+        }
+      },
+      "required": [
+        "entries"
+      ]
+    },
+    "FilesQuickOpenParams": {
+      "type": "object",
+      "properties": {
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        },
+        "query": {
+          "type": "string"
+        },
+        "limit": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "workspaceId",
+        "query",
+        "limit"
+      ]
+    },
+    "FilesQuickOpenResult": {
+      "type": "object",
+      "properties": {
+        "hits": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/QuickOpenHit"
+          }
+        }
+      },
+      "required": [
+        "hits"
+      ]
+    },
+    "FilesReadParams": {
+      "type": "object",
+      "properties": {
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "repoId",
+        "path"
+      ]
+    },
+    "FilesReadResult": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "sizeBytes": {
+          "$ref": "#/$defs/Count"
+        }
+      },
+      "required": [
+        "text",
+        "truncated",
+        "sizeBytes"
+      ]
+    },
+    "FixAction": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "open_url",
+            "open_settings",
+            "retry",
+            "sign_in",
+            "run_command"
+          ]
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "label"
+      ]
+    },
+    "GitBranchesResult": {
+      "type": "object",
+      "properties": {
+        "branches": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Branch"
+          }
+        }
+      },
+      "required": [
+        "branches"
+      ]
+    },
+    "GitCommitParams": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "sessionId",
+        "repoId",
+        "message"
+      ]
+    },
+    "GitCommitResult": {
+      "type": "object",
+      "properties": {
+        "commit": {
+          "$ref": "#/$defs/Commit"
+        }
+      },
+      "required": [
+        "commit"
+      ]
+    },
+    "GitDiffParams": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        },
+        "staged": {
+          "type": "boolean"
+        },
+        "paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "sessionId",
+        "repoId",
+        "staged"
+      ]
+    },
+    "GitDiffResult": {
+      "type": "object",
+      "properties": {
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FileDiff"
+          }
+        }
+      },
+      "required": [
+        "files"
+      ]
+    },
+    "GitDiscardParams": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "hunkIndexes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Count"
+          }
+        }
+      },
+      "required": [
+        "sessionId",
+        "repoId",
+        "path"
+      ]
+    },
+    "GitHubAuthStatus": {
+      "type": "object",
+      "properties": {
+        "host": {
+          "type": "string",
+          "minLength": 1
+        },
+        "signedIn": {
+          "type": "boolean"
+        },
+        "provider": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "gh",
+                "device_flow",
+                "pat"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "login": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "scopes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "host",
+        "signedIn",
+        "provider",
+        "login",
+        "scopes"
+      ]
+    },
+    "GitHubRepo": {
+      "type": "object",
+      "properties": {
+        "fullName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cloneUrl": {
+          "type": "string",
+          "minLength": 1
+        },
+        "archived": {
+          "type": "boolean"
+        },
+        "fork": {
+          "type": "boolean"
+        },
+        "topics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "fullName",
+        "cloneUrl",
+        "archived",
+        "fork",
+        "topics"
+      ]
+    },
+    "GitHubTeam": {
+      "type": "object",
+      "properties": {
+        "org": {
+          "type": "string",
+          "minLength": 1
+        },
+        "slug": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "org",
+        "slug",
+        "name"
+      ]
+    },
+    "GitLogParams": {
+      "type": "object",
+      "properties": {
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        },
+        "ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "limit": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "repoId",
+        "limit"
+      ]
+    },
+    "GitLogResult": {
+      "type": "object",
+      "properties": {
+        "commits": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Commit"
+          }
+        }
+      },
+      "required": [
+        "commits"
+      ]
+    },
+    "GitStageParams": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "hunkIndexes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Count"
+          }
+        }
+      },
+      "required": [
+        "sessionId",
+        "repoId",
+        "path"
+      ]
+    },
+    "GitStatus": {
+      "type": "object",
+      "properties": {
+        "branch": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "upstream": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "ahead": {
+          "$ref": "#/$defs/Count"
+        },
+        "behind": {
+          "$ref": "#/$defs/Count"
+        },
+        "entries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/StatusEntry"
+          }
+        }
+      },
+      "required": [
+        "branch",
+        "upstream",
+        "ahead",
+        "behind",
+        "entries"
+      ]
+    },
+    "GitStatusResult": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/GitStatus"
+        }
+      },
+      "required": [
+        "status"
+      ]
+    },
+    "GitUnstageParams": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "hunkIndexes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Count"
+          }
+        }
+      },
+      "required": [
+        "sessionId",
+        "repoId",
+        "path"
+      ]
+    },
+    "GithubAuthStatusParams": {
+      "type": "object",
+      "properties": {
+        "host": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "host"
+      ]
+    },
+    "GithubListTeamReposParams": {
+      "type": "object",
+      "properties": {
+        "host": {
+          "type": "string",
+          "minLength": 1
+        },
+        "org": {
+          "type": "string",
+          "minLength": 1
+        },
+        "teamSlug": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "host",
+        "org",
+        "teamSlug"
+      ]
+    },
+    "GithubListTeamReposResult": {
+      "type": "object",
+      "properties": {
+        "repos": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/GitHubRepo"
+          }
+        }
+      },
+      "required": [
+        "repos"
+      ]
+    },
+    "GithubListTeamsParams": {
+      "type": "object",
+      "properties": {
+        "host": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "host"
+      ]
+    },
+    "GithubListTeamsResult": {
+      "type": "object",
+      "properties": {
+        "teams": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/GitHubTeam"
+          }
+        }
+      },
+      "required": [
+        "teams"
+      ]
+    },
+    "Id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "McpAddParams": {
+      "type": "object",
+      "properties": {
+        "server": {
+          "$ref": "#/$defs/McpServerDef"
+        }
+      },
+      "required": [
+        "server"
+      ]
+    },
+    "McpAddResult": {
+      "type": "object",
+      "properties": {
+        "server": {
+          "$ref": "#/$defs/McpServerDef"
+        }
+      },
+      "required": [
+        "server"
+      ]
+    },
+    "McpAttachParams": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "$ref": "#/$defs/Id"
+        },
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "agent": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "serverId",
+        "sessionId"
+      ]
+    },
+    "McpAttachResult": {
+      "type": "object",
+      "properties": {
+        "toolDefinitionTokens": {
+          "$ref": "#/$defs/Count"
+        }
+      },
+      "required": [
+        "toolDefinitionTokens"
+      ]
+    },
+    "McpDetachParams": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "$ref": "#/$defs/Id"
+        },
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "serverId",
+        "sessionId"
+      ]
+    },
+    "McpListParams": {
+      "type": "object",
+      "properties": {
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        }
+      }
+    },
+    "McpListResult": {
+      "type": "object",
+      "properties": {
+        "servers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/McpServerDef"
+          }
+        }
+      },
+      "required": [
+        "servers"
+      ]
+    },
+    "McpScope": {
+      "type": "string",
+      "enum": [
+        "global",
+        "workspace",
+        "repo"
+      ]
+    },
+    "McpServerDef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "transport": {
+          "$ref": "#/$defs/McpTransport"
+        },
+        "toolAllowlist": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scope": {
+          "$ref": "#/$defs/McpScope"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "transport",
+        "toolAllowlist",
+        "scope"
+      ]
+    },
+    "McpServerStatus": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "$ref": "#/$defs/Id"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "connecting",
+            "healthy",
+            "degraded",
+            "needs_auth",
+            "failed",
+            "stopped"
+          ]
+        },
+        "lastError": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "tools": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "latencyMs": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "toolDefinitionTokens": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Count"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "checkedAt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Timestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "serverId",
+        "state",
+        "lastError",
+        "tools",
+        "latencyMs",
+        "toolDefinitionTokens",
+        "checkedAt"
+      ]
+    },
+    "McpStatusChangedNotification": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/McpServerStatus"
+        }
+      },
+      "required": [
+        "status"
+      ]
+    },
+    "McpStatusResult": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/McpServerStatus"
+        }
+      },
+      "required": [
+        "status"
+      ]
+    },
+    "McpTransport": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "stdio"
+            },
+            "command": {
+              "type": "string",
+              "minLength": 1
+            },
+            "args": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "env": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/SecretRef"
+                  }
+                ]
+              }
+            },
+            "cwd": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "type",
+            "command",
+            "args",
+            "env",
+            "cwd"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "http",
+                "sse"
+              ]
+            },
+            "url": {
+              "type": "string",
+              "format": "uri"
+            },
+            "headers": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/SecretRef"
+                  }
+                ]
+              }
+            }
+          },
+          "required": [
+            "type",
+            "url",
+            "headers"
+          ]
+        }
+      ]
+    },
+    "McpUpdateParams": {
+      "type": "object",
+      "properties": {
+        "server": {
+          "$ref": "#/$defs/McpServerDef"
+        }
+      },
+      "required": [
+        "server"
+      ]
+    },
+    "McpUpdateResult": {
+      "type": "object",
+      "properties": {
+        "server": {
+          "$ref": "#/$defs/McpServerDef"
+        }
+      },
+      "required": [
+        "server"
+      ]
+    },
+    "ModelInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "name": {
+          "type": "string"
+        },
+        "prices": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TokenPrices"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "allowedByPolicy": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "prices",
+        "allowedByPolicy"
+      ]
+    },
+    "ModelsListResult": {
+      "type": "object",
+      "properties": {
+        "models": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ModelInfo"
+          }
+        },
+        "fetchedAt": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "models",
+        "fetchedAt"
+      ]
+    },
+    "ModelsTiersResult": {
+      "type": "object",
+      "properties": {
+        "tiers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TierAssignment"
+          }
+        }
+      },
+      "required": [
+        "tiers"
+      ]
+    },
+    "Ok": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "type": "boolean",
+          "const": true
+        }
+      },
+      "required": [
+        "ok"
+      ]
+    },
+    "PolicyDecision": {
+      "type": "object",
+      "properties": {
+        "ruleId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ruleGroup": {
+          "$ref": "#/$defs/PolicyRuleGroup"
+        },
+        "outcome": {
+          "$ref": "#/$defs/PolicyOutcome"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "toolCallId": {
+          "$ref": "#/$defs/Id"
+        },
+        "toolName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "agent": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "ruleId",
+        "ruleGroup",
+        "outcome",
+        "reason",
+        "toolCallId",
+        "toolName",
+        "agent"
+      ]
+    },
+    "PolicyDecisionEvent": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "seq": {
+          "$ref": "#/$defs/Seq"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "type": {
+          "type": "string",
+          "const": "policy.decision"
+        },
+        "payload": {
+          "$ref": "#/$defs/PolicyDecision"
+        }
+      },
+      "required": [
+        "sessionId",
+        "seq",
+        "timestamp",
+        "type",
+        "payload"
+      ]
+    },
+    "PolicyOutcome": {
+      "type": "string",
+      "enum": [
+        "allow",
+        "deny",
+        "ask",
+        "rewrite"
+      ]
+    },
+    "PolicyRuleGroup": {
+      "type": "string",
+      "enum": [
+        "managed",
+        "safety",
+        "cost",
+        "permission"
+      ]
+    },
+    "ProtocolVersion": {
+      "type": "object",
+      "properties": {
+        "major": {
+          "$ref": "#/$defs/Count"
+        },
+        "minor": {
+          "$ref": "#/$defs/Count"
+        }
+      },
+      "required": [
+        "major",
+        "minor"
+      ]
+    },
+    "QuickOpenHit": {
+      "type": "object",
+      "properties": {
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "score": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "repoId",
+        "path",
+        "score"
+      ]
+    },
+    "Repo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "remoteUrl": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "localPath": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AbsolutePath"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "managed": {
+          "type": "boolean"
+        },
+        "defaultBranch": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cloneState": {
+          "$ref": "#/$defs/CloneState"
+        }
+      },
+      "required": [
+        "id",
+        "remoteUrl",
+        "localPath",
+        "managed",
+        "defaultBranch",
+        "cloneState"
+      ]
+    },
+    "RepoAddPathParams": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/AbsolutePath"
+        }
+      },
+      "required": [
+        "path"
+      ]
+    },
+    "RepoAddPathResult": {
+      "type": "object",
+      "properties": {
+        "repo": {
+          "$ref": "#/$defs/Repo"
+        }
+      },
+      "required": [
+        "repo"
+      ]
+    },
+    "RepoAddUrlParams": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "url"
+      ]
+    },
+    "RepoAddUrlResult": {
+      "type": "object",
+      "properties": {
+        "repo": {
+          "$ref": "#/$defs/Repo"
+        }
+      },
+      "required": [
+        "repo"
+      ]
+    },
+    "RepoCard": {
+      "type": "object",
+      "properties": {
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        },
+        "headCommit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "languages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "manifests": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "buildCommands": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "testCommands": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "owners": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "entryPoints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "repoId",
+        "headCommit",
+        "languages",
+        "manifests",
+        "buildCommands",
+        "testCommands",
+        "owners",
+        "entryPoints"
+      ]
+    },
+    "RepoCardResult": {
+      "type": "object",
+      "properties": {
+        "card": {
+          "$ref": "#/$defs/RepoCard"
+        }
+      },
+      "required": [
+        "card"
+      ]
+    },
+    "RepoGetResult": {
+      "type": "object",
+      "properties": {
+        "repo": {
+          "$ref": "#/$defs/Repo"
+        }
+      },
+      "required": [
+        "repo"
+      ]
+    },
+    "RepoListParams": {
+      "type": "object",
+      "properties": {
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        }
+      }
+    },
+    "RepoListResult": {
+      "type": "object",
+      "properties": {
+        "repos": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Repo"
+          }
+        }
+      },
+      "required": [
+        "repos"
+      ]
+    },
+    "RepoRemoveParams": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "force": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "force"
+      ]
+    },
+    "RepoSource": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "kind": {
+          "$ref": "#/$defs/RepoSourceKind"
+        },
+        "org": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selector": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lastSyncedAt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Timestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "org",
+        "selector",
+        "lastSyncedAt"
+      ]
+    },
+    "RepoSourceKind": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "team",
+        "topic",
+        "property"
+      ]
+    },
+    "RequestId": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        }
+      ]
+    },
+    "RoutingProfile": {
+      "type": "string",
+      "enum": [
+        "off",
+        "balanced",
+        "strict"
+      ]
+    },
+    "RpcError": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/ErrorData"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "RpcErrorResponse": {
+      "type": "object",
+      "properties": {
+        "jsonrpc": {
+          "type": "string",
+          "const": "2.0"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RequestId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "$ref": "#/$defs/RpcError"
+        }
+      },
+      "required": [
+        "jsonrpc",
+        "id",
+        "error"
+      ]
+    },
+    "RpcNotification": {
+      "type": "object",
+      "properties": {
+        "jsonrpc": {
+          "type": "string",
+          "const": "2.0"
+        },
+        "method": {
+          "type": "string",
+          "minLength": 1
+        },
+        "params": {}
+      },
+      "required": [
+        "jsonrpc",
+        "method"
+      ]
+    },
+    "RpcRequest": {
+      "type": "object",
+      "properties": {
+        "jsonrpc": {
+          "type": "string",
+          "const": "2.0"
+        },
+        "id": {
+          "$ref": "#/$defs/RequestId"
+        },
+        "method": {
+          "type": "string",
+          "minLength": 1
+        },
+        "params": {}
+      },
+      "required": [
+        "jsonrpc",
+        "id",
+        "method"
+      ]
+    },
+    "RpcSuccessResponse": {
+      "type": "object",
+      "properties": {
+        "jsonrpc": {
+          "type": "string",
+          "const": "2.0"
+        },
+        "id": {
+          "$ref": "#/$defs/RequestId"
+        },
+        "result": {}
+      },
+      "required": [
+        "jsonrpc",
+        "id",
+        "result"
+      ]
+    },
+    "RuntimeUnknownEvent": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "seq": {
+          "$ref": "#/$defs/Seq"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "type": {
+          "type": "string",
+          "const": "runtime.unknown"
+        },
+        "payload": {
+          "$ref": "#/$defs/RuntimeUnknownPayload"
+        }
+      },
+      "required": [
+        "sessionId",
+        "seq",
+        "timestamp",
+        "type",
+        "payload"
+      ]
+    },
+    "RuntimeUnknownPayload": {
+      "type": "object",
+      "properties": {
+        "runtimeType": {
+          "type": "string",
+          "minLength": 1
+        },
+        "raw": {}
+      },
+      "required": [
+        "runtimeType",
+        "raw"
+      ]
+    },
+    "SavingsEstimate": {
+      "type": "object",
+      "properties": {
+        "estimated": {
+          "type": "boolean",
+          "const": true
+        },
+        "credits": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "estimated",
+        "credits"
+      ]
+    },
+    "SecretRef": {
+      "type": "object",
+      "properties": {
+        "secretRef": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "secretRef"
+      ]
+    },
+    "SecretsGetParams": {
+      "type": "object",
+      "properties": {
+        "secretRef": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "secretRef"
+      ]
+    },
+    "SecretsGetResult": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "SendMode": {
+      "type": "string",
+      "enum": [
+        "send",
+        "steer",
+        "queue"
+      ]
+    },
+    "Seq": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 9007199254740991
+    },
+    "Session": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        },
+        "title": {
+          "type": "string"
+        },
+        "state": {
+          "$ref": "#/$defs/SessionState"
+        },
+        "writeRoots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Worktree"
+          }
+        },
+        "referenceRoots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AbsolutePath"
+          }
+        },
+        "routingProfile": {
+          "$ref": "#/$defs/RoutingProfile"
+        },
+        "budgetCredits": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Credits"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lastSeq": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "createdAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "updatedAt": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "workspaceId",
+        "title",
+        "state",
+        "writeRoots",
+        "referenceRoots",
+        "routingProfile",
+        "budgetCredits",
+        "lastSeq",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "SessionAbortedEvent": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "seq": {
+          "$ref": "#/$defs/Seq"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "type": {
+          "type": "string",
+          "const": "session.aborted"
+        },
+        "payload": {
+          "$ref": "#/$defs/SessionAbortedPayload"
+        }
+      },
+      "required": [
+        "sessionId",
+        "seq",
+        "timestamp",
+        "type",
+        "payload"
+      ]
+    },
+    "SessionAbortedPayload": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string",
+          "enum": [
+            "user",
+            "budget",
+            "engine"
+          ]
+        }
+      },
+      "required": [
+        "reason"
+      ]
+    },
+    "SessionChangedNotification": {
+      "type": "object",
+      "properties": {
+        "session": {
+          "$ref": "#/$defs/Session"
+        }
+      },
+      "required": [
+        "session"
+      ]
+    },
+    "SessionCreateParams": {
+      "type": "object",
+      "properties": {
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        },
+        "writeRepoIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          }
+        },
+        "referenceRepoIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          }
+        },
+        "routingProfile": {
+          "$ref": "#/$defs/RoutingProfile"
+        },
+        "budgetCredits": {
+          "$ref": "#/$defs/Credits"
+        },
+        "prompt": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "workspaceId",
+        "writeRepoIds",
+        "referenceRepoIds"
+      ]
+    },
+    "SessionCreateResult": {
+      "type": "object",
+      "properties": {
+        "session": {
+          "$ref": "#/$defs/Session"
+        }
+      },
+      "required": [
+        "session"
+      ]
+    },
+    "SessionErrorEvent": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "seq": {
+          "$ref": "#/$defs/Seq"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "type": {
+          "type": "string",
+          "const": "session.error"
+        },
+        "payload": {
+          "$ref": "#/$defs/SessionErrorPayload"
+        }
+      },
+      "required": [
+        "sessionId",
+        "seq",
+        "timestamp",
+        "type",
+        "payload"
+      ]
+    },
+    "SessionErrorPayload": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "SessionEvent": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/SessionStateChangedEvent"
+        },
+        {
+          "$ref": "#/$defs/UserMessageEvent"
+        },
+        {
+          "$ref": "#/$defs/AssistantDeltaEvent"
+        },
+        {
+          "$ref": "#/$defs/AssistantMessageEvent"
+        },
+        {
+          "$ref": "#/$defs/ToolStartedEvent"
+        },
+        {
+          "$ref": "#/$defs/ToolCompletedEvent"
+        },
+        {
+          "$ref": "#/$defs/ToolFailedEvent"
+        },
+        {
+          "$ref": "#/$defs/SubagentStartedEvent"
+        },
+        {
+          "$ref": "#/$defs/SubagentCompletedEvent"
+        },
+        {
+          "$ref": "#/$defs/SubagentFailedEvent"
+        },
+        {
+          "$ref": "#/$defs/PolicyDecisionEvent"
+        },
+        {
+          "$ref": "#/$defs/ApprovalRequestedEvent"
+        },
+        {
+          "$ref": "#/$defs/ApprovalResolvedEvent"
+        },
+        {
+          "$ref": "#/$defs/UsageRecordedEvent"
+        },
+        {
+          "$ref": "#/$defs/ContextUsageEvent"
+        },
+        {
+          "$ref": "#/$defs/BudgetWarningEvent"
+        },
+        {
+          "$ref": "#/$defs/BudgetExhaustedEvent"
+        },
+        {
+          "$ref": "#/$defs/SessionAbortedEvent"
+        },
+        {
+          "$ref": "#/$defs/SessionErrorEvent"
+        },
+        {
+          "$ref": "#/$defs/RuntimeUnknownEvent"
+        }
+      ]
+    },
+    "SessionGetResult": {
+      "type": "object",
+      "properties": {
+        "session": {
+          "$ref": "#/$defs/Session"
+        }
+      },
+      "required": [
+        "session"
+      ]
+    },
+    "SessionListParams": {
+      "type": "object",
+      "properties": {
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        }
+      }
+    },
+    "SessionListResult": {
+      "type": "object",
+      "properties": {
+        "sessions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Session"
+          }
+        }
+      },
+      "required": [
+        "sessions"
+      ]
+    },
+    "SessionResumeResult": {
+      "type": "object",
+      "properties": {
+        "session": {
+          "$ref": "#/$defs/Session"
+        }
+      },
+      "required": [
+        "session"
+      ]
+    },
+    "SessionSendParams": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mode": {
+          "$ref": "#/$defs/SendMode"
+        }
+      },
+      "required": [
+        "sessionId",
+        "text",
+        "mode"
+      ]
+    },
+    "SessionSendResult": {
+      "type": "object",
+      "properties": {
+        "accepted": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "accepted"
+      ]
+    },
+    "SessionState": {
+      "type": "string",
+      "enum": [
+        "starting",
+        "idle",
+        "running",
+        "awaiting_approval",
+        "ended",
+        "failed",
+        "resumable"
+      ]
+    },
+    "SessionStateChangedEvent": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "seq": {
+          "$ref": "#/$defs/Seq"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "type": {
+          "type": "string",
+          "const": "session.state_changed"
+        },
+        "payload": {
+          "$ref": "#/$defs/SessionStateChangedPayload"
+        }
+      },
+      "required": [
+        "sessionId",
+        "seq",
+        "timestamp",
+        "type",
+        "payload"
+      ]
+    },
+    "SessionStateChangedPayload": {
+      "type": "object",
+      "properties": {
+        "from": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SessionState"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "to": {
+          "$ref": "#/$defs/SessionState"
+        }
+      },
+      "required": [
+        "from",
+        "to"
+      ]
+    },
+    "StatusEntry": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "originalPath": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "staged": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FileChangeKind"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unstaged": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FileChangeKind"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "submodule": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "path",
+        "originalPath",
+        "staged",
+        "unstaged",
+        "submodule"
+      ]
+    },
+    "SubagentCompletedEvent": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "seq": {
+          "$ref": "#/$defs/Seq"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "type": {
+          "type": "string",
+          "const": "subagent.completed"
+        },
+        "payload": {
+          "$ref": "#/$defs/SubagentCompletedPayload"
+        }
+      },
+      "required": [
+        "sessionId",
+        "seq",
+        "timestamp",
+        "type",
+        "payload"
+      ]
+    },
+    "SubagentCompletedPayload": {
+      "type": "object",
+      "properties": {
+        "toolCallId": {
+          "$ref": "#/$defs/Id"
+        },
+        "agent": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model": {
+          "$ref": "#/$defs/Id"
+        },
+        "totalTokens": {
+          "$ref": "#/$defs/Count"
+        },
+        "durationMs": {
+          "$ref": "#/$defs/Count"
+        }
+      },
+      "required": [
+        "toolCallId",
+        "agent",
+        "model",
+        "totalTokens",
+        "durationMs"
+      ]
+    },
+    "SubagentFailedEvent": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "seq": {
+          "$ref": "#/$defs/Seq"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "type": {
+          "type": "string",
+          "const": "subagent.failed"
+        },
+        "payload": {
+          "$ref": "#/$defs/SubagentFailedPayload"
+        }
+      },
+      "required": [
+        "sessionId",
+        "seq",
+        "timestamp",
+        "type",
+        "payload"
+      ]
+    },
+    "SubagentFailedPayload": {
+      "type": "object",
+      "properties": {
+        "toolCallId": {
+          "$ref": "#/$defs/Id"
+        },
+        "agent": {
+          "type": "string",
+          "minLength": 1
+        },
+        "error": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "toolCallId",
+        "agent",
+        "error"
+      ]
+    },
+    "SubagentStartedEvent": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "seq": {
+          "$ref": "#/$defs/Seq"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "type": {
+          "type": "string",
+          "const": "subagent.started"
+        },
+        "payload": {
+          "$ref": "#/$defs/SubagentStartedPayload"
+        }
+      },
+      "required": [
+        "sessionId",
+        "seq",
+        "timestamp",
+        "type",
+        "payload"
+      ]
+    },
+    "SubagentStartedPayload": {
+      "type": "object",
+      "properties": {
+        "toolCallId": {
+          "$ref": "#/$defs/Id"
+        },
+        "agent": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "toolCallId",
+        "agent",
+        "model"
+      ]
+    },
+    "Tier": {
+      "type": "string",
+      "enum": [
+        "reasoning",
+        "worker"
+      ]
+    },
+    "TierAssignment": {
+      "type": "object",
+      "properties": {
+        "tier": {
+          "$ref": "#/$defs/Tier"
+        },
+        "setting": {
+          "type": "string",
+          "minLength": 1
+        },
+        "resolvedModelId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "tier",
+        "setting",
+        "resolvedModelId"
+      ]
+    },
+    "Timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+    },
+    "TokenPrices": {
+      "type": "object",
+      "properties": {
+        "input": {
+          "type": "number",
+          "minimum": 0
+        },
+        "cachedInput": {
+          "type": "number",
+          "minimum": 0
+        },
+        "output": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "input",
+        "cachedInput",
+        "output"
+      ]
+    },
+    "ToolCompletedEvent": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "seq": {
+          "$ref": "#/$defs/Seq"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "type": {
+          "type": "string",
+          "const": "tool.completed"
+        },
+        "payload": {
+          "$ref": "#/$defs/ToolCompletedPayload"
+        }
+      },
+      "required": [
+        "sessionId",
+        "seq",
+        "timestamp",
+        "type",
+        "payload"
+      ]
+    },
+    "ToolCompletedPayload": {
+      "type": "object",
+      "properties": {
+        "toolCallId": {
+          "$ref": "#/$defs/Id"
+        },
+        "toolName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "agent": {
+          "type": "string",
+          "minLength": 1
+        },
+        "parentToolCallId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "resultPreview": {
+          "type": "string"
+        },
+        "resultBytes": {
+          "$ref": "#/$defs/Count"
+        },
+        "spilledArtifactPath": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "toolCallId",
+        "toolName",
+        "agent",
+        "parentToolCallId",
+        "resultPreview",
+        "resultBytes",
+        "spilledArtifactPath"
+      ]
+    },
+    "ToolFailedEvent": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "seq": {
+          "$ref": "#/$defs/Seq"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "type": {
+          "type": "string",
+          "const": "tool.failed"
+        },
+        "payload": {
+          "$ref": "#/$defs/ToolFailedPayload"
+        }
+      },
+      "required": [
+        "sessionId",
+        "seq",
+        "timestamp",
+        "type",
+        "payload"
+      ]
+    },
+    "ToolFailedPayload": {
+      "type": "object",
+      "properties": {
+        "toolCallId": {
+          "$ref": "#/$defs/Id"
+        },
+        "toolName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "agent": {
+          "type": "string",
+          "minLength": 1
+        },
+        "parentToolCallId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "toolCallId",
+        "toolName",
+        "agent",
+        "parentToolCallId",
+        "error"
+      ]
+    },
+    "ToolStartedEvent": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "seq": {
+          "$ref": "#/$defs/Seq"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "type": {
+          "type": "string",
+          "const": "tool.started"
+        },
+        "payload": {
+          "$ref": "#/$defs/ToolStartedPayload"
+        }
+      },
+      "required": [
+        "sessionId",
+        "seq",
+        "timestamp",
+        "type",
+        "payload"
+      ]
+    },
+    "ToolStartedPayload": {
+      "type": "object",
+      "properties": {
+        "toolCallId": {
+          "$ref": "#/$defs/Id"
+        },
+        "toolName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "agent": {
+          "type": "string",
+          "minLength": 1
+        },
+        "parentToolCallId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "arguments": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {}
+        }
+      },
+      "required": [
+        "toolCallId",
+        "toolName",
+        "agent",
+        "parentToolCallId",
+        "arguments"
+      ]
+    },
+    "UsageGroupBy": {
+      "type": "string",
+      "enum": [
+        "session",
+        "agent",
+        "model",
+        "workspace",
+        "day"
+      ]
+    },
+    "UsageRecord": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "agent": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model": {
+          "$ref": "#/$defs/Id"
+        },
+        "inputTokens": {
+          "$ref": "#/$defs/Count"
+        },
+        "cachedInputTokens": {
+          "$ref": "#/$defs/Count"
+        },
+        "outputTokens": {
+          "$ref": "#/$defs/Count"
+        },
+        "credits": {
+          "$ref": "#/$defs/Credits"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "sessionId",
+        "agent",
+        "model",
+        "inputTokens",
+        "cachedInputTokens",
+        "outputTokens",
+        "credits",
+        "timestamp"
+      ]
+    },
+    "UsageRecordedEvent": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "seq": {
+          "$ref": "#/$defs/Seq"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "type": {
+          "type": "string",
+          "const": "usage.recorded"
+        },
+        "payload": {
+          "$ref": "#/$defs/UsageRecord"
+        }
+      },
+      "required": [
+        "sessionId",
+        "seq",
+        "timestamp",
+        "type",
+        "payload"
+      ]
+    },
+    "UsageRollupParams": {
+      "type": "object",
+      "properties": {
+        "groupBy": {
+          "$ref": "#/$defs/UsageGroupBy"
+        },
+        "from": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "to": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "groupBy",
+        "from",
+        "to"
+      ]
+    },
+    "UsageRollupResult": {
+      "type": "object",
+      "properties": {
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/UsageRollupRow"
+          }
+        },
+        "savings": {
+          "$ref": "#/$defs/SavingsEstimate"
+        }
+      },
+      "required": [
+        "rows",
+        "savings"
+      ]
+    },
+    "UsageRollupRow": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "inputTokens": {
+          "$ref": "#/$defs/Count"
+        },
+        "cachedInputTokens": {
+          "$ref": "#/$defs/Count"
+        },
+        "outputTokens": {
+          "$ref": "#/$defs/Count"
+        },
+        "credits": {
+          "$ref": "#/$defs/Credits"
+        }
+      },
+      "required": [
+        "key",
+        "inputTokens",
+        "cachedInputTokens",
+        "outputTokens",
+        "credits"
+      ]
+    },
+    "UserMessageEvent": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "seq": {
+          "$ref": "#/$defs/Seq"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "type": {
+          "type": "string",
+          "const": "user.message"
+        },
+        "payload": {
+          "$ref": "#/$defs/UserMessagePayload"
+        }
+      },
+      "required": [
+        "sessionId",
+        "seq",
+        "timestamp",
+        "type",
+        "payload"
+      ]
+    },
+    "UserMessagePayload": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "send",
+            "steer",
+            "queue"
+          ]
+        }
+      },
+      "required": [
+        "text",
+        "mode"
+      ]
+    },
+    "Workspace": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RepoSource"
+          }
+        },
+        "pinnedRepoIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          }
+        },
+        "overrides": {
+          "$ref": "#/$defs/WorkspaceOverrides"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "sources",
+        "pinnedRepoIds",
+        "overrides"
+      ]
+    },
+    "WorkspaceAddSourceParams": {
+      "type": "object",
+      "properties": {
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        },
+        "kind": {
+          "$ref": "#/$defs/RepoSourceKind"
+        },
+        "org": {
+          "type": "string",
+          "minLength": 1
+        },
+        "selector": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "workspaceId",
+        "kind"
+      ]
+    },
+    "WorkspaceAddSourceResult": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "$ref": "#/$defs/RepoSource"
+        }
+      },
+      "required": [
+        "source"
+      ]
+    },
+    "WorkspaceChangedNotification": {
+      "type": "object",
+      "properties": {
+        "workspace": {
+          "$ref": "#/$defs/Workspace"
+        }
+      },
+      "required": [
+        "workspace"
+      ]
+    },
+    "WorkspaceCreateParams": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "WorkspaceCreateResult": {
+      "type": "object",
+      "properties": {
+        "workspace": {
+          "$ref": "#/$defs/Workspace"
+        }
+      },
+      "required": [
+        "workspace"
+      ]
+    },
+    "WorkspaceGetResult": {
+      "type": "object",
+      "properties": {
+        "workspace": {
+          "$ref": "#/$defs/Workspace"
+        }
+      },
+      "required": [
+        "workspace"
+      ]
+    },
+    "WorkspaceListResult": {
+      "type": "object",
+      "properties": {
+        "workspaces": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Workspace"
+          }
+        }
+      },
+      "required": [
+        "workspaces"
+      ]
+    },
+    "WorkspaceOverrides": {
+      "type": "object",
+      "properties": {
+        "routingProfile": {
+          "$ref": "#/$defs/RoutingProfile"
+        },
+        "dailyCredits": {
+          "$ref": "#/$defs/Credits"
+        },
+        "mcpServerIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          }
+        }
+      }
+    },
+    "WorkspacePinRepoParams": {
+      "type": "object",
+      "properties": {
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        },
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "workspaceId",
+        "repoId"
+      ]
+    },
+    "WorkspaceRemoveSourceParams": {
+      "type": "object",
+      "properties": {
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        },
+        "sourceId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "workspaceId",
+        "sourceId"
+      ]
+    },
+    "WorkspaceSyncParams": {
+      "type": "object",
+      "properties": {
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "workspaceId"
+      ]
+    },
+    "WorkspaceSyncResult": {
+      "type": "object",
+      "properties": {
+        "added": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          }
+        },
+        "removed": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          }
+        }
+      },
+      "required": [
+        "added",
+        "removed"
+      ]
+    },
+    "WorkspaceUnpinRepoParams": {
+      "type": "object",
+      "properties": {
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        },
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "workspaceId",
+        "repoId"
+      ]
+    },
+    "WorkspaceUpdateParams": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "overrides": {
+          "$ref": "#/$defs/WorkspaceOverrides"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "WorkspaceUpdateResult": {
+      "type": "object",
+      "properties": {
+        "workspace": {
+          "$ref": "#/$defs/Workspace"
+        }
+      },
+      "required": [
+        "workspace"
+      ]
+    },
+    "Worktree": {
+      "type": "object",
+      "properties": {
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        },
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "path": {
+          "$ref": "#/$defs/AbsolutePath"
+        },
+        "branch": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "repoId",
+        "sessionId",
+        "path",
+        "branch"
+      ]
+    }
+  }
+}

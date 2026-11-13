@@ -1,0 +1,13 @@
+{
+  "sessionId": "ses_01",
+  "seq": 9,
+  "timestamp": "2026-11-12T09:30:00.000Z",
+  "type": "subagent.completed",
+  "payload": {
+    "toolCallId": "call_8",
+    "agent": "bulk-reader",
+    "model": "worker-model",
+    "totalTokens": 9000,
+    "durationMs": 14200
+  }
+}

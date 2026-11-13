@@ -138,13 +138,16 @@
   ],
   "E-01": [
     {
-      "check": "Every method has a request and a response schema (enumeration test)."
+      "check": "Every method has a request and a response schema (enumeration test).",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/protocol/tests/methods.test.ts"
     },
     {
-      "check": "The exported `protocol.schema.json` matches the committed file."
+      "check": "The exported `protocol.schema.json` matches the committed file.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/protocol/tests/schema-export.test.ts"
     },
     {
-      "check": "Each event type has a valid and an invalid fixture, accepted and rejected respectively."
+      "check": "Each event type has a valid and an invalid fixture, accepted and rejected respectively.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/protocol/tests/event-fixtures.test.ts"
     }
   ],
   "E-02": [

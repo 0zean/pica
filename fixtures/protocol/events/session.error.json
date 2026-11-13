@@ -1,0 +1,10 @@
+{
+  "sessionId": "ses_01",
+  "seq": 19,
+  "timestamp": "2026-11-12T09:30:00.000Z",
+  "type": "session.error",
+  "payload": {
+    "code": "runtime_failed",
+    "message": "Copilot runtime exited"
+  }
+}

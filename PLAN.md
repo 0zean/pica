@@ -348,6 +348,7 @@ Theme (accent, density, code font and size), keybindings, inspector layout, rout
 2. `make verify` exits 0.
 3. No new lint suppressions; no `TODO` without a unit ID.
 4. The unit index status is updated.
+5. The unit's work is opened as a pull request against `main` as soon as it is finished, with Auto-fix turned on so CI failures, merge conflicts, and review comments are handled on the PR. A unit is not `done` until that PR's CI passes and it is merged.
 
 ---
 
@@ -456,9 +457,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **E-01 · Protocol package** — F-01
 - Build: schemas for every RPC method, event type, and DTO; JSON Schema export; protocol version constant.
 - Verify:
-  - [ ] Every method has a request and a response schema (enumeration test).
-  - [ ] The exported `protocol.schema.json` matches the committed file.
-  - [ ] Each event type has a valid and an invalid fixture, accepted and rejected respectively.
+  - [x] Every method has a request and a response schema (enumeration test).
+  - [x] The exported `protocol.schema.json` matches the committed file.
+  - [x] Each event type has a valid and an invalid fixture, accepted and rejected respectively.
 
 **E-02 · Swift code generation** — E-01
 - Build: generator producing `PicaProtocol` Codable types from the JSON Schema.
@@ -957,7 +958,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | F-01 | Repository scaffold | — | done |
 | F-02 | Architecture guardrails | F-01 | done |
 | F-03 | Verify runner | F-01 | done |
-| E-01 | Protocol package | F-01 | todo |
+| E-01 | Protocol package | F-01 | done |
 | E-02 | Swift code generation | E-01 | todo |
 | E-03 | Store | F-01 | todo |
 | E-04 | Configuration | E-01 | todo |
