@@ -21,6 +21,7 @@ export function sqliteRepoRepository(db: DatabaseSync): RepoRepository {
   const byId = db.prepare(`SELECT ${columns} FROM repos WHERE id = ?`);
   const byRemoteUrl = db.prepare(`SELECT ${columns} FROM repos WHERE remote_url = ?`);
   const all = db.prepare(`SELECT ${columns} FROM repos ORDER BY remote_url`);
+  const deleteById = db.prepare("DELETE FROM repos WHERE id = ?");
 
   return {
     save: (repo) =>
@@ -32,6 +33,10 @@ export function sqliteRepoRepository(db: DatabaseSync): RepoRepository {
     findByRemoteUrl: (remoteUrl) =>
       attempt(() => found(byRemoteUrl.get(remoteUrl), `repo with remote ${remoteUrl}`)),
     list: () => attempt(() => ok(all.all().map(toRepo))),
+    delete: (id) =>
+      attempt(() =>
+        deleteById.run(id).changes === 0 ? fail("store.not_found", `repo ${id} not found`) : ok(undefined),
+      ),
   };
 }
 

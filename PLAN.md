@@ -625,9 +625,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **R-03 · Repo registry** — E-03, R-01
 - Build: add by path, add by URL (partial clone into the managed directory), remove.
 - Verify:
-  - [ ] Two paths with the same normalized remote resolve to one `Repo`.
-  - [ ] Removing an unmanaged repo never touches the filesystem.
-  - [ ] Removing a managed clone with uncommitted or unpushed work is refused without `force`.
+  - [x] Two paths with the same normalized remote resolve to one `Repo`.
+  - [x] Removing an unmanaged repo never touches the filesystem.
+  - [x] Removing a managed clone with uncommitted or unpushed work is refused without `force`.
 
 **R-04 · GitHub auth** — E-05
 - Build: provider chain (`gh` credentials, device flow, PAT from the secret broker), host configuration for github.com and GitHub Enterprise.
@@ -980,7 +980,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | C-10 | Eval harness | C-04, C-05, C-06, C-07, C-08 | todo |
 | R-01 | Git service | F-01 | done |
 | R-02 | Worktrees | R-01 | done |
-| R-03 | Repo registry | E-03, R-01 | todo |
+| R-03 | Repo registry | E-03, R-01 | done |
 | R-04 | GitHub auth | E-05 | todo |
 | R-05 | Team discovery | R-04 | todo |
 | R-06 | Workspace model | R-03, R-05 | todo |

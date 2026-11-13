@@ -35,6 +35,7 @@ export interface RepoRepository {
   get(id: string): StoreResult<Repo>;
   findByRemoteUrl(remoteUrl: string): StoreResult<Repo>;
   list(): StoreResult<readonly Repo[]>;
+  delete(id: string): StoreResult<void>;
 }
 
 export interface SessionRepository {

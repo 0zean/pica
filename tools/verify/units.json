@@ -442,13 +442,16 @@
   ],
   "R-03": [
     {
-      "check": "Two paths with the same normalized remote resolve to one `Repo`."
+      "check": "Two paths with the same normalized remote resolve to one `Repo`.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/repo-registry/same-remote.test.ts"
     },
     {
-      "check": "Removing an unmanaged repo never touches the filesystem."
+      "check": "Removing an unmanaged repo never touches the filesystem.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/repo-registry/remove-unmanaged.test.ts"
     },
     {
-      "check": "Removing a managed clone with uncommitted or unpushed work is refused without `force`."
+      "check": "Removing a managed clone with uncommitted or unpushed work is refused without `force`.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/repo-registry/remove-managed.test.ts"
     }
   ],
   "R-04": [
