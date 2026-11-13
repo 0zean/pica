@@ -1,0 +1,15 @@
+{
+  "sessionId": "ses_01",
+  "seq": 5,
+  "timestamp": "2026-11-12T09:30:00.000Z",
+  "type": "tool.started",
+  "payload": {
+    "toolCallId": "call_7",
+    "toolName": "read_file",
+    "agent": "main",
+    "parentToolCallId": null,
+    "arguments": [
+      "schema.sql"
+    ]
+  }
+}

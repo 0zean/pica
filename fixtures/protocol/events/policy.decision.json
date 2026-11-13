@@ -1,0 +1,15 @@
+{
+  "sessionId": "ses_01",
+  "seq": 11,
+  "timestamp": "2026-11-12T09:30:00.000Z",
+  "type": "policy.decision",
+  "payload": {
+    "ruleId": "cost.large_read",
+    "ruleGroup": "cost",
+    "outcome": "deny",
+    "reason": "schema.sql is 212 KB; ask bulk-reader",
+    "toolCallId": "call_7",
+    "toolName": "read_file",
+    "agent": "main"
+  }
+}

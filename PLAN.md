@@ -87,7 +87,7 @@ REST endpoints: `GET /user/teams`, `GET /orgs/{org}/teams/{team_slug}/repos` (pa
 | A6 | A session can read outside its `workingDirectory` once the host approves | S-04 | Session root directory of symlinks, or cross-repo access only through engine tools |
 | A7 | Node, the engine bundle, and the Copilot CLI can be signed and notarized inside the app | S-05 | Install the engine separately (pkg or Homebrew) |
 | A8 | All four MCP servers connect through the SDK, including OAuth | S-06 | Host-managed tokens supplied by Pica |
-| A9 | Event streaming over a Unix socket meets the throughput budget | S-07 | Coalesce events per display frame in the engine |
+| A9 | Event streaming over a Unix socket meets the throughput budget. **Confirmed** by S-07: 50,000 events at 25,000/s in order, p99 write-to-decoded ≈ 0.1 ms ([findings](docs/spikes/S-07.md)) | S-07 | Coalesce events per display frame in the engine |
 
 ---
 
@@ -348,6 +348,7 @@ Theme (accent, density, code font and size), keybindings, inspector layout, rout
 2. `make verify` exits 0.
 3. No new lint suppressions; no `TODO` without a unit ID.
 4. The unit index status is updated.
+5. The unit's work is opened as a pull request against `main` as soon as it is finished, with Auto-fix turned on so CI failures, merge conflicts, and review comments are handled on the PR. A unit is not `done` until that PR's CI passes and it is merged.
 
 ---
 
@@ -425,9 +426,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **S-07 · IPC throughput** — none
 - Build: Node socket server emitting synthetic events; Swift command-line client decoding them.
 - Verify:
-  - [ ] 50,000 events are received in order with none dropped at 20,000 events/s or better.
-  - [ ] p99 time from write to decoded value is under 5 ms.
-  - [ ] A9 is resolved.
+  - [x] 50,000 events are received in order with none dropped at 20,000 events/s or better.
+  - [x] p99 time from write to decoded value is under 5 ms.
+  - [x] A9 is resolved.
 
 **Gate G0:** every row in §2.4 is resolved and §3 reflects the outcomes. Phase 2 does not start before G0.
 
@@ -456,9 +457,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **E-01 · Protocol package** — F-01
 - Build: schemas for every RPC method, event type, and DTO; JSON Schema export; protocol version constant.
 - Verify:
-  - [ ] Every method has a request and a response schema (enumeration test).
-  - [ ] The exported `protocol.schema.json` matches the committed file.
-  - [ ] Each event type has a valid and an invalid fixture, accepted and rejected respectively.
+  - [x] Every method has a request and a response schema (enumeration test).
+  - [x] The exported `protocol.schema.json` matches the committed file.
+  - [x] Each event type has a valid and an invalid fixture, accepted and rejected respectively.
 
 **E-02 · Swift code generation** — E-01
 - Build: generator producing `PicaProtocol` Codable types from the JSON Schema.
@@ -470,9 +471,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **E-03 · Store** — F-01
 - Build: SQLite schema and migrations; repositories for workspaces, repos, sessions, events, usage.
 - Verify:
-  - [ ] Migrations apply from empty and from each earlier schema fixture.
-  - [ ] Property test: events read back in strictly increasing `seq` under concurrent appends.
-  - [ ] Killing the process mid-transaction leaves a database that opens and passes an integrity check.
+  - [x] Migrations apply from empty and from each earlier schema fixture.
+  - [x] Property test: events read back in strictly increasing `seq` under concurrent appends.
+  - [x] Killing the process mid-transaction leaves a database that opens and passes an integrity check.
 
 **E-04 · Configuration** — E-01
 - Build: layered JSONC loader, schema validation, managed locks, file watching.
@@ -953,13 +954,13 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | S-04 | Multi-root access | S-01 | todo |
 | S-05 | Packaging | — | todo |
 | S-06 | MCP connectivity | S-01 | todo |
-| S-07 | IPC throughput | — | todo |
+| S-07 | IPC throughput | — | done |
 | F-01 | Repository scaffold | — | done |
 | F-02 | Architecture guardrails | F-01 | done |
 | F-03 | Verify runner | F-01 | done |
-| E-01 | Protocol package | F-01 | todo |
+| E-01 | Protocol package | F-01 | done |
 | E-02 | Swift code generation | E-01 | todo |
-| E-03 | Store | F-01 | todo |
+| E-03 | Store | F-01 | done |
 | E-04 | Configuration | E-01 | todo |
 | E-05 | RPC server | E-01 | todo |
 | E-06 | Runtime port and FakeRuntime | E-01 | todo |

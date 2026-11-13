@@ -1,0 +1,11 @@
+{
+  "sessionId": "ses_01",
+  "seq": 17,
+  "timestamp": "2026-11-12T09:30:00.000Z",
+  "type": "budget.exhausted",
+  "payload": {
+    "spentCredits": 301.5,
+    "limitCredits": 300,
+    "approvalId": "apr_2"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "sessionId": "ses_01",
+  "seq": 12,
+  "timestamp": "2026-11-12T09:30:00.000Z",
+  "type": "approval.requested",
+  "payload": {
+    "id": "apr_1",
+    "sessionId": "ses_01",
+    "kind": "vibes",
+    "toolCallId": "call_9",
+    "summary": "Run `npm test`"
+  }
+}

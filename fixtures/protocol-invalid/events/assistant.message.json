@@ -1,0 +1,11 @@
+{
+  "sessionId": "ses_01",
+  "seq": 4,
+  "timestamp": "2026-11-12T09:30:00.000Z",
+  "type": "assistant.message",
+  "payload": {
+    "messageId": "msg_1",
+    "agent": "main",
+    "text": 42
+  }
+}

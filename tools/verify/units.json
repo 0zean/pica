@@ -93,13 +93,16 @@
   ],
   "S-07": [
     {
-      "check": "50,000 events are received in order with none dropped at 20,000 events/s or better."
+      "check": "50,000 events are received in order with none dropped at 20,000 events/s or better.",
+      "run": "spikes/s-07-ipc/run.sh order"
     },
     {
-      "check": "p99 time from write to decoded value is under 5 ms."
+      "check": "p99 time from write to decoded value is under 5 ms.",
+      "run": "spikes/s-07-ipc/run.sh latency"
     },
     {
-      "check": "A9 is resolved."
+      "check": "A9 is resolved.",
+      "run": "test -s docs/spikes/S-07.md && grep -q '^| A9 .*Confirmed' PLAN.md"
     }
   ],
   "F-01": [
@@ -138,13 +141,16 @@
   ],
   "E-01": [
     {
-      "check": "Every method has a request and a response schema (enumeration test)."
+      "check": "Every method has a request and a response schema (enumeration test).",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/protocol/tests/methods.test.ts"
     },
     {
-      "check": "The exported `protocol.schema.json` matches the committed file."
+      "check": "The exported `protocol.schema.json` matches the committed file.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/protocol/tests/schema-export.test.ts"
     },
     {
-      "check": "Each event type has a valid and an invalid fixture, accepted and rejected respectively."
+      "check": "Each event type has a valid and an invalid fixture, accepted and rejected respectively.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/protocol/tests/event-fixtures.test.ts"
     }
   ],
   "E-02": [
@@ -160,13 +166,16 @@
   ],
   "E-03": [
     {
-      "check": "Migrations apply from empty and from each earlier schema fixture."
+      "check": "Migrations apply from empty and from each earlier schema fixture.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/store/migrations.test.ts"
     },
     {
-      "check": "Property test: events read back in strictly increasing `seq` under concurrent appends."
+      "check": "Property test: events read back in strictly increasing `seq` under concurrent appends.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/store/event-seq.test.ts"
     },
     {
-      "check": "Killing the process mid-transaction leaves a database that opens and passes an integrity check."
+      "check": "Killing the process mid-transaction leaves a database that opens and passes an integrity check.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/store/crash.test.ts"
     }
   ],
   "E-04": [
