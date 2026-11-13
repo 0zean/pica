@@ -541,9 +541,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **C-02 · Agent definitions** — E-04
 - Build: `bulk-reader`, `code-writer`, `repo-scout` as Markdown files with frontmatter; loader merging built-in, user, workspace, repo, and `.github/agents`.
 - Verify:
-  - [ ] Precedence tests across all layers.
-  - [ ] `bulk-reader` and `repo-scout` contain no write or shell tool (asserted against the S-02 tool list).
-  - [ ] Prompt snapshot tests; an agent with an unknown tool or tier fails validation with the field named.
+  - [x] Precedence tests across all layers.
+  - [x] `bulk-reader` and `repo-scout` contain no write or shell tool (asserted against the S-02 tool list).
+  - [x] Prompt snapshot tests; an agent with an unknown tool or tier fails validation with the field named.
 
 **C-03 · Policy engine** — E-04
 - Build: pure `decide()` with ordered rule groups and decision records.
@@ -969,7 +969,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | E-09 | Copilot adapter | E-06 | todo |
 | E-10 | CLI | E-08 | todo |
 | C-01 | Model catalog and tiers | E-09 | todo |
-| C-02 | Agent definitions | E-04 | todo |
+| C-02 | Agent definitions | E-04 | done |
 | C-03 | Policy engine | E-04 | todo |
 | C-04 | Read delegation gate | C-03, E-08 | todo |
 | C-05 | Routing profiles | C-02, C-03 | todo |
