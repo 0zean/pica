@@ -1,0 +1,22 @@
+{
+  "branch": {
+    "commit": null,
+    "head": "main",
+    "upstream": null,
+    "ahead": null,
+    "behind": null
+  },
+  "entries": [
+    {
+      "kind": "changed",
+      "path": "first.txt",
+      "index": "added",
+      "worktree": "unmodified",
+      "submodule": null
+    },
+    {
+      "kind": "untracked",
+      "path": "scratch.txt"
+    }
+  ]
+}

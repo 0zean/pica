@@ -1,0 +1,195 @@
+[
+  {
+    "change": "added",
+    "path": ".gitmodules",
+    "oldPath": ".gitmodules",
+    "oldMode": null,
+    "newMode": "100644",
+    "similarity": null,
+    "binary": false,
+    "submodule": null,
+    "hunks": [
+      {
+        "oldStart": 0,
+        "oldLines": 0,
+        "newStart": 1,
+        "newLines": 3,
+        "section": "",
+        "lines": [
+          {
+            "kind": "added",
+            "text": "[submodule \"vendor/lib\"]",
+            "noNewlineAtEnd": false
+          },
+          {
+            "kind": "added",
+            "text": "\tpath = vendor/lib",
+            "noNewlineAtEnd": false
+          },
+          {
+            "kind": "added",
+            "text": "\turl = ../fixtures/lib",
+            "noNewlineAtEnd": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "change": "added",
+    "path": "empty.txt",
+    "oldPath": "empty.txt",
+    "oldMode": null,
+    "newMode": "100644",
+    "similarity": null,
+    "binary": false,
+    "submodule": null,
+    "hunks": []
+  },
+  {
+    "change": "modified",
+    "path": "file with spaces.txt",
+    "oldPath": "file with spaces.txt",
+    "oldMode": "100644",
+    "newMode": "100644",
+    "similarity": null,
+    "binary": false,
+    "submodule": null,
+    "hunks": [
+      {
+        "oldStart": 1,
+        "oldLines": 1,
+        "newStart": 1,
+        "newLines": 1,
+        "section": "",
+        "lines": [
+          {
+            "kind": "removed",
+            "text": "spaced",
+            "noNewlineAtEnd": false
+          },
+          {
+            "kind": "added",
+            "text": "spaced and edited",
+            "noNewlineAtEnd": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "change": "added",
+    "path": "new.bin",
+    "oldPath": "new.bin",
+    "oldMode": null,
+    "newMode": "100644",
+    "similarity": null,
+    "binary": true,
+    "submodule": null,
+    "hunks": []
+  },
+  {
+    "change": "added",
+    "path": "no-newline.txt",
+    "oldPath": "no-newline.txt",
+    "oldMode": null,
+    "newMode": "100644",
+    "similarity": null,
+    "binary": false,
+    "submodule": null,
+    "hunks": [
+      {
+        "oldStart": 0,
+        "oldLines": 0,
+        "newStart": 1,
+        "newLines": 1,
+        "section": "",
+        "lines": [
+          {
+            "kind": "added",
+            "text": "no newline",
+            "noNewlineAtEnd": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "change": "deleted",
+    "path": "old.bin",
+    "oldPath": "old.bin",
+    "oldMode": "100644",
+    "newMode": null,
+    "similarity": null,
+    "binary": true,
+    "submodule": null,
+    "hunks": []
+  },
+  {
+    "change": "modified",
+    "path": "script.sh",
+    "oldPath": "script.sh",
+    "oldMode": "100644",
+    "newMode": "100755",
+    "similarity": null,
+    "binary": false,
+    "submodule": null,
+    "hunks": []
+  },
+  {
+    "change": "added",
+    "path": "tab\there \"quoted\" café.txt",
+    "oldPath": "tab\there \"quoted\" café.txt",
+    "oldMode": null,
+    "newMode": "100644",
+    "similarity": null,
+    "binary": false,
+    "submodule": null,
+    "hunks": [
+      {
+        "oldStart": 0,
+        "oldLines": 0,
+        "newStart": 1,
+        "newLines": 1,
+        "section": "",
+        "lines": [
+          {
+            "kind": "added",
+            "text": "tabbed",
+            "noNewlineAtEnd": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "change": "added",
+    "path": "vendor/lib",
+    "oldPath": "vendor/lib",
+    "oldMode": null,
+    "newMode": "160000",
+    "similarity": null,
+    "binary": false,
+    "submodule": {
+      "oldCommit": null,
+      "newCommit": "030b0096ae36fbc8202c240f15b0a9ad24d2e0fc",
+      "dirty": false
+    },
+    "hunks": [
+      {
+        "oldStart": 0,
+        "oldLines": 0,
+        "newStart": 1,
+        "newLines": 1,
+        "section": "",
+        "lines": [
+          {
+            "kind": "added",
+            "text": "Subproject commit 030b0096ae36fbc8202c240f15b0a9ad24d2e0fc",
+            "noNewlineAtEnd": false
+          }
+        ]
+      }
+    ]
+  }
+]

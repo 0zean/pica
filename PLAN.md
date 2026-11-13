@@ -612,8 +612,8 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **R-01 · Git service** — F-01
 - Build: status, diff, branches, log, commit, push through the `git` CLI with machine-readable output.
 - Verify:
-  - [ ] Parser golden tests for status and diff output, including renames, binary files, and submodules.
-  - [ ] Integration tests against temporary repos built by a fixture script.
+  - [x] Parser golden tests for status and diff output, including renames, binary files, and submodules.
+  - [x] Integration tests against temporary repos built by a fixture script.
 
 **R-02 · Worktrees** — R-01
 - Build: create, list, remove; branch naming `pica/<slug>`; cleanup report.
@@ -978,7 +978,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | C-08 | Usage ledger | E-07, C-01 | todo |
 | C-09 | Budgets | C-08 | todo |
 | C-10 | Eval harness | C-04, C-05, C-06, C-07, C-08 | todo |
-| R-01 | Git service | F-01 | todo |
+| R-01 | Git service | F-01 | done |
 | R-02 | Worktrees | R-01 | todo |
 | R-03 | Repo registry | E-03, R-01 | todo |
 | R-04 | GitHub auth | E-05 | todo |

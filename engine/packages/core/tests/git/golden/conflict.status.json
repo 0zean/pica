@@ -1,0 +1,25 @@
+{
+  "branch": {
+    "commit": "438ba3edc6cdbc96acfe6d71c536d58f6c5ad8f5",
+    "head": "main",
+    "upstream": null,
+    "ahead": null,
+    "behind": null
+  },
+  "entries": [
+    {
+      "kind": "unmerged",
+      "path": "added.txt",
+      "index": "added",
+      "worktree": "added",
+      "submodule": null
+    },
+    {
+      "kind": "unmerged",
+      "path": "both.txt",
+      "index": "unmerged",
+      "worktree": "unmerged",
+      "submodule": null
+    }
+  ]
+}

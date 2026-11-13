@@ -1,0 +1,69 @@
+[
+  {
+    "change": "deleted",
+    "path": "doomed.txt",
+    "oldPath": "doomed.txt",
+    "oldMode": "100644",
+    "newMode": null,
+    "similarity": null,
+    "binary": false,
+    "submodule": null,
+    "hunks": [
+      {
+        "oldStart": 1,
+        "oldLines": 1,
+        "newStart": 0,
+        "newLines": 0,
+        "section": "",
+        "lines": [
+          {
+            "kind": "removed",
+            "text": "remove me",
+            "noNewlineAtEnd": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "change": "renamed",
+    "path": "new-name.txt",
+    "oldPath": "old-name.txt",
+    "oldMode": "100644",
+    "newMode": "100644",
+    "similarity": 90,
+    "binary": false,
+    "submodule": null,
+    "hunks": [
+      {
+        "oldStart": 6,
+        "oldLines": 3,
+        "newStart": 6,
+        "newLines": 4,
+        "section": "epsilon",
+        "lines": [
+          {
+            "kind": "context",
+            "text": "zeta",
+            "noNewlineAtEnd": false
+          },
+          {
+            "kind": "context",
+            "text": "eta",
+            "noNewlineAtEnd": false
+          },
+          {
+            "kind": "context",
+            "text": "theta",
+            "noNewlineAtEnd": false
+          },
+          {
+            "kind": "added",
+            "text": "iota",
+            "noNewlineAtEnd": false
+          }
+        ]
+      }
+    ]
+  }
+]
