@@ -713,9 +713,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **M-04 · Scoping and tool budgets** — M-01, C-02
 - Build: per-session and per-agent attachment, per-server tool allowlists, tool-definition token estimates.
 - Verify:
-  - [ ] Session-config snapshot: a server scoped to one agent appears only on that agent.
-  - [ ] A session with no servers attached carries no MCP tool definitions.
-  - [ ] Token estimates for fixture tool lists match expected values.
+  - [x] Session-config snapshot: a server scoped to one agent appears only on that agent.
+  - [x] A session with no servers attached carries no MCP tool definitions.
+  - [x] Token estimates for fixture tool lists match expected values.
 
 **M-05 · MCP permissions** — C-03, M-04
 - Build: per-tool allow, ask, deny; write-class tools default to ask; managed allowlist.
@@ -992,7 +992,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | M-01 | MCP registry and configuration | E-04 | done |
 | M-02 | MCP presets | M-01, S-06 | todo |
 | M-03 | Secrets and OAuth | M-01, E-05 | todo |
-| M-04 | Scoping and tool budgets | M-01, C-02 | todo |
+| M-04 | Scoping and tool budgets | M-01, C-02 | done |
 | M-05 | MCP permissions | C-03, M-04 | todo |
 | M-06 | Health and diagnostics | M-04 | todo |
 | A-01 | App shell and engine supervision | E-05, S-05 | todo |

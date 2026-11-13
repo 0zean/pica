@@ -1,0 +1,24 @@
+[
+  {
+    "name": "search_logs",
+    "description": "Search Datadog logs with a query — results are newest first.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "query": { "type": "string" },
+        "from": { "type": "string", "format": "date-time" },
+        "to": { "type": "string", "format": "date-time" },
+        "limit": { "type": "integer", "default": 50 }
+      },
+      "required": ["query"]
+    }
+  },
+  {
+    "name": "get_monitor",
+    "inputSchema": {
+      "type": "object",
+      "properties": { "monitor_id": { "type": "integer" } },
+      "required": ["monitor_id"]
+    }
+  }
+]

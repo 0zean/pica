@@ -1,0 +1,24 @@
+{
+  "datadog": {
+    "tools": {
+      "search_logs": 88,
+      "get_monitor": 38
+    },
+    "total": 126
+  },
+  "github": {
+    "tools": {
+      "get_issue": 99,
+      "list_issues": 144,
+      "create_pull_request": 158
+    },
+    "total": 401
+  },
+  "scripts": {
+    "tools": {
+      "noop": 18,
+      "échelle": 44
+    },
+    "total": 62
+  }
+}

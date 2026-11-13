@@ -1,0 +1,4 @@
+[
+  { "name": "noop", "inputSchema": { "type": "object" } },
+  { "name": "échelle", "description": "Mesure l’échelle 📏 d’un fichier.", "inputSchema": { "type": "object", "properties": { "chemin": { "type": "string" } } } }
+]
