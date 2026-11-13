@@ -23,7 +23,10 @@ interface MethodSpec {
   result: z.ZodType;
 }
 
-function clientMethod(params: z.ZodType, result: z.ZodType): MethodSpec {
+function clientMethod<P extends z.ZodType, R extends z.ZodType>(
+  params: P,
+  result: R,
+): { direction: "client"; params: P; result: R } {
   return { direction: "client", params, result };
 }
 
