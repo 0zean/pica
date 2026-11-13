@@ -28,6 +28,7 @@ export const ErrorCode = z.enum([
   "auth_required",
   "auth_sso_required",
   "auth_scope_missing",
+  "github_request_failed",
   "quota_exhausted",
   "model_unavailable",
   "budget_exhausted",
