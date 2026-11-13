@@ -428,13 +428,16 @@
   ],
   "R-02": [
     {
-      "check": "Edits in one worktree are not visible in another."
+      "check": "Edits in one worktree are not visible in another.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/worktrees/isolation.test.ts"
     },
     {
-      "check": "Removing a dirty worktree is refused without `force`."
+      "check": "Removing a dirty worktree is refused without `force`.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/worktrees/remove.test.ts"
     },
     {
-      "check": "The cleanup report for a fixture lists age, merged state, and dirty state correctly."
+      "check": "The cleanup report for a fixture lists age, merged state, and dirty state correctly.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/worktrees/worktrees.test.ts packages/adapters/tests/worktrees/cleanup-report.test.ts"
     }
   ],
   "R-03": [

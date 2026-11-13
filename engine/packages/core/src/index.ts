@@ -1,6 +1,7 @@
 export * from "./agents/index.ts";
 export * from "./config/index.ts";
 export * from "./git/index.ts";
+export * from "./worktrees/index.ts";
 export type { JsonObject, JsonValue } from "./json.ts";
 export { err, ok } from "./result.ts";
 export type { Result } from "./result.ts";
