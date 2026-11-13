@@ -1,17 +1,24 @@
 SWIFT_PACKAGES := $(wildcard app/Packages/*)
 
-.PHONY: verify lint lint-arch typecheck test build engine-install app-packages app-build app-ui-test
+.PHONY: verify lint lint-arch typecheck test build engine-install codegen codegen-drift app-packages app-build app-ui-test
 
 # `make verify UNIT=<ID>` runs only that unit's checks from tools/verify/units.json (PLAN.md §8.1).
 ifdef UNIT
 verify:
 	@tools/verify/run.sh "$(UNIT)"
 else
-verify: lint lint-arch typecheck test build app-ui-test
+verify: lint lint-arch typecheck codegen-drift test build app-ui-test
 endif
 
 engine-install:
 	cd engine && pnpm install --frozen-lockfile
+
+# Regenerates protocol.schema.json from the zod schemas, then the Swift types in PicaProtocol from it (D-05).
+codegen: engine-install
+	cd engine && pnpm protocol-schema && pnpm swift-codegen
+
+codegen-drift: codegen
+	@tools/codegen/check-drift.sh
 
 lint: engine-install
 	cd engine && pnpm lint

@@ -14,6 +14,7 @@ import * as usage from "./dto/usage.ts";
 import * as workspace from "./dto/workspace.ts";
 import { eventPayloads, eventSchemas, eventTypes, SessionEvent } from "./events.ts";
 import * as jsonrpc from "./jsonrpc.ts";
+import { RPC_ERROR_NUMBERS } from "./jsonrpc.ts";
 import { ById, ByRepo, BySession, ByWorktree, methodNames, methods, notificationNames, notifications, Ok } from "./methods.ts";
 import { PROTOCOL_VERSION } from "./version.ts";
 
@@ -104,6 +105,7 @@ export function buildProtocolJsonSchema(): Record<string, unknown> {
       notificationNames.map((name) => [name, { params: ref(registry, notifications[name]) }]),
     ),
     "x-pica-events": Object.fromEntries(eventTypes.map((type) => [type, ref(registry, eventSchemas[type])])),
+    "x-pica-rpc-error-numbers": RPC_ERROR_NUMBERS,
     $defs: defs,
   };
 }
