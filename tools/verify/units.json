@@ -583,13 +583,16 @@
   ],
   "M-04": [
     {
-      "check": "Session-config snapshot: a server scoped to one agent appears only on that agent."
+      "check": "Session-config snapshot: a server scoped to one agent appears only on that agent.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/mcp-attach/session-config.test.ts"
     },
     {
-      "check": "A session with no servers attached carries no MCP tool definitions."
+      "check": "A session with no servers attached carries no MCP tool definitions.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/mcp-attach/no-servers.test.ts"
     },
     {
-      "check": "Token estimates for fixture tool lists match expected values."
+      "check": "Token estimates for fixture tool lists match expected values.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/mcp-attach/token-estimates.test.ts"
     }
   ],
   "M-05": [
