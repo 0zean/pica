@@ -743,9 +743,9 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 **A-02 · EngineClient** — E-02
 - Build: actor with typed requests and event streams as `AsyncSequence`, resuming from the last `seq`.
 - Verify:
-  - [ ] Against a scripted socket server, reconnect resumes at `seq + 1` with no duplicate.
-  - [ ] Request timeout and task cancellation behave as specified.
-  - [ ] Engine-initiated `secrets.*` requests are answered from the Keychain broker.
+  - [x] Against a scripted socket server, reconnect resumes at `seq + 1` with no duplicate.
+  - [x] Request timeout and task cancellation behave as specified.
+  - [x] Engine-initiated `secrets.*` requests are answered from the Keychain broker.
 
 **A-03 · Design system** — F-01
 - Build: tokens for color, type, spacing, radius, motion; core components; brand assets derived from the logo.
@@ -996,7 +996,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | M-05 | MCP permissions | C-03, M-04 | todo |
 | M-06 | Health and diagnostics | M-04 | todo |
 | A-01 | App shell and engine supervision | E-05, S-05 | todo |
-| A-02 | EngineClient | E-02 | todo |
+| A-02 | EngineClient | E-02 | done |
 | A-03 | Design system | F-01 | done |
 | A-04 | Navigation shell | A-01, A-02, A-03 | todo |
 | A-05 | Session timeline | A-04 | todo |
