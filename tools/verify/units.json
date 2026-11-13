@@ -291,13 +291,16 @@
   ],
   "C-01": [
     {
-      "check": "Tier resolution table tests, including a preferred model missing and a model blocked by managed policy."
+      "check": "Tier resolution table tests, including a preferred model missing and a model blocked by managed policy.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/models/tiers.test.ts"
     },
     {
-      "check": "Credits computed for fixture usage (input, cached input, output) match expected values exactly."
+      "check": "Credits computed for fixture usage (input, cached input, output) match expected values exactly.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/models/cost.test.ts"
     },
     {
-      "check": "A stale cache is refreshed; a failed refresh keeps the previous catalog and raises a warning event."
+      "check": "A stale cache is refreshed; a failed refresh keeps the previous catalog and raises a warning event.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/models/catalog.test.ts"
     }
   ],
   "C-02": [

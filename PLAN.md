@@ -534,9 +534,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **C-01 · Model catalog and tiers** — E-09
 - Build: cached `models.list`, price table, tier resolution with `auto` and fallbacks, cost calculation.
 - Verify:
-  - [ ] Tier resolution table tests, including a preferred model missing and a model blocked by managed policy.
-  - [ ] Credits computed for fixture usage (input, cached input, output) match expected values exactly.
-  - [ ] A stale cache is refreshed; a failed refresh keeps the previous catalog and raises a warning event.
+  - [x] Tier resolution table tests, including a preferred model missing and a model blocked by managed policy.
+  - [x] Credits computed for fixture usage (input, cached input, output) match expected values exactly.
+  - [x] A stale cache is refreshed; a failed refresh keeps the previous catalog and raises a warning event.
 
 **C-02 · Agent definitions** — E-04
 - Build: `bulk-reader`, `code-writer`, `repo-scout` as Markdown files with frontmatter; loader merging built-in, user, workspace, repo, and `.github/agents`.
@@ -968,7 +968,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | E-08 | Session service | E-05, E-07 | done |
 | E-09 | Copilot adapter | E-06 | done |
 | E-10 | CLI | E-08 | todo |
-| C-01 | Model catalog and tiers | E-09 | todo |
+| C-01 | Model catalog and tiers | E-09 | done |
 | C-02 | Agent definitions | E-04 | done |
 | C-03 | Policy engine | E-04 | done |
 | C-04 | Read delegation gate | C-03, E-08 | todo |
