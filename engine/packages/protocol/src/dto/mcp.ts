@@ -38,3 +38,9 @@ export const McpServerStatus = z.object({
   toolDefinitionTokens: Count.nullable(),
   checkedAt: Timestamp.nullable(),
 });
+
+export type SecretRef = z.infer<typeof SecretRef>;
+export type McpScope = z.infer<typeof McpScope>;
+export type McpTransport = z.infer<typeof McpTransport>;
+export type McpServerDef = z.infer<typeof McpServerDef>;
+export type McpServerStatus = z.infer<typeof McpServerStatus>;

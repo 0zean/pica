@@ -1,0 +1,25 @@
+// VS Code allows comments and trailing commas in mcp.json.
+{
+  "inputs": [
+    { "type": "promptString", "id": "github-pat", "description": "GitHub personal access token", "password": true },
+  ],
+  "servers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": { "Authorization": "Bearer ${input:github-pat}" },
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}"],
+      "env": { "DEBUG": "mcp:*", "HOME_DIR": "${userHome}", "API_TOKEN": "${env:FS_TOKEN}" },
+      "envFile": "${workspaceFolder}/.env",
+      "cwd": "${workspaceFolder}/tools",
+    },
+    "Local Events": {
+      "type": "sse",
+      "url": "http://localhost:3001/sse",
+      "dev": { "watch": "src/**/*.ts" },
+    },
+  },
+}

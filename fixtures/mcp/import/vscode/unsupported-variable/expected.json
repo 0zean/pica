@@ -1,0 +1,13 @@
+{
+  "error": {
+    "code": "config.invalid",
+    "issues": [
+      {
+        "keyPath": "servers.tool.command",
+        "message": "unsupported VS Code variable ${command:python.interpreterPath}",
+        "line": 4,
+        "column": 7
+      }
+    ]
+  }
+}

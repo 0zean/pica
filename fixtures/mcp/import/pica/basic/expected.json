@@ -1,0 +1,59 @@
+{
+  "servers": [
+    {
+      "id": "datadog",
+      "name": "datadog",
+      "toolAllowlist": null,
+      "scope": "repo",
+      "transport": {
+        "type": "http",
+        "url": "https://mcp.datadoghq.eu/api/unstable/mcp-server/mcp",
+        "headers": {
+          "DD-API-KEY": {
+            "secretRef": "keychain:datadog-api-key"
+          },
+          "DD-APPLICATION-KEY": {
+            "secretRef": "env:DD_APP_KEY"
+          }
+        }
+      }
+    },
+    {
+      "id": "github",
+      "name": "GitHub",
+      "toolAllowlist": [
+        "get_issue",
+        "list_pull_requests"
+      ],
+      "scope": "repo",
+      "transport": {
+        "type": "http",
+        "url": "https://api.githubcopilot.com/mcp/",
+        "headers": {
+          "Authorization": "Bearer ${secret:keychain:github/pat}",
+          "X-MCP-Toolsets": "repos,issues"
+        }
+      }
+    },
+    {
+      "id": "scripts",
+      "name": "scripts",
+      "toolAllowlist": null,
+      "scope": "repo",
+      "transport": {
+        "type": "stdio",
+        "command": "node",
+        "args": [
+          "server.js",
+          "--token",
+          "${secret:env:SCRIPTS_TOKEN}"
+        ],
+        "env": {
+          "LOG_LEVEL": "debug"
+        },
+        "cwd": "tools/mcp"
+      }
+    }
+  ],
+  "notes": []
+}

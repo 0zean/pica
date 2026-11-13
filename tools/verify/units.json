@@ -541,13 +541,16 @@
   ],
   "M-01": [
     {
-      "check": "Merge precedence tests."
+      "check": "Merge precedence tests.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/mcp/precedence.test.ts packages/adapters/tests/mcp/loader.test.ts"
     },
     {
-      "check": "Import golden tests for each source format."
+      "check": "Import golden tests for each source format.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/mcp/import-golden.test.ts"
     },
     {
-      "check": "A definition with an inline secret is rejected with a message pointing to secret references."
+      "check": "A definition with an inline secret is rejected with a message pointing to secret references.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/mcp/inline-secret.test.ts"
     }
   ],
   "M-02": [

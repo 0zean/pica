@@ -8,3 +8,4 @@ export type * from "./store/index.ts";
 export * from "./runtime/index.ts";
 export * from "./policy/index.ts";
 export * from "./events/index.ts";
+export * from "./mcp/index.ts";

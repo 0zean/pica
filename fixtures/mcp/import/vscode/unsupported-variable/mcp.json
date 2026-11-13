@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "tool": {
+      "command": "${command:python.interpreterPath}",
+      "args": ["server.py"]
+    }
+  }
+}
