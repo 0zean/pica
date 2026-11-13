@@ -40,5 +40,6 @@ app-build:
 # UI tests need macOS automation mode; GitHub's macOS runners have it enabled. Locally, run
 # `automationmodetool enable-automationmode-without-authentication` once, or approve the prompt.
 app-ui-test:
+	rm -rf app/.derived/ui-tests.xcresult
 	xcodebuild -project app/Pica.xcodeproj -scheme PicaGallery -destination 'platform=macOS,arch=$(shell uname -m)' \
-		-derivedDataPath app/.derived test
+		-derivedDataPath app/.derived -resultBundlePath app/.derived/ui-tests.xcresult test

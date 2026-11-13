@@ -12,7 +12,11 @@ final class GalleryAccessibilityTests: XCTestCase {
         XCTAssertTrue(gallery.waitForExistence(timeout: 10))
         let galleryFrame = gallery.frame
 
-        for _ in 0..<4 {
+        for pass in 0..<4 {
+            let screenshot = XCTAttachment(screenshot: app.windows.firstMatch.screenshot())
+            screenshot.name = "audit pass \(pass)"
+            screenshot.lifetime = .keepAlways
+            add(screenshot)
             try app.performAccessibilityAudit { issue in
                 guard let element = issue.element, galleryFrame.contains(element.frame) else { return true }
                 XCTFail("Accessibility audit: \(issue.compactDescription). \(issue.detailedDescription) Element: \(element.elementType.rawValue) \"\(element.label)\" \(element.frame)")

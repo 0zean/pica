@@ -32,3 +32,11 @@ jobs:
           path: app/Packages/*/.snapshot-failures/
           if-no-files-found: ignore
           include-hidden-files: true
+      - name: Upload UI test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-test-results
+          path: app/.derived/ui-tests.xcresult
+          if-no-files-found: ignore
+          include-hidden-files: true
