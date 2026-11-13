@@ -1,13 +1,13 @@
 SWIFT_PACKAGES := $(wildcard app/Packages/*)
 
-.PHONY: verify lint lint-arch typecheck test build engine-install app-packages app-build
+.PHONY: verify lint lint-arch typecheck test build engine-install app-packages app-build app-ui-test
 
 # `make verify UNIT=<ID>` runs only that unit's checks from tools/verify/units.json (PLAN.md §8.1).
 ifdef UNIT
 verify:
 	@tools/verify/run.sh "$(UNIT)"
 else
-verify: lint lint-arch typecheck test build
+verify: lint lint-arch typecheck test build app-ui-test
 endif
 
 engine-install:
@@ -36,3 +36,9 @@ app-packages:
 app-build:
 	xcodebuild -project app/Pica.xcodeproj -scheme Pica -configuration Debug \
 		-derivedDataPath app/.derived -quiet CODE_SIGNING_ALLOWED=NO build
+
+# UI tests need macOS automation mode; GitHub's macOS runners have it enabled. Locally, run
+# `automationmodetool enable-automationmode-without-authentication` once, or approve the prompt.
+app-ui-test:
+	xcodebuild -project app/Pica.xcodeproj -scheme PicaGallery -destination 'platform=macOS,arch=$(shell uname -m)' \
+		-derivedDataPath app/.derived -quiet test

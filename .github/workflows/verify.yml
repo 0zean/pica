@@ -12,7 +12,7 @@ concurrency:
 jobs:
   verify:
     runs-on: macos-15
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -24,3 +24,10 @@ jobs:
           cache: pnpm
           cache-dependency-path: engine/pnpm-lock.yaml
       - run: make verify
+      - name: Upload snapshot failures
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapshot-failures
+          path: app/Packages/*/.snapshot-failures/
+          if-no-files-found: ignore

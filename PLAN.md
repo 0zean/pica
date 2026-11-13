@@ -996,7 +996,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | M-06 | Health and diagnostics | M-04 | todo |
 | A-01 | App shell and engine supervision | E-05, S-05 | todo |
 | A-02 | EngineClient | E-02 | todo |
-| A-03 | Design system | F-01 | todo |
+| A-03 | Design system | F-01 | doing |
 | A-04 | Navigation shell | A-01, A-02, A-03 | todo |
 | A-05 | Session timeline | A-04 | todo |
 | A-06 | Composer | A-05 | todo |
