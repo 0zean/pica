@@ -1,0 +1,36 @@
+{
+  "mcpServers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": { "Authorization": { "secretRef": "keychain:github/pat" } },
+      "tools": ["get_issue", "list_issues"]
+    }
+  },
+  "customAgents": [
+    { "name": "bulk-reader" },
+    {
+      "name": "repo-scout",
+      "mcpServers": {
+        "scripts": {
+          "type": "local",
+          "command": "node",
+          "args": ["server.js"],
+          "env": { "TOKEN": { "secretRef": "env:SCRIPTS_TOKEN" } },
+          "tools": ["*"]
+        }
+      }
+    },
+    {
+      "name": "triage",
+      "mcpServers": {
+        "datadog": {
+          "type": "sse",
+          "url": "https://mcp.datadoghq.com/sse",
+          "headers": {},
+          "tools": ["search_logs"]
+        }
+      }
+    }
+  ]
+}

@@ -5,6 +5,8 @@ export type ToolKind = "read" | "search" | "write" | "shell" | "web" | "agent" |
 export interface BuiltinTool {
   readonly name: string;
   readonly kind: ToolKind;
+  /** Set on the write tool that makes new files; `balanced` removes it from the main agent (C-05). */
+  readonly createsFiles?: true;
 }
 
 // TODO(S-02): provisional. Replace with the tool names recorded in docs/spikes/S-02-tools.json
@@ -14,7 +16,7 @@ export const provisionalBuiltinTools: readonly BuiltinTool[] = [
   { name: "view", kind: "read" },
   { name: "grep", kind: "search" },
   { name: "glob", kind: "search" },
-  { name: "create", kind: "write" },
+  { name: "create", kind: "write", createsFiles: true },
   { name: "edit", kind: "write" },
   { name: "bash", kind: "shell" },
   { name: "read_bash", kind: "shell" },

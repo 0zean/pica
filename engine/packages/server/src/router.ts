@@ -1,6 +1,6 @@
 import type * as z from "zod";
 import { methods, RpcRequest } from "@pica/protocol";
-import type { MethodName, RequestId, RpcSuccessResponse } from "@pica/protocol";
+import type { MethodName, NotificationName, RequestId, RpcSuccessResponse } from "@pica/protocol";
 import { parseClientResponse, type ClientResponse } from "./client-requests.ts";
 import { RpcFailure } from "./errors.ts";
 
@@ -9,6 +9,9 @@ export type MethodResult<M extends MethodName> = z.input<(typeof methods)[M]["re
 
 export interface RequestContext {
   readonly connectionId: number;
+  // Sends a notification to the requesting client only, after any response already written.
+  readonly notify: (method: NotificationName, params: unknown) => void;
+  readonly onClose: (listener: () => void) => void;
 }
 
 export type Handler<M extends MethodName> = (

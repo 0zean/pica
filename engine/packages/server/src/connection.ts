@@ -129,6 +129,12 @@ export class Connection {
     try {
       const response = await this.router.dispatch(message.id, message.method, message.params, {
         connectionId: this.id,
+        notify: (method, params) => {
+          this.notify(method, params);
+        },
+        onClose: (listener) => {
+          this.onClose(listener);
+        },
       });
       if (message.method === "engine.hello") {
         this.handshaken = true;

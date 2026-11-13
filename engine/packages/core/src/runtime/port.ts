@@ -50,6 +50,8 @@ export interface CustomAgentDefinition {
 }
 
 export interface SessionOptions {
+  // Lets the caller use its own id for the runtime session; the runtime picks one when absent.
+  readonly sessionId?: string;
   readonly workingDirectory: string;
   readonly model?: string;
   readonly customAgents?: readonly CustomAgentDefinition[];

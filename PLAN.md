@@ -508,10 +508,10 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **E-08 · Session service** — E-05, E-07
 - Build: lifecycle state machine, send, steer, queue, abort, approval round trip, resume.
 - Verify:
-  - [ ] Transition table tests accept every legal transition and reject every illegal one.
-  - [ ] Killing the engine during a FakeRuntime run and restarting leaves the session `resumable`, and resuming continues from the next event.
-  - [ ] An approval request is delivered to clients, and its resolution reaches the runtime exactly once.
-  - [ ] Abort during a tool call ends in `idle` with an `aborted` event.
+  - [x] Transition table tests accept every legal transition and reject every illegal one.
+  - [x] Killing the engine during a FakeRuntime run and restarting leaves the session `resumable`, and resuming continues from the next event.
+  - [x] An approval request is delivered to clients, and its resolution reaches the runtime exactly once.
+  - [x] Abort during a tool call ends in `idle` with an `aborted` event.
 
 **E-09 · Copilot adapter** — E-06
 - Build: `AgentRuntime` over `@github/copilot-sdk`, version pinned, with error and auth-state mapping. A replay server in `testkit` emulates the runtime's JSON-RPC from recorded transcripts.
@@ -534,9 +534,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **C-01 · Model catalog and tiers** — E-09
 - Build: cached `models.list`, price table, tier resolution with `auto` and fallbacks, cost calculation.
 - Verify:
-  - [ ] Tier resolution table tests, including a preferred model missing and a model blocked by managed policy.
-  - [ ] Credits computed for fixture usage (input, cached input, output) match expected values exactly.
-  - [ ] A stale cache is refreshed; a failed refresh keeps the previous catalog and raises a warning event.
+  - [x] Tier resolution table tests, including a preferred model missing and a model blocked by managed policy.
+  - [x] Credits computed for fixture usage (input, cached input, output) match expected values exactly.
+  - [x] A stale cache is refreshed; a failed refresh keeps the previous catalog and raises a warning event.
 
 **C-02 · Agent definitions** — E-04
 - Build: `bulk-reader`, `code-writer`, `repo-scout` as Markdown files with frontmatter; loader merging built-in, user, workspace, repo, and `.github/agents`.
@@ -564,9 +564,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **C-05 · Routing profiles** — C-02, C-03
 - Build: `off`, `balanced`, `strict` mapped to per-agent tool visibility and the delegation guide text.
 - Verify:
-  - [ ] Session-config snapshot per profile.
-  - [ ] In `strict`, the main agent's tool list contains no write tool; in `balanced`, no create-file tool; in `off`, no cost gate fires in any C-03 case.
-  - [ ] The delegation guide for a profile is byte-identical across sessions.
+  - [x] Session-config snapshot per profile.
+  - [x] In `strict`, the main agent's tool list contains no write tool; in `balanced`, no create-file tool; in `off`, no cost gate fires in any C-03 case.
+  - [x] The delegation guide for a profile is byte-identical across sessions.
 
 **C-06 · Output guard** — C-03, E-08
 - Build: `onPostToolUse` truncation with spill to a session artifact and a pointer line.
@@ -713,9 +713,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **M-04 · Scoping and tool budgets** — M-01, C-02
 - Build: per-session and per-agent attachment, per-server tool allowlists, tool-definition token estimates.
 - Verify:
-  - [ ] Session-config snapshot: a server scoped to one agent appears only on that agent.
-  - [ ] A session with no servers attached carries no MCP tool definitions.
-  - [ ] Token estimates for fixture tool lists match expected values.
+  - [x] Session-config snapshot: a server scoped to one agent appears only on that agent.
+  - [x] A session with no servers attached carries no MCP tool definitions.
+  - [x] Token estimates for fixture tool lists match expected values.
 
 **M-05 · MCP permissions** — C-03, M-04
 - Build: per-tool allow, ask, deny; write-class tools default to ask; managed allowlist.
@@ -965,14 +965,14 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | E-05 | RPC server | E-01 | done |
 | E-06 | Runtime port and FakeRuntime | E-01 | done |
 | E-07 | Event normalization and log | E-03, E-06 | done |
-| E-08 | Session service | E-05, E-07 | todo |
+| E-08 | Session service | E-05, E-07 | done |
 | E-09 | Copilot adapter | E-06 | done |
 | E-10 | CLI | E-08 | todo |
-| C-01 | Model catalog and tiers | E-09 | todo |
+| C-01 | Model catalog and tiers | E-09 | done |
 | C-02 | Agent definitions | E-04 | done |
 | C-03 | Policy engine | E-04 | done |
 | C-04 | Read delegation gate | C-03, E-08 | todo |
-| C-05 | Routing profiles | C-02, C-03 | todo |
+| C-05 | Routing profiles | C-02, C-03 | doing |
 | C-06 | Output guard | C-03, E-08 | todo |
 | C-07 | Delegator | C-02, C-05, G0 | todo |
 | C-08 | Usage ledger | E-07, C-01 | todo |
@@ -992,7 +992,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | M-01 | MCP registry and configuration | E-04 | done |
 | M-02 | MCP presets | M-01, S-06 | todo |
 | M-03 | Secrets and OAuth | M-01, E-05 | done |
-| M-04 | Scoping and tool budgets | M-01, C-02 | todo |
+| M-04 | Scoping and tool budgets | M-01, C-02 | done |
 | M-05 | MCP permissions | C-03, M-04 | todo |
 | M-06 | Health and diagnostics | M-04 | todo |
 | A-01 | App shell and engine supervision | E-05, S-05 | todo |

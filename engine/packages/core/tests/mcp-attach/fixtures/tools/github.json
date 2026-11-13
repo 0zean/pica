@@ -1,0 +1,47 @@
+[
+  {
+    "name": "get_issue",
+    "description": "Get details of a specific issue in a GitHub repository.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "owner": { "type": "string", "description": "Repository owner" },
+        "repo": { "type": "string", "description": "Repository name" },
+        "issue_number": { "type": "number", "description": "The number of the issue" }
+      },
+      "required": ["owner", "repo", "issue_number"]
+    }
+  },
+  {
+    "name": "list_issues",
+    "description": "List issues in a GitHub repository with filtering options.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "owner": { "type": "string", "description": "Repository owner" },
+        "repo": { "type": "string", "description": "Repository name" },
+        "state": { "type": "string", "enum": ["open", "closed", "all"], "description": "Filter by state" },
+        "labels": { "type": "array", "items": { "type": "string" }, "description": "Filter by labels" },
+        "perPage": { "type": "number", "minimum": 1, "maximum": 100, "description": "Results per page" }
+      },
+      "required": ["owner", "repo"]
+    }
+  },
+  {
+    "name": "create_pull_request",
+    "description": "Create a new pull request in a GitHub repository.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "owner": { "type": "string", "description": "Repository owner" },
+        "repo": { "type": "string", "description": "Repository name" },
+        "title": { "type": "string", "description": "PR title" },
+        "body": { "type": "string", "description": "PR description" },
+        "head": { "type": "string", "description": "Branch containing changes" },
+        "base": { "type": "string", "description": "Branch to merge into" },
+        "draft": { "type": "boolean", "description": "Create as draft PR" }
+      },
+      "required": ["owner", "repo", "title", "head", "base"]
+    }
+  }
+]
