@@ -1,0 +1,17 @@
+// Contract fixture: a tool call that only abort can end.
+{
+  "version": 1,
+  "models": [
+    { "id": "frontier-1", "name": "Frontier 1", "tokenPrices": { "input": 125, "cachedInput": 12.5, "output": 1000 }, "contextWindow": 200000 },
+    { "id": "worker-1", "name": "Worker 1", "tokenPrices": { "input": 15, "cachedInput": 1.5, "output": 60 } }
+  ],
+  "defaultModel": "frontier-1",
+  "turns": [
+    {
+      "steps": [
+        { "type": "toolCall", "name": "bash", "arguments": { "command": "sleep 1000" }, "result": "", "hangs": true },
+        { "type": "text", "content": "never emitted" },
+      ],
+    },
+  ],
+}

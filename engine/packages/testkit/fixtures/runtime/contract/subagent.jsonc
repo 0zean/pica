@@ -1,0 +1,28 @@
+// Contract fixture: delegation to a cheaper sub-agent.
+{
+  "version": 1,
+  "models": [
+    { "id": "frontier-1", "name": "Frontier 1", "tokenPrices": { "input": 125, "cachedInput": 12.5, "output": 1000 }, "contextWindow": 200000 },
+    { "id": "worker-1", "name": "Worker 1", "tokenPrices": { "input": 15, "cachedInput": 1.5, "output": 60 } }
+  ],
+  "defaultModel": "frontier-1",
+  "turns": [
+    {
+      "steps": [
+        { "type": "usage", "model": "frontier-1", "inputTokens": 500, "outputTokens": 20 },
+        {
+          "type": "subagent",
+          "agentName": "reader",
+          "model": "worker-1",
+          "steps": [
+            { "type": "toolCall", "name": "view", "arguments": { "path": "big.log" }, "result": "…200 KB…" },
+            { "type": "usage", "model": "worker-1", "inputTokens": 50000, "outputTokens": 300 },
+            { "type": "text", "content": "The log shows one failure." },
+          ],
+        },
+        { "type": "text", "content": "The reader found one failure." },
+        { "type": "usage", "model": "frontier-1", "inputTokens": 900, "cachedInputTokens": 500, "outputTokens": 25 },
+      ],
+    },
+  ],
+}

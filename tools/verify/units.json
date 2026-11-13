@@ -208,13 +208,16 @@
   ],
   "E-06": [
     {
-      "check": "Replaying a scenario twice produces byte-identical event logs."
+      "check": "Replaying a scenario twice produces byte-identical event logs.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/testkit/tests/runtime/replay.test.ts"
     },
     {
-      "check": "A shared contract suite passes against FakeRuntime."
+      "check": "A shared contract suite passes against FakeRuntime.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/testkit/tests/runtime/contract.test.ts"
     },
     {
-      "check": "Scenario files validate against a schema; an invalid one fails with a line reference."
+      "check": "Scenario files validate against a schema; an invalid one fails with a line reference.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/testkit/tests/runtime/scenario-schema.test.ts"
     }
   ],
   "E-07": [

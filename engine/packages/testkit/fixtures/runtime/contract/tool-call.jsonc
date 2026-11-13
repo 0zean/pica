@@ -1,0 +1,19 @@
+// Contract fixture: two tool calls, then text.
+{
+  "version": 1,
+  "models": [
+    { "id": "frontier-1", "name": "Frontier 1", "tokenPrices": { "input": 125, "cachedInput": 12.5, "output": 1000 }, "contextWindow": 200000 },
+    { "id": "worker-1", "name": "Worker 1", "tokenPrices": { "input": 15, "cachedInput": 1.5, "output": 60 } }
+  ],
+  "defaultModel": "frontier-1",
+  "turns": [
+    {
+      "steps": [
+        { "type": "toolCall", "name": "view", "arguments": { "path": "README.md" }, "result": "# Readme" },
+        { "type": "toolCall", "name": "bash", "arguments": { "command": "ls" }, "result": "README.md\nsrc" },
+        { "type": "text", "content": "The repo has a README and src." },
+        { "type": "usage", "model": "frontier-1", "inputTokens": 900, "outputTokens": 30 },
+      ],
+    },
+  ],
+}
