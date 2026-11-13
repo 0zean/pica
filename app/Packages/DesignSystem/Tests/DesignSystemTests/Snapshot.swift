@@ -5,7 +5,7 @@ import DesignSystem
 
 /// Renders SwiftUI views with `ImageRenderer` and compares them with reference PNGs committed under
 /// `__Snapshots__/macOS-<major>/`. System text rendering changes between macOS releases, so each
-/// major version keeps its own references; CI's `macos-15` image is the merge gate.
+/// major version keeps its own references; CI's `macos-26` image is the merge gate.
 ///
 /// Set `PICA_RECORD_SNAPSHOTS=1` to write new references. A mismatch or a missing reference writes the
 /// rendered image to `.snapshot-failures/` in the package, which CI uploads.
