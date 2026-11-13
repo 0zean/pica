@@ -21,6 +21,8 @@ public enum BrandColor {
 
 /// Semantic color roles. Light values are built from the brand colors; dark and increased-contrast
 /// values are chosen to keep text at WCAG AA (AAA under increased contrast), which a unit test checks.
+/// Text roles carry extra margin: small text on a 1x display renders at roughly three quarters of its
+/// nominal contrast, and the accessibility audit measures the rendered pixels.
 public enum Palette {
     public static let background = PicaColor(
         light: BrandColor.paper, dark: RGB(0x1C1E26),
@@ -32,7 +34,7 @@ public enum Palette {
         light: BrandColor.ink, dark: RGB(0xF2EEE9),
         lightIncreasedContrast: RGB(0x1A1C24), darkIncreasedContrast: RGB(0xFFFFFF))
     public static let textSecondary = PicaColor(
-        light: RGB(0x50555F), dark: RGB(0xB9BDC8),
+        light: RGB(0x464A56), dark: RGB(0xB9BDC8),
         lightIncreasedContrast: BrandColor.ink, darkIncreasedContrast: RGB(0xDADDE5))
     public static let border = PicaColor(
         light: RGB(0xDDD8D2), dark: RGB(0x3A3D4A),
