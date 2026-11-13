@@ -344,13 +344,16 @@
   ],
   "C-05": [
     {
-      "check": "Session-config snapshot per profile."
+      "check": "Session-config snapshot per profile.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/routing/session-config.test.ts"
     },
     {
-      "check": "In `strict`, the main agent's tool list contains no write tool; in `balanced`, no create-file tool; in `off`, no cost gate fires in any C-03 case."
+      "check": "In `strict`, the main agent's tool list contains no write tool; in `balanced`, no create-file tool; in `off`, no cost gate fires in any C-03 case.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/routing/main-agent-tools.test.ts packages/core/tests/routing/off-profile.test.ts"
     },
     {
-      "check": "The delegation guide for a profile is byte-identical across sessions."
+      "check": "The delegation guide for a profile is byte-identical across sessions.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/routing/delegation-guide.test.ts packages/core/tests/routing/delegation-guide-agents.test.ts"
     }
   ],
   "C-06": [

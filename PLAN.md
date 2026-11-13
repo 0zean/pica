@@ -564,9 +564,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **C-05 · Routing profiles** — C-02, C-03
 - Build: `off`, `balanced`, `strict` mapped to per-agent tool visibility and the delegation guide text.
 - Verify:
-  - [ ] Session-config snapshot per profile.
-  - [ ] In `strict`, the main agent's tool list contains no write tool; in `balanced`, no create-file tool; in `off`, no cost gate fires in any C-03 case.
-  - [ ] The delegation guide for a profile is byte-identical across sessions.
+  - [x] Session-config snapshot per profile.
+  - [x] In `strict`, the main agent's tool list contains no write tool; in `balanced`, no create-file tool; in `off`, no cost gate fires in any C-03 case.
+  - [x] The delegation guide for a profile is byte-identical across sessions.
 
 **C-06 · Output guard** — C-03, E-08
 - Build: `onPostToolUse` truncation with spill to a session artifact and a pointer line.
@@ -972,7 +972,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | C-02 | Agent definitions | E-04 | done |
 | C-03 | Policy engine | E-04 | done |
 | C-04 | Read delegation gate | C-03, E-08 | todo |
-| C-05 | Routing profiles | C-02, C-03 | todo |
+| C-05 | Routing profiles | C-02, C-03 | doing |
 | C-06 | Output guard | C-03, E-08 | todo |
 | C-07 | Delegator | C-02, C-05, G0 | todo |
 | C-08 | Usage ledger | E-07, C-01 | todo |
