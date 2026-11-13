@@ -508,10 +508,10 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **E-08 · Session service** — E-05, E-07
 - Build: lifecycle state machine, send, steer, queue, abort, approval round trip, resume.
 - Verify:
-  - [ ] Transition table tests accept every legal transition and reject every illegal one.
-  - [ ] Killing the engine during a FakeRuntime run and restarting leaves the session `resumable`, and resuming continues from the next event.
-  - [ ] An approval request is delivered to clients, and its resolution reaches the runtime exactly once.
-  - [ ] Abort during a tool call ends in `idle` with an `aborted` event.
+  - [x] Transition table tests accept every legal transition and reject every illegal one.
+  - [x] Killing the engine during a FakeRuntime run and restarting leaves the session `resumable`, and resuming continues from the next event.
+  - [x] An approval request is delivered to clients, and its resolution reaches the runtime exactly once.
+  - [x] Abort during a tool call ends in `idle` with an `aborted` event.
 
 **E-09 · Copilot adapter** — E-06
 - Build: `AgentRuntime` over `@github/copilot-sdk`, version pinned, with error and auth-state mapping. A replay server in `testkit` emulates the runtime's JSON-RPC from recorded transcripts.
@@ -965,7 +965,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | E-05 | RPC server | E-01 | done |
 | E-06 | Runtime port and FakeRuntime | E-01 | done |
 | E-07 | Event normalization and log | E-03, E-06 | done |
-| E-08 | Session service | E-05, E-07 | todo |
+| E-08 | Session service | E-05, E-07 | done |
 | E-09 | Copilot adapter | E-06 | done |
 | E-10 | CLI | E-08 | todo |
 | C-01 | Model catalog and tiers | E-09 | todo |

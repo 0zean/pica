@@ -50,7 +50,7 @@ export class CopilotRuntime implements AgentRuntime {
   }
 
   createSession(options: SessionOptions): RuntimeResult<RuntimeSession> {
-    return this.open(this.sessionIds(), options, (config) => this.client.createSession(config));
+    return this.open(options.sessionId ?? this.sessionIds(), options, (config) => this.client.createSession(config));
   }
 
   resumeSession(options: ResumeOptions): RuntimeResult<RuntimeSession> {
