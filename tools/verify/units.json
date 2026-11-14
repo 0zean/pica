@@ -542,13 +542,16 @@
   ],
   "R-08": [
     {
-      "check": "On a three-repo fixture, search returns `repo:path:line` hits in a deterministic order within the result cap."
+      "check": "On a three-repo fixture, search returns `repo:path:line` hits in a deterministic order within the result cap.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/repo-tools/search.test.ts"
     },
     {
-      "check": "`repo_read` refuses paths outside workspace repos."
+      "check": "`repo_read` refuses paths outside workspace repos.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/repo-tools/read.test.ts packages/adapters/tests/repo-tools/session-tools.test.ts"
     },
     {
-      "check": "Mention parser table tests, including ambiguous and missing repos."
+      "check": "Mention parser table tests, including ambiguous and missing repos.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/repo-tools/mentions.test.ts"
     }
   ],
   "R-09": [

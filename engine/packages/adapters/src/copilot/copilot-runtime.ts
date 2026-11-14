@@ -19,6 +19,7 @@ import {
 } from "@github/copilot-sdk";
 import { CopilotRuntimeSession } from "./copilot-session.ts";
 import { toRuntimeError } from "./errors.ts";
+import { toSdkTools } from "./engine-tools.ts";
 import { bridgeHooks } from "./hooks.ts";
 import { isModelUsable, toQuotaInfo, toRuntimeModel } from "./models.ts";
 
@@ -145,6 +146,7 @@ function sessionConfig(sessionId: string, options: SessionOptions, session: Copi
         }),
     // Hidden from the main agent only; sub-agents keep them (§2.1, `defaultAgent.excludedTools`).
     ...(options.excludedTools === undefined ? {} : { defaultAgent: { excludedTools: [...options.excludedTools] } }),
+    ...(options.tools === undefined || options.tools.length === 0 ? {} : { tools: toSdkTools(options.tools) }),
     ...(options.maxAiCredits === undefined ? {} : { sessionLimits: { maxAiCredits: options.maxAiCredits } }),
   };
 }

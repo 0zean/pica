@@ -1,3 +1,4 @@
+import type { JsonObject, JsonValue } from "../json.ts";
 import type { Result } from "../result.ts";
 import type { RuntimeError } from "./errors.ts";
 import type { RuntimeEventListener } from "./events.ts";
@@ -49,6 +50,20 @@ export interface CustomAgentDefinition {
   readonly tools?: readonly string[];
 }
 
+// A tool the engine implements itself (R-08). `invoke` never throws; a failure is `ok: false`
+// with text the model can read. `parameters` is a JSON Schema object.
+export interface EngineTool {
+  readonly name: string;
+  readonly description: string;
+  readonly parameters: JsonObject;
+  invoke(args: JsonValue): Promise<EngineToolOutput>;
+}
+
+export interface EngineToolOutput {
+  readonly ok: boolean;
+  readonly text: string;
+}
+
 export interface SessionOptions {
   // Lets the caller use its own id for the runtime session; the runtime picks one when absent.
   readonly sessionId?: string;
@@ -56,6 +71,7 @@ export interface SessionOptions {
   readonly model?: string;
   readonly customAgents?: readonly CustomAgentDefinition[];
   readonly excludedTools?: readonly string[];
+  readonly tools?: readonly EngineTool[];
   readonly maxAiCredits?: number;
   readonly hooks?: RuntimeHooks;
 }

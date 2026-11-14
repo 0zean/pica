@@ -663,9 +663,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **R-08 · Cross-repo tools** — R-06, R-07
 - Build: `repo_search`, `repo_read`, `repo_list` as engine tools; `@repo:path` mention parsing.
 - Verify:
-  - [ ] On a three-repo fixture, search returns `repo:path:line` hits in a deterministic order within the result cap.
-  - [ ] `repo_read` refuses paths outside workspace repos.
-  - [ ] Mention parser table tests, including ambiguous and missing repos.
+  - [x] On a three-repo fixture, search returns `repo:path:line` hits in a deterministic order within the result cap.
+  - [x] `repo_read` refuses paths outside workspace repos.
+  - [x] Mention parser table tests, including ambiguous and missing repos.
 
 **R-09 · Repo cards** — R-03
 - Build: model-free summary cached by HEAD commit.
@@ -987,7 +987,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | R-05 | Team discovery | R-04 | done |
 | R-06 | Workspace model | R-03, R-05 | done |
 | R-07 | Session scope and sandbox | C-03, R-02 | done |
-| R-08 | Cross-repo tools | R-06, R-07 | todo |
+| R-08 | Cross-repo tools | R-06, R-07 | done |
 | R-09 | Repo cards | R-03 | done |
 | R-10 | Multi-repo change sets | R-02, R-07 | done |
 | R-11 | Fan-out runs | R-06, E-08 | done |
