@@ -641,10 +641,10 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **R-05 · Team discovery** — R-04
 - Build: list orgs and teams, team repos, topic and custom-property selectors, sync with diff.
 - Verify:
-  - [ ] A stub with 250 repos across 3 pages is fully discovered.
-  - [ ] A 304 response makes no changes and issues no further requests.
-  - [ ] Archived repos and forks are excluded or included per setting.
-  - [ ] Sync diff reports added and removed repos exactly.
+  - [x] A stub with 250 repos across 3 pages is fully discovered.
+  - [x] A 304 response makes no changes and issues no further requests.
+  - [x] Archived repos and forks are excluded or included per setting.
+  - [x] Sync diff reports added and removed repos exactly.
 
 **R-06 · Workspace model** — R-03, R-05
 - Build: workspace CRUD, sources, pinned repos, lazy clone state, settings overrides.
@@ -670,9 +670,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **R-09 · Repo cards** — R-03
 - Build: model-free summary cached by HEAD commit.
 - Verify:
-  - [ ] Golden cards for fixture repos in four ecosystems.
-  - [ ] The cache is reused on the same commit and rebuilt on a new one.
-  - [ ] A card never exceeds its size cap.
+  - [x] Golden cards for fixture repos in four ecosystems.
+  - [x] The cache is reused on the same commit and rebuilt on a new one.
+  - [x] A card never exceeds its size cap.
 
 **R-10 · Multi-repo change sets** — R-02, R-07
 - Build: one session with worktrees in several repos on one branch name; per-repo diffs; linked pull requests.
@@ -984,11 +984,11 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | R-02 | Worktrees | R-01 | done |
 | R-03 | Repo registry | E-03, R-01 | done |
 | R-04 | GitHub auth | E-05 | done |
-| R-05 | Team discovery | R-04 | todo |
+| R-05 | Team discovery | R-04 | done |
 | R-06 | Workspace model | R-03, R-05 | todo |
 | R-07 | Session scope and sandbox | C-03, R-02 | todo |
 | R-08 | Cross-repo tools | R-06, R-07 | todo |
-| R-09 | Repo cards | R-03 | todo |
+| R-09 | Repo cards | R-03 | done |
 | R-10 | Multi-repo change sets | R-02, R-07 | todo |
 | R-11 | Fan-out runs | R-06, E-08 | todo |
 | M-01 | MCP registry and configuration | E-04 | done |

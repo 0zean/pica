@@ -493,16 +493,20 @@
   ],
   "R-05": [
     {
-      "check": "A stub with 250 repos across 3 pages is fully discovered."
+      "check": "A stub with 250 repos across 3 pages is fully discovered.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/discovery/pagination.test.ts"
     },
     {
-      "check": "A 304 response makes no changes and issues no further requests."
+      "check": "A 304 response makes no changes and issues no further requests.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/discovery/conditional.test.ts"
     },
     {
-      "check": "Archived repos and forks are excluded or included per setting."
+      "check": "Archived repos and forks are excluded or included per setting.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/discovery/filter.test.ts"
     },
     {
-      "check": "Sync diff reports added and removed repos exactly."
+      "check": "Sync diff reports added and removed repos exactly.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/discovery/diff.test.ts"
     }
   ],
   "R-06": [
@@ -540,13 +544,16 @@
   ],
   "R-09": [
     {
-      "check": "Golden cards for fixture repos in four ecosystems."
+      "check": "Golden cards for fixture repos in four ecosystems.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/repo-cards/golden.test.ts"
     },
     {
-      "check": "The cache is reused on the same commit and rebuilt on a new one."
+      "check": "The cache is reused on the same commit and rebuilt on a new one.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/repo-cards/cache.test.ts"
     },
     {
-      "check": "A card never exceeds its size cap."
+      "check": "A card never exceeds its size cap.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/repo-cards/card.test.ts packages/adapters/tests/repo-cards/size-cap.test.ts"
     }
   ],
   "R-10": [

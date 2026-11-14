@@ -1,0 +1,7 @@
+repo: acme/node @ 37e52443401e
+languages: TypeScript 4, Shell 1
+build: pnpm run build
+test: pnpm test
+entry points: dist/cli.js, dist/index.js, src/cli.ts, src/index.ts
+manifests: package.json, pnpm-workspace.yaml, packages/ui/package.json
+owners: * @acme/web; /packages/ui/ @acme/design @dana; /scripts/ @acme/release
