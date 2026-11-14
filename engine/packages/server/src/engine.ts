@@ -3,6 +3,7 @@ import { performance } from "node:perf_hooks";
 import {
   agentTier,
   createEventLog,
+  createFanOutService,
   createOutputGuard,
   createRedactingEventLog,
   createRedactingLogger,
@@ -20,6 +21,7 @@ import type {
   AuditLog,
   BudgetSettings,
   EventLog,
+  FanOutInfo,
   McpHealthMonitor,
   McpSecretRedactor,
   OutputGuardDeps,
@@ -32,6 +34,7 @@ import type {
   WorkspaceService,
 } from "@pica/core";
 import { registerEngineHandlers } from "./engine-handlers.ts";
+import { registerFanOutHandlers, toFanOutDto } from "./fanout-handlers.ts";
 import { registerMcpHealthHandlers } from "./mcp-handlers.ts";
 import { SocketListener } from "./listener.ts";
 import type { ConnectionLimits } from "./connection.ts";
@@ -62,6 +65,7 @@ export interface EngineSessionOptions {
   readonly audit?: AuditLog;
   // H-04: exports usage metrics over OTLP. Off unless given; the caller stops it.
   readonly metricsExport?: UsageMetricsExporter;
+  readonly newFanOutId?: () => string;
 }
 
 export interface EngineOptions {
@@ -85,12 +89,18 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
   const router = new MethodRouter();
   // Session changes can only be broadcast once the listener exists; recovery runs before it does.
   const started: { listener?: SocketListener } = {};
+  const fanOut = {
+    ...(options.workspaces === undefined ? {} : { workspaces: options.workspaces }),
+    onChanged: (info: FanOutInfo) => {
+      started.listener?.broadcast("fanout.changed", { fanOut: toFanOutDto(info) });
+    },
+  };
   const sessions =
     options.sessions === undefined
       ? undefined
       : startSessions(router, options.sessions, log, scrubber, (session) => {
           started.listener?.broadcast("session.changed", { session: toSessionDto(session) });
-        });
+        }, fanOut);
   registerEngineHandlers(router, {
     uptimeMs: () => performance.now() - startedAt,
     sessionsRunning: () => sessions?.runningCount() ?? 0,
@@ -127,6 +137,7 @@ function startSessions(
   log: Logger,
   scrubber: McpSecretRedactor,
   onChanged: NonNullable<Parameters<typeof createSessionService>[0]["onChanged"]>,
+  fanOut: { readonly workspaces?: WorkspaceService; readonly onChanged: (fanOut: FanOutInfo) => void },
 ): SessionService {
   const usage = options.usage ?? {};
   const ledger = withUsageLedger(createRedactingEventLog(createEventLog(options.store.events), scrubber), {
@@ -160,6 +171,18 @@ function startSessions(
     log.warn(`${String(recovered.value.length)} session(s) from the previous engine are resumable`);
   }
   registerSessionHandlers(router, { sessions: service, log: eventLog, events: options.store.events });
+  // R-11: fan-out runs drive sessions through the same service and follow them on the same log.
+  registerFanOutHandlers(
+    router,
+    createFanOutService({
+      sessions: service,
+      events: eventLog,
+      clock,
+      newFanOutId: options.newFanOutId ?? randomUUID,
+      onChanged: fanOut.onChanged,
+      ...(fanOut.workspaces === undefined ? {} : { workspaces: fanOut.workspaces }),
+    }),
+  );
   registerUsageHandlers(
     router,
     createUsageReport({ usage: options.store.usage, reasoningPrices: usage.reasoningPrices ?? (() => null) }),
