@@ -11,7 +11,7 @@ import {
   type SessionOptions,
 } from "@pica/core";
 import { sequentialIds, steppingClock, type Clock, type IdSource } from "./deterministic.ts";
-import { FakeSession } from "./fake-session.ts";
+import { FakeSession, type FakeSessionOptions } from "./fake-session.ts";
 import type { Scenario } from "./scenario-schema.ts";
 
 export interface FakeRuntimeOptions {
@@ -73,7 +73,7 @@ export class FakeRuntime implements AgentRuntime {
         err({ code: "runtime.session_not_found", message: `no session with id ${options.sessionId}` }),
       );
     }
-    session.reopen(options.hooks ?? {});
+    session.reopen(sessionOptions(options));
     return Promise.resolve(ok(session));
   }
 
@@ -84,11 +84,15 @@ export class FakeRuntime implements AgentRuntime {
   #newSession(id: string, options: SessionOptions): FakeSession {
     const session = new FakeSession(
       { id, scenario: this.#scenario, clock: this.#clock, ids: this.#ids, record: (event) => this.#log.push(event) },
-      options.hooks ?? {},
+      sessionOptions(options),
     );
     this.#sessions.set(id, session);
     return session;
   }
+}
+
+function sessionOptions(options: SessionOptions): FakeSessionOptions {
+  return { hooks: options.hooks ?? {}, maxAiCredits: options.maxAiCredits };
 }
 
 function toRuntimeModel(model: Scenario["models"][number]): RuntimeModel {

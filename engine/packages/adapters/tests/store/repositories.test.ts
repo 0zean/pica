@@ -52,6 +52,12 @@ describe("sqlite store repositories", () => {
       { ...sampleSession("session-1"), state: "resumable", updatedAt: "2026-11-12T11:00:00.000Z" },
     ]);
     expect(errorCode(store.sessions.updateState("missing", "idle", "t"))).toBe("store.not_found");
+    value(store.sessions.updateBudget("session-1", 450, "2026-11-12T12:00:00.000Z"));
+    expect(value(store.sessions.get("session-1"))).toMatchObject({
+      budgetMaxCredits: 450,
+      updatedAt: "2026-11-12T12:00:00.000Z",
+    });
+    expect(errorCode(store.sessions.updateBudget("missing", 1, "t"))).toBe("store.not_found");
     expect(errorCode(store.workspaces.delete(sampleWorkspace.id))).toBe("store.conflict");
   });
 

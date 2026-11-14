@@ -97,6 +97,17 @@ export function toRuntimeEvent(event: SessionEvent, context: EventContext): Runt
         outputTokens: event.data.outputTokens ?? 0,
         ...scope,
       });
+    case "session_limits_exhausted.requested":
+      return wrap(event, "session_limits_exhausted.requested", {
+        requestId: event.data.requestId,
+        usedAiCredits: event.data.usedAiCredits,
+        maxAiCredits: event.data.maxAiCredits,
+      });
+    case "session_limits_exhausted.completed":
+      return wrap(event, "session_limits_exhausted.completed", {
+        requestId: event.data.requestId,
+        maxAiCredits: event.data.response.action === "cancel" ? null : (event.data.response.maxAiCredits ?? null),
+      });
     case "session.usage_info":
       return wrap(event, "session.usage_info", {
         currentTokens: event.data.currentTokens,

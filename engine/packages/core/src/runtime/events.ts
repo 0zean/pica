@@ -61,6 +61,15 @@ export interface RuntimeEventDataMap {
     readonly outputTokens: number;
     readonly agentId?: string;
   };
+  // The session's credit spend reached `maxAiCredits` after a model call; the next call waits for
+  // `resolveSessionLimit` (PLAN.md §2.1).
+  "session_limits_exhausted.requested": {
+    readonly requestId: string;
+    readonly usedAiCredits: number;
+    readonly maxAiCredits: number;
+  };
+  // `maxAiCredits` is the new limit, or null when the blocked call was cancelled.
+  "session_limits_exhausted.completed": { readonly requestId: string; readonly maxAiCredits: number | null };
   "session.usage_info": { readonly currentTokens: number; readonly tokenLimit: number };
   "session.error": { readonly code: RuntimeErrorCode; readonly message: string };
   abort: { readonly reason: string };

@@ -1,0 +1,4 @@
+{"id":"e1","timestamp":"2026-01-01T00:00:00.001Z","type":"session_limits_exhausted.requested","data":{"requestId":"limit-1","usedAiCredits":2.5,"maxAiCredits":2}}
+{"id":"e2","timestamp":"2026-01-01T00:00:00.002Z","type":"session_limits_exhausted.completed","data":{"requestId":"limit-1","maxAiCredits":5}}
+{"id":"e3","timestamp":"2026-01-01T00:00:00.003Z","type":"session_limits_exhausted.requested","data":{"requestId":"limit-2","usedAiCredits":5,"maxAiCredits":5}}
+{"id":"e4","timestamp":"2026-01-01T00:00:00.004Z","type":"session_limits_exhausted.completed","data":{"requestId":"limit-2","maxAiCredits":null}}

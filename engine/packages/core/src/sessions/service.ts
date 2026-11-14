@@ -3,7 +3,9 @@ import { createRuntimeEventRecorder } from "../events/index.ts";
 import type { RuntimeEventRecorder } from "../events/index.ts";
 import type { AgentRuntime, RuntimeEvent, RuntimeHooks, RuntimeSession } from "../runtime/index.ts";
 import { ok } from "../result.ts";
-import type { Session, SessionState, Store, StoreError } from "../store/index.ts";
+import type { Session, SessionState, Store, StoreError, UsageRepository } from "../store/index.ts";
+import { checkWorkspaceDailyCap, createSessionBudget, sessionSpend } from "./budget.ts";
+import type { BudgetSettings, SessionBudget } from "./budget.ts";
 import { runtimeFailure, sessionFailure } from "./errors.ts";
 import type { SessionResult } from "./errors.ts";
 import { toSessionInfo } from "./info.ts";
@@ -27,6 +29,9 @@ export interface SessionServiceDeps {
   // Tool-call hooks for one session's runtime; the policy engine (C-03) supplies them.
   readonly hooks?: (sessionId: string) => RuntimeHooks;
   readonly onChanged?: (session: SessionInfo) => void;
+  // C-09: without `usage` the workspace daily cap is not checked and spend starts at zero on resume.
+  readonly budget?: BudgetSettings;
+  readonly usage?: Pick<UsageRepository, "rollup">;
 }
 
 export interface CreateSessionRequest {
@@ -52,7 +57,13 @@ export interface SessionService {
   end(sessionId: string): Promise<SessionResult<undefined>>;
   listApprovals(sessionId: string): SessionResult<readonly PendingApproval[]>;
   // Each pending approval is resolved at most once; a repeat answers `session.approval_not_found`.
-  resolveApproval(approvalId: string, choice: SessionApprovalChoice): Promise<SessionResult<undefined>>;
+  // For a budget approval, allowing raises the session limit to `budgetCredits` (by default, by
+  // the configured session budget); denying cancels the blocked model call and ends the turn.
+  resolveApproval(
+    approvalId: string,
+    choice: SessionApprovalChoice,
+    budgetCredits?: number,
+  ): Promise<SessionResult<undefined>>;
   runningCount(): number;
 }
 
@@ -63,6 +74,7 @@ interface LiveSession {
   readonly recorder: RuntimeEventRecorder;
   readonly approvals: Map<string, PendingApproval>;
   readonly queue: string[];
+  readonly budget: SessionBudget;
   unsubscribe: () => void;
   steer: string | undefined;
   abortReason: AbortReason;
@@ -122,12 +134,13 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     return session.ok ? session.value.state : undefined;
   }
 
-  function attach(sessionId: string, runtime: RuntimeSession): void {
+  function attach(sessionId: string, runtime: RuntimeSession, budget: SessionBudget): void {
     const session: LiveSession = {
       runtime,
       recorder: createRuntimeEventRecorder(deps.events, { sessionId, rootAgent }),
       approvals: new Map(),
       queue: [],
+      budget,
       unsubscribe: () => undefined,
       steer: undefined,
       abortReason: "user",
@@ -144,13 +157,18 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     switch (event.type) {
       case "user.message":
       case "permission.completed":
+      case "session_limits_exhausted.completed":
         return;
       case "abort":
         append(sessionId, { type: "session.aborted", payload: { reason: session.abortReason }, timestamp: event.timestamp });
         session.abortReason = "user";
         return;
       case "permission.requested":
+      case "session_limits_exhausted.requested":
         requestApproval(sessionId, session, event);
+        return;
+      case "assistant.usage":
+        recordUsage(sessionId, session, event);
         return;
       case "session.idle":
         move(sessionId, "turn_ended");
@@ -164,16 +182,43 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
   function requestApproval(
     sessionId: string,
     session: LiveSession,
-    event: Extract<RuntimeEvent, { type: "permission.requested" }>,
+    event: Extract<RuntimeEvent, { type: "permission.requested" | "session_limits_exhausted.requested" }>,
   ): void {
     for (const appended of session.recorder.record(event).appended) {
-      if (appended.type === "approval.requested" && appended.payload.kind === "tool_call") {
-        session.approvals.set(appended.payload.id, { ...appended.payload, kind: "tool_call" });
+      if (appended.type === "approval.requested") {
+        session.approvals.set(appended.payload.id, appended.payload);
       }
     }
     if (stateOf(sessionId) === "running") {
       move(sessionId, "approval_requested");
     }
+  }
+
+  function recordUsage(
+    sessionId: string,
+    session: LiveSession,
+    event: Extract<RuntimeEvent, { type: "assistant.usage" }>,
+  ): void {
+    for (const appended of session.recorder.record(event).appended) {
+      if (appended.type !== "usage.recorded") {
+        continue;
+      }
+      for (const warning of session.budget.record(appended.payload.credits)) {
+        append(sessionId, { type: "budget.warning", payload: warning, timestamp: appended.timestamp });
+      }
+    }
+  }
+
+  function budgetFor(limitCredits: number | null, spentCredits: number): SessionBudget {
+    return createSessionBudget(limitCredits, spentCredits, deps.budget?.warningThresholds);
+  }
+
+  function checkDailyCap(workspaceId: string): SessionResult<undefined> {
+    const cap = deps.budget?.workspaceDailyCredits;
+    if (cap === undefined || deps.usage === undefined) {
+      return ok(undefined);
+    }
+    return checkWorkspaceDailyCap(deps.usage, workspaceId, cap, clock());
   }
 
   async function startTurn(
@@ -280,12 +325,16 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
   async function resolveApproval(
     approvalId: string,
     choice: SessionApprovalChoice,
+    budgetCredits?: number,
   ): Promise<SessionResult<undefined>> {
     const found = [...live.entries()].find(([, session]) => session.approvals.has(approvalId));
     if (found === undefined) {
       return sessionFailure("session.approval_not_found", `no pending approval ${approvalId}`);
     }
     const [sessionId, session] = found;
+    if (session.approvals.get(approvalId)?.kind === "budget") {
+      return resolveBudget(sessionId, session, approvalId, choice, budgetCredits);
+    }
     // Removed before the first await, so a concurrent second resolve cannot reach the runtime.
     session.approvals.delete(approvalId);
     append(sessionId, { type: "approval.resolved", payload: { approvalId, choice }, timestamp: clock() });
@@ -298,6 +347,54 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
       return runtimeFailure(resolved.error);
     }
     return ok(undefined);
+  }
+
+  async function resolveBudget(
+    sessionId: string,
+    session: LiveSession,
+    approvalId: string,
+    choice: SessionApprovalChoice,
+    budgetCredits: number | undefined,
+  ): Promise<SessionResult<undefined>> {
+    const limit = choice === "deny" ? null : raisedLimit(session.budget, budgetCredits);
+    if (limit !== null && !(limit > session.budget.spent())) {
+      return sessionFailure(
+        "session.invalid_request",
+        `the new budget must exceed the ${String(session.budget.spent())} credits already spent`,
+      );
+    }
+    session.approvals.delete(approvalId);
+    if (limit === null) {
+      session.queue.length = 0;
+      session.steer = undefined;
+    } else {
+      const updated = store.sessions.updateBudget(sessionId, limit, clock());
+      if (!updated.ok) {
+        return storeFailure(updated.error);
+      }
+      session.budget.raise(limit);
+    }
+    append(sessionId, { type: "approval.resolved", payload: { approvalId, choice }, timestamp: clock() });
+    if (session.approvals.size === 0 && stateOf(sessionId) === "awaiting_approval") {
+      move(sessionId, "approval_resolved");
+    }
+    if (limit === null) {
+      append(sessionId, { type: "session.aborted", payload: { reason: "budget" }, timestamp: clock() });
+    }
+    const resolved = await session.runtime.resolveSessionLimit(approvalId, limit);
+    if (!resolved.ok) {
+      append(sessionId, { type: "session.error", payload: { code: resolved.error.code, message: resolved.error.message }, timestamp: clock() });
+      return runtimeFailure(resolved.error);
+    }
+    return ok(undefined);
+  }
+
+  function raisedLimit(budget: SessionBudget, requested: number | undefined): number {
+    if (requested !== undefined) {
+      return requested;
+    }
+    const current = budget.limit() ?? budget.spent();
+    return current + (deps.budget?.sessionCredits ?? current);
   }
 
   function workingDirectory(session: Pick<Session, "writeRoots" | "referenceRoots">): string | undefined {
@@ -316,14 +413,24 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     if (stored.value.state !== "resumable") {
       return sessionFailure("session.invalid_state", `session ${sessionId} is ${stored.value.state}, not resumable`);
     }
+    const capped = checkDailyCap(stored.value.workspaceId);
+    if (!capped.ok) {
+      return capped;
+    }
     const directory = workingDirectory(stored.value) ?? "/";
-    const resumed = await deps.runtime.resumeSession({ sessionId, workingDirectory: directory, ...runtimeHooks(sessionId) });
+    const limit = stored.value.budgetMaxCredits;
+    const resumed = await deps.runtime.resumeSession({
+      sessionId,
+      workingDirectory: directory,
+      ...(limit === null ? {} : { maxAiCredits: limit }),
+      ...runtimeHooks(sessionId),
+    });
     if (!resumed.ok) {
       append(sessionId, { type: "session.error", payload: { code: resumed.error.code, message: resumed.error.message }, timestamp: clock() });
       move(sessionId, "fail");
       return runtimeFailure(resumed.error);
     }
-    attach(sessionId, resumed.value);
+    attach(sessionId, resumed.value, budgetFor(limit, deps.usage === undefined ? 0 : sessionSpend(deps.usage, sessionId)));
     return move(sessionId, "resume");
   }
 
@@ -355,6 +462,11 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     if (directory === undefined) {
       return sessionFailure("session.invalid_request", "a session needs at least one write or reference repo");
     }
+    const capped = checkDailyCap(request.workspaceId);
+    if (!capped.ok) {
+      return capped;
+    }
+    const budgetCredits = request.budgetCredits ?? deps.budget?.sessionCredits;
     const at = clock();
     const session: Session = {
       id: deps.newSessionId(),
@@ -362,7 +474,7 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
       ...roots.value,
       state: "starting",
       routingProfile: request.routingProfile ?? "balanced",
-      budgetMaxCredits: request.budgetCredits ?? null,
+      budgetMaxCredits: budgetCredits ?? null,
       createdAt: at,
       updatedAt: at,
     };
@@ -372,18 +484,19 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     }
     append(session.id, stateChanged(null, "starting", at));
     changed(session);
-    return startRuntime(session, directory, request);
+    return startRuntime(session, directory, request.prompt);
   }
 
   async function startRuntime(
     session: Session,
     directory: string,
-    request: CreateSessionRequest,
+    prompt: string | undefined,
   ): Promise<SessionResult<SessionInfo>> {
+    const limit = session.budgetMaxCredits;
     const opened = await deps.runtime.createSession({
       sessionId: session.id,
       workingDirectory: directory,
-      ...(request.budgetCredits === undefined ? {} : { maxAiCredits: request.budgetCredits }),
+      ...(limit === null ? {} : { maxAiCredits: limit }),
       ...runtimeHooks(session.id),
     });
     if (!opened.ok) {
@@ -391,12 +504,12 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
       move(session.id, "fail");
       return runtimeFailure(opened.error);
     }
-    attach(session.id, opened.value);
+    attach(session.id, opened.value, budgetFor(limit, 0));
     const ready = move(session.id, "runtime_ready");
-    if (!ready.ok || request.prompt === undefined || request.prompt === "") {
+    if (!ready.ok || prompt === undefined || prompt === "") {
       return ready;
     }
-    const sent = await send(session.id, request.prompt, "send");
+    const sent = await send(session.id, prompt, "send");
     return sent.ok ? get(session.id) : sent;
   }
 

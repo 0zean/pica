@@ -1,0 +1,6 @@
+{"type":"approval.requested","payload":{"id":"limit-1","sessionId":"pica-session-1","kind":"budget","toolCallId":null,"summary":"Session budget of 2 credits is used up"},"timestamp":"2026-01-01T00:00:00.001Z"}
+{"type":"budget.exhausted","payload":{"spentCredits":2.5,"limitCredits":2,"approvalId":"limit-1"},"timestamp":"2026-01-01T00:00:00.001Z"}
+{"type":"approval.resolved","payload":{"approvalId":"limit-1","choice":"allow_once"},"timestamp":"2026-01-01T00:00:00.002Z"}
+{"type":"approval.requested","payload":{"id":"limit-2","sessionId":"pica-session-1","kind":"budget","toolCallId":null,"summary":"Session budget of 5 credits is used up"},"timestamp":"2026-01-01T00:00:00.003Z"}
+{"type":"budget.exhausted","payload":{"spentCredits":5,"limitCredits":5,"approvalId":"limit-2"},"timestamp":"2026-01-01T00:00:00.003Z"}
+{"type":"approval.resolved","payload":{"approvalId":"limit-2","choice":"deny"},"timestamp":"2026-01-01T00:00:00.004Z"}

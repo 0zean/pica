@@ -49,6 +49,8 @@ const allRuntimeTypes: readonly RuntimeEventType[] = [
   "subagent.completed",
   "subagent.failed",
   "assistant.usage",
+  "session_limits_exhausted.requested",
+  "session_limits_exhausted.completed",
   "session.usage_info",
   "session.error",
   "abort",

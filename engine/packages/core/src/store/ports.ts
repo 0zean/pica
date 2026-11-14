@@ -45,6 +45,7 @@ export interface SessionRepository {
   get(id: string): StoreResult<Session>;
   listByWorkspace(workspaceId: string): StoreResult<readonly Session[]>;
   updateState(id: string, state: SessionState, updatedAt: string): StoreResult<void>;
+  updateBudget(id: string, budgetMaxCredits: number | null, updatedAt: string): StoreResult<void>;
 }
 
 // PLAN.md D-06: each session's events carry their own sequence, starting at 1 with no gaps.
