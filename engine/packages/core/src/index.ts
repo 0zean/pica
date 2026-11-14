@@ -18,3 +18,4 @@ export * from "./routing/index.ts";
 export * from "./models/index.ts";
 export * from "./sessions/index.ts";
 export * from "./usage/index.ts";
+export * from "./repo-cards/index.ts";
