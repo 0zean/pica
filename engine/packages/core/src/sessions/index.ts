@@ -9,7 +9,7 @@ export type {
   SessionSendMode,
   SessionWorktreeInfo,
 } from "./info.ts";
-export { checkWorkspaceDailyCap, createSessionBudget, defaultWarningThresholds, sessionSpend, utcDay } from "./budget.ts";
+export { checkWorkspaceDailyCap, createSessionBudget, defaultWarningThresholds, sessionSpend, utcDay, withinSessionCeiling } from "./budget.ts";
 export type { BudgetSettings, BudgetWarning, SessionBudget } from "./budget.ts";
 export { createReadGate } from "./pre-tool-use.ts";
 export type { ReadGateDeps } from "./pre-tool-use.ts";
