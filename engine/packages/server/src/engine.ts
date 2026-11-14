@@ -23,6 +23,7 @@ import type {
   Store,
   TokenPrices,
   UsagePricing,
+  WorkspaceService,
 } from "@pica/core";
 import { registerEngineHandlers } from "./engine-handlers.ts";
 import { registerMcpHealthHandlers } from "./mcp-handlers.ts";
@@ -32,6 +33,7 @@ import type { Logger } from "./logger.ts";
 import { MethodRouter } from "./router.ts";
 import { registerSessionHandlers, toSessionDto } from "./session-handlers.ts";
 import { registerUsageHandlers } from "./usage-handlers.ts";
+import { registerWorkspaceHandlers } from "./workspace-handlers.ts";
 
 export interface EngineUsageOptions extends Partial<UsagePricing> {
   readonly reasoningPrices?: () => TokenPrices | null;
@@ -59,6 +61,8 @@ export interface EngineOptions {
   readonly sessions?: EngineSessionOptions;
   // M-06: answers `mcp.status*` and `mcp.restart`, and broadcasts `mcp.statusChanged`.
   readonly mcpHealth?: McpHealthMonitor;
+  // R-06: answers `workspace.*`, `repo.list` and `repo.get`, and broadcasts `workspace.changed`.
+  readonly workspaces?: WorkspaceService;
 }
 
 // Composition root: later units construct their adapters and register their handlers here.
@@ -82,6 +86,14 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
   });
   if (options.mcpHealth !== undefined) {
     registerMcpHealthHandlers(router, options.mcpHealth);
+  }
+  if (options.workspaces !== undefined) {
+    registerWorkspaceHandlers(router, {
+      workspaces: options.workspaces,
+      onChanged: (workspace) => {
+        started.listener?.broadcast("workspace.changed", { workspace });
+      },
+    });
   }
   const listener = await SocketListener.start({
     socketPath: options.socketPath,

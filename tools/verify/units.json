@@ -514,13 +514,16 @@
   ],
   "R-06": [
     {
-      "check": "A team source adds repos as `available`, not cloned."
+      "check": "A team source adds repos as `available`, not cloned.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/workspaces/team-source.test.ts packages/server/tests/workspaces/rpc.test.ts"
     },
     {
-      "check": "Removing a source keeps pinned repos."
+      "check": "Removing a source keeps pinned repos.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/workspaces/remove-source.test.ts"
     },
     {
-      "check": "Workspace overrides resolve through E-04 precedence."
+      "check": "Workspace overrides resolve through E-04 precedence.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/workspaces/overrides.test.ts"
     }
   ],
   "R-07": [
@@ -564,13 +567,16 @@
   ],
   "R-10": [
     {
-      "check": "A two-repo change set creates two worktrees and two branches with the same name."
+      "check": "A two-repo change set creates two worktrees and two branches with the same name.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/changesets/create.test.ts"
     },
     {
-      "check": "Against a stub API, both pull requests are created and each body links the other."
+      "check": "Against a stub API, both pull requests are created and each body links the other.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/changesets/body.test.ts && pnpm exec vitest run packages/adapters/tests/changesets/pull-requests.test.ts -t 'each body links the other'"
     },
     {
-      "check": "A failure creating the second pull request reports partial state without rolling back the first."
+      "check": "A failure creating the second pull request reports partial state without rolling back the first.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/changesets/pull-requests.test.ts -t 'partial state|failed push'"
     }
   ],
   "R-11": [
