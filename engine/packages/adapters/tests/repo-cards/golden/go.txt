@@ -1,0 +1,7 @@
+repo: acme/go @ e4decafd752e
+languages: Go 5, Shell 1
+build: make build; go build ./...
+test: make test; go test ./...
+entry points: cmd/server/main.go, cmd/worker/main.go
+manifests: Makefile, go.mod
+owners: * @acme/backend; /docs/ @acme/writers

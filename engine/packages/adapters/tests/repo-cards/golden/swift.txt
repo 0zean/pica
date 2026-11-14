@@ -1,0 +1,6 @@
+repo: acme/swift @ 555673945bb3
+languages: Swift 5
+build: swift build
+test: swift test
+entry points: acme-cli (executable target), Sources/acme-cli/main.swift
+manifests: Package.swift
