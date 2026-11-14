@@ -85,7 +85,7 @@ REST endpoints: `GET /user/teams`, `GET /orgs/{org}/teams/{team_slug}/repos` (pa
 | A4 | A sub-agent's `model` override is honored and billed at that model's rate | S-03 | Engine-managed child sessions with an explicit model |
 | A5 | Usage can be attributed per agent | S-03 | Attribute by `toolCallId` window, or by child session |
 | A6 | A session can read outside its `workingDirectory` once the host approves | S-04 | Session root directory of symlinks, or cross-repo access only through engine tools |
-| A7 | Node, the engine bundle, and the Copilot CLI can be ad-hoc signed inside the app and run on a Mac without developer tools after a GitHub Releases download; Developer ID signing and notarization come later (D-17) | S-05 | Install the engine separately (pkg or Homebrew) |
+| A7 | Node, the engine bundle, and the Copilot CLI can be ad-hoc signed inside the app and run on a Mac without developer tools after a GitHub Releases download; Developer ID signing and notarization come later (D-17). **Confirmed** on the build machine by S-05: ad-hoc, hardened-runtime bundle passes `--deep --strict`, survives zip/unzip, and runs quarantined helpers once the bundle is approved; `copilot-runtime` needs `disable-library-validation` when re-signed ad-hoc. Second-account "Open Anyway" check pending with the owner ([findings](docs/spikes/S-05.md)) | S-05 | Install the engine separately (pkg or Homebrew) |
 | A8 | All four MCP servers connect through the SDK, including OAuth | S-06 | Host-managed tokens supplied by Pica |
 | A9 | Event streaming over a Unix socket meets the throughput budget. **Confirmed** by S-07: 50,000 events at 25,000/s in order, p99 write-to-decoded ≈ 0.1 ms ([findings](docs/spikes/S-07.md)) | S-07 | Coalesce events per display frame in the engine |
 
@@ -417,9 +417,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **S-05 · Packaging** — none
 - Build: minimal ad-hoc signed, hardened-runtime `.app` containing a Node binary, a bundled "hello" engine, and the Copilot CLI, zipped as a GitHub Releases asset would be (D-17).
 - Verify:
-  - [ ] `codesign --verify --deep --strict` passes on the ad-hoc signed app, and every nested Mach-O binary is signed with the hardened runtime.
-  - [ ] **(manual)** On a second macOS user account with no developer tools, the zip downloaded with the quarantine attribute set opens after "Open Anyway", and the engine answers a ping. The exact steps are recorded for the install guide.
-  - [ ] A7 is resolved.
+  - [x] `codesign --verify --deep --strict` passes on the ad-hoc signed app, and every nested Mach-O binary is signed with the hardened runtime.
+  - [ ] **(manual)** On a second macOS user account with no developer tools, the zip downloaded with the quarantine attribute set opens after "Open Anyway", and the engine answers a ping. The exact steps are recorded for the install guide. *Waiting on the owner; checklist in [docs/spikes/S-05.md](docs/spikes/S-05.md#install-steps-owners-manual-check-and-the-draft-of-the-install-guide).*
+  - [x] A7 is resolved.
 
 **S-06 · MCP connectivity** — S-01
 - Verify:
@@ -956,7 +956,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | S-02 | Hook enforcement and delegation | S-01 | todo |
 | S-03 | Per-agent model and attribution | S-02 | todo |
 | S-04 | Multi-root access | S-01 | todo |
-| S-05 | Packaging | — | todo |
+| S-05 | Packaging | — | doing (awaiting owner's manual check) |
 | S-06 | MCP connectivity | S-01 | todo |
 | S-07 | IPC throughput | — | done |
 | F-01 | Repository scaffold | — | done |
