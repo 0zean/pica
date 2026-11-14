@@ -192,7 +192,7 @@ Session states: `starting → idle ⇄ running ⇄ awaiting_approval`, then `end
 
 ### 4.5 Protocol shape
 
-Namespaces: `engine.*` (handshake, version, health), `workspace.*`, `repo.*`, `github.*`, `session.*`, `events.*`, `approval.*`, `git.*`, `files.*`, `mcp.*`, `agents.*`, `models.*`, `usage.*`, `config.*`, `secrets.*` (engine → client requests).
+Namespaces: `engine.*` (handshake, version, health), `workspace.*`, `repo.*`, `github.*`, `session.*`, `fanout.*`, `events.*`, `approval.*`, `git.*`, `files.*`, `mcp.*`, `agents.*`, `models.*`, `usage.*`, `config.*`, `secrets.*` (engine → client requests).
 
 Rules:
 - `engine.hello` exchanges protocol versions; a major mismatch refuses the connection.
@@ -684,9 +684,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **R-11 · Fan-out runs** — R-06, E-08
 - Build: one task as parallel sessions over selected repos with a concurrency cap and an aggregate view.
 - Verify:
-  - [ ] FakeRuntime: with 6 repos and a cap of 3, no more than 3 sessions run at once.
-  - [ ] One failing session does not cancel the others; the aggregate reports each result.
-  - [ ] Cancelling the fan-out aborts every running session.
+  - [x] FakeRuntime: with 6 repos and a cap of 3, no more than 3 sessions run at once.
+  - [x] One failing session does not cancel the others; the aggregate reports each result.
+  - [x] Cancelling the fan-out aborts every running session.
 
 **Milestone M3 — multi-repo slice:** **(live)** from the CLI, import a GitHub team, start a session in one repo that answers a question about code in another, and see the lookup attributed to `repo-scout` on the worker tier.
 
@@ -990,7 +990,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | R-08 | Cross-repo tools | R-06, R-07 | done |
 | R-09 | Repo cards | R-03 | done |
 | R-10 | Multi-repo change sets | R-02, R-07 | done |
-| R-11 | Fan-out runs | R-06, E-08 | todo |
+| R-11 | Fan-out runs | R-06, E-08 | done |
 | M-01 | MCP registry and configuration | E-04 | done |
 | M-02 | MCP presets | M-01, S-06 | todo |
 | M-03 | Secrets and OAuth | M-01, E-05 | done |

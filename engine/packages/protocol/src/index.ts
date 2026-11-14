@@ -9,6 +9,7 @@ export * from "./managed-policy-file.ts";
 export * from "./mcp-file.ts";
 export * from "./dto/agents.ts";
 export * from "./dto/config.ts";
+export * from "./dto/fanout.ts";
 export * from "./dto/files.ts";
 export * from "./dto/git.ts";
 export * from "./dto/github.ts";

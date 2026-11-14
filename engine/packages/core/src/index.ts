@@ -28,3 +28,4 @@ export * from "./redaction/index.ts";
 export * from "./workspaces/index.ts";
 export * from "./changesets/index.ts";
 export * from "./repo-tools/index.ts";
+export * from "./fanout/index.ts";

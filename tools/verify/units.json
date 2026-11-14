@@ -584,13 +584,16 @@
   ],
   "R-11": [
     {
-      "check": "FakeRuntime: with 6 repos and a cap of 3, no more than 3 sessions run at once."
+      "check": "FakeRuntime: with 6 repos and a cap of 3, no more than 3 sessions run at once.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/fanout/fanout.test.ts -t 'no more than 3 sessions run at once'"
     },
     {
-      "check": "One failing session does not cancel the others; the aggregate reports each result."
+      "check": "One failing session does not cancel the others; the aggregate reports each result.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/fanout && pnpm exec vitest run packages/server/tests/fanout/fanout.test.ts -t 'one failing session'"
     },
     {
-      "check": "Cancelling the fan-out aborts every running session."
+      "check": "Cancelling the fan-out aborts every running session.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/fanout/fanout.test.ts -t 'aborts every running session'"
     }
   ],
   "M-01": [
