@@ -2,7 +2,8 @@ export type McpAttachmentIssueCode =
   | "mcp_attach.unknown_server"
   | "mcp_attach.unknown_agent"
   | "mcp_attach.tool_not_allowed"
-  | "mcp_attach.empty_allowlist";
+  | "mcp_attach.empty_allowlist"
+  | "mcp_attach.not_in_managed_allowlist";
 
 export interface McpAttachmentIssue {
   readonly code: McpAttachmentIssueCode;
@@ -10,6 +11,8 @@ export interface McpAttachmentIssue {
   // "session" or "agent:<name>".
   readonly target: string;
   readonly message: string;
+  // Set when a managed policy refused the attachment, e.g. "managed:org-mcp".
+  readonly policy?: string;
 }
 
 export interface McpAttachmentError {

@@ -44,8 +44,20 @@ const Budget = z.strictObject({
   workspaceDailyCredits: Credits.default(3000),
 });
 
+export const McpToolPermission = z.enum(["allow", "ask", "deny"]);
+
+// `server/tool` or `server/*` (docs/mcp-permissions.md).
+const McpToolPermissionRule = z.strictObject({
+  tool: z.string().regex(/^[A-Za-z0-9][A-Za-z0-9._-]*\/([A-Za-z0-9._-]+|\*)$/).describe('"server/tool" or "server/*"'),
+  permission: McpToolPermission,
+});
+
 const Permissions = z.strictObject({
   mode: PermissionMode.default("ask"),
+  mcpTools: z
+    .array(McpToolPermissionRule)
+    .optional()
+    .describe("Per-tool MCP permissions; an exact tool beats server/*. Overrides mode and the write-class default"),
 });
 
 export const PicaConfig = z.strictObject({
@@ -56,6 +68,7 @@ export const PicaConfig = z.strictObject({
 });
 
 export type PicaConfig = z.output<typeof PicaConfig>;
+export type McpToolPermission = z.output<typeof McpToolPermission>;
 
 export function buildConfigJsonSchema(): Record<string, unknown> {
   const schema: Record<string, unknown> = z.toJSONSchema(PicaConfig, { target: "draft-2020-12", io: "input" });

@@ -24,7 +24,7 @@ Each attachment may name tools; `null` means "whatever the server allows".
 - Attaching one server twice to the same target joins the lists; `null` on either side means every tool.
 - An empty list is rejected (`mcp_attach.empty_allowlist`); detach the server instead.
 
-Other errors: `mcp_attach.unknown_server`, `mcp_attach.unknown_agent`. All problems are reported together under `mcp_attach.invalid`.
+Other errors: `mcp_attach.unknown_server`, `mcp_attach.unknown_agent`, and `mcp_attach.not_in_managed_allowlist` (M-05, [mcp-permissions.md](mcp-permissions.md)). All problems are reported together under `mcp_attach.invalid`.
 
 ## Token estimation
 

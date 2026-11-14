@@ -1,16 +1,20 @@
 import type { McpServerDef } from "@pica/protocol";
+import type { ManagedMcpAllowlist } from "../policy/index.ts";
 import { err, ok } from "../result.ts";
 import type { Result } from "../result.ts";
 import { mcpAttachmentError } from "./errors.ts";
 import type { McpAttachmentError, McpAttachmentIssue } from "./errors.ts";
+import { managedAllowlistProblem } from "./managed-allowlist.ts";
 import type { AttachedMcpServer, McpAttachment, McpAttachmentPlan, McpAttachmentTarget } from "./types.ts";
 
 // Builds what each part of a session may see. A server reaches the session or an agent only
 // through an attachment; attaching the same server twice to one target joins the tool lists.
+// With a managed allowlist, a server off the list is refused (M-05).
 export function attachMcpServers(
   servers: readonly McpServerDef[],
   agents: readonly string[],
   attachments: readonly McpAttachment[],
+  managedAllowlist?: ManagedMcpAllowlist,
 ): Result<McpAttachmentPlan, McpAttachmentError> {
   const definitions = new Map(servers.map((server) => [server.id, server]));
   const knownAgents = new Set(agents);
@@ -18,7 +22,7 @@ export function attachMcpServers(
   const byTarget = new Map<string, Map<string, AttachedMcpServer>>();
   for (const attachment of attachments) {
     const target = targetLabel(attachment.target);
-    const checked = checkAttachment(attachment, definitions.get(attachment.serverId), knownAgents);
+    const checked = checkAttachment(attachment, definitions.get(attachment.serverId), knownAgents, managedAllowlist);
     if (!checked.ok) {
       issues.push({ serverId: attachment.serverId, target, ...checked.error });
       continue;
@@ -41,18 +45,23 @@ export function attachMcpServers(
   });
 }
 
-type Problem = Pick<McpAttachmentIssue, "code" | "message">;
+type Problem = Pick<McpAttachmentIssue, "code" | "message" | "policy">;
 
 function checkAttachment(
   attachment: McpAttachment,
   definition: McpServerDef | undefined,
   knownAgents: ReadonlySet<string>,
+  managedAllowlist: ManagedMcpAllowlist | undefined,
 ): Result<McpServerDef, Problem> {
   if (attachment.target.kind === "agent" && !knownAgents.has(attachment.target.agent)) {
     return err({ code: "mcp_attach.unknown_agent", message: `no agent named "${attachment.target.agent}"` });
   }
   if (definition === undefined) {
     return err({ code: "mcp_attach.unknown_server", message: "no MCP server with this id is defined" });
+  }
+  const refused = managedAllowlist === undefined ? undefined : managedAllowlistProblem(definition, managedAllowlist);
+  if (refused !== undefined) {
+    return err(refused);
   }
   if (attachment.tools === null) {
     return ok(definition);

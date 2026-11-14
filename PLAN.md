@@ -722,8 +722,8 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **M-05 · MCP permissions** — C-03, M-04
 - Build: per-tool allow, ask, deny; write-class tools default to ask; managed allowlist.
 - Verify:
-  - [ ] Policy cases for each outcome.
-  - [ ] A server absent from the managed allowlist cannot be attached, and the error names the policy.
+  - [x] Policy cases for each outcome.
+  - [x] A server absent from the managed allowlist cannot be attached, and the error names the policy.
 
 **M-06 · Health and diagnostics** — M-04
 - Build: connection status, last error, tool list, latency.
@@ -995,7 +995,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | M-02 | MCP presets | M-01, S-06 | todo |
 | M-03 | Secrets and OAuth | M-01, E-05 | done |
 | M-04 | Scoping and tool budgets | M-01, C-02 | done |
-| M-05 | MCP permissions | C-03, M-04 | todo |
+| M-05 | MCP permissions | C-03, M-04 | done |
 | M-06 | Health and diagnostics | M-04 | todo |
 | A-01 | App shell and engine supervision | E-05, S-05 | todo |
 | A-02 | EngineClient | E-02 | done |

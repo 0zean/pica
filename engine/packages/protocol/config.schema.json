@@ -118,6 +118,33 @@
             "ask",
             "auto"
           ]
+        },
+        "mcpTools": {
+          "description": "Per-tool MCP permissions; an exact tool beats server/*. Overrides mode and the write-class default",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "tool": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*\\/([A-Za-z0-9._-]+|\\*)$",
+                "description": "\"server/tool\" or \"server/*\""
+              },
+              "permission": {
+                "type": "string",
+                "enum": [
+                  "allow",
+                  "ask",
+                  "deny"
+                ]
+              }
+            },
+            "required": [
+              "tool",
+              "permission"
+            ],
+            "additionalProperties": false
+          }
         }
       },
       "additionalProperties": false

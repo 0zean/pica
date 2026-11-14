@@ -614,10 +614,12 @@
   ],
   "M-05": [
     {
-      "check": "Policy cases for each outcome."
+      "check": "Policy cases for each outcome.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/policy/mcp-permissions.test.ts"
     },
     {
-      "check": "A server absent from the managed allowlist cannot be attached, and the error names the policy."
+      "check": "A server absent from the managed allowlist cannot be attached, and the error names the policy.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/mcp-attach/managed-allowlist.test.ts"
     }
   ],
   "M-06": [
