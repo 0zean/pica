@@ -6,6 +6,7 @@ export type GitErrorCode =
   | "git.invalid_argument"
   | "git.unknown_revision"
   | "git.nothing_to_commit"
+  | "git.hook_blocked"
   | "git.push_rejected"
   | "git.command_failed"
   | "git.parse_failed";

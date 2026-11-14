@@ -148,6 +148,104 @@
         }
       },
       "additionalProperties": false
+    },
+    "hooks": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "sessionStart": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "description": "Shown when the hook fails; defaults to the command",
+                "type": "string",
+                "minLength": 1
+              },
+              "command": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Run with /bin/sh -c in the session or repository directory"
+              },
+              "timeoutSeconds": {
+                "default": 60,
+                "description": "The hook is killed when it runs longer",
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 600
+              }
+            },
+            "required": [
+              "command"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "sessionEnd": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "description": "Shown when the hook fails; defaults to the command",
+                "type": "string",
+                "minLength": 1
+              },
+              "command": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Run with /bin/sh -c in the session or repository directory"
+              },
+              "timeoutSeconds": {
+                "default": 60,
+                "description": "The hook is killed when it runs longer",
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 600
+              }
+            },
+            "required": [
+              "command"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "beforeCommit": {
+          "default": [],
+          "description": "A hook that exits non-zero blocks the commit",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "description": "Shown when the hook fails; defaults to the command",
+                "type": "string",
+                "minLength": 1
+              },
+              "command": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Run with /bin/sh -c in the session or repository directory"
+              },
+              "timeoutSeconds": {
+                "default": 60,
+                "description": "The hook is killed when it runs longer",
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 600
+              }
+            },
+            "required": [
+              "command"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
     }
   },
   "additionalProperties": false,

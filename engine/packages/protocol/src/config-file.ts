@@ -60,15 +60,31 @@ const Permissions = z.strictObject({
     .describe("Per-tool MCP permissions; an exact tool beats server/*. Overrides mode and the write-class default"),
 });
 
+// X-03: shell commands the engine runs on Pica events (docs/user-hooks.md).
+const UserHook = z.strictObject({
+  name: z.string().min(1).optional().describe("Shown when the hook fails; defaults to the command"),
+  command: z.string().min(1).describe("Run with /bin/sh -c in the session or repository directory"),
+  timeoutSeconds: z.number().positive().max(600).default(60).describe("The hook is killed when it runs longer"),
+});
+
+const UserHooks = z.strictObject({
+  sessionStart: z.array(UserHook).default([]),
+  sessionEnd: z.array(UserHook).default([]),
+  beforeCommit: z.array(UserHook).default([]).describe("A hook that exits non-zero blocks the commit"),
+});
+
 export const PicaConfig = z.strictObject({
   $schema: z.string().optional(),
   routing: Routing.prefault({}),
   budget: Budget.prefault({}),
   permissions: Permissions.prefault({}),
+  hooks: UserHooks.prefault({}),
 });
 
 export type PicaConfig = z.output<typeof PicaConfig>;
 export type McpToolPermission = z.output<typeof McpToolPermission>;
+export type UserHook = z.output<typeof UserHook>;
+export type UserHookEvent = keyof PicaConfig["hooks"];
 
 export function buildConfigJsonSchema(): Record<string, unknown> {
   const schema: Record<string, unknown> = z.toJSONSchema(PicaConfig, { target: "draft-2020-12", io: "input" });

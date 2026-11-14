@@ -859,9 +859,9 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 **X-03 · User hooks** — C-03
 - Build: command hooks run by the engine on Pica events (session start and end, before commit), with timeouts.
 - Verify:
-  - [ ] A hook exiting non-zero before commit blocks the commit and surfaces its output.
-  - [ ] A hook exceeding its timeout is killed and reported.
-  - [ ] A user hook cannot change a managed policy outcome (policy case).
+  - [x] A hook exiting non-zero before commit blocks the commit and surfaces its output.
+  - [x] A hook exceeding its timeout is killed and reported.
+  - [x] A user hook cannot change a managed policy outcome (policy case).
 
 **H-01 · Managed policy** — E-04, C-03, M-05
 - Build: organization policy from a managed preferences domain or a root-owned file: model allowlist, MCP allowlist, budget ceilings, permission-mode floor.
@@ -1015,7 +1015,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | A-16 | Session overview | A-05, R-11 | todo |
 | X-01 | Themes and density | A-03, A-14 | todo |
 | X-02 | Agents, skills, and rules management | C-02, A-14 | todo |
-| X-03 | User hooks | C-03 | todo |
+| X-03 | User hooks | C-03 | done |
 | H-01 | Managed policy | E-04, C-03, M-05 | done |
 | H-02 | Audit log | C-03, E-07 | done |
 | H-03 | Redaction | M-03 | done |
