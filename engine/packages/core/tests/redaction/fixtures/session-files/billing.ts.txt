@@ -1,0 +1,5 @@
+export const invoiceRetryLimit = computeRetryLimit("billing-fixture");
+export const datadogKey = "0000fake0000fake0000fake0000fake";
+export function chargeCustomerFixture(customerId: string): string {
+  return `charge-${customerId}-fixture-marker`;
+}

@@ -4,6 +4,9 @@ import {
   agentTier,
   createEventLog,
   createOutputGuard,
+  createRedactingEventLog,
+  createRedactingLogger,
+  createSecretScrubber,
   createSessionService,
   createUsageReport,
   withOutputGuard,
@@ -13,6 +16,7 @@ import type {
   AgentRuntime,
   BudgetSettings,
   McpHealthMonitor,
+  McpSecretRedactor,
   OutputGuardDeps,
   RuntimeHooks,
   SessionService,
@@ -60,13 +64,16 @@ export interface EngineOptions {
 // Composition root: later units construct their adapters and register their handlers here.
 export async function startEngine(options: EngineOptions): Promise<SocketListener> {
   const startedAt = performance.now();
+  // H-03: token formats are scrubbed from every log line and stored event.
+  const scrubber = createSecretScrubber();
+  const log = createRedactingLogger(options.log, scrubber);
   const router = new MethodRouter();
   // Session changes can only be broadcast once the listener exists; recovery runs before it does.
   const started: { listener?: SocketListener } = {};
   const sessions =
     options.sessions === undefined
       ? undefined
-      : startSessions(router, options.sessions, options.log, (session) => {
+      : startSessions(router, options.sessions, log, scrubber, (session) => {
           started.listener?.broadcast("session.changed", { session: toSessionDto(session) });
         });
   registerEngineHandlers(router, {
@@ -79,7 +86,7 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
   const listener = await SocketListener.start({
     socketPath: options.socketPath,
     router,
-    log: options.log,
+    log,
     ...(options.limits === undefined ? {} : { limits: options.limits }),
   });
   started.listener = listener;
@@ -95,10 +102,11 @@ function startSessions(
   router: MethodRouter,
   options: EngineSessionOptions,
   log: Logger,
+  scrubber: McpSecretRedactor,
   onChanged: NonNullable<Parameters<typeof createSessionService>[0]["onChanged"]>,
 ): SessionService {
   const usage = options.usage ?? {};
-  const eventLog = withUsageLedger(createEventLog(options.store.events), {
+  const eventLog = withUsageLedger(createRedactingEventLog(createEventLog(options.store.events), scrubber), {
     usage: options.store.usage,
     pricing: {
       pricesFor: usage.pricesFor ?? (() => null),

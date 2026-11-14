@@ -52,4 +52,4 @@ Every secret value the engine reads or receives (resolved references, access and
 - session events, before they are stored or delivered (`createRedactingEventLog`),
 - error messages and `needs_auth` reasons.
 
-OAuth adapter failures carry status codes and registered OAuth error codes only, never response bodies. Values shorter than 4 characters are not redacted, since that would erase ordinary text. Secrets the engine never saw, such as a token a tool prints on its own, are H-03's pattern-based scrubber's job.
+OAuth adapter failures carry status codes and registered OAuth error codes only, never response bodies. Values shorter than 4 characters are not redacted, since that would erase ordinary text. Secrets the engine never saw, such as a token a tool prints on its own, are caught by the pattern-based scrubber ([redaction.md](redaction.md)).

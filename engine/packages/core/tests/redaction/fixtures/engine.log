@@ -1,0 +1,4 @@
+picad: warning: datadog stderr: export DD_API_KEY=0000fake0000fake0000fake0000fake
+picad: info: copilot token refreshed tid=fake0123456789;exp=1767225600;sku=free_fake;st=dotcom;chat=1;8kp=1:0000fakefakefakefake0000fakefakefake0000fakefake
+picad: error: clone failed https://x-access-token:ghs_FAKE0000fake1111FAKE2222fake3333FAKE@github.com/acme/app.git
+picad: info: session session-fixture-1 idle
