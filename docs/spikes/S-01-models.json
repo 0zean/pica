@@ -1,0 +1,155 @@
+{
+  "sdk": "@github/copilot-sdk@1.0.28",
+  "authType": "user",
+  "host": "https://github.com",
+  "rawModels": {
+    "models": [
+      {
+        "id": "auto",
+        "name": "Auto",
+        "capabilities": {}
+      }
+    ],
+    "imageModels": [
+      {
+        "id": "gpt-image-2.5-flare",
+        "name": "GPT Image 2.5 Flare",
+        "supportedOperations": [],
+        "isDefault": true,
+        "availability": "unavailable"
+      }
+    ]
+  },
+  "tokenPriceUnits": {
+    "units": []
+  },
+  "quota": {
+    "quotaSnapshots": {
+      "chat": {
+        "isUnlimitedEntitlement": false,
+        "entitlementRequests": 200,
+        "usedRequests": 0,
+        "usageAllowedWithExhaustedQuota": false,
+        "overage": 0,
+        "overageAllowedWithExhaustedQuota": false,
+        "remainingPercentage": 100,
+        "resetDate": "2026-11-14T21:31:50.324Z",
+        "hasQuota": true,
+        "tokenBasedBilling": true
+      },
+      "completions": {
+        "isUnlimitedEntitlement": false,
+        "entitlementRequests": 2000,
+        "usedRequests": 10,
+        "usageAllowedWithExhaustedQuota": false,
+        "overage": 0,
+        "overageAllowedWithExhaustedQuota": false,
+        "remainingPercentage": 99.5,
+        "resetDate": "2026-11-14T21:31:50.324Z",
+        "hasQuota": true,
+        "tokenBasedBilling": true
+      },
+      "premium_interactions": {
+        "isUnlimitedEntitlement": false,
+        "entitlementRequests": 0,
+        "usedRequests": 0,
+        "usageAllowedWithExhaustedQuota": false,
+        "overage": 0,
+        "overageAllowedWithExhaustedQuota": false,
+        "remainingPercentage": 0,
+        "resetDate": "2026-11-14T21:31:50.324Z",
+        "hasQuota": false,
+        "tokenBasedBilling": true
+      }
+    }
+  },
+  "sessionDefaults": {
+    "current": {},
+    "list": {
+      "list": [
+        {
+          "id": "auto",
+          "name": "Auto",
+          "capabilities": {},
+          "provider": {
+            "id": "copilot",
+            "label": "GitHub Copilot",
+            "kind": "copilot"
+          }
+        }
+      ],
+      "modelPriceCategories": [
+        {
+          "id": "claude-haiku-4.5",
+          "priceCategory": "low"
+        },
+        {
+          "id": "gpt-6-luna",
+          "priceCategory": "low"
+        },
+        {
+          "id": "gpt-5.6-luna",
+          "priceCategory": "low"
+        },
+        {
+          "id": "mai-code-1.1-flash",
+          "priceCategory": "low"
+        },
+        {
+          "id": "gpt-4o-mini-2024-07-18",
+          "priceCategory": "low"
+        },
+        {
+          "id": "gpt-4o-2024-11-20",
+          "priceCategory": "medium"
+        },
+        {
+          "id": "gpt-4o-2024-08-06",
+          "priceCategory": "high"
+        },
+        {
+          "id": "gpt-5.6-luna-free-auto",
+          "priceCategory": "low"
+        },
+        {
+          "id": "gpt-3.5-turbo-0613",
+          "priceCategory": "medium"
+        },
+        {
+          "id": "gpt-4",
+          "priceCategory": "medium"
+        },
+        {
+          "id": "gpt-4-0613",
+          "priceCategory": "medium"
+        },
+        {
+          "id": "gpt-4o-2024-05-13",
+          "priceCategory": "medium"
+        },
+        {
+          "id": "gpt-4-o-preview",
+          "priceCategory": "high"
+        },
+        {
+          "id": "gpt-4o-mini",
+          "priceCategory": "low"
+        },
+        {
+          "id": "gpt-4o",
+          "priceCategory": "medium"
+        }
+      ],
+      "quotaSnapshots": {},
+      "resolvedAuthLogin": "https://github.com:<login>",
+      "providers": [
+        {
+          "kind": "copilot",
+          "id": "copilot",
+          "label": "GitHub Copilot",
+          "ordering": 0
+        }
+      ]
+    }
+  }
+}
