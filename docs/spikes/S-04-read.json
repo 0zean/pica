@@ -1,0 +1,3620 @@
+{
+  "sdk": "@github/copilot-sdk@1.0.28",
+  "mode": "read",
+  "runs": [
+    {
+      "variant": "permission",
+      "reached": true,
+      "reply": "\nbravo-s1nmco",
+      "errors": [],
+      "readPermissionsForB": 2,
+      "log": {
+        "label": "read:permission",
+        "workingDirectory": "<repoA>",
+        "permissions": [
+          {
+            "sessionId": "66294346-dc38-4618-8fe9-ae5afa0b5938",
+            "request": {
+              "kind": "read",
+              "toolCallId": "call_xET8uUEi5LQVtTw9Q5821wz6",
+              "intention": "Read file: <repoB>/notes.txt",
+              "path": "<repoB>/notes.txt"
+            },
+            "result": {
+              "kind": "approve-once"
+            }
+          },
+          {
+            "sessionId": "66294346-dc38-4618-8fe9-ae5afa0b5938",
+            "request": {
+              "kind": "read",
+              "toolCallId": "call_xET8uUEi5LQVtTw9Q5821wz6",
+              "intention": "Read file: <repoB>/notes.txt",
+              "path": "<repoB>/notes.txt"
+            },
+            "result": {
+              "kind": "approve-once"
+            }
+          }
+        ],
+        "hooks": [
+          {
+            "sessionId": "66294346-dc38-4618-8fe9-ae5afa0b5938",
+            "input": {
+              "sessionId": "66294346-dc38-4618-8fe9-ae5afa0b5938",
+              "timestamp": "2026-11-14T22:37:30.937Z",
+              "toolName": "view",
+              "toolArgs": {
+                "path": "<repoB>/notes.txt"
+              },
+              "workingDirectory": "<repoA>"
+            }
+          }
+        ],
+        "events": [
+          {
+            "type": "session.start",
+            "data": {
+              "sessionId": "66294346-dc38-4618-8fe9-ae5afa0b5938",
+              "version": 1,
+              "producer": "copilot-agent",
+              "copilotVersion": "1.0.105",
+              "startTime": "2026-11-14T22:37:28.703Z",
+              "contextTier": null,
+              "context": {
+                "cwd": "<repoA>",
+                "gitRoot": "<repoA>",
+                "branch": "main",
+                "headCommit": "940e4e5504b77c4ab55e6e174c2028b7bda39be3"
+              },
+              "remoteSteerable": false,
+              "alreadyInUse": false
+            },
+            "id": "4ed9a663-bd35-4bd5-a8a3-3b3e7f788b23",
+            "timestamp": "2026-11-14T22:37:28.766Z",
+            "parentId": null
+          },
+          {
+            "type": "session.managed_settings_resolved",
+            "data": {
+              "source": "none",
+              "serverManaged": false,
+              "deviceManaged": false,
+              "clientManaged": false,
+              "policyHelperManaged": false,
+              "failClosed": false,
+              "sandboxEnabledByUndeterminedPolicy": false,
+              "bypassPermissionsDisabled": false,
+              "managedKeys": [],
+              "permissionsContext": {
+                "failClosed": false
+              }
+            },
+            "ephemeral": true,
+            "id": "2ef7d75a-65e4-4012-9939-8b21afd269e7",
+            "timestamp": "2026-11-14T22:37:28.769Z",
+            "parentId": "4ed9a663-bd35-4bd5-a8a3-3b3e7f788b23"
+          },
+          {
+            "type": "pending_messages.modified",
+            "data": {},
+            "ephemeral": true,
+            "id": "60987b5e-f43b-4bcd-8347-28af49618749",
+            "timestamp": "2026-11-14T22:37:28.786Z",
+            "parentId": "4ed9a663-bd35-4bd5-a8a3-3b3e7f788b23"
+          },
+          {
+            "type": "pending_messages.modified",
+            "data": {},
+            "ephemeral": true,
+            "id": "b9f3fdfd-c0c5-4322-b699-1f82e6c28025",
+            "timestamp": "2026-11-14T22:37:28.798Z",
+            "parentId": "4ed9a663-bd35-4bd5-a8a3-3b3e7f788b23"
+          },
+          {
+            "type": "session.title_changed",
+            "data": {
+              "title": "Read the file <repoB>/notes.txt and reply with its exact contents only."
+            },
+            "ephemeral": true,
+            "id": "778a182e-8c6b-4192-ae22-a97403ac994c",
+            "timestamp": "2026-11-14T22:37:28.800Z",
+            "parentId": "4ed9a663-bd35-4bd5-a8a3-3b3e7f788b23"
+          },
+          {
+            "type": "hook.start",
+            "data": {
+              "hookInvocationId": "d926d1e3-3a59-4a44-950d-0930c63612b8",
+              "hookType": "sessionStart",
+              "input": {
+                "source": "new",
+                "initialPrompt": "Read the file <repoB>/notes.txt and reply with its exact contents only.",
+                "sessionId": "66294346-dc38-4618-8fe9-ae5afa0b5938",
+                "timestamp": 1794695848801,
+                "cwd": "<repoA>"
+              }
+            },
+            "id": "84330190-0459-4cf9-8899-a522e79a0883",
+            "timestamp": "2026-11-14T22:37:28.801Z",
+            "parentId": "4ed9a663-bd35-4bd5-a8a3-3b3e7f788b23"
+          },
+          {
+            "type": "hook.end",
+            "data": {
+              "hookInvocationId": "d926d1e3-3a59-4a44-950d-0930c63612b8",
+              "hookType": "sessionStart",
+              "success": true
+            },
+            "id": "3e0bed61-6f27-4b95-9571-51afb493925d",
+            "timestamp": "2026-11-14T22:37:28.803Z",
+            "parentId": "84330190-0459-4cf9-8899-a522e79a0883"
+          },
+          {
+            "type": "session.model_change",
+            "data": {
+              "previousModel": null,
+              "newModel": "auto",
+              "previousReasoningEffort": null,
+              "reasoningEffort": null,
+              "previousReasoningSummary": null,
+              "reasoningSummary": null,
+              "source": "startup",
+              "contextTier": null,
+              "autoTier": null
+            },
+            "id": "8dfa37b6-ffb4-4496-a8fb-818f245c11d5",
+            "timestamp": "2026-11-14T22:37:29.170Z",
+            "parentId": "3e0bed61-6f27-4b95-9571-51afb493925d"
+          },
+          {
+            "type": "session.auto_mode_resolved",
+            "data": {
+              "chosenModel": "mai-code-1.1-flash",
+              "selectionReason": "Auto selected MAI-Code-1.1-Flash because it was the best choice out of the models available in your plan.",
+              "categoryScores": {
+                "reasoning": 0.0282,
+                "code_gen": 0.0066,
+                "debugging": 0.0014,
+                "tool_use": 0.0145
+              },
+              "candidateModels": [
+                "mai-code-1.1-flash"
+              ],
+              "routingMethod": "auto_v2",
+              "fallback": false,
+              "availableModels": [
+                "mai-code-1.1-flash"
+              ],
+              "endToEndLatencyMs": 171.33441599999998,
+              "hasImage": false
+            },
+            "id": "2bd68490-5b42-4a31-8fc8-629f2d8a0ce3",
+            "timestamp": "2026-11-14T22:37:29.345Z",
+            "parentId": "8dfa37b6-ffb4-4496-a8fb-818f245c11d5"
+          },
+          {
+            "type": "session.skills_loaded",
+            "data": {
+              "skills": [
+                {
+                  "name": "customize-cloud-agent",
+                  "commandName": "customize-cloud-agent",
+                  "description": "Skill for customizing the Copilot cloud agent (formerly known as Copilot coding agent) environment, including copilot-setup-steps.yml configuration, preinstalling tools and dependencies, runners, and settings. Use when the user mentions copilot-setup-steps, copilot setup steps, or wants to configure the cloud agent environment.",
+                  "source": "builtin",
+                  "userInvocable": false,
+                  "enabled": true,
+                  "path": "~/Documents/repos/pica/.claude/worktrees/s-04-multi-root-3b4178/engine/node_modules/.pnpm/@github+copilot-sdk-darwin-arm64@1.0.28/node_modules/@github/copilot-sdk-darwin-arm64/builtin/customize-cloud-agent/SKILL.md"
+                },
+                {
+                  "name": "github-pr-media",
+                  "commandName": "github-pr-media",
+                  "description": "Upload an image or video to GitHub's user attachments API and embed it in a pull request description or comment. Use when asked to add screenshots, diagrams, recordings, or other media to a PR or GitHub comment.",
+                  "source": "builtin",
+                  "userInvocable": false,
+                  "enabled": true,
+                  "path": "~/Documents/repos/pica/.claude/worktrees/s-04-multi-root-3b4178/engine/node_modules/.pnpm/@github+copilot-sdk-darwin-arm64@1.0.28/node_modules/@github/copilot-sdk-darwin-arm64/builtin/github-pr-media/SKILL.md"
+                }
+              ]
+            },
+            "ephemeral": true,
+            "id": "7cf5bff3-e24f-4c57-a8cf-5454e3dd8337",
+            "timestamp": "2026-11-14T22:37:29.352Z",
+            "parentId": "2bd68490-5b42-4a31-8fc8-629f2d8a0ce3"
+          },
+          {
+            "type": "session.mcp_server_status_changed",
+            "data": {
+              "serverName": "github-mcp-server",
+              "status": "pending"
+            },
+            "ephemeral": true,
+            "id": "b35e6fd6-fae1-4a5d-9597-1eb0f0db1d1b",
+            "timestamp": "2026-11-14T22:37:29.364Z",
+            "parentId": "2bd68490-5b42-4a31-8fc8-629f2d8a0ce3"
+          },
+          {
+            "type": "session.mcp_server_status_changed",
+            "data": {
+              "serverName": "github-mcp-server",
+              "status": "connected",
+              "configSource": "builtin"
+            },
+            "ephemeral": true,
+            "id": "4937d142-fcf3-4a6b-916e-36e2f3292b09",
+            "timestamp": "2026-11-14T22:37:29.572Z",
+            "parentId": "2bd68490-5b42-4a31-8fc8-629f2d8a0ce3"
+          },
+          {
+            "type": "session.mcp_servers_loaded",
+            "ephemeral": true,
+            "data": {
+              "servers": [
+                {
+                  "name": "github-mcp-server",
+                  "status": "connected",
+                  "source": "builtin",
+                  "displayName": "GitHub MCP Server",
+                  "serverMetadata": {
+                    "instructions": "The GitHub MCP Server provides tools to interact with GitHub platform.\n\nTool selection guidance:\n\t1. Use 'list_*' tools for broad, simple retrieval and pagination of all items of a type (e.g., all issues, all PRs, all branches) with basic filtering.\n\t2. Use 'search_*' tools for targeted queries with specific criteria, keywords, or complex filters (e.g., issues with certain text, PRs by author, cod…(903 chars)"
+                  }
+                }
+              ]
+            },
+            "id": "75448e6b-685e-4d51-a531-c7ec67443aff",
+            "timestamp": "2026-11-14T22:37:29.573Z",
+            "parentId": "2bd68490-5b42-4a31-8fc8-629f2d8a0ce3"
+          },
+          {
+            "type": "session.mcp_server_tools_loaded",
+            "data": {
+              "serverName": "github-mcp-server",
+              "toolCount": 5
+            },
+            "ephemeral": true,
+            "id": "91245fa0-044b-4f9d-a3f2-c1d7cbcc4931",
+            "timestamp": "2026-11-14T22:37:29.739Z",
+            "parentId": "2bd68490-5b42-4a31-8fc8-629f2d8a0ce3"
+          },
+          {
+            "type": "session.tools_updated",
+            "data": {
+              "model": "mai-code-1.1-flash"
+            },
+            "ephemeral": true,
+            "id": "41851c66-ed87-46f0-a661-402ee1610442",
+            "timestamp": "2026-11-14T22:37:29.772Z",
+            "parentId": "2bd68490-5b42-4a31-8fc8-629f2d8a0ce3"
+          },
+          {
+            "type": "hook.start",
+            "data": {
+              "hookInvocationId": "465ae9b3-dbb2-44d6-843f-c08f2ed01229",
+              "hookType": "userPromptSubmitted",
+              "input": {
+                "sessionId": "66294346-dc38-4618-8fe9-ae5afa0b5938",
+                "prompt": "Read the file <repoB>/notes.txt and reply with its exact contents only.",
+                "timestamp": 1794695849774,
+                "cwd": "<repoA>"
+              }
+            },
+            "id": "f1ee177b-fe46-42ad-a641-04e5f56578a0",
+            "timestamp": "2026-11-14T22:37:29.774Z",
+            "parentId": "2bd68490-5b42-4a31-8fc8-629f2d8a0ce3"
+          },
+          {
+            "type": "hook.end",
+            "data": {
+              "hookInvocationId": "465ae9b3-dbb2-44d6-843f-c08f2ed01229",
+              "hookType": "userPromptSubmitted",
+              "success": true
+            },
+            "id": "f8f43ad3-d2dd-4934-8506-cd987087a72a",
+            "timestamp": "2026-11-14T22:37:29.775Z",
+            "parentId": "f1ee177b-fe46-42ad-a641-04e5f56578a0"
+          },
+          {
+            "type": "hook.start",
+            "data": {
+              "hookInvocationId": "2a3f444d-1169-4718-a11d-d756a9d5e219",
+              "hookType": "userPromptTransformed",
+              "input": {
+                "sessionId": "66294346-dc38-4618-8fe9-ae5afa0b5938",
+                "prompt": "Read the file <repoB>/notes.txt and reply with its exact contents only.",
+                "transformedPrompt": "<current_datetime>2026-11-14T17:37:29.776-05:00</current_datetime>\n\nRead the file <repoB>/notes.txt and reply with its exact contents only.",
+                "timestamp": 1794695849777,
+                "cwd": "<repoA>"
+              }
+            },
+            "id": "164cf341-f4b3-49db-8730-7c8d614703ff",
+            "timestamp": "2026-11-14T22:37:29.777Z",
+            "parentId": "f8f43ad3-d2dd-4934-8506-cd987087a72a"
+          },
+          {
+            "type": "hook.end",
+            "data": {
+              "hookInvocationId": "2a3f444d-1169-4718-a11d-d756a9d5e219",
+              "hookType": "userPromptTransformed",
+              "success": true
+            },
+            "id": "9baa772a-1224-45b0-9a35-90ca4f38c87c",
+            "timestamp": "2026-11-14T22:37:29.777Z",
+            "parentId": "164cf341-f4b3-49db-8730-7c8d614703ff"
+          },
+          {
+            "type": "user.message",
+            "data": {
+              "content": "Read the file <repoB>/notes.txt and reply with its exact contents only.",
+              "transformedContent": "<current_datetime>2026-11-14T17:37:29.776-05:00</current_datetime>\n\nRead the file <repoB>/notes.txt and reply with its exact contents only.",
+              "messageId": "50df3211-39c1-40da-b5e4-4b0876f10d9d",
+              "supportedNativeDocumentMimeTypes": [],
+              "delivery": "idle",
+              "interactionId": "39988350-3279-4e79-94a8-c021237b69ed",
+              "turnId": "0",
+              "parentAgentTaskId": "c63bc707-49c9-4d82-b8a9-ab11d7c96e44"
+            },
+            "id": "0607333e-2766-461a-a55b-ec5b70c4fc58",
+            "timestamp": "2026-11-14T22:37:29.778Z",
+            "parentId": "9baa772a-1224-45b0-9a35-90ca4f38c87c"
+          },
+          {
+            "type": "system.message",
+            "data": {
+              "role": "system",
+              "content": "You are GitHub Copilot, an AI coding agent built by GitHub. You are an interactive tool that helps users with software engineering tasks.\n\n# Tone and style\n* When providing output or explanation to the user, try to limit your response to 100 words or less.\n* Be concise in routine responses. For complex tasks, briefly explain your approach before implementing.\n\n# Search and delegation\n* Give sub-ag…(22415 chars)",
+              "contentBlocks": [
+                {
+                  "content": "You are GitHub Copilot, an AI coding agent built by GitHub. You are an interactive tool that helps users with software engineering tasks.\n\n# Tone and style\n* When providing output or explanation to the user, try to limit your response to 100 words or less.\n* Be concise in routine responses. For complex tasks, briefly explain your approach before implementing.\n\n# Search and delegation\n* Give sub-ag…(4806 chars)",
+                  "isStatic": true
+                },
+                {
+                  "content": "<version_information>Version number: 1.0.105</version_information>\n\n<model_information>Auto mode is active. The concrete model is selected dynamically and may change during the conversation.\nWhen asked which model you are or what model is being used, explain that Auto mode selects the model and do not name a specific underlying model.</model_information>\n\n<environment_context>\nYou are working in t…(17607 chars)"
+                }
+              ],
+              "interactionId": "39988350-3279-4e79-94a8-c021237b69ed",
+              "metadata": {
+                "variables": {
+                  "gitCommitTrailer": {
+                    "sessionId": null,
+                    "clientName": "sdk",
+                    "coauthorEnabled": true
+                  }
+                }
+              }
+            },
+            "id": "a661759b-30fb-43f0-8be8-5e96afafcfdd",
+            "timestamp": "2026-11-14T22:37:29.779Z",
+            "parentId": "0607333e-2766-461a-a55b-ec5b70c4fc58"
+          },
+          {
+            "type": "assistant.turn_start",
+            "data": {
+              "turnId": "0",
+              "interactionId": "39988350-3279-4e79-94a8-c021237b69ed"
+            },
+            "id": "5d4c55e8-b33c-436f-9ade-3fcdc9fa9d3f",
+            "timestamp": "2026-11-14T22:37:29.784Z",
+            "parentId": "a661759b-30fb-43f0-8be8-5e96afafcfdd"
+          },
+          {
+            "type": "session.usage_info",
+            "ephemeral": true,
+            "data": {
+              "tokenLimit": 128000,
+              "currentTokens": 12664,
+              "messagesLength": 2,
+              "systemTokens": 4815,
+              "conversationTokens": 61,
+              "toolDefinitionsTokens": 7788,
+              "isInitial": true
+            },
+            "id": "d91c5db6-fcde-4587-bbe8-ee0a02556217",
+            "timestamp": "2026-11-14T22:37:29.790Z",
+            "parentId": "5d4c55e8-b33c-436f-9ade-3fcdc9fa9d3f"
+          },
+          {
+            "type": "assistant.usage",
+            "data": {
+              "model": "mai-code-1.1-flash",
+              "provider": {
+                "id": "copilot",
+                "kind": "copilot",
+                "label": "GitHub Copilot"
+              },
+              "modelDisplayName": "MAI-Code-1.1-Flash",
+              "inputTokens": 11316,
+              "outputTokens": 36,
+              "cacheReadTokens": 7424,
+              "cacheWriteTokens": 0,
+              "reasoningTokens": 0,
+              "cost": 1,
+              "duration": 921,
+              "timeToFirstTokenMs": 809.928458,
+              "outputTtftMs": 809.929083,
+              "cacheExpiresAt": "2026-11-14T23:07:30.006Z",
+              "interTokenLatencyMs": 2.4574934210526314,
+              "initiator": "user",
+              "interactionType": "conversation-agent",
+              "isByok": false,
+              "isAuto": true,
+              "maxPromptTokens": 128000,
+              "transport": "websocket",
+              "requestBodyBytes": 59002,
+              "requestBodyWireBytes": 59002,
+              "requestBodyEncoding": "identity",
+              "apiCallId": "1o+Ej7O9XBnbLWFxtIykFb4dNAjwNWTFCJMlB6CZ33vy5VRM5MfzJENR7E9/e5PWp/imAIbsbXskUC8XDbiw1EEHa0nS/IWyxy7xDto2uFCY5UMlP6Tqu6Wipz4xIG+01niuoLJ4eReAFPBOkABt859shAAI4lvhpOjfT2472f5tGGvr3PW9fltyVF5IppKQ25z8F80vvMhsAAOnzY+VpJIEkijF6HBKmtsNmkTX6gdcd8pzSgzU1TDkfDWBb8vtE0rtoKLbv9uDgehcXhnIJ+PPIISxEKFz5VIQ2psOCDilRyb7vvxnCcpg79mZMrzXu49eMSaAHTK5hk6Udr660JQXqRHLEO1Ecp+AK7rGoIBznvU4orXB8tkA2BhkFzcTwDAVf/ewgzNi+M5y…(520 chars)",
+              "providerCallId": "00000-c6db189e-2204-4de9-be5f-995240f71afc",
+              "serviceRequestId": "b822d16a-e244-4222-9359-382fbb74fca2",
+              "rte": true,
+              "apiEndpoint": "ws:/responses",
+              "quotaSnapshots": {
+                "chat": {
+                  "isUnlimitedEntitlement": false,
+                  "entitlementRequests": 200,
+                  "usedRequests": 9,
+                  "usageAllowedWithExhaustedQuota": false,
+                  "overage": 0,
+                  "overageAllowedWithExhaustedQuota": false,
+                  "remainingPercentage": 95.3,
+                  "resetDate": "2026-12-01T00:00:00Z"
+                },
+                "completions": {
+                  "isUnlimitedEntitlement": false,
+                  "entitlementRequests": 2000,
+                  "usedRequests": 10,
+                  "usageAllowedWithExhaustedQuota": false,
+                  "overage": 0,
+                  "overageAllowedWithExhaustedQuota": false,
+                  "remainingPercentage": 99.5,
+                  "resetDate": "2026-12-01T00:00:00Z"
+                },
+                "premium_interactions": {
+                  "isUnlimitedEntitlement": false,
+                  "entitlementRequests": 0,
+                  "usedRequests": 0,
+                  "usageAllowedWithExhaustedQuota": false,
+                  "overage": 0,
+                  "overageAllowedWithExhaustedQuota": false,
+                  "remainingPercentage": 0,
+                  "resetDate": "2026-12-01T00:00:00Z"
+                }
+              },
+              "copilotUsage": {
+                "tokenDetails": [
+                  {
+                    "batchSize": 1000000,
+                    "costPerBatch": 20000000000,
+                    "tokenCount": 3892,
+                    "tokenType": "input",
+                    "model": "mai-code-1.1-flash"
+                  },
+                  {
+                    "batchSize": 1000000,
+                    "costPerBatch": 2000000000,
+                    "tokenCount": 7424,
+                    "tokenType": "cache_read",
+                    "model": "mai-code-1.1-flash"
+                  },
+                  {
+                    "batchSize": 1000000,
+                    "costPerBatch": 25000000000,
+                    "tokenCount": 0,
+                    "tokenType": "cache_write",
+                    "model": "mai-code-1.1-flash"
+                  },
+                  {
+                    "batchSize": 1000000,
+                    "costPerBatch": 120000000000,
+                    "tokenCount": 36,
+                    "tokenType": "output",
+                    "model": "mai-code-1.1-flash"
+                  }
+                ],
+                "totalNanoAiu": 97008000
+              },
+              "aiCreditsStatus": "complete",
+              "reasoningEffort": "medium",
+              "reasoningSummary": "detailed",
+              "availableToolCount": 25,
+              "toolTokenCount": 7788,
+              "customToolCallCount": 0,
+              "unmatchedToolResultCount": 0,
+              "orphanToolCallCount": 0,
+              "frontierSource": "reported_writes",
+              "cacheTtlSeconds": 1800,
+              "cacheDetailsReported": true,
+              "numToolCalls": 1,
+              "toolCounts": {
+                "view": 1
+              },
+              "finishReason": "tool_calls",
+              "contentFilterTriggered": false,
+              "accounting": {
+                "sourceSessionId": "66294346-dc38-4618-8fe9-ae5afa0b5938",
+                "sequence": 1,
+                "usageId": "1o+Ej7O9XBnbLWFxtIykFb4dNAjwNWTFCJMlB6CZ33vy5VRM5MfzJENR7E9/e5PWp/imAIbsbXskUC8XDbiw1EEHa0nS/IWyxy7xDto2uFCY5UMlP6Tqu6Wipz4xIG+01niuoLJ4eReAFPBOkABt859shAAI4lvhpOjfT2472f5tGGvr3PW9fltyVF5IppKQ25z8F80vvMhsAAOnzY+VpJIEkijF6HBKmtsNmkTX6gdcd8pzSgzU1TDkfDWBb8vtE0rtoKLbv9uDgehcXhnIJ+PPIISxEKFz5VIQ2psOCDilRyb7vvxnCcpg79mZMrzXu49eMSaAHTK5hk6Udr660JQXqRHLEO1Ecp+AK7rGoIBznvU4orXB8tkA2BhkFzcTwDAVf/ewgzNi+M5y…(520 chars)"
+              }
+            },
+            "ephemeral": true,
+            "id": "f73838c6-2c20-4c93-8127-74048faf8531",
+            "timestamp": "2026-11-14T22:37:30.929Z",
+            "parentId": "95bf6571-f7e4-4622-b478-9d87a3809732"
+          },
+          {
+            "type": "assistant.message",
+            "data": {
+              "messageId": "75a53469-d0bc-48ae-86dd-1a6f58544fe6",
+              "originatingMessageId": "50df3211-39c1-40da-b5e4-4b0876f10d9d",
+              "model": "mai-code-1.1-flash",
+              "providerId": "copilot",
+              "content": "",
+              "toolRequests": [
+                {
+                  "toolCallId": "call_xET8uUEi5LQVtTw9Q5821wz6",
+                  "name": "view",
+                  "arguments": {
+                    "path": "<repoB>/notes.txt"
+                  },
+                  "type": "function",
+                  "intentionSummary": "view the file at <repoB>/notes.txt.",
+                  "toolTitle": "Viewing file"
+                }
+              ],
+              "interactionId": "39988350-3279-4e79-94a8-c021237b69ed",
+              "turnId": "0",
+              "rte": true,
+              "apiCallId": "1o+Ej7O9XBnbLWFxtIykFb4dNAjwNWTFCJMlB6CZ33vy5VRM5MfzJENR7E9/e5PWp/imAIbsbXskUC8XDbiw1EEHa0nS/IWyxy7xDto2uFCY5UMlP6Tqu6Wipz4xIG+01niuoLJ4eReAFPBOkABt859shAAI4lvhpOjfT2472f5tGGvr3PW9fltyVF5IppKQ25z8F80vvMhsAAOnzY+VpJIEkijF6HBKmtsNmkTX6gdcd8pzSgzU1TDkfDWBb8vtE0rtoKLbv9uDgehcXhnIJ+PPIISxEKFz5VIQ2psOCDilRyb7vvxnCcpg79mZMrzXu49eMSaAHTK5hk6Udr660JQXqRHLEO1Ecp+AK7rGoIBznvU4orXB8tkA2BhkFzcTwDAVf/ewgzNi+M5y…(520 chars)",
+              "serverTools": {
+                "provider": "openai-responses"
+              }
+            },
+            "id": "2ff88a84-c19f-4b83-85b7-61b4371e008a",
+            "timestamp": "2026-11-14T22:37:30.934Z",
+            "parentId": "95bf6571-f7e4-4622-b478-9d87a3809732"
+          },
+          {
+            "type": "tool.execution_start",
+            "data": {
+              "toolCallId": "call_xET8uUEi5LQVtTw9Q5821wz6",
+              "toolName": "view",
+              "arguments": {
+                "path": "<repoB>/notes.txt"
+              },
+              "turnId": "0",
+              "model": "mai-code-1.1-flash",
+              "toolTitle": "Viewing file"
+            },
+            "id": "60cd2f8c-0302-49d6-8fc4-e6078c442f59",
+            "timestamp": "2026-11-14T22:37:30.935Z",
+            "parentId": "2ff88a84-c19f-4b83-85b7-61b4371e008a"
+          },
+          {
+            "type": "hook.start",
+            "data": {
+              "hookInvocationId": "f7e73776-acd6-4d30-ba5a-734fcbf90bcf",
+              "hookType": "preToolUse",
+              "input": {
+                "sessionId": "66294346-dc38-4618-8fe9-ae5afa0b5938",
+                "cwd": "<repoA>",
+                "toolCalls": [
+                  {
+                    "id": "call_xET8uUEi5LQVtTw9Q5821wz6",
+                    "name": "view",
+                    "args": {
+                      "path": "<repoB>/notes.txt"
+                    }
+                  }
+                ]
+              }
+            },
+            "id": "237728e7-3cf6-4298-bd86-e715281ebfad",
+            "timestamp": "2026-11-14T22:37:30.937Z",
+            "parentId": "60cd2f8c-0302-49d6-8fc4-e6078c442f59"
+          },
+          {
+            "type": "hook.end",
+            "data": {
+              "hookInvocationId": "f7e73776-acd6-4d30-ba5a-734fcbf90bcf",
+              "hookType": "preToolUse",
+              "success": true
+            },
+            "id": "d070344f-7630-4065-8b96-d73344232494",
+            "timestamp": "2026-11-14T22:37:30.937Z",
+            "parentId": "237728e7-3cf6-4298-bd86-e715281ebfad"
+          },
+          {
+            "type": "permission.requested",
+            "data": {
+              "requestId": "587c5717-a452-490c-bd1f-c6a57c8a1217",
+              "permissionRequest": {
+                "kind": "read",
+                "toolCallId": "call_xET8uUEi5LQVtTw9Q5821wz6",
+                "intention": "Read file: <repoB>/notes.txt",
+                "path": "<repoB>/notes.txt"
+              },
+              "promptRequest": {
+                "kind": "path",
+                "accessKind": "read",
+                "paths": [
+                  "<repoB>/notes.txt"
+                ],
+                "readOnlyDirectories": [
+                  "<repoB>"
+                ],
+                "toolCallId": "call_xET8uUEi5LQVtTw9Q5821wz6"
+              },
+              "agentMode": "interactive",
+              "permissionMode": "manual",
+              "ownerSessionId": "66294346-dc38-4618-8fe9-ae5afa0b5938"
+            },
+            "id": "adab5d70-1c5a-406c-a623-0f6c8dfadf50",
+            "timestamp": "2026-11-14T22:37:30.945Z",
+            "parentId": "d070344f-7630-4065-8b96-d73344232494"
+          },
+          {
+            "type": "permission.completed",
+            "data": {
+              "requestId": "587c5717-a452-490c-bd1f-c6a57c8a1217",
+              "toolCallId": "call_xET8uUEi5LQVtTw9Q5821wz6",
+              "result": {
+                "kind": "approved"
+              }
+            },
+            "id": "09dd3b14-b758-4d8b-ba26-f36cb46b24c6",
+            "timestamp": "2026-11-14T22:37:30.949Z",
+            "parentId": "adab5d70-1c5a-406c-a623-0f6c8dfadf50"
+          },
+          {
+            "type": "permission.requested",
+            "data": {
+              "requestId": "621677bc-6507-446f-802c-7ee8c5429306",
+              "permissionRequest": {
+                "kind": "read",
+                "toolCallId": "call_xET8uUEi5LQVtTw9Q5821wz6",
+                "intention": "Read file: <repoB>/notes.txt",
+                "path": "<repoB>/notes.txt"
+              },
+              "promptRequest": {
+                "kind": "read",
+                "intention": "Read file: <repoB>/notes.txt",
+                "path": "<repoB>/notes.txt",
+                "toolCallId": "call_xET8uUEi5LQVtTw9Q5821wz6"
+              },
+              "agentMode": "interactive",
+              "permissionMode": "manual",
+              "ownerSessionId": "66294346-dc38-4618-8fe9-ae5afa0b5938"
+            },
+            "id": "ae89c51e-2a2e-42ee-b351-4e0bcdf0f4a2",
+            "timestamp": "2026-11-14T22:37:30.950Z",
+            "parentId": "09dd3b14-b758-4d8b-ba26-f36cb46b24c6"
+          },
+          {
+            "type": "permission.completed",
+            "data": {
+              "requestId": "621677bc-6507-446f-802c-7ee8c5429306",
+              "toolCallId": "call_xET8uUEi5LQVtTw9Q5821wz6",
+              "result": {
+                "kind": "approved"
+              }
+            },
+            "id": "2bc45531-3e9b-4559-8ce5-9064772e1523",
+            "timestamp": "2026-11-14T22:37:30.950Z",
+            "parentId": "ae89c51e-2a2e-42ee-b351-4e0bcdf0f4a2"
+          },
+          {
+            "type": "hook.start",
+            "data": {
+              "hookInvocationId": "07ad8214-bc48-4cde-83a4-38043d8df65c",
+              "hookType": "postToolUse",
+              "input": {
+                "sessionId": "66294346-dc38-4618-8fe9-ae5afa0b5938",
+                "timestamp": 1794695850953,
+                "cwd": "<repoA>",
+                "toolName": "view",
+                "toolArgs": {
+                  "path": "<repoB>/notes.txt"
+                },
+                "toolResult": {
+                  "resultType": "success",
+                  "textResultForLlm": "bravo-s1nmco\n",
+                  "toolTelemetry": {
+                    "properties": {
+                      "command": "view",
+                      "options": "{\"truncateBasedOn\":\"tokenCount\",\"truncateStyle\":\"middle\"}",
+                      "inputs": "[\"path\",\"command\"]",
+                      "resolvedPathAgainstCwd": "false",
+                      "fileExtension": "[\".txt\"]",
+                      "viewType": "file"
+                    },
+                    "metrics": {
+                      "resultLength": 13,
+                      "resultForLlmLength": 13,
+                      "context_token_limit": 128000,
+                      "context_current_tokens": 12664
+                    },
+                    "restrictedProperties": {}
+                  },
+                  "sessionLog": "\ndiff --git a<repoB>/notes.txt b<repoB>/notes.txt\nindex 0000000..0000000 100644\n--- a<repoB>/notes.txt\n+++ b<repoB>/notes.txt\n@@ -1,2 +1,2 @@\n bravo-s1nmco\n \n",
+                  "skipLargeOutputProcessing": true
+                }
+              }
+            },
+            "id": "eadaf51a-ff6d-4d37-bcfa-48ca0987b153",
+            "timestamp": "2026-11-14T22:37:30.953Z",
+            "parentId": "2bc45531-3e9b-4559-8ce5-9064772e1523"
+          },
+          {
+            "type": "hook.end",
+            "data": {
+              "hookInvocationId": "07ad8214-bc48-4cde-83a4-38043d8df65c",
+              "hookType": "postToolUse",
+              "success": true
+            },
+            "id": "7dab58e0-931b-4378-ad88-9baa841227f7",
+            "timestamp": "2026-11-14T22:37:30.954Z",
+            "parentId": "eadaf51a-ff6d-4d37-bcfa-48ca0987b153"
+          },
+          {
+            "type": "tool.execution_complete",
+            "data": {
+              "toolCallId": "call_xET8uUEi5LQVtTw9Q5821wz6",
+              "model": "mai-code-1.1-flash",
+              "interactionId": "39988350-3279-4e79-94a8-c021237b69ed",
+              "turnId": "0",
+              "rte": true,
+              "success": true,
+              "result": {
+                "content": "bravo-s1nmco\n",
+                "detailedContent": "\ndiff --git a<repoB>/notes.txt b<repoB>/notes.txt\nindex 0000000..0000000 100644\n--- a<repoB>/notes.txt\n+++ b<repoB>/notes.txt\n@@ -1,2 +1,2 @@\n bravo-s1nmco\n \n"
+              },
+              "toolTelemetry": {
+                "properties": {
+                  "command": "view",
+                  "options": "{\"truncateBasedOn\":\"tokenCount\",\"truncateStyle\":\"middle\"}",
+                  "inputs": "[\"path\",\"command\"]",
+                  "resolvedPathAgainstCwd": "false",
+                  "fileExtension": "[\".txt\"]",
+                  "viewType": "file"
+                },
+                "restrictedProperties": {},
+                "metrics": {
+                  "resultLength": 13,
+                  "resultForLlmLength": 13,
+                  "context_token_limit": 128000,
+                  "context_current_tokens": 12664,
+                  "result_token_count": 7
+                }
+              }
+            },
+            "id": "dd5ce1ea-6b1b-4d3b-8643-4a0cdb80ff48",
+            "timestamp": "2026-11-14T22:37:30.955Z",
+            "parentId": "7dab58e0-931b-4378-ad88-9baa841227f7"
+          },
+          {
+            "type": "assistant.turn_end",
+            "data": {
+              "turnId": "0"
+            },
+            "id": "80d39abc-856c-466d-9b37-3ab8ee4a4b0e",
+            "timestamp": "2026-11-14T22:37:30.959Z",
+            "parentId": "dd5ce1ea-6b1b-4d3b-8643-4a0cdb80ff48"
+          },
+          {
+            "type": "assistant.turn_start",
+            "data": {
+              "turnId": "1",
+              "interactionId": "39988350-3279-4e79-94a8-c021237b69ed"
+            },
+            "id": "36d2b3c4-6a41-44df-a4b9-a862da275c5d",
+            "timestamp": "2026-11-14T22:37:30.959Z",
+            "parentId": "80d39abc-856c-466d-9b37-3ab8ee4a4b0e"
+          },
+          {
+            "type": "session.usage_info",
+            "ephemeral": true,
+            "data": {
+              "tokenLimit": 128000,
+              "currentTokens": 12731,
+              "messagesLength": 4,
+              "systemTokens": 4815,
+              "conversationTokens": 128,
+              "toolDefinitionsTokens": 7788,
+              "isInitial": false
+            },
+            "id": "2d0eb296-62ed-4847-a029-c4a3ce6d5a55",
+            "timestamp": "2026-11-14T22:37:30.960Z",
+            "parentId": "36d2b3c4-6a41-44df-a4b9-a862da275c5d"
+          },
+          {
+            "type": "assistant.usage",
+            "data": {
+              "model": "mai-code-1.1-flash",
+              "provider": {
+                "id": "copilot",
+                "kind": "copilot",
+                "label": "GitHub Copilot"
+              },
+              "modelDisplayName": "MAI-Code-1.1-Flash",
+              "inputTokens": 11369,
+              "outputTokens": 10,
+              "cacheReadTokens": 11264,
+              "cacheWriteTokens": 0,
+              "reasoningTokens": 0,
+              "cost": 1,
+              "duration": 607,
+              "timeToFirstTokenMs": 537.709083,
+              "outputTtftMs": 537.70975,
+              "cacheExpiresAt": "2026-11-14T23:07:30.965Z",
+              "interTokenLatencyMs": 2.5298334000000002,
+              "initiator": "agent",
+              "interactionType": "conversation-agent",
+              "isByok": false,
+              "isAuto": true,
+              "maxPromptTokens": 128000,
+              "transport": "websocket",
+              "requestBodyBytes": 59362,
+              "requestBodyWireBytes": 59362,
+              "requestBodyEncoding": "identity",
+              "apiCallId": "TmY+0Pbd3XKPpRrMliJn7ZsDbxdfuokCWOammR4LVmqpt4LQWlY4OpsqU04W93q+KzKSgmecJIJqKmpiGlLk7/Sh4XIOI0kjpYN+8U7L3MoYDBtTQWTeUIRIn413+6R8HoZAmNUbGC0jluiYdufOWAcsRluv2on7jcDveD8AT2RH6g/5rW5vnOqH9WR4Ch6EnvPCJHTSJL0UVgq56W5FyRd/N1BRYJOdsyceiePQHHbOgFhLDwMMQeASSC2ab7CFYyXbvtUA17s1cnVx5agDLni4Ibl4EXWBhXdqNZj7r4RdIVX/sxcGOHQ+EB4IYTQI5FvM1Vofc/mEMEL51PvcmD5XjoHj7Nw4Y1rFga8tVoRw3PKbhZIrC6WmUU36J7m+n8YOvewzkxZpslyy…(520 chars)",
+              "providerCallId": "00000-c6db189e-2204-4de9-be5f-995240f71afc",
+              "serviceRequestId": "bbd59fa6-4817-4ed5-b0f6-898e21892412",
+              "rte": true,
+              "apiEndpoint": "ws:/responses",
+              "quotaSnapshots": {
+                "chat": {
+                  "isUnlimitedEntitlement": false,
+                  "entitlementRequests": 200,
+                  "usedRequests": 10,
+                  "usageAllowedWithExhaustedQuota": false,
+                  "overage": 0,
+                  "overageAllowedWithExhaustedQuota": false,
+                  "remainingPercentage": 95.2,
+                  "resetDate": "2026-12-01T00:00:00Z"
+                },
+                "completions": {
+                  "isUnlimitedEntitlement": false,
+                  "entitlementRequests": 2000,
+                  "usedRequests": 10,
+                  "usageAllowedWithExhaustedQuota": false,
+                  "overage": 0,
+                  "overageAllowedWithExhaustedQuota": false,
+                  "remainingPercentage": 99.5,
+                  "resetDate": "2026-12-01T00:00:00Z"
+                },
+                "premium_interactions": {
+                  "isUnlimitedEntitlement": false,
+                  "entitlementRequests": 0,
+                  "usedRequests": 0,
+                  "usageAllowedWithExhaustedQuota": false,
+                  "overage": 0,
+                  "overageAllowedWithExhaustedQuota": false,
+                  "remainingPercentage": 0,
+                  "resetDate": "2026-12-01T00:00:00Z"
+                }
+              },
+              "copilotUsage": {
+                "tokenDetails": [
+                  {
+                    "batchSize": 1000000,
+                    "costPerBatch": 20000000000,
+                    "tokenCount": 105,
+                    "tokenType": "input",
+                    "model": "mai-code-1.1-flash"
+                  },
+                  {
+                    "batchSize": 1000000,
+                    "costPerBatch": 2000000000,
+                    "tokenCount": 11264,
+                    "tokenType": "cache_read",
+                    "model": "mai-code-1.1-flash"
+                  },
+                  {
+                    "batchSize": 1000000,
+                    "costPerBatch": 25000000000,
+                    "tokenCount": 0,
+                    "tokenType": "cache_write",
+                    "model": "mai-code-1.1-flash"
+                  },
+                  {
+                    "batchSize": 1000000,
+                    "costPerBatch": 120000000000,
+                    "tokenCount": 10,
+                    "tokenType": "output",
+                    "model": "mai-code-1.1-flash"
+                  }
+                ],
+                "totalNanoAiu": 25828000
+              },
+              "aiCreditsStatus": "complete",
+              "reasoningEffort": "medium",
+              "reasoningSummary": "detailed",
+              "availableToolCount": 25,
+              "toolTokenCount": 7788,
+              "customToolCallCount": 0,
+              "unmatchedToolResultCount": 0,
+              "orphanToolCallCount": 0,
+              "frontierSource": "reported_writes",
+              "cacheTtlSeconds": 1800,
+              "cacheDetailsReported": true,
+              "numToolCalls": 0,
+              "toolCounts": {},
+              "finishReason": "stop",
+              "contentFilterTriggered": false,
+              "accounting": {
+                "sourceSessionId": "66294346-dc38-4618-8fe9-ae5afa0b5938",
+                "sequence": 2,
+                "usageId": "TmY+0Pbd3XKPpRrMliJn7ZsDbxdfuokCWOammR4LVmqpt4LQWlY4OpsqU04W93q+KzKSgmecJIJqKmpiGlLk7/Sh4XIOI0kjpYN+8U7L3MoYDBtTQWTeUIRIn413+6R8HoZAmNUbGC0jluiYdufOWAcsRluv2on7jcDveD8AT2RH6g/5rW5vnOqH9WR4Ch6EnvPCJHTSJL0UVgq56W5FyRd/N1BRYJOdsyceiePQHHbOgFhLDwMMQeASSC2ab7CFYyXbvtUA17s1cnVx5agDLni4Ibl4EXWBhXdqNZj7r4RdIVX/sxcGOHQ+EB4IYTQI5FvM1Vofc/mEMEL51PvcmD5XjoHj7Nw4Y1rFga8tVoRw3PKbhZIrC6WmUU36J7m+n8YOvewzkxZpslyy…(520 chars)"
+              }
+            },
+            "ephemeral": true,
+            "id": "ecec5167-6fb0-4c95-943b-ddf52817668f",
+            "timestamp": "2026-11-14T22:37:31.573Z",
+            "parentId": "338c6df7-6977-44ff-a0f5-038076efd1db"
+          },
+          {
+            "type": "assistant.message",
+            "data": {
+              "messageId": "5f651e7e-d028-4003-a43f-9168bc827a2e",
+              "originatingMessageId": "50df3211-39c1-40da-b5e4-4b0876f10d9d",
+              "model": "mai-code-1.1-flash",
+              "providerId": "copilot",
+              "content": "bravo-s1nmco",
+              "toolRequests": [],
+              "interactionId": "39988350-3279-4e79-94a8-c021237b69ed",
+              "turnId": "1",
+              "phase": "final_answer",
+              "rte": true,
+              "apiCallId": "TmY+0Pbd3XKPpRrMliJn7ZsDbxdfuokCWOammR4LVmqpt4LQWlY4OpsqU04W93q+KzKSgmecJIJqKmpiGlLk7/Sh4XIOI0kjpYN+8U7L3MoYDBtTQWTeUIRIn413+6R8HoZAmNUbGC0jluiYdufOWAcsRluv2on7jcDveD8AT2RH6g/5rW5vnOqH9WR4Ch6EnvPCJHTSJL0UVgq56W5FyRd/N1BRYJOdsyceiePQHHbOgFhLDwMMQeASSC2ab7CFYyXbvtUA17s1cnVx5agDLni4Ibl4EXWBhXdqNZj7r4RdIVX/sxcGOHQ+EB4IYTQI5FvM1Vofc/mEMEL51PvcmD5XjoHj7Nw4Y1rFga8tVoRw3PKbhZIrC6WmUU36J7m+n8YOvewzkxZpslyy…(520 chars)",
+              "serverTools": {
+                "provider": "openai-responses"
+              }
+            },
+            "id": "6d5e11ac-dc69-4f07-96a0-758e949a1923",
+            "timestamp": "2026-11-14T22:37:31.577Z",
+            "parentId": "338c6df7-6977-44ff-a0f5-038076efd1db"
+          },
+          {
+            "type": "assistant.turn_end",
+            "data": {
+              "turnId": "1"
+            },
+            "id": "bfe52df3-c8c6-4bf5-92e8-5fe1e2f18d05",
+            "timestamp": "2026-11-14T22:37:31.578Z",
+            "parentId": "6d5e11ac-dc69-4f07-96a0-758e949a1923"
+          },
+          {
+            "type": "hook.start",
+            "data": {
+              "hookInvocationId": "9ac17885-fd3b-4374-a28c-d1093b17f55d",
+              "hookType": "agentStop",
+              "input": {
+                "sessionId": "66294346-dc38-4618-8fe9-ae5afa0b5938",
+                "transcriptPath": "~/.copilot/session-state/66294346-dc38-4618-8fe9-ae5afa0b5938/events.jsonl",
+                "stopReason": "end_turn",
+                "stop_hook_active": false,
+                "timestamp": 1794695851580,
+                "cwd": "<repoA>"
+              }
+            },
+            "id": "825e700a-9dea-497c-a31a-15b7aad84a87",
+            "timestamp": "2026-11-14T22:37:31.580Z",
+            "parentId": "bfe52df3-c8c6-4bf5-92e8-5fe1e2f18d05"
+          },
+          {
+            "type": "hook.end",
+            "data": {
+              "hookInvocationId": "9ac17885-fd3b-4374-a28c-d1093b17f55d",
+              "hookType": "agentStop",
+              "success": true
+            },
+            "id": "66911d22-2aa8-4f80-ada0-c5c7e97683b4",
+            "timestamp": "2026-11-14T22:37:31.581Z",
+            "parentId": "825e700a-9dea-497c-a31a-15b7aad84a87"
+          },
+          {
+            "type": "session.usage_checkpoint",
+            "data": {
+              "totalNanoAiu": 122836000,
+              "totalPremiumRequests": 1,
+              "modelCacheState": [
+                {
+                  "modelId": "mai-code-1.1-flash",
+                  "cacheExpiresAt": "2026-11-14T23:07:30.965Z",
+                  "cacheTtlSeconds": 1800
+                }
+              ],
+              "promptCacheBreakState": [
+                {
+                  "conversation": "main",
+                  "models": {
+                    "mai-code-1.1-flash": {
+                      "model": "mai-code-1.1-flash",
+                      "vendor": "openai",
+                      "model_call_id": "TmY+0Pbd3XKPpRrMliJn7ZsDbxdfuokCWOammR4LVmqpt4LQWlY4OpsqU04W93q+KzKSgmecJIJqKmpiGlLk7/Sh4XIOI0kjpYN+8U7L3MoYDBtTQWTeUIRIn413+6R8HoZAmNUbGC0jluiYdufOWAcsRluv2on7jcDveD8AT2RH6g/5rW5vnOqH9WR4Ch6EnvPCJHTSJL0UVgq56W5FyRd/N1BRYJOdsyceiePQHHbOgFhLDwMMQeASSC2ab7CFYyXbvtUA17s1cnVx5agDLni4Ibl4EXWBhXdqNZj7r4RdIVX/sxcGOHQ+EB4IYTQI5FvM1Vofc/mEMEL51PvcmD5XjoHj7Nw4Y1rFga8tVoRw3PKbhZIrC6WmUU36J7m+n8YOvewzkxZpslyy…(520 chars)",
+                      "request_id": "00000-c6db189e-2204-4de9-be5f-995240f71afc",
+                      "github_request_id": "bbd59fa6-4817-4ed5-b0f6-898e21892412",
+                      "api_endpoint": "ws:/responses",
+                      "transport": "websocket",
+                      "session_mode": "interactive",
+                      "reasoning_effort": "medium",
+                      "initiator": "agent",
+                      "tool_count": 25,
+                      "tool_tokens": 7788,
+                      "tools": [
+                        {
+                          "name": "bash",
+                          "schema_hash": "5aff88e14e77",
+                          "safe": true
+                        },
+                        {
+                          "name": "read_bash",
+                          "schema_hash": "78bdc74b3707",
+                          "safe": true
+                        },
+                        {
+                          "name": "stop_bash",
+                          "schema_hash": "dd8c0c97e7c9",
+                          "safe": true
+                        },
+                        {
+                          "name": "list_bash",
+                          "schema_hash": "3209638ac5d6",
+                          "safe": true
+                        },
+                        {
+                          "name": "view",
+                          "schema_hash": "3e73851b027b",
+                          "safe": true
+                        },
+                        {
+                          "name": "create",
+                          "schema_hash": "d7e30321149d",
+                          "safe": true
+                        },
+                        {
+                          "name": "edit",
+                          "schema_hash": "0be632c6eeaa",
+                          "safe": true
+                        },
+                        {
+                          "name": "web_fetch",
+                          "schema_hash": "a0829f05c5fd",
+                          "safe": true
+                        },
+                        {
+                          "name": "search_code_subagent",
+                          "schema_hash": "3c5f0f30dd6a",
+                          "safe": true
+                        },
+                        {
+                          "name": "semantic_code_search",
+                          "schema_hash": "a9a3d6d96921",
+                          "safe": false
+                        },
+                        {
+                          "name": "skill",
+                          "schema_hash": "a7ac9beec0b8",
+                          "safe": true
+                        },
+                        {
+                          "name": "run_dynamic_workflow",
+                          "schema_hash": "d4f938d51048",
+                          "safe": true
+                        },
+                        {
+                          "name": "dynamic_workflows_manage",
+                          "schema_hash": "5d3e79db7ecb",
+                          "safe": false
+                        },
+                        {
+                          "name": "sql",
+                          "schema_hash": "5756c3fc79ed",
+                          "safe": true
+                        },
+                        {
+                          "name": "read_agent",
+                          "schema_hash": "fb2b527fdba4",
+                          "safe": true
+                        },
+                        {
+                          "name": "list_agents",
+                          "schema_hash": "bb480bb53a47",
+                          "safe": true
+                        },
+                        {
+                          "name": "write_agent",
+                          "schema_hash": "d4ba47acdccd",
+                          "safe": true
+                        },
+                        {
+                          "name": "grep",
+                          "schema_hash": "d0b58b80eaaf",
+                          "safe": true
+                        },
+                        {
+                          "name": "glob",
+                          "schema_hash": "40089e3a3ba4",
+                          "safe": true
+                        },
+                        {
+                          "name": "task",
+                          "schema_hash": "ce7cf447089e",
+                          "safe": true
+                        },
+                        {
+                          "name": "github-mcp-server-get_copilot_space",
+                          "schema_hash": "c8adccdafb84",
+                          "safe": true
+                        },
+                        {
+                          "name": "github-mcp-server-get_file_contents",
+                          "schema_hash": "6cf17f9abfd4",
+                          "safe": true
+                        },
+                        {
+                          "name": "github-mcp-server-list_copilot_spaces",
+                          "schema_hash": "32e5d3fd470f",
+                          "safe": true
+                        },
+                        {
+                          "name": "github-mcp-server-search_code",
+                          "schema_hash": "679d4765fec5",
+                          "safe": true
+                        },
+                        {
+                          "name": "github-mcp-server-search_users",
+                          "schema_hash": "da0cf089bedb",
+                          "safe": true
+                        }
+                      ],
+                      "tools_truncated": 0,
+                      "system_segments": [
+                        {
+                          "segment": "identity_preamble",
+                          "hash": "bb194c21624a",
+                          "tokens": 16
+                        },
+                        {
+                          "segment": "interaction_mode",
+                          "hash": "e5959028ccdd",
+                          "tokens": 13
+                        },
+                        {
+                          "segment": "tone_and_style",
+                          "hash": "cd4c10cfdb57",
+                          "tokens": 45
+                        },
+                        {
+                          "segment": "search_and_delegation",
+                          "hash": "745ad2d45bb4",
+                          "tokens": 138
+                        },
+                        {
+                          "segment": "tool_efficiency",
+                          "hash": "cb7de732a200",
+                          "tokens": 200
+                        },
+                        {
+                          "segment": "version_information",
+                          "hash": "9082bee48598",
+                          "tokens": 17
+                        },
+                        {
+                          "segment": "model_information",
+                          "hash": "5e67dc60f292",
+                          "tokens": 54
+                        },
+                        {
+                          "segment": "environment_context",
+                          "hash": "b78cc223c3e4",
+                          "tokens": 92
+                        },
+                        {
+                          "segment": "identity_task_instructions",
+                          "hash": "adb5ce208724",
+                          "tokens": 11
+                        },
+                        {
+                          "segment": "code_change_instructions",
+                          "hash": "ae7d2a78e12d",
+                          "tokens": 228
+                        },
+                        {
+                          "segment": "dynamic_guidelines",
+                          "hash": "b41ed4d2e2eb",
+                          "tokens": 82
+                        },
+                        {
+                          "segment": "environment_limitations",
+                          "hash": "8cf9cbce1516",
+                          "tokens": 244
+                        },
+                        {
+                          "segment": "tool_intro",
+                          "hash": "2c07d9f78963",
+                          "tokens": 20
+                        },
+                        {
+                          "segment": "tool_instructions",
+                          "hash": "41f19b5793c7",
+                          "tokens": 3199
+                        },
+                        {
+                          "segment": "system_notifications",
+                          "hash": "06e72cdc5231",
+                          "tokens": 86
+                        },
+                        {
+                          "segment": "workspace_context",
+                          "hash": "4db57385ae4a",
+                          "tokens": 80
+                        },
+                        {
+                          "segment": "git_commit_trailer",
+                          "hash": "1d737bc1da62",
+                          "tokens": 67
+                        },
+                        {
+                          "segment": "final_instructions",
+                          "hash": "42885e06aebe",
+                          "tokens": 223
+                        }
+                      ],
+                      "conversation": {
+                        "message_count": 3,
+                        "points": [
+                          {
+                            "index": 0,
+                            "hash": "93e4d8f8ba30"
+                          },
+                          {
+                            "index": 1,
+                            "hash": "3c1e3d0d6891"
+                          },
+                          {
+                            "index": 2,
+                            "hash": "15a6f22e287c"
+                          }
+                        ]
+                      },
+                      "cache_config": {
+                        "arm": "control",
+                        "marks_system_prompt": false,
+                        "marks_conversation": false,
+                        "advisor_tool": false,
+                        "incremental_input": true,
+                        "system_prompt_layout": "legacy"
+                      },
+                      "prompt_tokens": 11369,
+                      "cache_read": 11264,
+                      "cache_write": 0,
+                      "cache_details_reported": true,
+                      "frontier_tokens": 11264,
+                      "frontier_source": "reported_writes",
+                      "ttl_seconds": 1800,
+                      "cache_expires_at": "2026-11-14T23:07:30.965Z",
+                      "completed_at": "2026-11-14T22:37:31.572Z"
+                    }
+                  },
+                  "lastActiveModel": "mai-code-1.1-flash",
+                  "pendingRewriteSources": []
+                }
+              ],
+              "accountingSnapshot": {
+                "totalPremiumRequestCost": 1,
+                "totalUserRequests": 1,
+                "totalNanoAiu": 122836000,
+                "aiCreditsStatus": "complete",
+                "tokenDetails": {
+                  "input": {
+                    "tokenCount": 3997
+                  },
+                  "cache_read": {
+                    "tokenCount": 18688
+                  },
+                  "cache_write": {
+                    "tokenCount": 0
+                  },
+                  "output": {
+                    "tokenCount": 46
+                  }
+                },
+                "totalApiDurationMs": 1528,
+                "sessionStartTime": "2026-11-14T22:37:28.703Z",
+                "codeChanges": {
+                  "linesAdded": 0,
+                  "linesRemoved": 0,
+                  "filesModifiedCount": 0,
+                  "filesModified": []
+                },
+                "modelMetrics": {
+                  "mai-code-1.1-flash": {
+                    "requests": {
+                      "count": 2,
+                      "cost": 1
+                    },
+                    "usage": {
+                      "inputTokens": 22685,
+                      "outputTokens": 46,
+                      "cacheReadTokens": 18688,
+                      "cacheWriteTokens": 0,
+                      "reasoningTokens": 0
+                    },
+                    "cacheExpiresAt": "2026-11-14T23:07:30.965Z",
+                    "totalNanoAiu": 122836000,
+                    "aiCreditsStatus": "complete",
+                    "tokenDetails": {
+                      "input": {
+                        "tokenCount": 3997
+                      },
+                      "cache_read": {
+                        "tokenCount": 18688
+                      },
+                      "cache_write": {
+                        "tokenCount": 0
+                      },
+                      "output": {
+                        "tokenCount": 46
+                      }
+                    }
+                  }
+                },
+                "agentMetrics": {
+                  "main": {
+                    "totalApiDurationMs": 1528,
+                    "totalNanoAiu": 122836000,
+                    "modelMetrics": {
+                      "mai-code-1.1-flash": {
+                        "requests": {
+                          "count": 2,
+                          "cost": 1
+                        },
+                        "usage": {
+                          "inputTokens": 22685,
+                          "outputTokens": 46,
+                          "cacheReadTokens": 18688,
+                          "cacheWriteTokens": 0,
+                          "reasoningTokens": 0
+                        },
+                        "totalNanoAiu": 122836000,
+                        "tokenDetails": {
+                          "input": {
+                            "tokenCount": 3997
+                          },
+                          "cache_read": {
+                            "tokenCount": 18688
+                          },
+                          "cache_write": {
+                            "tokenCount": 0
+                          },
+                          "output": {
+                            "tokenCount": 46
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "providerModelMetrics": [
+                  {
+                    "provider": {
+                      "id": "copilot",
+                      "label": "GitHub Copilot",
+                      "kind": "copilot"
+                    },
+                    "modelId": "mai-code-1.1-flash",
+                    "metrics": {
+                      "requests": {
+                        "count": 2,
+                        "cost": 1
+                      },
+                      "usage": {
+                        "inputTokens": 22685,
+                        "outputTokens": 46,
+                        "cacheReadTokens": 18688,
+                        "cacheWriteTokens": 0,
+                        "reasoningTokens": 0
+                      },
+                      "totalNanoAiu": 122836000,
+                      "aiCreditsStatus": "complete",
+                      "tokenDetails": {
+                        "input": {
+                          "tokenCount": 3997
+                        },
+                        "cache_read": {
+                          "tokenCount": 18688
+                        },
+                        "cache_write": {
+                          "tokenCount": 0
+                        },
+                        "output": {
+                          "tokenCount": 46
+                        }
+                      }
+                    },
+                    "modelDisplayName": "MAI-Code-1.1-Flash"
+                  }
+                ],
+                "currentModel": "mai-code-1.1-flash",
+                "lastCallInputTokens": 11369,
+                "lastCallOutputTokens": 10
+              },
+              "providerModelMetrics": [
+                {
+                  "provider": {
+                    "id": "copilot",
+                    "label": "GitHub Copilot",
+                    "kind": "copilot"
+                  },
+                  "modelId": "mai-code-1.1-flash",
+                  "metrics": {
+                    "requests": {
+                      "count": 2,
+                      "cost": 1
+                    },
+                    "usage": {
+                      "inputTokens": 22685,
+                      "outputTokens": 46,
+                      "cacheReadTokens": 18688,
+                      "cacheWriteTokens": 0,
+                      "reasoningTokens": 0
+                    },
+                    "totalNanoAiu": 122836000,
+                    "aiCreditsStatus": "complete",
+                    "tokenDetails": {
+                      "input": {
+                        "tokenCount": 3997
+                      },
+                      "cache_read": {
+                        "tokenCount": 18688
+                      },
+                      "cache_write": {
+                        "tokenCount": 0
+                      },
+                      "output": {
+                        "tokenCount": 46
+                      }
+                    }
+                  },
+                  "modelDisplayName": "MAI-Code-1.1-Flash"
+                }
+              ],
+              "usageAccountingWatermarks": {
+                "66294346-dc38-4618-8fe9-ae5afa0b5938": 2
+              }
+            },
+            "id": "bc0c0d7a-15f4-4e5e-9ed8-7bec6e5ac789",
+            "timestamp": "2026-11-14T22:37:31.583Z",
+            "parentId": "66911d22-2aa8-4f80-ada0-c5c7e97683b4"
+          },
+          {
+            "type": "assistant.idle",
+            "data": {},
+            "ephemeral": true,
+            "id": "e7fcf350-aef7-4159-adb7-b592c59fc3c1",
+            "timestamp": "2026-11-14T22:37:31.584Z",
+            "parentId": "bc0c0d7a-15f4-4e5e-9ed8-7bec6e5ac789"
+          },
+          {
+            "type": "session.idle",
+            "data": {
+              "mode": "interactive"
+            },
+            "ephemeral": true,
+            "id": "a284357e-c6a3-47ee-bce7-f0db2cfea805",
+            "timestamp": "2026-11-14T22:37:31.585Z",
+            "parentId": "bc0c0d7a-15f4-4e5e-9ed8-7bec6e5ac789"
+          },
+          {
+            "type": "hook.start",
+            "data": {
+              "hookInvocationId": "bcb255d9-831f-49c1-b77c-216c4693653a",
+              "hookType": "sessionEnd",
+              "input": {
+                "reason": "user_exit",
+                "sessionId": "66294346-dc38-4618-8fe9-ae5afa0b5938",
+                "timestamp": 1794695851588,
+                "cwd": "<repoA>"
+              }
+            },
+            "id": "b5d580a5-b437-4242-a76b-c681125f585c",
+            "timestamp": "2026-11-14T22:37:31.588Z",
+            "parentId": "bc0c0d7a-15f4-4e5e-9ed8-7bec6e5ac789"
+          },
+          {
+            "type": "hook.end",
+            "data": {
+              "hookInvocationId": "bcb255d9-831f-49c1-b77c-216c4693653a",
+              "hookType": "sessionEnd",
+              "success": true
+            },
+            "id": "ff591846-884b-4ce0-9bd5-6cf788359e9f",
+            "timestamp": "2026-11-14T22:37:31.589Z",
+            "parentId": "b5d580a5-b437-4242-a76b-c681125f585c"
+          },
+          {
+            "type": "session.shutdown",
+            "data": {
+              "accountingSnapshot": {
+                "totalPremiumRequestCost": 1,
+                "totalUserRequests": 1,
+                "totalNanoAiu": 122836000,
+                "aiCreditsStatus": "complete",
+                "tokenDetails": {
+                  "input": {
+                    "tokenCount": 3997
+                  },
+                  "cache_read": {
+                    "tokenCount": 18688
+                  },
+                  "cache_write": {
+                    "tokenCount": 0
+                  },
+                  "output": {
+                    "tokenCount": 46
+                  }
+                },
+                "totalApiDurationMs": 1528,
+                "sessionStartTime": "2026-11-14T22:37:28.703Z",
+                "codeChanges": {
+                  "linesAdded": 0,
+                  "linesRemoved": 0,
+                  "filesModifiedCount": 0,
+                  "filesModified": []
+                },
+                "modelMetrics": {
+                  "mai-code-1.1-flash": {
+                    "requests": {
+                      "count": 2,
+                      "cost": 1
+                    },
+                    "usage": {
+                      "inputTokens": 22685,
+                      "outputTokens": 46,
+                      "cacheReadTokens": 18688,
+                      "cacheWriteTokens": 0,
+                      "reasoningTokens": 0
+                    },
+                    "cacheExpiresAt": "2026-11-14T23:07:30.965Z",
+                    "totalNanoAiu": 122836000,
+                    "aiCreditsStatus": "complete",
+                    "tokenDetails": {
+                      "input": {
+                        "tokenCount": 3997
+                      },
+                      "cache_read": {
+                        "tokenCount": 18688
+                      },
+                      "cache_write": {
+                        "tokenCount": 0
+                      },
+                      "output": {
+                        "tokenCount": 46
+                      }
+                    }
+                  }
+                },
+                "agentMetrics": {
+                  "main": {
+                    "totalApiDurationMs": 1528,
+                    "totalNanoAiu": 122836000,
+                    "modelMetrics": {
+                      "mai-code-1.1-flash": {
+                        "requests": {
+                          "count": 2,
+                          "cost": 1
+                        },
+                        "usage": {
+                          "inputTokens": 22685,
+                          "outputTokens": 46,
+                          "cacheReadTokens": 18688,
+                          "cacheWriteTokens": 0,
+                          "reasoningTokens": 0
+                        },
+                        "totalNanoAiu": 122836000,
+                        "tokenDetails": {
+                          "input": {
+                            "tokenCount": 3997
+                          },
+                          "cache_read": {
+                            "tokenCount": 18688
+                          },
+                          "cache_write": {
+                            "tokenCount": 0
+                          },
+                          "output": {
+                            "tokenCount": 46
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "providerModelMetrics": [
+                  {
+                    "provider": {
+                      "id": "copilot",
+                      "label": "GitHub Copilot",
+                      "kind": "copilot"
+                    },
+                    "modelId": "mai-code-1.1-flash",
+                    "metrics": {
+                      "requests": {
+                        "count": 2,
+                        "cost": 1
+                      },
+                      "usage": {
+                        "inputTokens": 22685,
+                        "outputTokens": 46,
+                        "cacheReadTokens": 18688,
+                        "cacheWriteTokens": 0,
+                        "reasoningTokens": 0
+                      },
+                      "totalNanoAiu": 122836000,
+                      "aiCreditsStatus": "complete",
+                      "tokenDetails": {
+                        "input": {
+                          "tokenCount": 3997
+                        },
+                        "cache_read": {
+                          "tokenCount": 18688
+                        },
+                        "cache_write": {
+                          "tokenCount": 0
+                        },
+                        "output": {
+                          "tokenCount": 46
+                        }
+                      }
+                    },
+                    "modelDisplayName": "MAI-Code-1.1-Flash"
+                  }
+                ],
+                "currentModel": "mai-code-1.1-flash",
+                "lastCallInputTokens": 11369,
+                "lastCallOutputTokens": 10
+              },
+              "providerModelMetrics": [
+                {
+                  "provider": {
+                    "id": "copilot",
+                    "label": "GitHub Copilot",
+                    "kind": "copilot"
+                  },
+                  "modelId": "mai-code-1.1-flash",
+                  "metrics": {
+                    "requests": {
+                      "count": 2,
+                      "cost": 1
+                    },
+                    "usage": {
+                      "inputTokens": 22685,
+                      "outputTokens": 46,
+                      "cacheReadTokens": 18688,
+                      "cacheWriteTokens": 0,
+                      "reasoningTokens": 0
+                    },
+                    "totalNanoAiu": 122836000,
+                    "aiCreditsStatus": "complete",
+                    "tokenDetails": {
+                      "input": {
+                        "tokenCount": 3997
+                      },
+                      "cache_read": {
+                        "tokenCount": 18688
+                      },
+                      "cache_write": {
+                        "tokenCount": 0
+                      },
+                      "output": {
+                        "tokenCount": 46
+                      }
+                    }
+                  },
+                  "modelDisplayName": "MAI-Code-1.1-Flash"
+                }
+              ],
+              "usageAccountingWatermarks": {
+                "66294346-dc38-4618-8fe9-ae5afa0b5938": 2
+              },
+              "shutdownType": "routine",
+              "totalPremiumRequests": 1,
+              "totalNanoAiu": 122836000,
+              "tokenDetails": {
+                "input": {
+                  "tokenCount": 3997
+                },
+                "cache_read": {
+                  "tokenCount": 18688
+                },
+                "cache_write": {
+                  "tokenCount": 0
+                },
+                "output": {
+                  "tokenCount": 46
+                }
+              },
+              "totalApiDurationMs": 1528,
+              "sessionStartTime": 1794695848703,
+              "eventsFileSizeBytes": 51055,
+              "codeChanges": {
+                "linesAdded": 0,
+                "linesRemoved": 0,
+                "filesModified": []
+              },
+              "modelMetrics": {
+                "mai-code-1.1-flash": {
+                  "requests": {
+                    "count": 2,
+                    "cost": 1
+                  },
+                  "usage": {
+                    "inputTokens": 22685,
+                    "outputTokens": 46,
+                    "cacheReadTokens": 18688,
+                    "cacheWriteTokens": 0,
+                    "reasoningTokens": 0
+                  },
+                  "totalNanoAiu": 122836000,
+                  "tokenDetails": {
+                    "input": {
+                      "tokenCount": 3997
+                    },
+                    "cache_read": {
+                      "tokenCount": 18688
+                    },
+                    "cache_write": {
+                      "tokenCount": 0
+                    },
+                    "output": {
+                      "tokenCount": 46
+                    }
+                  }
+                }
+              },
+              "agentMetrics": {
+                "main": {
+                  "totalApiDurationMs": 1528,
+                  "totalNanoAiu": 122836000,
+                  "modelMetrics": {
+                    "mai-code-1.1-flash": {
+                      "requests": {
+                        "count": 2,
+                        "cost": 1
+                      },
+                      "usage": {
+                        "inputTokens": 22685,
+                        "outputTokens": 46,
+                        "cacheReadTokens": 18688,
+                        "cacheWriteTokens": 0,
+                        "reasoningTokens": 0
+                      },
+                      "totalNanoAiu": 122836000,
+                      "tokenDetails": {
+                        "input": {
+                          "tokenCount": 3997
+                        },
+                        "cache_read": {
+                          "tokenCount": 18688
+                        },
+                        "cache_write": {
+                          "tokenCount": 0
+                        },
+                        "output": {
+                          "tokenCount": 46
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "currentModel": "mai-code-1.1-flash",
+              "currentTokens": 12076,
+              "systemTokens": 4815,
+              "conversationTokens": 138,
+              "toolDefinitionsTokens": 7120
+            },
+            "id": "0be521b5-b8dd-430c-945b-e0f060ba7c3f",
+            "timestamp": "2026-11-14T22:37:31.595Z",
+            "parentId": "ff591846-884b-4ce0-9bd5-6cf788359e9f"
+          }
+        ],
+        "sessionId": "66294346-dc38-4618-8fe9-ae5afa0b5938"
+      }
+    },
+    {
+      "variant": "additionalDirectories",
+      "reached": true,
+      "reply": "\nbravo-s1nmco",
+      "errors": [],
+      "readPermissionsForB": 1,
+      "log": {
+        "label": "read:additionalDirectories",
+        "workingDirectory": "<repoA>",
+        "additionalDirectories": [
+          "<repoB>"
+        ],
+        "permissions": [
+          {
+            "sessionId": "a3342afb-0af6-4481-97e9-8f74a82a589d",
+            "request": {
+              "kind": "read",
+              "toolCallId": "call_MyIvohkiriK4uwCRCL4sFL8V",
+              "intention": "Read file: <repoB>/notes.txt",
+              "path": "<repoB>/notes.txt"
+            },
+            "result": {
+              "kind": "approve-once"
+            }
+          }
+        ],
+        "hooks": [
+          {
+            "sessionId": "a3342afb-0af6-4481-97e9-8f74a82a589d",
+            "input": {
+              "sessionId": "a3342afb-0af6-4481-97e9-8f74a82a589d",
+              "timestamp": "2026-11-14T22:37:33.943Z",
+              "toolName": "view",
+              "toolArgs": {
+                "path": "<repoB>/notes.txt"
+              },
+              "workingDirectory": "<repoA>"
+            }
+          }
+        ],
+        "events": [
+          {
+            "type": "session.start",
+            "data": {
+              "sessionId": "a3342afb-0af6-4481-97e9-8f74a82a589d",
+              "version": 1,
+              "producer": "copilot-agent",
+              "copilotVersion": "1.0.105",
+              "startTime": "2026-11-14T22:37:32.100Z",
+              "contextTier": null,
+              "context": {
+                "cwd": "<repoA>",
+                "gitRoot": "<repoA>",
+                "branch": "main",
+                "headCommit": "940e4e5504b77c4ab55e6e174c2028b7bda39be3"
+              },
+              "remoteSteerable": false,
+              "alreadyInUse": false
+            },
+            "id": "7cb402a3-2cfb-4b24-a63d-b2fd8e1a92fd",
+            "timestamp": "2026-11-14T22:37:32.108Z",
+            "parentId": null
+          },
+          {
+            "type": "session.managed_settings_resolved",
+            "data": {
+              "source": "none",
+              "serverManaged": false,
+              "deviceManaged": false,
+              "clientManaged": false,
+              "policyHelperManaged": false,
+              "failClosed": false,
+              "sandboxEnabledByUndeterminedPolicy": false,
+              "bypassPermissionsDisabled": false,
+              "managedKeys": [],
+              "permissionsContext": {
+                "failClosed": false
+              }
+            },
+            "ephemeral": true,
+            "id": "1265410a-535f-4a11-81f8-e1c5b21711f6",
+            "timestamp": "2026-11-14T22:37:32.108Z",
+            "parentId": "7cb402a3-2cfb-4b24-a63d-b2fd8e1a92fd"
+          },
+          {
+            "type": "pending_messages.modified",
+            "data": {},
+            "ephemeral": true,
+            "id": "734ee4c1-41b3-44db-aaf9-e524349dbdf5",
+            "timestamp": "2026-11-14T22:37:32.115Z",
+            "parentId": "7cb402a3-2cfb-4b24-a63d-b2fd8e1a92fd"
+          },
+          {
+            "type": "session.indexed_search",
+            "data": {
+              "kind": "status",
+              "state": "disabled"
+            },
+            "ephemeral": true,
+            "id": "b551f3a9-96b8-4211-a19e-477746323f4c",
+            "timestamp": "2026-11-14T22:37:32.116Z",
+            "parentId": "7cb402a3-2cfb-4b24-a63d-b2fd8e1a92fd"
+          },
+          {
+            "type": "session.indexed_search",
+            "data": {
+              "kind": "startup",
+              "outcome": "skipped_below_threshold",
+              "forcedByEnv": false,
+              "warmStart": false,
+              "startupDurationMs": 13,
+              "fileCount": 2,
+              "eligible": false
+            },
+            "ephemeral": true,
+            "id": "9fdc267f-6757-4e44-8729-5903e7659749",
+            "timestamp": "2026-11-14T22:37:32.117Z",
+            "parentId": "7cb402a3-2cfb-4b24-a63d-b2fd8e1a92fd"
+          },
+          {
+            "type": "pending_messages.modified",
+            "data": {},
+            "ephemeral": true,
+            "id": "7b265a81-50e5-4c82-addc-2c79232313ea",
+            "timestamp": "2026-11-14T22:37:32.118Z",
+            "parentId": "7cb402a3-2cfb-4b24-a63d-b2fd8e1a92fd"
+          },
+          {
+            "type": "hook.start",
+            "data": {
+              "hookInvocationId": "6d9d4ed8-c1ad-4481-9b0a-3ebadb0597f7",
+              "hookType": "sessionStart",
+              "input": {
+                "source": "new",
+                "initialPrompt": "Read the file <repoB>/notes.txt and reply with its exact contents only.",
+                "sessionId": "a3342afb-0af6-4481-97e9-8f74a82a589d",
+                "timestamp": 1794695852118,
+                "cwd": "<repoA>"
+              }
+            },
+            "id": "d4290a0e-bc65-4660-9a9d-659fd043a22f",
+            "timestamp": "2026-11-14T22:37:32.118Z",
+            "parentId": "7cb402a3-2cfb-4b24-a63d-b2fd8e1a92fd"
+          },
+          {
+            "type": "hook.end",
+            "data": {
+              "hookInvocationId": "6d9d4ed8-c1ad-4481-9b0a-3ebadb0597f7",
+              "hookType": "sessionStart",
+              "success": true
+            },
+            "id": "2b4ec8e1-4470-4583-a44f-76218acf91bc",
+            "timestamp": "2026-11-14T22:37:32.119Z",
+            "parentId": "d4290a0e-bc65-4660-9a9d-659fd043a22f"
+          },
+          {
+            "type": "session.title_changed",
+            "data": {
+              "title": "Read the file <repoB>/notes.txt and reply with its exact contents only."
+            },
+            "ephemeral": true,
+            "id": "e0ac0dfd-0aa4-4741-84ce-6ac6ead15bbc",
+            "timestamp": "2026-11-14T22:37:32.119Z",
+            "parentId": "2b4ec8e1-4470-4583-a44f-76218acf91bc"
+          },
+          {
+            "type": "session.model_change",
+            "data": {
+              "previousModel": null,
+              "newModel": "auto",
+              "previousReasoningEffort": null,
+              "reasoningEffort": null,
+              "previousReasoningSummary": null,
+              "reasoningSummary": null,
+              "source": "startup",
+              "contextTier": null,
+              "autoTier": null
+            },
+            "id": "4cf133c5-665d-49e8-815f-641516cdb0c2",
+            "timestamp": "2026-11-14T22:37:32.188Z",
+            "parentId": "2b4ec8e1-4470-4583-a44f-76218acf91bc"
+          },
+          {
+            "type": "session.auto_mode_resolved",
+            "data": {
+              "chosenModel": "mai-code-1.1-flash",
+              "selectionReason": "Auto selected MAI-Code-1.1-Flash because it was the best choice out of the models available in your plan.",
+              "categoryScores": {
+                "debugging": 0.0014,
+                "tool_use": 0.0145,
+                "code_gen": 0.0066,
+                "reasoning": 0.0282
+              },
+              "candidateModels": [
+                "mai-code-1.1-flash"
+              ],
+              "routingMethod": "auto_v2",
+              "fallback": false,
+              "availableModels": [
+                "mai-code-1.1-flash"
+              ],
+              "endToEndLatencyMs": 125.974625,
+              "hasImage": false
+            },
+            "id": "2bb44026-60ef-490f-969c-cdb2cb1081d5",
+            "timestamp": "2026-11-14T22:37:32.315Z",
+            "parentId": "4cf133c5-665d-49e8-815f-641516cdb0c2"
+          },
+          {
+            "type": "session.skills_loaded",
+            "data": {
+              "skills": [
+                {
+                  "name": "customize-cloud-agent",
+                  "commandName": "customize-cloud-agent",
+                  "description": "Skill for customizing the Copilot cloud agent (formerly known as Copilot coding agent) environment, including copilot-setup-steps.yml configuration, preinstalling tools and dependencies, runners, and settings. Use when the user mentions copilot-setup-steps, copilot setup steps, or wants to configure the cloud agent environment.",
+                  "source": "builtin",
+                  "userInvocable": false,
+                  "enabled": true,
+                  "path": "~/Documents/repos/pica/.claude/worktrees/s-04-multi-root-3b4178/engine/node_modules/.pnpm/@github+copilot-sdk-darwin-arm64@1.0.28/node_modules/@github/copilot-sdk-darwin-arm64/builtin/customize-cloud-agent/SKILL.md"
+                },
+                {
+                  "name": "github-pr-media",
+                  "commandName": "github-pr-media",
+                  "description": "Upload an image or video to GitHub's user attachments API and embed it in a pull request description or comment. Use when asked to add screenshots, diagrams, recordings, or other media to a PR or GitHub comment.",
+                  "source": "builtin",
+                  "userInvocable": false,
+                  "enabled": true,
+                  "path": "~/Documents/repos/pica/.claude/worktrees/s-04-multi-root-3b4178/engine/node_modules/.pnpm/@github+copilot-sdk-darwin-arm64@1.0.28/node_modules/@github/copilot-sdk-darwin-arm64/builtin/github-pr-media/SKILL.md"
+                }
+              ]
+            },
+            "ephemeral": true,
+            "id": "59a1f806-83d3-4e0d-8dc9-dafd067166c8",
+            "timestamp": "2026-11-14T22:37:32.317Z",
+            "parentId": "2bb44026-60ef-490f-969c-cdb2cb1081d5"
+          },
+          {
+            "type": "session.mcp_server_status_changed",
+            "data": {
+              "serverName": "github-mcp-server",
+              "status": "pending"
+            },
+            "ephemeral": true,
+            "id": "0354fa1a-0964-4fc8-9cf3-2e0def24bd83",
+            "timestamp": "2026-11-14T22:37:32.319Z",
+            "parentId": "2bb44026-60ef-490f-969c-cdb2cb1081d5"
+          },
+          {
+            "type": "session.mcp_servers_loaded",
+            "ephemeral": true,
+            "data": {
+              "servers": [
+                {
+                  "name": "github-mcp-server",
+                  "status": "connected",
+                  "source": "builtin",
+                  "displayName": "GitHub MCP Server",
+                  "serverMetadata": {
+                    "instructions": "The GitHub MCP Server provides tools to interact with GitHub platform.\n\nTool selection guidance:\n\t1. Use 'list_*' tools for broad, simple retrieval and pagination of all items of a type (e.g., all issues, all PRs, all branches) with basic filtering.\n\t2. Use 'search_*' tools for targeted queries with specific criteria, keywords, or complex filters (e.g., issues with certain text, PRs by author, cod…(903 chars)"
+                  }
+                }
+              ]
+            },
+            "id": "eb188cef-438a-462c-bbf4-556e818c166f",
+            "timestamp": "2026-11-14T22:37:32.524Z",
+            "parentId": "2bb44026-60ef-490f-969c-cdb2cb1081d5"
+          },
+          {
+            "type": "session.mcp_server_status_changed",
+            "data": {
+              "serverName": "github-mcp-server",
+              "status": "connected",
+              "configSource": "builtin"
+            },
+            "ephemeral": true,
+            "id": "4bb7eb5b-67cf-4565-b1ba-e3279d9023b5",
+            "timestamp": "2026-11-14T22:37:32.524Z",
+            "parentId": "2bb44026-60ef-490f-969c-cdb2cb1081d5"
+          },
+          {
+            "type": "session.mcp_server_tools_loaded",
+            "data": {
+              "serverName": "github-mcp-server",
+              "toolCount": 5
+            },
+            "ephemeral": true,
+            "id": "1509ad87-d7ff-4906-8b22-32f564ab3a70",
+            "timestamp": "2026-11-14T22:37:32.657Z",
+            "parentId": "2bb44026-60ef-490f-969c-cdb2cb1081d5"
+          },
+          {
+            "type": "session.tools_updated",
+            "data": {
+              "model": "mai-code-1.1-flash"
+            },
+            "ephemeral": true,
+            "id": "ed4af7f3-bab9-4c0f-99be-634cdba22174",
+            "timestamp": "2026-11-14T22:37:32.677Z",
+            "parentId": "2bb44026-60ef-490f-969c-cdb2cb1081d5"
+          },
+          {
+            "type": "hook.start",
+            "data": {
+              "hookInvocationId": "72508db4-7900-47fc-9d02-d2dd6fc14f86",
+              "hookType": "userPromptSubmitted",
+              "input": {
+                "sessionId": "a3342afb-0af6-4481-97e9-8f74a82a589d",
+                "prompt": "Read the file <repoB>/notes.txt and reply with its exact contents only.",
+                "timestamp": 1794695852678,
+                "cwd": "<repoA>"
+              }
+            },
+            "id": "76fd66cc-c81b-4578-8ebe-4efa7be2647f",
+            "timestamp": "2026-11-14T22:37:32.678Z",
+            "parentId": "2bb44026-60ef-490f-969c-cdb2cb1081d5"
+          },
+          {
+            "type": "hook.end",
+            "data": {
+              "hookInvocationId": "72508db4-7900-47fc-9d02-d2dd6fc14f86",
+              "hookType": "userPromptSubmitted",
+              "success": true
+            },
+            "id": "5a34de53-3a94-4109-bf3f-afa535367998",
+            "timestamp": "2026-11-14T22:37:32.679Z",
+            "parentId": "76fd66cc-c81b-4578-8ebe-4efa7be2647f"
+          },
+          {
+            "type": "hook.start",
+            "data": {
+              "hookInvocationId": "a56d5b40-e00e-474b-bb98-298e5cb111af",
+              "hookType": "userPromptTransformed",
+              "input": {
+                "sessionId": "a3342afb-0af6-4481-97e9-8f74a82a589d",
+                "prompt": "Read the file <repoB>/notes.txt and reply with its exact contents only.",
+                "transformedPrompt": "<current_datetime>2026-11-14T17:37:32.680-05:00</current_datetime>\n\nRead the file <repoB>/notes.txt and reply with its exact contents only.",
+                "timestamp": 1794695852680,
+                "cwd": "<repoA>"
+              }
+            },
+            "id": "f7239787-2742-4c85-a8dd-fd2b16e81b1c",
+            "timestamp": "2026-11-14T22:37:32.680Z",
+            "parentId": "5a34de53-3a94-4109-bf3f-afa535367998"
+          },
+          {
+            "type": "hook.end",
+            "data": {
+              "hookInvocationId": "a56d5b40-e00e-474b-bb98-298e5cb111af",
+              "hookType": "userPromptTransformed",
+              "success": true
+            },
+            "id": "c49ebc3d-2cbc-4ec8-8f50-7bdf85a849d9",
+            "timestamp": "2026-11-14T22:37:32.680Z",
+            "parentId": "f7239787-2742-4c85-a8dd-fd2b16e81b1c"
+          },
+          {
+            "type": "user.message",
+            "data": {
+              "content": "Read the file <repoB>/notes.txt and reply with its exact contents only.",
+              "transformedContent": "<current_datetime>2026-11-14T17:37:32.680-05:00</current_datetime>\n\nRead the file <repoB>/notes.txt and reply with its exact contents only.",
+              "messageId": "9b6b55c7-58d6-4fe7-8e0a-100acf95c0fc",
+              "supportedNativeDocumentMimeTypes": [],
+              "delivery": "idle",
+              "interactionId": "cad58343-5eae-4f2d-9053-d8cdee4caf6e",
+              "turnId": "0",
+              "parentAgentTaskId": "f65d1dce-f953-4225-9edc-48961d459441"
+            },
+            "id": "45f0c528-e2bc-495b-bd9a-2b1177f462b5",
+            "timestamp": "2026-11-14T22:37:32.680Z",
+            "parentId": "c49ebc3d-2cbc-4ec8-8f50-7bdf85a849d9"
+          },
+          {
+            "type": "system.message",
+            "data": {
+              "role": "system",
+              "content": "You are GitHub Copilot, an AI coding agent built by GitHub. You are an interactive tool that helps users with software engineering tasks.\n\n# Tone and style\n* When providing output or explanation to the user, try to limit your response to 100 words or less.\n* Be concise in routine responses. For complex tasks, briefly explain your approach before implementing.\n\n# Search and delegation\n* Give sub-ag…(22509 chars)",
+              "contentBlocks": [
+                {
+                  "content": "You are GitHub Copilot, an AI coding agent built by GitHub. You are an interactive tool that helps users with software engineering tasks.\n\n# Tone and style\n* When providing output or explanation to the user, try to limit your response to 100 words or less.\n* Be concise in routine responses. For complex tasks, briefly explain your approach before implementing.\n\n# Search and delegation\n* Give sub-ag…(4806 chars)",
+                  "isStatic": true
+                },
+                {
+                  "content": "<version_information>Version number: 1.0.105</version_information>\n\n<model_information>Auto mode is active. The concrete model is selected dynamically and may change during the conversation.\nWhen asked which model you are or what model is being used, explain that Auto mode selects the model and do not name a specific underlying model.</model_information>\n\n<environment_context>\nYou are working in t…(17701 chars)"
+                }
+              ],
+              "interactionId": "cad58343-5eae-4f2d-9053-d8cdee4caf6e",
+              "metadata": {
+                "variables": {
+                  "gitCommitTrailer": {
+                    "sessionId": null,
+                    "clientName": "sdk",
+                    "coauthorEnabled": true
+                  }
+                }
+              }
+            },
+            "id": "27d0e4fd-bd61-4f3f-86d6-10337ff0c4d2",
+            "timestamp": "2026-11-14T22:37:32.681Z",
+            "parentId": "45f0c528-e2bc-495b-bd9a-2b1177f462b5"
+          },
+          {
+            "type": "assistant.turn_start",
+            "data": {
+              "turnId": "0",
+              "interactionId": "cad58343-5eae-4f2d-9053-d8cdee4caf6e"
+            },
+            "id": "f3a226fc-dabd-4462-acbe-703506a249fa",
+            "timestamp": "2026-11-14T22:37:32.684Z",
+            "parentId": "27d0e4fd-bd61-4f3f-86d6-10337ff0c4d2"
+          },
+          {
+            "type": "session.usage_info",
+            "ephemeral": true,
+            "data": {
+              "tokenLimit": 128000,
+              "currentTokens": 12694,
+              "messagesLength": 2,
+              "systemTokens": 4845,
+              "conversationTokens": 61,
+              "toolDefinitionsTokens": 7788,
+              "isInitial": true
+            },
+            "id": "8fa30b2e-8ac4-485a-a1a8-b2b46d20f2b1",
+            "timestamp": "2026-11-14T22:37:32.687Z",
+            "parentId": "f3a226fc-dabd-4462-acbe-703506a249fa"
+          },
+          {
+            "type": "assistant.usage",
+            "data": {
+              "model": "mai-code-1.1-flash",
+              "provider": {
+                "id": "copilot",
+                "kind": "copilot",
+                "label": "GitHub Copilot"
+              },
+              "modelDisplayName": "MAI-Code-1.1-Flash",
+              "inputTokens": 11346,
+              "outputTokens": 36,
+              "cacheReadTokens": 7424,
+              "cacheWriteTokens": 0,
+              "reasoningTokens": 0,
+              "cost": 1,
+              "duration": 1015,
+              "timeToFirstTokenMs": 876.287542,
+              "outputTtftMs": 876.287625,
+              "cacheExpiresAt": "2026-11-14T23:07:32.922Z",
+              "interTokenLatencyMs": 2.5313114210526315,
+              "initiator": "user",
+              "interactionType": "conversation-agent",
+              "isByok": false,
+              "isAuto": true,
+              "maxPromptTokens": 128000,
+              "transport": "websocket",
+              "requestBodyBytes": 59098,
+              "requestBodyWireBytes": 59098,
+              "requestBodyEncoding": "identity",
+              "apiCallId": "xqL69CO2OACQnQxW27ClsLmqCiI15n6/6zVuHD58ZRvfHSerEbrpllJI2voXUVr2sFKAu8QRqUOugaHsodKBcjyPlAe65a75E+d3yxCfGmx08Tgg7BrOkNX002SeQrOngliIzjW9+RXrT6N9i1R6RKtPIHruuu1KO2COyxTC6pCG1CPGPFRUqz9WGudxiV92iK4CHaypcybyzJWfEqO2l3h09fVKxzud43BFR6h5RWjS4fDj7/go+RcjCNKcjZh0eepD8Tauj7RrKvR/SUjQDaVdoClOyJKCwQb8CMfAMe0UWySUKmdezj63S8wHg6+W5X6ox4Q38UAzTAoMSNbgJ7f/zDTA2hG5oceWRsWBaSmU51B3O/FXZ+wXY/qtputr0nE3IUrR5I4CzKuj…(520 chars)",
+              "providerCallId": "00000-3bab975a-cba5-41bd-b267-aa9255b49e8f",
+              "serviceRequestId": "2092c0eb-65c5-4cb2-96b8-b16fc24eff65",
+              "rte": true,
+              "apiEndpoint": "ws:/responses",
+              "quotaSnapshots": {
+                "chat": {
+                  "isUnlimitedEntitlement": false,
+                  "entitlementRequests": 200,
+                  "usedRequests": 10,
+                  "usageAllowedWithExhaustedQuota": false,
+                  "overage": 0,
+                  "overageAllowedWithExhaustedQuota": false,
+                  "remainingPercentage": 95.1,
+                  "resetDate": "2026-12-01T00:00:00Z"
+                },
+                "completions": {
+                  "isUnlimitedEntitlement": false,
+                  "entitlementRequests": 2000,
+                  "usedRequests": 10,
+                  "usageAllowedWithExhaustedQuota": false,
+                  "overage": 0,
+                  "overageAllowedWithExhaustedQuota": false,
+                  "remainingPercentage": 99.5,
+                  "resetDate": "2026-12-01T00:00:00Z"
+                },
+                "premium_interactions": {
+                  "isUnlimitedEntitlement": false,
+                  "entitlementRequests": 0,
+                  "usedRequests": 0,
+                  "usageAllowedWithExhaustedQuota": false,
+                  "overage": 0,
+                  "overageAllowedWithExhaustedQuota": false,
+                  "remainingPercentage": 0,
+                  "resetDate": "2026-12-01T00:00:00Z"
+                }
+              },
+              "copilotUsage": {
+                "tokenDetails": [
+                  {
+                    "batchSize": 1000000,
+                    "costPerBatch": 20000000000,
+                    "tokenCount": 3922,
+                    "tokenType": "input",
+                    "model": "mai-code-1.1-flash"
+                  },
+                  {
+                    "batchSize": 1000000,
+                    "costPerBatch": 2000000000,
+                    "tokenCount": 7424,
+                    "tokenType": "cache_read",
+                    "model": "mai-code-1.1-flash"
+                  },
+                  {
+                    "batchSize": 1000000,
+                    "costPerBatch": 25000000000,
+                    "tokenCount": 0,
+                    "tokenType": "cache_write",
+                    "model": "mai-code-1.1-flash"
+                  },
+                  {
+                    "batchSize": 1000000,
+                    "costPerBatch": 120000000000,
+                    "tokenCount": 36,
+                    "tokenType": "output",
+                    "model": "mai-code-1.1-flash"
+                  }
+                ],
+                "totalNanoAiu": 97608000
+              },
+              "aiCreditsStatus": "complete",
+              "reasoningEffort": "medium",
+              "reasoningSummary": "detailed",
+              "availableToolCount": 25,
+              "toolTokenCount": 7788,
+              "customToolCallCount": 0,
+              "unmatchedToolResultCount": 0,
+              "orphanToolCallCount": 0,
+              "frontierSource": "reported_writes",
+              "cacheTtlSeconds": 1800,
+              "cacheDetailsReported": true,
+              "numToolCalls": 1,
+              "toolCounts": {
+                "view": 1
+              },
+              "finishReason": "tool_calls",
+              "contentFilterTriggered": false,
+              "accounting": {
+                "sourceSessionId": "a3342afb-0af6-4481-97e9-8f74a82a589d",
+                "sequence": 1,
+                "usageId": "xqL69CO2OACQnQxW27ClsLmqCiI15n6/6zVuHD58ZRvfHSerEbrpllJI2voXUVr2sFKAu8QRqUOugaHsodKBcjyPlAe65a75E+d3yxCfGmx08Tgg7BrOkNX002SeQrOngliIzjW9+RXrT6N9i1R6RKtPIHruuu1KO2COyxTC6pCG1CPGPFRUqz9WGudxiV92iK4CHaypcybyzJWfEqO2l3h09fVKxzud43BFR6h5RWjS4fDj7/go+RcjCNKcjZh0eepD8Tauj7RrKvR/SUjQDaVdoClOyJKCwQb8CMfAMe0UWySUKmdezj63S8wHg6+W5X6ox4Q38UAzTAoMSNbgJ7f/zDTA2hG5oceWRsWBaSmU51B3O/FXZ+wXY/qtputr0nE3IUrR5I4CzKuj…(520 chars)"
+              }
+            },
+            "ephemeral": true,
+            "id": "e59ce417-05ed-4d71-b1bd-7a50cfae7284",
+            "timestamp": "2026-11-14T22:37:33.937Z",
+            "parentId": "6f8c6381-2fd8-464f-b241-9996abbe7163"
+          },
+          {
+            "type": "assistant.message",
+            "data": {
+              "messageId": "7498935d-528c-4502-a062-be53365ca93c",
+              "originatingMessageId": "9b6b55c7-58d6-4fe7-8e0a-100acf95c0fc",
+              "model": "mai-code-1.1-flash",
+              "providerId": "copilot",
+              "content": "",
+              "toolRequests": [
+                {
+                  "toolCallId": "call_MyIvohkiriK4uwCRCL4sFL8V",
+                  "name": "view",
+                  "arguments": {
+                    "path": "<repoB>/notes.txt"
+                  },
+                  "type": "function",
+                  "intentionSummary": "view the file at <repoB>/notes.txt.",
+                  "toolTitle": "Viewing file"
+                }
+              ],
+              "interactionId": "cad58343-5eae-4f2d-9053-d8cdee4caf6e",
+              "turnId": "0",
+              "rte": true,
+              "apiCallId": "xqL69CO2OACQnQxW27ClsLmqCiI15n6/6zVuHD58ZRvfHSerEbrpllJI2voXUVr2sFKAu8QRqUOugaHsodKBcjyPlAe65a75E+d3yxCfGmx08Tgg7BrOkNX002SeQrOngliIzjW9+RXrT6N9i1R6RKtPIHruuu1KO2COyxTC6pCG1CPGPFRUqz9WGudxiV92iK4CHaypcybyzJWfEqO2l3h09fVKxzud43BFR6h5RWjS4fDj7/go+RcjCNKcjZh0eepD8Tauj7RrKvR/SUjQDaVdoClOyJKCwQb8CMfAMe0UWySUKmdezj63S8wHg6+W5X6ox4Q38UAzTAoMSNbgJ7f/zDTA2hG5oceWRsWBaSmU51B3O/FXZ+wXY/qtputr0nE3IUrR5I4CzKuj…(520 chars)",
+              "serverTools": {
+                "provider": "openai-responses"
+              }
+            },
+            "id": "3a27a0d0-2655-48d5-b9de-bee879832286",
+            "timestamp": "2026-11-14T22:37:33.941Z",
+            "parentId": "6f8c6381-2fd8-464f-b241-9996abbe7163"
+          },
+          {
+            "type": "tool.execution_start",
+            "data": {
+              "toolCallId": "call_MyIvohkiriK4uwCRCL4sFL8V",
+              "toolName": "view",
+              "arguments": {
+                "path": "<repoB>/notes.txt"
+              },
+              "turnId": "0",
+              "model": "mai-code-1.1-flash",
+              "toolTitle": "Viewing file"
+            },
+            "id": "c0438239-8b14-49d7-a1c3-b944873fe347",
+            "timestamp": "2026-11-14T22:37:33.942Z",
+            "parentId": "3a27a0d0-2655-48d5-b9de-bee879832286"
+          },
+          {
+            "type": "hook.start",
+            "data": {
+              "hookInvocationId": "bc2f3c27-cbd1-452d-81e2-a2ce8b549f99",
+              "hookType": "preToolUse",
+              "input": {
+                "sessionId": "a3342afb-0af6-4481-97e9-8f74a82a589d",
+                "cwd": "<repoA>",
+                "toolCalls": [
+                  {
+                    "id": "call_MyIvohkiriK4uwCRCL4sFL8V",
+                    "name": "view",
+                    "args": {
+                      "path": "<repoB>/notes.txt"
+                    }
+                  }
+                ]
+              }
+            },
+            "id": "9db775cd-ceb8-4e74-9ef0-88f772d58ae7",
+            "timestamp": "2026-11-14T22:37:33.943Z",
+            "parentId": "c0438239-8b14-49d7-a1c3-b944873fe347"
+          },
+          {
+            "type": "hook.end",
+            "data": {
+              "hookInvocationId": "bc2f3c27-cbd1-452d-81e2-a2ce8b549f99",
+              "hookType": "preToolUse",
+              "success": true
+            },
+            "id": "01a9e110-a732-445e-9568-8f983e1b7883",
+            "timestamp": "2026-11-14T22:37:33.944Z",
+            "parentId": "9db775cd-ceb8-4e74-9ef0-88f772d58ae7"
+          },
+          {
+            "type": "permission.requested",
+            "data": {
+              "requestId": "8580df11-2582-4b9a-8038-c26d2f92fe68",
+              "permissionRequest": {
+                "kind": "read",
+                "toolCallId": "call_MyIvohkiriK4uwCRCL4sFL8V",
+                "intention": "Read file: <repoB>/notes.txt",
+                "path": "<repoB>/notes.txt"
+              },
+              "promptRequest": {
+                "kind": "read",
+                "intention": "Read file: <repoB>/notes.txt",
+                "path": "<repoB>/notes.txt",
+                "toolCallId": "call_MyIvohkiriK4uwCRCL4sFL8V"
+              },
+              "agentMode": "interactive",
+              "permissionMode": "manual",
+              "ownerSessionId": "a3342afb-0af6-4481-97e9-8f74a82a589d"
+            },
+            "id": "c8efd6cd-bc02-4fc9-94ea-0bd920422085",
+            "timestamp": "2026-11-14T22:37:33.945Z",
+            "parentId": "01a9e110-a732-445e-9568-8f983e1b7883"
+          },
+          {
+            "type": "permission.completed",
+            "data": {
+              "requestId": "8580df11-2582-4b9a-8038-c26d2f92fe68",
+              "toolCallId": "call_MyIvohkiriK4uwCRCL4sFL8V",
+              "result": {
+                "kind": "approved"
+              }
+            },
+            "id": "e22349b6-4889-4cbe-89d6-8df33dab8d4a",
+            "timestamp": "2026-11-14T22:37:33.946Z",
+            "parentId": "c8efd6cd-bc02-4fc9-94ea-0bd920422085"
+          },
+          {
+            "type": "hook.start",
+            "data": {
+              "hookInvocationId": "968149b1-3cdf-44dd-9451-ff258bd5b759",
+              "hookType": "postToolUse",
+              "input": {
+                "sessionId": "a3342afb-0af6-4481-97e9-8f74a82a589d",
+                "timestamp": 1794695853947,
+                "cwd": "<repoA>",
+                "toolName": "view",
+                "toolArgs": {
+                  "path": "<repoB>/notes.txt"
+                },
+                "toolResult": {
+                  "resultType": "success",
+                  "textResultForLlm": "bravo-s1nmco\n",
+                  "toolTelemetry": {
+                    "properties": {
+                      "command": "view",
+                      "options": "{\"truncateBasedOn\":\"tokenCount\",\"truncateStyle\":\"middle\"}",
+                      "inputs": "[\"path\",\"command\"]",
+                      "resolvedPathAgainstCwd": "false",
+                      "fileExtension": "[\".txt\"]",
+                      "viewType": "file"
+                    },
+                    "metrics": {
+                      "resultLength": 13,
+                      "resultForLlmLength": 13,
+                      "context_token_limit": 128000,
+                      "context_current_tokens": 12694
+                    },
+                    "restrictedProperties": {}
+                  },
+                  "sessionLog": "\ndiff --git a<repoB>/notes.txt b<repoB>/notes.txt\nindex 0000000..0000000 100644\n--- a<repoB>/notes.txt\n+++ b<repoB>/notes.txt\n@@ -1,2 +1,2 @@\n bravo-s1nmco\n \n",
+                  "skipLargeOutputProcessing": true
+                }
+              }
+            },
+            "id": "2e6af4c0-5993-4096-a57d-0d863cb6946a",
+            "timestamp": "2026-11-14T22:37:33.947Z",
+            "parentId": "e22349b6-4889-4cbe-89d6-8df33dab8d4a"
+          },
+          {
+            "type": "hook.end",
+            "data": {
+              "hookInvocationId": "968149b1-3cdf-44dd-9451-ff258bd5b759",
+              "hookType": "postToolUse",
+              "success": true
+            },
+            "id": "bc201003-98c5-4672-aeff-f8ea0bc9f4d0",
+            "timestamp": "2026-11-14T22:37:33.948Z",
+            "parentId": "2e6af4c0-5993-4096-a57d-0d863cb6946a"
+          },
+          {
+            "type": "tool.execution_complete",
+            "data": {
+              "toolCallId": "call_MyIvohkiriK4uwCRCL4sFL8V",
+              "model": "mai-code-1.1-flash",
+              "interactionId": "cad58343-5eae-4f2d-9053-d8cdee4caf6e",
+              "turnId": "0",
+              "rte": true,
+              "success": true,
+              "result": {
+                "content": "bravo-s1nmco\n",
+                "detailedContent": "\ndiff --git a<repoB>/notes.txt b<repoB>/notes.txt\nindex 0000000..0000000 100644\n--- a<repoB>/notes.txt\n+++ b<repoB>/notes.txt\n@@ -1,2 +1,2 @@\n bravo-s1nmco\n \n"
+              },
+              "toolTelemetry": {
+                "properties": {
+                  "command": "view",
+                  "options": "{\"truncateBasedOn\":\"tokenCount\",\"truncateStyle\":\"middle\"}",
+                  "inputs": "[\"path\",\"command\"]",
+                  "resolvedPathAgainstCwd": "false",
+                  "fileExtension": "[\".txt\"]",
+                  "viewType": "file"
+                },
+                "restrictedProperties": {},
+                "metrics": {
+                  "resultLength": 13,
+                  "resultForLlmLength": 13,
+                  "context_token_limit": 128000,
+                  "context_current_tokens": 12694,
+                  "result_token_count": 7
+                }
+              }
+            },
+            "id": "ec27dd55-9f9e-4130-873c-2e1fbe10f9fa",
+            "timestamp": "2026-11-14T22:37:33.948Z",
+            "parentId": "bc201003-98c5-4672-aeff-f8ea0bc9f4d0"
+          },
+          {
+            "type": "assistant.turn_end",
+            "data": {
+              "turnId": "0"
+            },
+            "id": "27af8275-943e-4b33-b168-6bfc3935a5e5",
+            "timestamp": "2026-11-14T22:37:33.952Z",
+            "parentId": "ec27dd55-9f9e-4130-873c-2e1fbe10f9fa"
+          },
+          {
+            "type": "assistant.turn_start",
+            "data": {
+              "turnId": "1",
+              "interactionId": "cad58343-5eae-4f2d-9053-d8cdee4caf6e"
+            },
+            "id": "f102ecf2-b067-4a36-b39a-b0f3d0a8ff2c",
+            "timestamp": "2026-11-14T22:37:33.953Z",
+            "parentId": "27af8275-943e-4b33-b168-6bfc3935a5e5"
+          },
+          {
+            "type": "session.usage_info",
+            "ephemeral": true,
+            "data": {
+              "tokenLimit": 128000,
+              "currentTokens": 12759,
+              "messagesLength": 4,
+              "systemTokens": 4845,
+              "conversationTokens": 126,
+              "toolDefinitionsTokens": 7788,
+              "isInitial": false
+            },
+            "id": "3262ca53-91d2-4f0d-88be-09d74805de9b",
+            "timestamp": "2026-11-14T22:37:33.954Z",
+            "parentId": "f102ecf2-b067-4a36-b39a-b0f3d0a8ff2c"
+          },
+          {
+            "type": "assistant.usage",
+            "data": {
+              "model": "mai-code-1.1-flash",
+              "provider": {
+                "id": "copilot",
+                "kind": "copilot",
+                "label": "GitHub Copilot"
+              },
+              "modelDisplayName": "MAI-Code-1.1-Flash",
+              "inputTokens": 11399,
+              "outputTokens": 10,
+              "cacheReadTokens": 11264,
+              "cacheWriteTokens": 0,
+              "reasoningTokens": 0,
+              "cost": 1,
+              "duration": 1163,
+              "timeToFirstTokenMs": 1089.702959,
+              "outputTtftMs": 1089.703042,
+              "cacheExpiresAt": "2026-11-14T23:07:33.960Z",
+              "interTokenLatencyMs": 3.1294999999999997,
+              "initiator": "agent",
+              "interactionType": "conversation-agent",
+              "isByok": false,
+              "isAuto": true,
+              "maxPromptTokens": 128000,
+              "transport": "websocket",
+              "requestBodyBytes": 59458,
+              "requestBodyWireBytes": 59458,
+              "requestBodyEncoding": "identity",
+              "apiCallId": "2Q+9+f+NC380iVOrg1f2xYCzZel7wqKXxZa24CTXFF+3xJj2DQ7n1mb/3RG9NO3XxtMKyy0316jDt79jkTSdbI8eNO5V1oYU2lSwTwB31tCntrLxWe92NJyXZJgxvGyRVUW7grNPah1DJHRAD7HE4/FWau5+fB/doaO90BLUjzeAn1SSJC+kI/eMJEMemmtX5FhAEq20C8toV9YU1cwG/pPrisOqWNZiLJKAJ193xg9jVrmr5X7R2d5hKjJsUjVIeFG6sYd8OsxNL/hFQZr8Z4rP92l2qTadv7N1dBbrtZP/WTO2S7eg2Dy08kNnovkfCswTdm4B2MtB9wTpK3OZhc1QGA7VzlEgpPClzoEOPWA2dUpsALeQ0Y7byxiRtgP/gHNSHOpvaYoxGq1f…(520 chars)",
+              "providerCallId": "00000-3bab975a-cba5-41bd-b267-aa9255b49e8f",
+              "serviceRequestId": "8d4e7fe9-6435-4fe5-8650-d34f2be30d77",
+              "rte": true,
+              "apiEndpoint": "ws:/responses",
+              "quotaSnapshots": {
+                "chat": {
+                  "isUnlimitedEntitlement": false,
+                  "entitlementRequests": 200,
+                  "usedRequests": 10,
+                  "usageAllowedWithExhaustedQuota": false,
+                  "overage": 0,
+                  "overageAllowedWithExhaustedQuota": false,
+                  "remainingPercentage": 95.1,
+                  "resetDate": "2026-12-01T00:00:00Z"
+                },
+                "completions": {
+                  "isUnlimitedEntitlement": false,
+                  "entitlementRequests": 2000,
+                  "usedRequests": 10,
+                  "usageAllowedWithExhaustedQuota": false,
+                  "overage": 0,
+                  "overageAllowedWithExhaustedQuota": false,
+                  "remainingPercentage": 99.5,
+                  "resetDate": "2026-12-01T00:00:00Z"
+                },
+                "premium_interactions": {
+                  "isUnlimitedEntitlement": false,
+                  "entitlementRequests": 0,
+                  "usedRequests": 0,
+                  "usageAllowedWithExhaustedQuota": false,
+                  "overage": 0,
+                  "overageAllowedWithExhaustedQuota": false,
+                  "remainingPercentage": 0,
+                  "resetDate": "2026-12-01T00:00:00Z"
+                }
+              },
+              "copilotUsage": {
+                "tokenDetails": [
+                  {
+                    "batchSize": 1000000,
+                    "costPerBatch": 20000000000,
+                    "tokenCount": 135,
+                    "tokenType": "input",
+                    "model": "mai-code-1.1-flash"
+                  },
+                  {
+                    "batchSize": 1000000,
+                    "costPerBatch": 2000000000,
+                    "tokenCount": 11264,
+                    "tokenType": "cache_read",
+                    "model": "mai-code-1.1-flash"
+                  },
+                  {
+                    "batchSize": 1000000,
+                    "costPerBatch": 25000000000,
+                    "tokenCount": 0,
+                    "tokenType": "cache_write",
+                    "model": "mai-code-1.1-flash"
+                  },
+                  {
+                    "batchSize": 1000000,
+                    "costPerBatch": 120000000000,
+                    "tokenCount": 10,
+                    "tokenType": "output",
+                    "model": "mai-code-1.1-flash"
+                  }
+                ],
+                "totalNanoAiu": 26428000
+              },
+              "aiCreditsStatus": "complete",
+              "reasoningEffort": "medium",
+              "reasoningSummary": "detailed",
+              "availableToolCount": 25,
+              "toolTokenCount": 7788,
+              "customToolCallCount": 0,
+              "unmatchedToolResultCount": 0,
+              "orphanToolCallCount": 0,
+              "frontierSource": "reported_writes",
+              "cacheTtlSeconds": 1800,
+              "cacheDetailsReported": true,
+              "numToolCalls": 0,
+              "toolCounts": {},
+              "finishReason": "stop",
+              "contentFilterTriggered": false,
+              "accounting": {
+                "sourceSessionId": "a3342afb-0af6-4481-97e9-8f74a82a589d",
+                "sequence": 2,
+                "usageId": "2Q+9+f+NC380iVOrg1f2xYCzZel7wqKXxZa24CTXFF+3xJj2DQ7n1mb/3RG9NO3XxtMKyy0316jDt79jkTSdbI8eNO5V1oYU2lSwTwB31tCntrLxWe92NJyXZJgxvGyRVUW7grNPah1DJHRAD7HE4/FWau5+fB/doaO90BLUjzeAn1SSJC+kI/eMJEMemmtX5FhAEq20C8toV9YU1cwG/pPrisOqWNZiLJKAJ193xg9jVrmr5X7R2d5hKjJsUjVIeFG6sYd8OsxNL/hFQZr8Z4rP92l2qTadv7N1dBbrtZP/WTO2S7eg2Dy08kNnovkfCswTdm4B2MtB9wTpK3OZhc1QGA7VzlEgpPClzoEOPWA2dUpsALeQ0Y7byxiRtgP/gHNSHOpvaYoxGq1f…(520 chars)"
+              }
+            },
+            "ephemeral": true,
+            "id": "a5a7339d-8f75-4729-9736-75ae4fb3845f",
+            "timestamp": "2026-11-14T22:37:35.123Z",
+            "parentId": "7c762bdc-cc7f-4b6d-a92b-c5765423b2d5"
+          },
+          {
+            "type": "assistant.message",
+            "data": {
+              "messageId": "0284729e-c55d-4a17-8e31-44906f243ff7",
+              "originatingMessageId": "9b6b55c7-58d6-4fe7-8e0a-100acf95c0fc",
+              "model": "mai-code-1.1-flash",
+              "providerId": "copilot",
+              "content": "bravo-s1nmco",
+              "toolRequests": [],
+              "interactionId": "cad58343-5eae-4f2d-9053-d8cdee4caf6e",
+              "turnId": "1",
+              "phase": "final_answer",
+              "rte": true,
+              "apiCallId": "2Q+9+f+NC380iVOrg1f2xYCzZel7wqKXxZa24CTXFF+3xJj2DQ7n1mb/3RG9NO3XxtMKyy0316jDt79jkTSdbI8eNO5V1oYU2lSwTwB31tCntrLxWe92NJyXZJgxvGyRVUW7grNPah1DJHRAD7HE4/FWau5+fB/doaO90BLUjzeAn1SSJC+kI/eMJEMemmtX5FhAEq20C8toV9YU1cwG/pPrisOqWNZiLJKAJ193xg9jVrmr5X7R2d5hKjJsUjVIeFG6sYd8OsxNL/hFQZr8Z4rP92l2qTadv7N1dBbrtZP/WTO2S7eg2Dy08kNnovkfCswTdm4B2MtB9wTpK3OZhc1QGA7VzlEgpPClzoEOPWA2dUpsALeQ0Y7byxiRtgP/gHNSHOpvaYoxGq1f…(520 chars)",
+              "serverTools": {
+                "provider": "openai-responses"
+              }
+            },
+            "id": "d378d493-29dc-4a3e-a669-98bd12f2cfa9",
+            "timestamp": "2026-11-14T22:37:35.125Z",
+            "parentId": "7c762bdc-cc7f-4b6d-a92b-c5765423b2d5"
+          },
+          {
+            "type": "assistant.turn_end",
+            "data": {
+              "turnId": "1"
+            },
+            "id": "97d1dd42-6957-4029-a958-2c9065708fa7",
+            "timestamp": "2026-11-14T22:37:35.126Z",
+            "parentId": "d378d493-29dc-4a3e-a669-98bd12f2cfa9"
+          },
+          {
+            "type": "hook.start",
+            "data": {
+              "hookInvocationId": "74d60eab-aa65-454d-bc1b-94a668217669",
+              "hookType": "agentStop",
+              "input": {
+                "sessionId": "a3342afb-0af6-4481-97e9-8f74a82a589d",
+                "transcriptPath": "~/.copilot/session-state/a3342afb-0af6-4481-97e9-8f74a82a589d/events.jsonl",
+                "stopReason": "end_turn",
+                "stop_hook_active": false,
+                "timestamp": 1794695855128,
+                "cwd": "<repoA>"
+              }
+            },
+            "id": "4fffb7a9-42f6-4bfe-b67d-14577ddd945c",
+            "timestamp": "2026-11-14T22:37:35.128Z",
+            "parentId": "97d1dd42-6957-4029-a958-2c9065708fa7"
+          },
+          {
+            "type": "hook.end",
+            "data": {
+              "hookInvocationId": "74d60eab-aa65-454d-bc1b-94a668217669",
+              "hookType": "agentStop",
+              "success": true
+            },
+            "id": "0287fd34-3aa5-4386-9a66-e1eb4b509924",
+            "timestamp": "2026-11-14T22:37:35.128Z",
+            "parentId": "4fffb7a9-42f6-4bfe-b67d-14577ddd945c"
+          },
+          {
+            "type": "session.usage_checkpoint",
+            "data": {
+              "totalNanoAiu": 124036000,
+              "totalPremiumRequests": 1,
+              "modelCacheState": [
+                {
+                  "modelId": "mai-code-1.1-flash",
+                  "cacheExpiresAt": "2026-11-14T23:07:33.960Z",
+                  "cacheTtlSeconds": 1800
+                }
+              ],
+              "promptCacheBreakState": [
+                {
+                  "conversation": "main",
+                  "models": {
+                    "mai-code-1.1-flash": {
+                      "model": "mai-code-1.1-flash",
+                      "vendor": "openai",
+                      "model_call_id": "2Q+9+f+NC380iVOrg1f2xYCzZel7wqKXxZa24CTXFF+3xJj2DQ7n1mb/3RG9NO3XxtMKyy0316jDt79jkTSdbI8eNO5V1oYU2lSwTwB31tCntrLxWe92NJyXZJgxvGyRVUW7grNPah1DJHRAD7HE4/FWau5+fB/doaO90BLUjzeAn1SSJC+kI/eMJEMemmtX5FhAEq20C8toV9YU1cwG/pPrisOqWNZiLJKAJ193xg9jVrmr5X7R2d5hKjJsUjVIeFG6sYd8OsxNL/hFQZr8Z4rP92l2qTadv7N1dBbrtZP/WTO2S7eg2Dy08kNnovkfCswTdm4B2MtB9wTpK3OZhc1QGA7VzlEgpPClzoEOPWA2dUpsALeQ0Y7byxiRtgP/gHNSHOpvaYoxGq1f…(520 chars)",
+                      "request_id": "00000-3bab975a-cba5-41bd-b267-aa9255b49e8f",
+                      "github_request_id": "8d4e7fe9-6435-4fe5-8650-d34f2be30d77",
+                      "api_endpoint": "ws:/responses",
+                      "transport": "websocket",
+                      "session_mode": "interactive",
+                      "reasoning_effort": "medium",
+                      "initiator": "agent",
+                      "tool_count": 25,
+                      "tool_tokens": 7788,
+                      "tools": [
+                        {
+                          "name": "bash",
+                          "schema_hash": "5aff88e14e77",
+                          "safe": true
+                        },
+                        {
+                          "name": "read_bash",
+                          "schema_hash": "78bdc74b3707",
+                          "safe": true
+                        },
+                        {
+                          "name": "stop_bash",
+                          "schema_hash": "dd8c0c97e7c9",
+                          "safe": true
+                        },
+                        {
+                          "name": "list_bash",
+                          "schema_hash": "3209638ac5d6",
+                          "safe": true
+                        },
+                        {
+                          "name": "view",
+                          "schema_hash": "3e73851b027b",
+                          "safe": true
+                        },
+                        {
+                          "name": "create",
+                          "schema_hash": "d7e30321149d",
+                          "safe": true
+                        },
+                        {
+                          "name": "edit",
+                          "schema_hash": "0be632c6eeaa",
+                          "safe": true
+                        },
+                        {
+                          "name": "web_fetch",
+                          "schema_hash": "a0829f05c5fd",
+                          "safe": true
+                        },
+                        {
+                          "name": "search_code_subagent",
+                          "schema_hash": "3c5f0f30dd6a",
+                          "safe": true
+                        },
+                        {
+                          "name": "semantic_code_search",
+                          "schema_hash": "a9a3d6d96921",
+                          "safe": false
+                        },
+                        {
+                          "name": "skill",
+                          "schema_hash": "a7ac9beec0b8",
+                          "safe": true
+                        },
+                        {
+                          "name": "run_dynamic_workflow",
+                          "schema_hash": "d4f938d51048",
+                          "safe": true
+                        },
+                        {
+                          "name": "dynamic_workflows_manage",
+                          "schema_hash": "5d3e79db7ecb",
+                          "safe": false
+                        },
+                        {
+                          "name": "sql",
+                          "schema_hash": "5756c3fc79ed",
+                          "safe": true
+                        },
+                        {
+                          "name": "read_agent",
+                          "schema_hash": "fb2b527fdba4",
+                          "safe": true
+                        },
+                        {
+                          "name": "list_agents",
+                          "schema_hash": "bb480bb53a47",
+                          "safe": true
+                        },
+                        {
+                          "name": "write_agent",
+                          "schema_hash": "d4ba47acdccd",
+                          "safe": true
+                        },
+                        {
+                          "name": "grep",
+                          "schema_hash": "d0b58b80eaaf",
+                          "safe": true
+                        },
+                        {
+                          "name": "glob",
+                          "schema_hash": "40089e3a3ba4",
+                          "safe": true
+                        },
+                        {
+                          "name": "task",
+                          "schema_hash": "ce7cf447089e",
+                          "safe": true
+                        },
+                        {
+                          "name": "github-mcp-server-get_copilot_space",
+                          "schema_hash": "c8adccdafb84",
+                          "safe": true
+                        },
+                        {
+                          "name": "github-mcp-server-get_file_contents",
+                          "schema_hash": "6cf17f9abfd4",
+                          "safe": true
+                        },
+                        {
+                          "name": "github-mcp-server-list_copilot_spaces",
+                          "schema_hash": "32e5d3fd470f",
+                          "safe": true
+                        },
+                        {
+                          "name": "github-mcp-server-search_code",
+                          "schema_hash": "679d4765fec5",
+                          "safe": true
+                        },
+                        {
+                          "name": "github-mcp-server-search_users",
+                          "schema_hash": "da0cf089bedb",
+                          "safe": true
+                        }
+                      ],
+                      "tools_truncated": 0,
+                      "system_segments": [
+                        {
+                          "segment": "identity_preamble",
+                          "hash": "bb194c21624a",
+                          "tokens": 16
+                        },
+                        {
+                          "segment": "interaction_mode",
+                          "hash": "e5959028ccdd",
+                          "tokens": 13
+                        },
+                        {
+                          "segment": "tone_and_style",
+                          "hash": "cd4c10cfdb57",
+                          "tokens": 45
+                        },
+                        {
+                          "segment": "search_and_delegation",
+                          "hash": "745ad2d45bb4",
+                          "tokens": 138
+                        },
+                        {
+                          "segment": "tool_efficiency",
+                          "hash": "cb7de732a200",
+                          "tokens": 200
+                        },
+                        {
+                          "segment": "version_information",
+                          "hash": "9082bee48598",
+                          "tokens": 17
+                        },
+                        {
+                          "segment": "model_information",
+                          "hash": "5e67dc60f292",
+                          "tokens": 54
+                        },
+                        {
+                          "segment": "environment_context",
+                          "hash": "957578486bd8",
+                          "tokens": 120
+                        },
+                        {
+                          "segment": "identity_task_instructions",
+                          "hash": "adb5ce208724",
+                          "tokens": 11
+                        },
+                        {
+                          "segment": "code_change_instructions",
+                          "hash": "ae7d2a78e12d",
+                          "tokens": 228
+                        },
+                        {
+                          "segment": "dynamic_guidelines",
+                          "hash": "b41ed4d2e2eb",
+                          "tokens": 82
+                        },
+                        {
+                          "segment": "environment_limitations",
+                          "hash": "8cf9cbce1516",
+                          "tokens": 244
+                        },
+                        {
+                          "segment": "tool_intro",
+                          "hash": "2c07d9f78963",
+                          "tokens": 20
+                        },
+                        {
+                          "segment": "tool_instructions",
+                          "hash": "41f19b5793c7",
+                          "tokens": 3199
+                        },
+                        {
+                          "segment": "system_notifications",
+                          "hash": "06e72cdc5231",
+                          "tokens": 86
+                        },
+                        {
+                          "segment": "workspace_context",
+                          "hash": "1080a0215854",
+                          "tokens": 82
+                        },
+                        {
+                          "segment": "git_commit_trailer",
+                          "hash": "1d737bc1da62",
+                          "tokens": 67
+                        },
+                        {
+                          "segment": "final_instructions",
+                          "hash": "42885e06aebe",
+                          "tokens": 223
+                        }
+                      ],
+                      "conversation": {
+                        "message_count": 3,
+                        "points": [
+                          {
+                            "index": 0,
+                            "hash": "51cf0e2a7d56"
+                          },
+                          {
+                            "index": 1,
+                            "hash": "b85affc13e5e"
+                          },
+                          {
+                            "index": 2,
+                            "hash": "f4a9a460634c"
+                          }
+                        ]
+                      },
+                      "cache_config": {
+                        "arm": "control",
+                        "marks_system_prompt": false,
+                        "marks_conversation": false,
+                        "advisor_tool": false,
+                        "incremental_input": true,
+                        "system_prompt_layout": "legacy"
+                      },
+                      "prompt_tokens": 11399,
+                      "cache_read": 11264,
+                      "cache_write": 0,
+                      "cache_details_reported": true,
+                      "frontier_tokens": 11264,
+                      "frontier_source": "reported_writes",
+                      "ttl_seconds": 1800,
+                      "cache_expires_at": "2026-11-14T23:07:33.96Z",
+                      "completed_at": "2026-11-14T22:37:35.123Z"
+                    }
+                  },
+                  "lastActiveModel": "mai-code-1.1-flash",
+                  "pendingRewriteSources": []
+                }
+              ],
+              "accountingSnapshot": {
+                "totalPremiumRequestCost": 1,
+                "totalUserRequests": 1,
+                "totalNanoAiu": 124036000,
+                "aiCreditsStatus": "complete",
+                "tokenDetails": {
+                  "input": {
+                    "tokenCount": 4057
+                  },
+                  "cache_read": {
+                    "tokenCount": 18688
+                  },
+                  "cache_write": {
+                    "tokenCount": 0
+                  },
+                  "output": {
+                    "tokenCount": 46
+                  }
+                },
+                "totalApiDurationMs": 2178,
+                "sessionStartTime": "2026-11-14T22:37:32.100Z",
+                "codeChanges": {
+                  "linesAdded": 0,
+                  "linesRemoved": 0,
+                  "filesModifiedCount": 0,
+                  "filesModified": []
+                },
+                "modelMetrics": {
+                  "mai-code-1.1-flash": {
+                    "requests": {
+                      "count": 2,
+                      "cost": 1
+                    },
+                    "usage": {
+                      "inputTokens": 22745,
+                      "outputTokens": 46,
+                      "cacheReadTokens": 18688,
+                      "cacheWriteTokens": 0,
+                      "reasoningTokens": 0
+                    },
+                    "cacheExpiresAt": "2026-11-14T23:07:33.960Z",
+                    "totalNanoAiu": 124036000,
+                    "aiCreditsStatus": "complete",
+                    "tokenDetails": {
+                      "input": {
+                        "tokenCount": 4057
+                      },
+                      "cache_read": {
+                        "tokenCount": 18688
+                      },
+                      "cache_write": {
+                        "tokenCount": 0
+                      },
+                      "output": {
+                        "tokenCount": 46
+                      }
+                    }
+                  }
+                },
+                "agentMetrics": {
+                  "main": {
+                    "totalApiDurationMs": 2178,
+                    "totalNanoAiu": 124036000,
+                    "modelMetrics": {
+                      "mai-code-1.1-flash": {
+                        "requests": {
+                          "count": 2,
+                          "cost": 1
+                        },
+                        "usage": {
+                          "inputTokens": 22745,
+                          "outputTokens": 46,
+                          "cacheReadTokens": 18688,
+                          "cacheWriteTokens": 0,
+                          "reasoningTokens": 0
+                        },
+                        "totalNanoAiu": 124036000,
+                        "tokenDetails": {
+                          "input": {
+                            "tokenCount": 4057
+                          },
+                          "cache_read": {
+                            "tokenCount": 18688
+                          },
+                          "cache_write": {
+                            "tokenCount": 0
+                          },
+                          "output": {
+                            "tokenCount": 46
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "providerModelMetrics": [
+                  {
+                    "provider": {
+                      "id": "copilot",
+                      "label": "GitHub Copilot",
+                      "kind": "copilot"
+                    },
+                    "modelId": "mai-code-1.1-flash",
+                    "metrics": {
+                      "requests": {
+                        "count": 2,
+                        "cost": 1
+                      },
+                      "usage": {
+                        "inputTokens": 22745,
+                        "outputTokens": 46,
+                        "cacheReadTokens": 18688,
+                        "cacheWriteTokens": 0,
+                        "reasoningTokens": 0
+                      },
+                      "totalNanoAiu": 124036000,
+                      "aiCreditsStatus": "complete",
+                      "tokenDetails": {
+                        "input": {
+                          "tokenCount": 4057
+                        },
+                        "cache_read": {
+                          "tokenCount": 18688
+                        },
+                        "cache_write": {
+                          "tokenCount": 0
+                        },
+                        "output": {
+                          "tokenCount": 46
+                        }
+                      }
+                    },
+                    "modelDisplayName": "MAI-Code-1.1-Flash"
+                  }
+                ],
+                "currentModel": "mai-code-1.1-flash",
+                "lastCallInputTokens": 11399,
+                "lastCallOutputTokens": 10
+              },
+              "providerModelMetrics": [
+                {
+                  "provider": {
+                    "id": "copilot",
+                    "label": "GitHub Copilot",
+                    "kind": "copilot"
+                  },
+                  "modelId": "mai-code-1.1-flash",
+                  "metrics": {
+                    "requests": {
+                      "count": 2,
+                      "cost": 1
+                    },
+                    "usage": {
+                      "inputTokens": 22745,
+                      "outputTokens": 46,
+                      "cacheReadTokens": 18688,
+                      "cacheWriteTokens": 0,
+                      "reasoningTokens": 0
+                    },
+                    "totalNanoAiu": 124036000,
+                    "aiCreditsStatus": "complete",
+                    "tokenDetails": {
+                      "input": {
+                        "tokenCount": 4057
+                      },
+                      "cache_read": {
+                        "tokenCount": 18688
+                      },
+                      "cache_write": {
+                        "tokenCount": 0
+                      },
+                      "output": {
+                        "tokenCount": 46
+                      }
+                    }
+                  },
+                  "modelDisplayName": "MAI-Code-1.1-Flash"
+                }
+              ],
+              "usageAccountingWatermarks": {
+                "a3342afb-0af6-4481-97e9-8f74a82a589d": 2
+              }
+            },
+            "id": "a53cd3dc-ee03-4dfa-979a-0f3468f7593f",
+            "timestamp": "2026-11-14T22:37:35.129Z",
+            "parentId": "0287fd34-3aa5-4386-9a66-e1eb4b509924"
+          },
+          {
+            "type": "assistant.idle",
+            "data": {},
+            "ephemeral": true,
+            "id": "bd2192e9-007e-4128-be04-90b8928c5eb5",
+            "timestamp": "2026-11-14T22:37:35.129Z",
+            "parentId": "a53cd3dc-ee03-4dfa-979a-0f3468f7593f"
+          },
+          {
+            "type": "session.idle",
+            "data": {
+              "mode": "interactive"
+            },
+            "ephemeral": true,
+            "id": "9e979f6d-4d3c-4a47-be65-fd12c5c5d5aa",
+            "timestamp": "2026-11-14T22:37:35.131Z",
+            "parentId": "a53cd3dc-ee03-4dfa-979a-0f3468f7593f"
+          },
+          {
+            "type": "hook.start",
+            "data": {
+              "hookInvocationId": "00b8f142-0404-4baf-8bbe-fcc41c13378b",
+              "hookType": "sessionEnd",
+              "input": {
+                "reason": "user_exit",
+                "sessionId": "a3342afb-0af6-4481-97e9-8f74a82a589d",
+                "timestamp": 1794695855132,
+                "cwd": "<repoA>"
+              }
+            },
+            "id": "04b44142-7a1a-40ba-a803-b907ac4962ad",
+            "timestamp": "2026-11-14T22:37:35.132Z",
+            "parentId": "a53cd3dc-ee03-4dfa-979a-0f3468f7593f"
+          },
+          {
+            "type": "hook.end",
+            "data": {
+              "hookInvocationId": "00b8f142-0404-4baf-8bbe-fcc41c13378b",
+              "hookType": "sessionEnd",
+              "success": true
+            },
+            "id": "969ed354-978e-4fd2-b4f9-0f5958af7a91",
+            "timestamp": "2026-11-14T22:37:35.133Z",
+            "parentId": "04b44142-7a1a-40ba-a803-b907ac4962ad"
+          },
+          {
+            "type": "session.shutdown",
+            "data": {
+              "accountingSnapshot": {
+                "totalPremiumRequestCost": 1,
+                "totalUserRequests": 1,
+                "totalNanoAiu": 124036000,
+                "aiCreditsStatus": "complete",
+                "tokenDetails": {
+                  "input": {
+                    "tokenCount": 4057
+                  },
+                  "cache_read": {
+                    "tokenCount": 18688
+                  },
+                  "cache_write": {
+                    "tokenCount": 0
+                  },
+                  "output": {
+                    "tokenCount": 46
+                  }
+                },
+                "totalApiDurationMs": 2178,
+                "sessionStartTime": "2026-11-14T22:37:32.100Z",
+                "codeChanges": {
+                  "linesAdded": 0,
+                  "linesRemoved": 0,
+                  "filesModifiedCount": 0,
+                  "filesModified": []
+                },
+                "modelMetrics": {
+                  "mai-code-1.1-flash": {
+                    "requests": {
+                      "count": 2,
+                      "cost": 1
+                    },
+                    "usage": {
+                      "inputTokens": 22745,
+                      "outputTokens": 46,
+                      "cacheReadTokens": 18688,
+                      "cacheWriteTokens": 0,
+                      "reasoningTokens": 0
+                    },
+                    "cacheExpiresAt": "2026-11-14T23:07:33.960Z",
+                    "totalNanoAiu": 124036000,
+                    "aiCreditsStatus": "complete",
+                    "tokenDetails": {
+                      "input": {
+                        "tokenCount": 4057
+                      },
+                      "cache_read": {
+                        "tokenCount": 18688
+                      },
+                      "cache_write": {
+                        "tokenCount": 0
+                      },
+                      "output": {
+                        "tokenCount": 46
+                      }
+                    }
+                  }
+                },
+                "agentMetrics": {
+                  "main": {
+                    "totalApiDurationMs": 2178,
+                    "totalNanoAiu": 124036000,
+                    "modelMetrics": {
+                      "mai-code-1.1-flash": {
+                        "requests": {
+                          "count": 2,
+                          "cost": 1
+                        },
+                        "usage": {
+                          "inputTokens": 22745,
+                          "outputTokens": 46,
+                          "cacheReadTokens": 18688,
+                          "cacheWriteTokens": 0,
+                          "reasoningTokens": 0
+                        },
+                        "totalNanoAiu": 124036000,
+                        "tokenDetails": {
+                          "input": {
+                            "tokenCount": 4057
+                          },
+                          "cache_read": {
+                            "tokenCount": 18688
+                          },
+                          "cache_write": {
+                            "tokenCount": 0
+                          },
+                          "output": {
+                            "tokenCount": 46
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "providerModelMetrics": [
+                  {
+                    "provider": {
+                      "id": "copilot",
+                      "label": "GitHub Copilot",
+                      "kind": "copilot"
+                    },
+                    "modelId": "mai-code-1.1-flash",
+                    "metrics": {
+                      "requests": {
+                        "count": 2,
+                        "cost": 1
+                      },
+                      "usage": {
+                        "inputTokens": 22745,
+                        "outputTokens": 46,
+                        "cacheReadTokens": 18688,
+                        "cacheWriteTokens": 0,
+                        "reasoningTokens": 0
+                      },
+                      "totalNanoAiu": 124036000,
+                      "aiCreditsStatus": "complete",
+                      "tokenDetails": {
+                        "input": {
+                          "tokenCount": 4057
+                        },
+                        "cache_read": {
+                          "tokenCount": 18688
+                        },
+                        "cache_write": {
+                          "tokenCount": 0
+                        },
+                        "output": {
+                          "tokenCount": 46
+                        }
+                      }
+                    },
+                    "modelDisplayName": "MAI-Code-1.1-Flash"
+                  }
+                ],
+                "currentModel": "mai-code-1.1-flash",
+                "lastCallInputTokens": 11399,
+                "lastCallOutputTokens": 10
+              },
+              "providerModelMetrics": [
+                {
+                  "provider": {
+                    "id": "copilot",
+                    "label": "GitHub Copilot",
+                    "kind": "copilot"
+                  },
+                  "modelId": "mai-code-1.1-flash",
+                  "metrics": {
+                    "requests": {
+                      "count": 2,
+                      "cost": 1
+                    },
+                    "usage": {
+                      "inputTokens": 22745,
+                      "outputTokens": 46,
+                      "cacheReadTokens": 18688,
+                      "cacheWriteTokens": 0,
+                      "reasoningTokens": 0
+                    },
+                    "totalNanoAiu": 124036000,
+                    "aiCreditsStatus": "complete",
+                    "tokenDetails": {
+                      "input": {
+                        "tokenCount": 4057
+                      },
+                      "cache_read": {
+                        "tokenCount": 18688
+                      },
+                      "cache_write": {
+                        "tokenCount": 0
+                      },
+                      "output": {
+                        "tokenCount": 46
+                      }
+                    }
+                  },
+                  "modelDisplayName": "MAI-Code-1.1-Flash"
+                }
+              ],
+              "usageAccountingWatermarks": {
+                "a3342afb-0af6-4481-97e9-8f74a82a589d": 2
+              },
+              "shutdownType": "routine",
+              "totalPremiumRequests": 1,
+              "totalNanoAiu": 124036000,
+              "tokenDetails": {
+                "input": {
+                  "tokenCount": 4057
+                },
+                "cache_read": {
+                  "tokenCount": 18688
+                },
+                "cache_write": {
+                  "tokenCount": 0
+                },
+                "output": {
+                  "tokenCount": 46
+                }
+              },
+              "totalApiDurationMs": 2178,
+              "sessionStartTime": 1794695852100,
+              "eventsFileSizeBytes": 50092,
+              "codeChanges": {
+                "linesAdded": 0,
+                "linesRemoved": 0,
+                "filesModified": []
+              },
+              "modelMetrics": {
+                "mai-code-1.1-flash": {
+                  "requests": {
+                    "count": 2,
+                    "cost": 1
+                  },
+                  "usage": {
+                    "inputTokens": 22745,
+                    "outputTokens": 46,
+                    "cacheReadTokens": 18688,
+                    "cacheWriteTokens": 0,
+                    "reasoningTokens": 0
+                  },
+                  "totalNanoAiu": 124036000,
+                  "tokenDetails": {
+                    "input": {
+                      "tokenCount": 4057
+                    },
+                    "cache_read": {
+                      "tokenCount": 18688
+                    },
+                    "cache_write": {
+                      "tokenCount": 0
+                    },
+                    "output": {
+                      "tokenCount": 46
+                    }
+                  }
+                }
+              },
+              "agentMetrics": {
+                "main": {
+                  "totalApiDurationMs": 2178,
+                  "totalNanoAiu": 124036000,
+                  "modelMetrics": {
+                    "mai-code-1.1-flash": {
+                      "requests": {
+                        "count": 2,
+                        "cost": 1
+                      },
+                      "usage": {
+                        "inputTokens": 22745,
+                        "outputTokens": 46,
+                        "cacheReadTokens": 18688,
+                        "cacheWriteTokens": 0,
+                        "reasoningTokens": 0
+                      },
+                      "totalNanoAiu": 124036000,
+                      "tokenDetails": {
+                        "input": {
+                          "tokenCount": 4057
+                        },
+                        "cache_read": {
+                          "tokenCount": 18688
+                        },
+                        "cache_write": {
+                          "tokenCount": 0
+                        },
+                        "output": {
+                          "tokenCount": 46
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "currentModel": "mai-code-1.1-flash",
+              "currentTokens": 12104,
+              "systemTokens": 4845,
+              "conversationTokens": 136,
+              "toolDefinitionsTokens": 7120
+            },
+            "id": "e49df22b-7ba4-4810-882e-4c4cd565b99c",
+            "timestamp": "2026-11-14T22:37:35.138Z",
+            "parentId": "969ed354-978e-4fd2-b4f9-0f5958af7a91"
+          }
+        ],
+        "sessionId": "a3342afb-0af6-4481-97e9-8f74a82a589d"
+      }
+    }
+  ]
+}
