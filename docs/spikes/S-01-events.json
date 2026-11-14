@@ -1,0 +1,2461 @@
+{
+  "requestedModel": null,
+  "currentModel": {
+    "before": {},
+    "after": {
+      "modelId": "auto"
+    }
+  },
+  "events": [
+    {
+      "type": "session.start",
+      "data": {
+        "sessionId": "35ea092f-657e-4ab9-b667-9857b7125925",
+        "version": 1,
+        "producer": "copilot-agent",
+        "copilotVersion": "1.0.105",
+        "startTime": "2026-11-14T21:40:22.081Z",
+        "contextTier": null,
+        "context": {
+          "cwd": "<workdir>"
+        },
+        "remoteSteerable": false,
+        "alreadyInUse": false
+      },
+      "id": "848e3991-fa0f-4714-b403-8713ccdc1922",
+      "timestamp": "2026-11-14T21:40:22.122Z",
+      "parentId": null
+    },
+    {
+      "type": "session.managed_settings_resolved",
+      "data": {
+        "source": "none",
+        "serverManaged": false,
+        "deviceManaged": false,
+        "clientManaged": false,
+        "policyHelperManaged": false,
+        "failClosed": false,
+        "sandboxEnabledByUndeterminedPolicy": false,
+        "bypassPermissionsDisabled": false,
+        "managedKeys": [],
+        "permissionsContext": {
+          "failClosed": false
+        }
+      },
+      "ephemeral": true,
+      "id": "ee8f6cba-6eb0-4486-8c10-61ce935980f7",
+      "timestamp": "2026-11-14T21:40:22.123Z",
+      "parentId": "848e3991-fa0f-4714-b403-8713ccdc1922"
+    },
+    {
+      "type": "pending_messages.modified",
+      "data": {},
+      "ephemeral": true,
+      "id": "55638d94-abd6-42b7-b076-e23fdcabea60",
+      "timestamp": "2026-11-14T21:40:22.139Z",
+      "parentId": "848e3991-fa0f-4714-b403-8713ccdc1922"
+    },
+    {
+      "type": "pending_messages.modified",
+      "data": {},
+      "ephemeral": true,
+      "id": "a5400e9e-5c29-4278-9f1a-578a2c787f15",
+      "timestamp": "2026-11-14T21:40:22.142Z",
+      "parentId": "848e3991-fa0f-4714-b403-8713ccdc1922"
+    },
+    {
+      "type": "session.title_changed",
+      "data": {
+        "title": "Reply with the single word: ok"
+      },
+      "ephemeral": true,
+      "id": "1c5acbe0-5dd9-4665-9bff-1f7c456a5dee",
+      "timestamp": "2026-11-14T21:40:22.143Z",
+      "parentId": "848e3991-fa0f-4714-b403-8713ccdc1922"
+    },
+    {
+      "type": "session.model_change",
+      "data": {
+        "previousModel": null,
+        "newModel": "auto",
+        "previousReasoningEffort": null,
+        "reasoningEffort": null,
+        "previousReasoningSummary": null,
+        "reasoningSummary": null,
+        "source": "startup",
+        "contextTier": null,
+        "autoTier": null
+      },
+      "id": "c043e5d2-ec17-41f2-9314-f03bc210eb38",
+      "timestamp": "2026-11-14T21:40:22.188Z",
+      "parentId": "848e3991-fa0f-4714-b403-8713ccdc1922"
+    },
+    {
+      "type": "session.auto_mode_resolved",
+      "data": {
+        "chosenModel": "mai-code-1.1-flash",
+        "selectionReason": "Auto selected MAI-Code-1.1-Flash because it was the best choice out of the models available in your plan.",
+        "categoryScores": {
+          "code_gen": 0.0045,
+          "tool_use": 0.0024,
+          "debugging": 0.003,
+          "reasoning": 0.0223
+        },
+        "candidateModels": [
+          "mai-code-1.1-flash"
+        ],
+        "routingMethod": "auto_v2",
+        "fallback": false,
+        "availableModels": [
+          "mai-code-1.1-flash"
+        ],
+        "endToEndLatencyMs": 147.922375,
+        "hasImage": false
+      },
+      "id": "65d0296b-6748-4901-91e6-de4854f36cff",
+      "timestamp": "2026-11-14T21:40:22.338Z",
+      "parentId": "c043e5d2-ec17-41f2-9314-f03bc210eb38"
+    },
+    {
+      "type": "session.skills_loaded",
+      "data": {
+        "skills": [
+          {
+            "name": "customize-cloud-agent",
+            "commandName": "customize-cloud-agent",
+            "description": "Skill for customizing the Copilot cloud agent (formerly known as Copilot coding agent) environment, including copilot-setup-steps.yml configuration, preinstalling tools and dependencies, runners, and settings. Use when the user mentions copilot-setup-steps, copilot setup steps, or wants to configure the cloud agent environment.",
+            "source": "builtin",
+            "userInvocable": false,
+            "enabled": true,
+            "path": "~/Documents/repos/pica/.claude/worktrees/r-01-git-service-0a79e8/engine/node_modules/.pnpm/@github+copilot-sdk-darwin-arm64@1.0.28/node_modules/@github/copilot-sdk-darwin-arm64/builtin/customize-cloud-agent/SKILL.md"
+          },
+          {
+            "name": "github-pr-media",
+            "commandName": "github-pr-media",
+            "description": "Upload an image or video to GitHub's user attachments API and embed it in a pull request description or comment. Use when asked to add screenshots, diagrams, recordings, or other media to a PR or GitHub comment.",
+            "source": "builtin",
+            "userInvocable": false,
+            "enabled": true,
+            "path": "~/Documents/repos/pica/.claude/worktrees/r-01-git-service-0a79e8/engine/node_modules/.pnpm/@github+copilot-sdk-darwin-arm64@1.0.28/node_modules/@github/copilot-sdk-darwin-arm64/builtin/github-pr-media/SKILL.md"
+          }
+        ]
+      },
+      "ephemeral": true,
+      "id": "8cf81675-64f4-4f3b-badb-eb08c78f05b7",
+      "timestamp": "2026-11-14T21:40:22.340Z",
+      "parentId": "65d0296b-6748-4901-91e6-de4854f36cff"
+    },
+    {
+      "type": "session.mcp_server_status_changed",
+      "data": {
+        "serverName": "github-mcp-server",
+        "status": "pending"
+      },
+      "ephemeral": true,
+      "id": "df87f54a-1071-4f0c-8bc9-ca7f31d42ead",
+      "timestamp": "2026-11-14T21:40:22.347Z",
+      "parentId": "65d0296b-6748-4901-91e6-de4854f36cff"
+    },
+    {
+      "type": "session.mcp_server_status_changed",
+      "data": {
+        "serverName": "github-mcp-server",
+        "status": "connected",
+        "configSource": "builtin"
+      },
+      "ephemeral": true,
+      "id": "2352e6bd-c5ec-41f2-8812-2c7460d2a71d",
+      "timestamp": "2026-11-14T21:40:22.536Z",
+      "parentId": "65d0296b-6748-4901-91e6-de4854f36cff"
+    },
+    {
+      "type": "session.mcp_servers_loaded",
+      "ephemeral": true,
+      "data": {
+        "servers": [
+          {
+            "name": "github-mcp-server",
+            "status": "connected",
+            "source": "builtin",
+            "displayName": "GitHub MCP Server",
+            "serverMetadata": {
+              "instructions": "The GitHub MCP Server provides tools to interact with GitHub platform.\n\nTool selection guidance:\n\t1. Use 'list_*' tools for broad, simple retrieval and pagination of all items of a type (e.g., all issues, all PRs, all branches) with basic filtering.\n\t2. Use 'search_*' tools for targeted queries with specific criteria, keywords, or complex filters (e.g., issues with certain text, PRs by author, cod…(903 chars)"
+            }
+          }
+        ]
+      },
+      "id": "8b39ed98-3fc1-4ea4-aab1-383f5c5b45f8",
+      "timestamp": "2026-11-14T21:40:22.536Z",
+      "parentId": "65d0296b-6748-4901-91e6-de4854f36cff"
+    },
+    {
+      "type": "session.mcp_server_tools_loaded",
+      "data": {
+        "serverName": "github-mcp-server",
+        "toolCount": 5
+      },
+      "ephemeral": true,
+      "id": "2ca892d1-e833-47de-97f5-1f2e89bd90d5",
+      "timestamp": "2026-11-14T21:40:22.753Z",
+      "parentId": "65d0296b-6748-4901-91e6-de4854f36cff"
+    },
+    {
+      "type": "session.tools_updated",
+      "data": {
+        "model": "mai-code-1.1-flash"
+      },
+      "ephemeral": true,
+      "id": "110b07de-c71c-43b9-90f1-a8fbdbe38b2d",
+      "timestamp": "2026-11-14T21:40:22.770Z",
+      "parentId": "65d0296b-6748-4901-91e6-de4854f36cff"
+    },
+    {
+      "type": "user.message",
+      "data": {
+        "content": "Reply with the single word: ok",
+        "transformedContent": "<current_datetime>2026-11-14T16:40:22.771-05:00</current_datetime>\n\nReply with the single word: ok",
+        "messageId": "a75bbdde-fa2e-4d06-acbe-0cfcd091b005",
+        "supportedNativeDocumentMimeTypes": [],
+        "delivery": "idle",
+        "interactionId": "f4ba594d-f416-429e-9642-b665360deca9",
+        "turnId": "0",
+        "parentAgentTaskId": "a0a374af-f387-4845-b9bd-b2fdb161586e"
+      },
+      "id": "658472bf-57e2-428e-8fab-4dbc2dc854a3",
+      "timestamp": "2026-11-14T21:40:22.771Z",
+      "parentId": "65d0296b-6748-4901-91e6-de4854f36cff"
+    },
+    {
+      "type": "system.message",
+      "data": {
+        "role": "system",
+        "content": "You are GitHub Copilot, an AI coding agent built by GitHub. You are an interactive tool that helps users with software engineering tasks.\n\n# Tone and style\n* When providing output or explanation to the user, try to limit your response to 100 words or less.\n* Be concise in routine responses. For complex tasks, briefly explain your approach before implementing.\n\n# Search and delegation\n* Give sub-ag…(22429 chars)",
+        "contentBlocks": [
+          {
+            "content": "You are GitHub Copilot, an AI coding agent built by GitHub. You are an interactive tool that helps users with software engineering tasks.\n\n# Tone and style\n* When providing output or explanation to the user, try to limit your response to 100 words or less.\n* Be concise in routine responses. For complex tasks, briefly explain your approach before implementing.\n\n# Search and delegation\n* Give sub-ag…(4806 chars)",
+            "isStatic": true
+          },
+          {
+            "content": "<version_information>Version number: 1.0.105</version_information>\n\n<model_information>Auto mode is active. The concrete model is selected dynamically and may change during the conversation.\nWhen asked which model you are or what model is being used, explain that Auto mode selects the model and do not name a specific underlying model.</model_information>\n\n<environment_context>\nYou are working in t…(17621 chars)"
+          }
+        ],
+        "interactionId": "f4ba594d-f416-429e-9642-b665360deca9",
+        "metadata": {
+          "variables": {
+            "gitCommitTrailer": {
+              "sessionId": null,
+              "clientName": "sdk",
+              "coauthorEnabled": true
+            }
+          }
+        }
+      },
+      "id": "0cf5a7dd-78c7-46d9-84d5-f16ca3944ce8",
+      "timestamp": "2026-11-14T21:40:22.771Z",
+      "parentId": "658472bf-57e2-428e-8fab-4dbc2dc854a3"
+    },
+    {
+      "type": "model.turn_started",
+      "data": {
+        "kind": "turn_started",
+        "model": "mai-code-1.1-flash",
+        "modelInfo": {
+          "billing": {
+            "restricted_to": [
+              "free",
+              "edu",
+              "individual_trial",
+              "pro",
+              "pro_plus",
+              "max",
+              "business",
+              "enterprise"
+            ],
+            "token_prices": {
+              "batch_size": 1000000,
+              "default": {
+                "cache_read_price": 2,
+                "cache_write_price": 25,
+                "input_price": 20,
+                "max_prompt_tokens": 128000,
+                "output_price": 120
+              }
+            }
+          },
+          "capabilities": {
+            "family": "oswe-vscode-modelD",
+            "limits": {
+              "max_context_window_tokens": 256000,
+              "max_output_tokens": 128000,
+              "max_prompt_tokens": 128000,
+              "vision": {
+                "max_prompt_image_size": 3145728,
+                "max_prompt_images": 1,
+                "supported_media_types": [
+                  "image/jpeg",
+                  "image/png",
+                  "image/webp",
+                  "image/gif",
+                  "application/pdf"
+                ]
+              }
+            },
+            "object": "model_capabilities",
+            "supports": {
+              "parallel_tool_calls": true,
+              "reasoning_effort": [
+                "low",
+                "medium",
+                "high"
+              ],
+              "streaming": true,
+              "structured_outputs": true,
+              "tool_calls": true,
+              "vision": true,
+              "adaptive_thinking": "unsupported"
+            },
+            "tokenizer": "o200k_base",
+            "type": "chat"
+          },
+          "id": "mai-code-1.1-flash",
+          "is_chat_default": false,
+          "is_chat_fallback": false,
+          "model_picker_category": "lightweight",
+          "model_picker_enabled": false,
+          "model_picker_price_category": "low",
+          "name": "MAI-Code-1.1-Flash",
+          "object": "model",
+          "policy": {
+            "state": "enabled",
+            "terms": ""
+          },
+          "preview": false,
+          "supported_endpoints": [
+            "/responses",
+            "ws:/responses"
+          ],
+          "vendor": "Microsoft",
+          "version": "mai-code-1.1-flash",
+          "modelProviderId": "copilot",
+          "modelProviderOrdering": 0,
+          "provider": {
+            "id": "copilot",
+            "kind": "copilot",
+            "label": "GitHub Copilot"
+          }
+        },
+        "turn": 0,
+        "timestampMs": 1794692422773
+      },
+      "ephemeral": true,
+      "id": "142b2f76-70bb-4871-9158-09b443378630",
+      "timestamp": "2026-11-14T21:40:22.773Z",
+      "parentId": "0cf5a7dd-78c7-46d9-84d5-f16ca3944ce8"
+    },
+    {
+      "type": "assistant.turn_start",
+      "data": {
+        "turnId": "0",
+        "interactionId": "f4ba594d-f416-429e-9642-b665360deca9"
+      },
+      "id": "299f15a1-15e2-4279-bd35-ceb30f58fd44",
+      "timestamp": "2026-11-14T21:40:22.773Z",
+      "parentId": "0cf5a7dd-78c7-46d9-84d5-f16ca3944ce8"
+    },
+    {
+      "type": "session.usage_info",
+      "ephemeral": true,
+      "data": {
+        "tokenLimit": 128000,
+        "currentTokens": 12645,
+        "messagesLength": 2,
+        "systemTokens": 4820,
+        "conversationTokens": 37,
+        "toolDefinitionsTokens": 7788,
+        "isInitial": true
+      },
+      "id": "26284fac-de0d-466a-a1a8-a7fef6cbb9f8",
+      "timestamp": "2026-11-14T21:40:22.779Z",
+      "parentId": "299f15a1-15e2-4279-bd35-ceb30f58fd44"
+    },
+    {
+      "type": "model.call_start",
+      "data": {
+        "turnId": "0",
+        "model": "mai-code-1.1-flash"
+      },
+      "ephemeral": true,
+      "id": "c54bab65-e08d-4024-a9eb-d0661b7fc301",
+      "timestamp": "2026-11-14T21:40:22.781Z",
+      "parentId": "299f15a1-15e2-4279-bd35-ceb30f58fd44"
+    },
+    {
+      "type": "model.model_call_started",
+      "data": {
+        "kind": "model_call_started",
+        "model": "mai-code-1.1-flash",
+        "modelInfo": {
+          "billing": {
+            "restricted_to": [
+              "free",
+              "edu",
+              "individual_trial",
+              "pro",
+              "pro_plus",
+              "max",
+              "business",
+              "enterprise"
+            ],
+            "token_prices": {
+              "batch_size": 1000000,
+              "default": {
+                "cache_read_price": 2,
+                "cache_write_price": 25,
+                "input_price": 20,
+                "max_prompt_tokens": 128000,
+                "output_price": 120
+              }
+            }
+          },
+          "capabilities": {
+            "family": "oswe-vscode-modelD",
+            "limits": {
+              "max_context_window_tokens": 256000,
+              "max_output_tokens": 128000,
+              "max_prompt_tokens": 128000,
+              "vision": {
+                "max_prompt_image_size": 3145728,
+                "max_prompt_images": 1,
+                "supported_media_types": [
+                  "image/jpeg",
+                  "image/png",
+                  "image/webp",
+                  "image/gif",
+                  "application/pdf"
+                ]
+              }
+            },
+            "object": "model_capabilities",
+            "supports": {
+              "parallel_tool_calls": true,
+              "reasoning_effort": [
+                "low",
+                "medium",
+                "high"
+              ],
+              "streaming": true,
+              "structured_outputs": true,
+              "tool_calls": true,
+              "vision": true,
+              "adaptive_thinking": "unsupported"
+            },
+            "tokenizer": "o200k_base",
+            "type": "chat"
+          },
+          "id": "mai-code-1.1-flash",
+          "is_chat_default": false,
+          "is_chat_fallback": false,
+          "model_picker_category": "lightweight",
+          "model_picker_enabled": false,
+          "model_picker_price_category": "low",
+          "name": "MAI-Code-1.1-Flash",
+          "object": "model",
+          "policy": {
+            "state": "enabled",
+            "terms": ""
+          },
+          "preview": false,
+          "supported_endpoints": [
+            "/responses",
+            "ws:/responses"
+          ],
+          "vendor": "Microsoft",
+          "version": "mai-code-1.1-flash",
+          "modelProviderId": "copilot",
+          "modelProviderOrdering": 0,
+          "provider": {
+            "id": "copilot",
+            "kind": "copilot",
+            "label": "GitHub Copilot"
+          }
+        },
+        "turn": 0,
+        "timestampMs": 1794692422781
+      },
+      "ephemeral": true,
+      "id": "d60adecc-70bb-4fc9-b6f4-b5c7af96d4ff",
+      "timestamp": "2026-11-14T21:40:22.781Z",
+      "parentId": "299f15a1-15e2-4279-bd35-ceb30f58fd44"
+    },
+    {
+      "type": "assistant.message_start",
+      "data": {
+        "messageId": "a893b5b7-8bc2-498a-b49a-b1a40ec6a4c5",
+        "phase": "final_answer"
+      },
+      "ephemeral": true,
+      "id": "5a17cc6e-b3ec-4bfe-a772-d25e12cd2f11",
+      "timestamp": "2026-11-14T21:40:24.875Z",
+      "parentId": "299f15a1-15e2-4279-bd35-ceb30f58fd44"
+    },
+    {
+      "type": "assistant.streaming_delta",
+      "data": {
+        "totalResponseSizeBytes": 2
+      },
+      "ephemeral": true,
+      "id": "650372c3-8802-4456-9e70-c9d714bfbcd1",
+      "timestamp": "2026-11-14T21:40:24.876Z",
+      "parentId": "299f15a1-15e2-4279-bd35-ceb30f58fd44"
+    },
+    {
+      "type": "assistant.message_delta",
+      "data": {
+        "messageId": "a893b5b7-8bc2-498a-b49a-b1a40ec6a4c5",
+        "deltaContent": "ok"
+      },
+      "ephemeral": true,
+      "id": "05ef7308-29b4-4b13-910a-0b3c58a04a28",
+      "timestamp": "2026-11-14T21:40:24.876Z",
+      "parentId": "299f15a1-15e2-4279-bd35-ceb30f58fd44"
+    },
+    {
+      "type": "model.captured_assignment_context",
+      "data": {
+        "kind": "captured_assignment_context",
+        "assignmentContext": "e4hcf520:1109203;permission_prompt_treatment:1332566;ccr_pr_nudge_auto_review:1467214;4cj51803:1433348;cmc_aa_c:1435710;seatcta-d9cadb09:1462477;ghuitreatment2:1482850;githubexp-exposure-services:1484840;"
+      },
+      "ephemeral": true,
+      "id": "08ddd158-3d8c-41a8-b2ce-2d4f1971a07b",
+      "timestamp": "2026-11-14T21:40:24.934Z",
+      "parentId": "299f15a1-15e2-4279-bd35-ceb30f58fd44"
+    },
+    {
+      "type": "assistant.usage",
+      "data": {
+        "model": "mai-code-1.1-flash",
+        "provider": {
+          "id": "copilot",
+          "kind": "copilot",
+          "label": "GitHub Copilot"
+        },
+        "modelDisplayName": "MAI-Code-1.1-Flash",
+        "inputTokens": 11297,
+        "outputTokens": 5,
+        "cacheReadTokens": 1280,
+        "cacheWriteTokens": 0,
+        "reasoningTokens": 0,
+        "cost": 1,
+        "duration": 1933,
+        "timeToFirstTokenMs": 1874.5461249999998,
+        "outputTtftMs": 1874.546542,
+        "cacheExpiresAt": "2026-11-14T22:10:23.002Z",
+        "initiator": "user",
+        "interactionType": "conversation-agent",
+        "isByok": false,
+        "isAuto": true,
+        "maxPromptTokens": 128000,
+        "transport": "websocket",
+        "requestBodyBytes": 58947,
+        "requestBodyWireBytes": 58947,
+        "requestBodyEncoding": "identity",
+        "apiCallId": "1zhSszIUgudM0BZZuq60X974zyNpVrin4xGiaIcv+LewSyjx5kNDG4oBUjQ6VrQxTs7ohWMSHfxkt9W/3jdFMSCaBjEAf5XGSVoOA9RPBqajAKLjPRMFa+e9XatVGgNlKzdAJc8lStJDNa9i7SZl7uH8Gl5EcXH2h6+c2N3HVoOxjGlf0gpFqIyD1iUirJcZpp0yAMaThOGXvN2fyXpgW+gS3AiB4uxWoAcAiSp4CQ4DpqhNnF84yLJ9vLrIA1pD42bybw0auoq4MEQVw0dvdnVZbjnX3cDE85c+AgXtzuBR156bU+gnvC7ckgeuLNQOblVxZPYR6uYdyKNzrRuAVqve1wxWwgP7NrdkuIIOuhaN4ozDviYOU3zvtYAIilLVcFdnLnXpAyS3QBGD…(516 chars)",
+        "providerCallId": "00000-50582591-bce2-469a-91f7-8b061d44b37a",
+        "serviceRequestId": "90b67208-7c1a-4d28-98c1-514293db7b68",
+        "rte": true,
+        "apiEndpoint": "ws:/responses",
+        "quotaSnapshots": {
+          "chat": {
+            "isUnlimitedEntitlement": false,
+            "entitlementRequests": 200,
+            "usedRequests": 0,
+            "usageAllowedWithExhaustedQuota": false,
+            "overage": 0,
+            "overageAllowedWithExhaustedQuota": false,
+            "remainingPercentage": 99.9,
+            "resetDate": "2026-12-01T00:00:00Z"
+          },
+          "completions": {
+            "isUnlimitedEntitlement": false,
+            "entitlementRequests": 2000,
+            "usedRequests": 10,
+            "usageAllowedWithExhaustedQuota": false,
+            "overage": 0,
+            "overageAllowedWithExhaustedQuota": false,
+            "remainingPercentage": 99.5,
+            "resetDate": "2026-12-01T00:00:00Z"
+          },
+          "premium_interactions": {
+            "isUnlimitedEntitlement": false,
+            "entitlementRequests": 0,
+            "usedRequests": 0,
+            "usageAllowedWithExhaustedQuota": false,
+            "overage": 0,
+            "overageAllowedWithExhaustedQuota": false,
+            "remainingPercentage": 0,
+            "resetDate": "2026-12-01T00:00:00Z"
+          }
+        },
+        "copilotUsage": {
+          "tokenDetails": [
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 20000000000,
+              "tokenCount": 10017,
+              "tokenType": "input",
+              "model": "mai-code-1.1-flash"
+            },
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 2000000000,
+              "tokenCount": 1280,
+              "tokenType": "cache_read",
+              "model": "mai-code-1.1-flash"
+            },
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 25000000000,
+              "tokenCount": 0,
+              "tokenType": "cache_write",
+              "model": "mai-code-1.1-flash"
+            },
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 120000000000,
+              "tokenCount": 5,
+              "tokenType": "output",
+              "model": "mai-code-1.1-flash"
+            }
+          ],
+          "totalNanoAiu": 203500000
+        },
+        "aiCreditsStatus": "complete",
+        "reasoningEffort": "medium",
+        "reasoningSummary": "detailed",
+        "availableToolCount": 25,
+        "toolTokenCount": 7788,
+        "customToolCallCount": 0,
+        "unmatchedToolResultCount": 0,
+        "orphanToolCallCount": 0,
+        "frontierSource": "reported_writes",
+        "cacheTtlSeconds": 1800,
+        "cacheDetailsReported": true,
+        "numToolCalls": 0,
+        "toolCounts": {},
+        "finishReason": "stop",
+        "contentFilterTriggered": false,
+        "accounting": {
+          "sourceSessionId": "35ea092f-657e-4ab9-b667-9857b7125925",
+          "sequence": 1,
+          "usageId": "1zhSszIUgudM0BZZuq60X974zyNpVrin4xGiaIcv+LewSyjx5kNDG4oBUjQ6VrQxTs7ohWMSHfxkt9W/3jdFMSCaBjEAf5XGSVoOA9RPBqajAKLjPRMFa+e9XatVGgNlKzdAJc8lStJDNa9i7SZl7uH8Gl5EcXH2h6+c2N3HVoOxjGlf0gpFqIyD1iUirJcZpp0yAMaThOGXvN2fyXpgW+gS3AiB4uxWoAcAiSp4CQ4DpqhNnF84yLJ9vLrIA1pD42bybw0auoq4MEQVw0dvdnVZbjnX3cDE85c+AgXtzuBR156bU+gnvC7ckgeuLNQOblVxZPYR6uYdyKNzrRuAVqve1wxWwgP7NrdkuIIOuhaN4ozDviYOU3zvtYAIilLVcFdnLnXpAyS3QBGD…(516 chars)"
+        }
+      },
+      "ephemeral": true,
+      "id": "74d8004e-918a-4058-bf08-cf514cc0601d",
+      "timestamp": "2026-11-14T21:40:24.935Z",
+      "parentId": "0ed3f717-9841-4c86-9f91-c5fbd31ee9fa"
+    },
+    {
+      "type": "model.model_call_success",
+      "data": {
+        "kind": "model_call_success",
+        "turn": 0,
+        "modelCallDurationMs": 1933,
+        "ttftMs": 1874.5461249999998,
+        "outputTtftMs": 1874.546542,
+        "modelCall": {
+          "model": "mai-code-1.1-flash",
+          "api_id": "1zhSszIUgudM0BZZuq60X974zyNpVrin4xGiaIcv+LewSyjx5kNDG4oBUjQ6VrQxTs7ohWMSHfxkt9W/3jdFMSCaBjEAf5XGSVoOA9RPBqajAKLjPRMFa+e9XatVGgNlKzdAJc8lStJDNa9i7SZl7uH8Gl5EcXH2h6+c2N3HVoOxjGlf0gpFqIyD1iUirJcZpp0yAMaThOGXvN2fyXpgW+gS3AiB4uxWoAcAiSp4CQ4DpqhNnF84yLJ9vLrIA1pD42bybw0auoq4MEQVw0dvdnVZbjnX3cDE85c+AgXtzuBR156bU+gnvC7ckgeuLNQOblVxZPYR6uYdyKNzrRuAVqve1wxWwgP7NrdkuIIOuhaN4ozDviYOU3zvtYAIilLVcFdnLnXpAyS3QBGD…(516 chars)",
+          "api_endpoint": "ws:/responses",
+          "request_id": "00000-50582591-bce2-469a-91f7-8b061d44b37a",
+          "client_request_id": "00000-50582591-bce2-469a-91f7-8b061d44b37a",
+          "service_request_id": "90b67208-7c1a-4d28-98c1-514293db7b68",
+          "rte": true,
+          "initiator": "user",
+          "transport": "websocket",
+          "request_body_bytes": 58947,
+          "request_body_wire_bytes": 58947,
+          "request_body_encoding": "identity"
+        },
+        "responseChunk": {
+          "id": "1zhSszIUgudM0BZZuq60X974zyNpVrin4xGiaIcv+LewSyjx5kNDG4oBUjQ6VrQxTs7ohWMSHfxkt9W/3jdFMSCaBjEAf5XGSVoOA9RPBqajAKLjPRMFa+e9XatVGgNlKzdAJc8lStJDNa9i7SZl7uH8Gl5EcXH2h6+c2N3HVoOxjGlf0gpFqIyD1iUirJcZpp0yAMaThOGXvN2fyXpgW+gS3AiB4uxWoAcAiSp4CQ4DpqhNnF84yLJ9vLrIA1pD42bybw0auoq4MEQVw0dvdnVZbjnX3cDE85c+AgXtzuBR156bU+gnvC7ckgeuLNQOblVxZPYR6uYdyKNzrRuAVqve1wxWwgP7NrdkuIIOuhaN4ozDviYOU3zvtYAIilLVcFdnLnXpAyS3QBGD…(516 chars)",
+          "choices": [
+            {
+              "delta": {
+                "responses_message_status": "completed",
+                "role": "assistant",
+                "content": "ok",
+                "refusal": null,
+                "phase": "final_answer"
+              },
+              "finish_reason": "stop",
+              "index": 0
+            }
+          ],
+          "created": 1794692424,
+          "model": "mai-code-1.1-flash",
+          "object": "chat.completion.chunk",
+          "usage": {
+            "completion_tokens": 5,
+            "total_tokens": 11302,
+            "prompt_tokens_details": {
+              "cached_tokens": 1280,
+              "cache_creation_tokens": 0,
+              "cache_write_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_tokens": 11297
+          },
+          "copilot_usage": {
+            "token_details": [
+              {
+                "batch_size": 1000000,
+                "cost_per_batch": 20000000000,
+                "model": "mai-code-1.1-flash",
+                "token_count": 10017,
+                "token_type": "input"
+              },
+              {
+                "batch_size": 1000000,
+                "cost_per_batch": 2000000000,
+                "model": "mai-code-1.1-flash",
+                "token_count": 1280,
+                "token_type": "cache_read"
+              },
+              {
+                "batch_size": 1000000,
+                "cost_per_batch": 25000000000,
+                "model": "mai-code-1.1-flash",
+                "token_count": 0,
+                "token_type": "cache_write"
+              },
+              {
+                "batch_size": 1000000,
+                "cost_per_batch": 120000000000,
+                "model": "mai-code-1.1-flash",
+                "token_count": 5,
+                "token_type": "output"
+              }
+            ],
+            "total_nano_aiu": 203500000
+          }
+        },
+        "responseUsage": {
+          "completion_tokens": 5,
+          "total_tokens": 11302,
+          "prompt_tokens_details": {
+            "cached_tokens": 1280,
+            "cache_creation_tokens": 0,
+            "cache_ttl_seconds": 1800
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          },
+          "prompt_tokens": 11297,
+          "prompt_cache_frontier_source": "reported_writes",
+          "prompt_cache_details_reported": true
+        },
+        "quotaSnapshots": {
+          "chat": {
+            "isUnlimitedEntitlement": false,
+            "entitlementRequests": 200,
+            "usedRequests": 0,
+            "usageAllowedWithExhaustedQuota": false,
+            "overage": 0,
+            "overageAllowedWithExhaustedQuota": false,
+            "remainingPercentage": 99.9,
+            "resetDate": "2026-12-01T00:00:00Z"
+          },
+          "completions": {
+            "isUnlimitedEntitlement": false,
+            "entitlementRequests": 2000,
+            "usedRequests": 10,
+            "usageAllowedWithExhaustedQuota": false,
+            "overage": 0,
+            "overageAllowedWithExhaustedQuota": false,
+            "remainingPercentage": 99.5,
+            "resetDate": "2026-12-01T00:00:00Z"
+          },
+          "premium_interactions": {
+            "isUnlimitedEntitlement": false,
+            "entitlementRequests": 0,
+            "usedRequests": 0,
+            "usageAllowedWithExhaustedQuota": false,
+            "overage": 0,
+            "overageAllowedWithExhaustedQuota": false,
+            "remainingPercentage": 0,
+            "resetDate": "2026-12-01T00:00:00Z"
+          }
+        },
+        "requestId": "00000-50582591-bce2-469a-91f7-8b061d44b37a",
+        "clientRequestId": "00000-50582591-bce2-469a-91f7-8b061d44b37a",
+        "serviceRequestId": "90b67208-7c1a-4d28-98c1-514293db7b68",
+        "rte": true,
+        "copilotUsage": {
+          "token_details": [
+            {
+              "batch_size": 1000000,
+              "cost_per_batch": 20000000000,
+              "model": "mai-code-1.1-flash",
+              "token_count": 10017,
+              "token_type": "input"
+            },
+            {
+              "batch_size": 1000000,
+              "cost_per_batch": 2000000000,
+              "model": "mai-code-1.1-flash",
+              "token_count": 1280,
+              "token_type": "cache_read"
+            },
+            {
+              "batch_size": 1000000,
+              "cost_per_batch": 25000000000,
+              "model": "mai-code-1.1-flash",
+              "token_count": 0,
+              "token_type": "cache_write"
+            },
+            {
+              "batch_size": 1000000,
+              "cost_per_batch": 120000000000,
+              "model": "mai-code-1.1-flash",
+              "token_count": 5,
+              "token_type": "output"
+            }
+          ],
+          "total_nano_aiu": 203500000
+        },
+        "reasoningEffort": "medium",
+        "reasoningSummary": "detailed",
+        "maxPromptTokens": 128000,
+        "toolCount": 25,
+        "toolTokenCount": 7788,
+        "provider": {
+          "id": "copilot",
+          "kind": "copilot",
+          "label": "GitHub Copilot"
+        },
+        "customToolCallCount": 0,
+        "unmatchedToolResultCount": 0,
+        "orphanToolCallCount": 0,
+        "modelDisplayName": "MAI-Code-1.1-Flash",
+        "requestCapture": {
+          "tools": [
+            {
+              "name": "bash",
+              "schema_hash": "5aff88e14e77",
+              "safe": true
+            },
+            {
+              "name": "read_bash",
+              "schema_hash": "78bdc74b3707",
+              "safe": true
+            },
+            {
+              "name": "stop_bash",
+              "schema_hash": "dd8c0c97e7c9",
+              "safe": true
+            },
+            {
+              "name": "list_bash",
+              "schema_hash": "3209638ac5d6",
+              "safe": true
+            },
+            {
+              "name": "view",
+              "schema_hash": "3e73851b027b",
+              "safe": true
+            },
+            {
+              "name": "create",
+              "schema_hash": "d7e30321149d",
+              "safe": true
+            },
+            {
+              "name": "edit",
+              "schema_hash": "0be632c6eeaa",
+              "safe": true
+            },
+            {
+              "name": "web_fetch",
+              "schema_hash": "a0829f05c5fd",
+              "safe": true
+            },
+            {
+              "name": "search_code_subagent",
+              "schema_hash": "3c5f0f30dd6a",
+              "safe": true
+            },
+            {
+              "name": "semantic_code_search",
+              "schema_hash": "a9a3d6d96921",
+              "safe": false
+            },
+            {
+              "name": "skill",
+              "schema_hash": "a7ac9beec0b8",
+              "safe": true
+            },
+            {
+              "name": "run_dynamic_workflow",
+              "schema_hash": "d4f938d51048",
+              "safe": true
+            },
+            {
+              "name": "dynamic_workflows_manage",
+              "schema_hash": "5d3e79db7ecb",
+              "safe": false
+            },
+            {
+              "name": "sql",
+              "schema_hash": "5756c3fc79ed",
+              "safe": true
+            },
+            {
+              "name": "read_agent",
+              "schema_hash": "fb2b527fdba4",
+              "safe": true
+            },
+            {
+              "name": "list_agents",
+              "schema_hash": "bb480bb53a47",
+              "safe": true
+            },
+            {
+              "name": "write_agent",
+              "schema_hash": "d4ba47acdccd",
+              "safe": true
+            },
+            {
+              "name": "grep",
+              "schema_hash": "d0b58b80eaaf",
+              "safe": true
+            },
+            {
+              "name": "glob",
+              "schema_hash": "40089e3a3ba4",
+              "safe": true
+            },
+            {
+              "name": "task",
+              "schema_hash": "ce7cf447089e",
+              "safe": true
+            },
+            {
+              "name": "github-mcp-server-get_copilot_space",
+              "schema_hash": "c8adccdafb84",
+              "safe": true
+            },
+            {
+              "name": "github-mcp-server-get_file_contents",
+              "schema_hash": "6cf17f9abfd4",
+              "safe": true
+            },
+            {
+              "name": "github-mcp-server-list_copilot_spaces",
+              "schema_hash": "32e5d3fd470f",
+              "safe": true
+            },
+            {
+              "name": "github-mcp-server-search_code",
+              "schema_hash": "679d4765fec5",
+              "safe": true
+            },
+            {
+              "name": "github-mcp-server-search_users",
+              "schema_hash": "da0cf089bedb",
+              "safe": true
+            }
+          ],
+          "tool_part_hashes": [
+            {
+              "description": "1102ce92a573",
+              "input_schema.properties.command": "5da931124dd1",
+              "input_schema.properties.description": "02e284c5e671",
+              "input_schema.properties.detach": "17d145a6ba3a",
+              "input_schema.properties.initial_wait": "ae7ede56c2b6",
+              "input_schema.properties.mode": "02e34195919b",
+              "input_schema.properties.shellId": "75ab839de1f2",
+              "input_schema.required": "f663a2120c12",
+              "input_schema.type": "626992da9517",
+              "type": "74234e98afe7"
+            },
+            {
+              "description": "0073d97dcbfe",
+              "input_schema.properties.delay": "c191fa219340",
+              "input_schema.properties.shellId": "a8d0a0a94df4",
+              "input_schema.required": "45f24513777b",
+              "input_schema.type": "626992da9517",
+              "type": "74234e98afe7"
+            },
+            {
+              "description": "fe5021cf8149",
+              "input_schema.properties.shellId": "4ab406978e41",
+              "input_schema.required": "e9872d6e4f87",
+              "input_schema.type": "626992da9517",
+              "type": "74234e98afe7"
+            },
+            {
+              "description": "dbca47715fa3",
+              "input_schema.required": "4f53cda18c2b",
+              "input_schema.type": "626992da9517",
+              "type": "74234e98afe7"
+            },
+            {
+              "description": "b17f34b08c19",
+              "input_schema.properties.forceReadLargeFiles": "e536f675bece",
+              "input_schema.properties.path": "93f37772019b",
+              "input_schema.properties.view_range": "682929c20bc0",
+              "input_schema.required": "39f0d1a2eda0",
+              "input_schema.type": "626992da9517",
+              "type": "74234e98afe7"
+            },
+            {
+              "description": "d87140759dd3",
+              "input_schema.properties.file_text": "0d3afaab0462",
+              "input_schema.properties.path": "fef5b9298edb",
+              "input_schema.required": "3d41c28ff819",
+              "input_schema.type": "626992da9517",
+              "type": "74234e98afe7"
+            },
+            {
+              "description": "cc912c47bd47",
+              "input_schema.properties.new_str": "6d6a05c4ee9e",
+              "input_schema.properties.old_str": "8ed3e57b826b",
+              "input_schema.properties.path": "9cf42acfe95b",
+              "input_schema.required": "39f0d1a2eda0",
+              "input_schema.type": "626992da9517",
+              "type": "74234e98afe7"
+            },
+            {
+              "description": "1c4d77e76aee",
+              "input_schema.properties.max_length": "1445c14ab2f3",
+              "input_schema.properties.raw": "0e32571ef747",
+              "input_schema.properties.start_index": "b80b5630ee53",
+              "input_schema.properties.url": "ed15d34827be",
+              "input_schema.required": "172f6d9f96f8",
+              "input_schema.type": "626992da9517",
+              "type": "74234e98afe7"
+            },
+            {
+              "description": "5b18fe196d7b",
+              "input_schema.properties.details": "268ae3a7401e",
+              "input_schema.properties.query": "19c453126a12",
+              "input_schema.properties.thoroughness": "44943655cf7d",
+              "input_schema.required": "505ff151e09e",
+              "input_schema.type": "626992da9517",
+              "type": "74234e98afe7"
+            },
+            {
+              "description": "b4d4b058997b",
+              "input_schema": "74e287ea8fb5",
+              "type": "74234e98afe7"
+            },
+            {
+              "description": "a3708f3dcc82",
+              "input_schema.properties.skill": "41f37ae65b04",
+              "input_schema.required": "08e747d0b996",
+              "input_schema.type": "626992da9517",
+              "type": "74234e98afe7"
+            },
+            {
+              "description": "53af31fa3e93",
+              "input_schema.oneOf": "81b882756921",
+              "type": "74234e98afe7"
+            },
+            {
+              "description": "69bd5ab0e46d",
+              "input_schema.additionalProperties": "fcbcf165908d",
+              "input_schema.oneOf": "650acf45e1a1",
+              "input_schema.properties.beforeSeq": "a28d81a5d282",
+              "input_schema.properties.meta": "82131725803e",
+              "input_schema.properties.name": "7b63602b39dc",
+              "input_schema.properties.operation": "23b68a1492c5",
+              "input_schema.properties.run": "02ea4ba3cf51",
+              "input_schema.properties.runId": "3bd4a2e43e70",
+              "input_schema.required": "8b5af50e6be2",
+              "input_schema.type": "626992da9517",
+              "type": "74234e98afe7"
+            },
+            {
+              "description": "1cce153b7088",
+              "input_schema.properties.description": "c2124912581d",
+              "input_schema.properties.query": "78fc213bc559",
+              "input_schema.required": "fcc19df405af",
+              "input_schema.type": "626992da9517",
+              "type": "74234e98afe7"
+            },
+            {
+              "description": "d975a3f63890",
+              "input_schema.properties.agent_id": "9ca7d66a249d",
+              "input_schema.properties.since_turn": "3e51f1da34cf",
+              "input_schema.properties.timeout": "81249ee8415b",
+              "input_schema.properties.wait": "c20005cf7f33",
+              "input_schema.required": "8b1848faefa0",
+              "input_schema.type": "626992da9517",
+              "type": "74234e98afe7"
+            },
+            {
+              "description": "3977cb526912",
+              "input_schema.properties.include_completed": "5e48883602d1",
+              "input_schema.properties.scope": "cd2ccd14a6b3",
+              "input_schema.type": "626992da9517",
+              "type": "74234e98afe7"
+            },
+            {
+              "description": "9abd4ee1aafb",
+              "input_schema.oneOf": "39d4571e1ab3",
+              "input_schema.properties.agent_id": "3212f5b91dfc",
+              "input_schema.properties.agent_ids": "1234c7f04c97",
+              "input_schema.properties.message": "bf042ac20829",
+              "input_schema.properties.scope": "05ea84084083",
+              "input_schema.required": "6ed896f26cf3",
+              "input_schema.type": "626992da9517",
+              "type": "74234e98afe7"
+            },
+            {
+              "description": "0aea316553c9",
+              "input_schema.properties.-A": "a19635419b81",
+              "input_schema.properties.-B": "c9be863f4bf0",
+              "input_schema.properties.-C": "ea3dee58c412",
+              "input_schema.properties.-i": "dc7c0625935e",
+              "input_schema.properties.-n": "af80e386c77f",
+              "input_schema.properties.glob": "de89a2f98cce",
+              "input_schema.properties.head_limit": "cbdf5e31e73e",
+              "input_schema.properties.multiline": "0b4345263d6d",
+              "input_schema.properties.output_mode": "114aace1233c",
+              "input_schema.properties.paths": "71aab7b00653",
+              "input_schema.properties.pattern": "687ad3359b6f",
+              "input_schema.properties.type": "95ac6c42db4c",
+              "input_schema.required": "ebbee8ee5a4e",
+              "input_schema.type": "626992da9517",
+              "type": "74234e98afe7"
+            },
+            {
+              "description": "52ad318b8271",
+              "input_schema.properties.paths": "71aab7b00653",
+              "input_schema.properties.pattern": "edf895e68ba3",
+              "input_schema.required": "ebbee8ee5a4e",
+              "input_schema.type": "626992da9517",
+              "type": "74234e98afe7"
+            },
+            {
+              "description": "b5f49bfa3fb9",
+              "input_schema.properties.agent_type": "13a4c3682ec1",
+              "input_schema.properties.context_tier": "33e739bfe24f",
+              "input_schema.properties.description": "8aef6e803853",
+              "input_schema.properties.mode": "0bb5eb5561a6",
+              "input_schema.properties.model": "c2a38dc44592",
+              "input_schema.properties.name": "c6e6ecfcdd94",
+              "input_schema.properties.prompt": "15bf39ad1073",
+              "input_schema.properties.reasoning_effort": "091e413ca9c2",
+              "input_schema.required": "26b4e41bed60",
+              "input_schema.type": "626992da9517"
+            },
+            {
+              "description": "4bc5e5bfc78c",
+              "input_schema": "e26d80f53fba"
+            },
+            {
+              "description": "d5863ce3e859",
+              "input_schema": "3e8fd49a5ed6"
+            },
+            {
+              "description": "d4a9c23ca967",
+              "input_schema": "efddc7bd8bbc"
+            },
+            {
+              "description": "04156c75518d",
+              "input_schema": "4ad473c9570e"
+            },
+            {
+              "description": "94e2be075472",
+              "input_schema": "0d70495994a0"
+            }
+          ],
+          "tools_truncated": 0,
+          "system_segments": [
+            {
+              "segment": "identity_preamble",
+              "hash": "bb194c21624a",
+              "tokens": 16
+            },
+            {
+              "segment": "interaction_mode",
+              "hash": "e5959028ccdd",
+              "tokens": 13
+            },
+            {
+              "segment": "tone_and_style",
+              "hash": "cd4c10cfdb57",
+              "tokens": 45
+            },
+            {
+              "segment": "search_and_delegation",
+              "hash": "745ad2d45bb4",
+              "tokens": 138
+            },
+            {
+              "segment": "tool_efficiency",
+              "hash": "cb7de732a200",
+              "tokens": 200
+            },
+            {
+              "segment": "version_information",
+              "hash": "9082bee48598",
+              "tokens": 17
+            },
+            {
+              "segment": "model_information",
+              "hash": "5e67dc60f292",
+              "tokens": 54
+            },
+            {
+              "segment": "environment_context",
+              "hash": "b9e448980258",
+              "tokens": 98
+            },
+            {
+              "segment": "identity_task_instructions",
+              "hash": "adb5ce208724",
+              "tokens": 11
+            },
+            {
+              "segment": "code_change_instructions",
+              "hash": "ae7d2a78e12d",
+              "tokens": 228
+            },
+            {
+              "segment": "dynamic_guidelines",
+              "hash": "b41ed4d2e2eb",
+              "tokens": 82
+            },
+            {
+              "segment": "environment_limitations",
+              "hash": "8cf9cbce1516",
+              "tokens": 244
+            },
+            {
+              "segment": "tool_intro",
+              "hash": "2c07d9f78963",
+              "tokens": 20
+            },
+            {
+              "segment": "tool_instructions",
+              "hash": "41f19b5793c7",
+              "tokens": 3199
+            },
+            {
+              "segment": "system_notifications",
+              "hash": "06e72cdc5231",
+              "tokens": 86
+            },
+            {
+              "segment": "workspace_context",
+              "hash": "4437462d84d8",
+              "tokens": 79
+            },
+            {
+              "segment": "git_commit_trailer",
+              "hash": "1d737bc1da62",
+              "tokens": 67
+            },
+            {
+              "segment": "final_instructions",
+              "hash": "42885e06aebe",
+              "tokens": 223
+            }
+          ],
+          "conversation": {
+            "message_count": 1,
+            "points": [
+              {
+                "index": 0,
+                "hash": "59c7072edbd1"
+              }
+            ]
+          },
+          "cache_config": {
+            "arm": "control",
+            "marks_system_prompt": false,
+            "marks_conversation": false,
+            "advisor_tool": false,
+            "incremental_input": false,
+            "system_prompt_layout": "legacy"
+          },
+          "session_mode": "interactive"
+        }
+      },
+      "ephemeral": true,
+      "id": "60907a86-703e-4a2f-9354-67c969a99038",
+      "timestamp": "2026-11-14T21:40:24.937Z",
+      "parentId": "0ed3f717-9841-4c86-9f91-c5fbd31ee9fa"
+    },
+    {
+      "type": "model.call_finished",
+      "data": {
+        "turnId": "0",
+        "dispatchDurationMs": 2152,
+        "outcome": "success",
+        "editClassifierVersion": 1,
+        "interactionId": "f4ba594d-f416-429e-9642-b665360deca9",
+        "containsBuiltInFileEditRequest": false
+      },
+      "ephemeral": true,
+      "id": "c758e698-7239-48e0-ad29-e205340c6723",
+      "timestamp": "2026-11-14T21:40:24.938Z",
+      "parentId": "0ed3f717-9841-4c86-9f91-c5fbd31ee9fa"
+    },
+    {
+      "type": "model.message",
+      "data": {
+        "kind": "message",
+        "turn": 0,
+        "modelCall": {
+          "model": "mai-code-1.1-flash",
+          "api_id": "1zhSszIUgudM0BZZuq60X974zyNpVrin4xGiaIcv+LewSyjx5kNDG4oBUjQ6VrQxTs7ohWMSHfxkt9W/3jdFMSCaBjEAf5XGSVoOA9RPBqajAKLjPRMFa+e9XatVGgNlKzdAJc8lStJDNa9i7SZl7uH8Gl5EcXH2h6+c2N3HVoOxjGlf0gpFqIyD1iUirJcZpp0yAMaThOGXvN2fyXpgW+gS3AiB4uxWoAcAiSp4CQ4DpqhNnF84yLJ9vLrIA1pD42bybw0auoq4MEQVw0dvdnVZbjnX3cDE85c+AgXtzuBR156bU+gnvC7ckgeuLNQOblVxZPYR6uYdyKNzrRuAVqve1wxWwgP7NrdkuIIOuhaN4ozDviYOU3zvtYAIilLVcFdnLnXpAyS3QBGD…(516 chars)",
+          "api_endpoint": "ws:/responses",
+          "request_id": "00000-50582591-bce2-469a-91f7-8b061d44b37a",
+          "client_request_id": "00000-50582591-bce2-469a-91f7-8b061d44b37a",
+          "service_request_id": "90b67208-7c1a-4d28-98c1-514293db7b68",
+          "rte": true,
+          "initiator": "user",
+          "transport": "websocket"
+        },
+        "message": {
+          "content": "ok",
+          "refusal": null,
+          "role": "assistant",
+          "responses_message_status": "completed",
+          "phase": "final_answer",
+          "serverTools": {
+            "provider": "openai-responses"
+          },
+          "apiCallId": "1zhSszIUgudM0BZZuq60X974zyNpVrin4xGiaIcv+LewSyjx5kNDG4oBUjQ6VrQxTs7ohWMSHfxkt9W/3jdFMSCaBjEAf5XGSVoOA9RPBqajAKLjPRMFa+e9XatVGgNlKzdAJc8lStJDNa9i7SZl7uH8Gl5EcXH2h6+c2N3HVoOxjGlf0gpFqIyD1iUirJcZpp0yAMaThOGXvN2fyXpgW+gS3AiB4uxWoAcAiSp4CQ4DpqhNnF84yLJ9vLrIA1pD42bybw0auoq4MEQVw0dvdnVZbjnX3cDE85c+AgXtzuBR156bU+gnvC7ckgeuLNQOblVxZPYR6uYdyKNzrRuAVqve1wxWwgP7NrdkuIIOuhaN4ozDviYOU3zvtYAIilLVcFdnLnXpAyS3QBGD…(516 chars)",
+          "outputTokens": 5,
+          "providerId": "copilot"
+        }
+      },
+      "ephemeral": true,
+      "id": "3c38c54a-e097-4f67-8c0a-5e8385c07830",
+      "timestamp": "2026-11-14T21:40:24.938Z",
+      "parentId": "0ed3f717-9841-4c86-9f91-c5fbd31ee9fa"
+    },
+    {
+      "type": "assistant.message",
+      "data": {
+        "messageId": "a893b5b7-8bc2-498a-b49a-b1a40ec6a4c5",
+        "originatingMessageId": "a75bbdde-fa2e-4d06-acbe-0cfcd091b005",
+        "model": "mai-code-1.1-flash",
+        "providerId": "copilot",
+        "content": "ok",
+        "toolRequests": [],
+        "interactionId": "f4ba594d-f416-429e-9642-b665360deca9",
+        "turnId": "0",
+        "phase": "final_answer",
+        "rte": true,
+        "apiCallId": "1zhSszIUgudM0BZZuq60X974zyNpVrin4xGiaIcv+LewSyjx5kNDG4oBUjQ6VrQxTs7ohWMSHfxkt9W/3jdFMSCaBjEAf5XGSVoOA9RPBqajAKLjPRMFa+e9XatVGgNlKzdAJc8lStJDNa9i7SZl7uH8Gl5EcXH2h6+c2N3HVoOxjGlf0gpFqIyD1iUirJcZpp0yAMaThOGXvN2fyXpgW+gS3AiB4uxWoAcAiSp4CQ4DpqhNnF84yLJ9vLrIA1pD42bybw0auoq4MEQVw0dvdnVZbjnX3cDE85c+AgXtzuBR156bU+gnvC7ckgeuLNQOblVxZPYR6uYdyKNzrRuAVqve1wxWwgP7NrdkuIIOuhaN4ozDviYOU3zvtYAIilLVcFdnLnXpAyS3QBGD…(516 chars)",
+        "serverTools": {
+          "provider": "openai-responses"
+        }
+      },
+      "id": "25d051f7-6b7d-41fb-925a-02b8a814355b",
+      "timestamp": "2026-11-14T21:40:24.939Z",
+      "parentId": "0ed3f717-9841-4c86-9f91-c5fbd31ee9fa"
+    },
+    {
+      "type": "model.response",
+      "data": {
+        "kind": "response",
+        "turn": 0,
+        "modelCall": {
+          "model": "mai-code-1.1-flash",
+          "api_id": "1zhSszIUgudM0BZZuq60X974zyNpVrin4xGiaIcv+LewSyjx5kNDG4oBUjQ6VrQxTs7ohWMSHfxkt9W/3jdFMSCaBjEAf5XGSVoOA9RPBqajAKLjPRMFa+e9XatVGgNlKzdAJc8lStJDNa9i7SZl7uH8Gl5EcXH2h6+c2N3HVoOxjGlf0gpFqIyD1iUirJcZpp0yAMaThOGXvN2fyXpgW+gS3AiB4uxWoAcAiSp4CQ4DpqhNnF84yLJ9vLrIA1pD42bybw0auoq4MEQVw0dvdnVZbjnX3cDE85c+AgXtzuBR156bU+gnvC7ckgeuLNQOblVxZPYR6uYdyKNzrRuAVqve1wxWwgP7NrdkuIIOuhaN4ozDviYOU3zvtYAIilLVcFdnLnXpAyS3QBGD…(516 chars)"
+        },
+        "response": {
+          "content": "ok",
+          "refusal": null,
+          "role": "assistant",
+          "responses_message_status": "completed",
+          "phase": "final_answer",
+          "serverTools": {
+            "provider": "openai-responses"
+          },
+          "providerId": "copilot"
+        }
+      },
+      "ephemeral": true,
+      "id": "80b0f143-4f5e-4fc9-8cae-aba717940d0c",
+      "timestamp": "2026-11-14T21:40:24.940Z",
+      "parentId": "25d051f7-6b7d-41fb-925a-02b8a814355b"
+    },
+    {
+      "type": "model.call_final_result",
+      "data": {
+        "model": "mai-code-1.1-flash",
+        "isByok": false,
+        "result": "success"
+      },
+      "ephemeral": true,
+      "id": "d979af2e-f736-45c7-b2d7-0823ff349aaf",
+      "timestamp": "2026-11-14T21:40:24.940Z",
+      "parentId": "25d051f7-6b7d-41fb-925a-02b8a814355b"
+    },
+    {
+      "type": "model.turn_ended",
+      "data": {
+        "kind": "turn_ended",
+        "model": "mai-code-1.1-flash",
+        "modelInfo": {
+          "billing": {
+            "restricted_to": [
+              "free",
+              "edu",
+              "individual_trial",
+              "pro",
+              "pro_plus",
+              "max",
+              "business",
+              "enterprise"
+            ],
+            "token_prices": {
+              "batch_size": 1000000,
+              "default": {
+                "cache_read_price": 2,
+                "cache_write_price": 25,
+                "input_price": 20,
+                "max_prompt_tokens": 128000,
+                "output_price": 120
+              }
+            }
+          },
+          "capabilities": {
+            "family": "oswe-vscode-modelD",
+            "limits": {
+              "max_context_window_tokens": 256000,
+              "max_output_tokens": 128000,
+              "max_prompt_tokens": 128000,
+              "vision": {
+                "max_prompt_image_size": 3145728,
+                "max_prompt_images": 1,
+                "supported_media_types": [
+                  "image/jpeg",
+                  "image/png",
+                  "image/webp",
+                  "image/gif",
+                  "application/pdf"
+                ]
+              }
+            },
+            "object": "model_capabilities",
+            "supports": {
+              "parallel_tool_calls": true,
+              "reasoning_effort": [
+                "low",
+                "medium",
+                "high"
+              ],
+              "streaming": true,
+              "structured_outputs": true,
+              "tool_calls": true,
+              "vision": true,
+              "adaptive_thinking": "unsupported"
+            },
+            "tokenizer": "o200k_base",
+            "type": "chat"
+          },
+          "id": "mai-code-1.1-flash",
+          "is_chat_default": false,
+          "is_chat_fallback": false,
+          "model_picker_category": "lightweight",
+          "model_picker_enabled": false,
+          "model_picker_price_category": "low",
+          "name": "MAI-Code-1.1-Flash",
+          "object": "model",
+          "policy": {
+            "state": "enabled",
+            "terms": ""
+          },
+          "preview": false,
+          "supported_endpoints": [
+            "/responses",
+            "ws:/responses"
+          ],
+          "vendor": "Microsoft",
+          "version": "mai-code-1.1-flash",
+          "modelProviderId": "copilot",
+          "modelProviderOrdering": 0,
+          "provider": {
+            "id": "copilot",
+            "kind": "copilot",
+            "label": "GitHub Copilot"
+          }
+        },
+        "turn": 0,
+        "timestampMs": 1794692424940
+      },
+      "ephemeral": true,
+      "id": "e57b345b-001f-4d51-89cd-e0a6bbc4f1fa",
+      "timestamp": "2026-11-14T21:40:24.940Z",
+      "parentId": "25d051f7-6b7d-41fb-925a-02b8a814355b"
+    },
+    {
+      "type": "assistant.turn_end",
+      "data": {
+        "turnId": "0"
+      },
+      "id": "55a25e56-62c2-4eb9-a163-0cd5f1ae1c9f",
+      "timestamp": "2026-11-14T21:40:24.940Z",
+      "parentId": "25d051f7-6b7d-41fb-925a-02b8a814355b"
+    },
+    {
+      "type": "model.messages_snapshot",
+      "data": {
+        "kind": "messages_snapshot",
+        "messages": [
+          {
+            "role": "system",
+            "content": "You are GitHub Copilot, an AI coding agent built by GitHub. You are an interactive tool that helps users with software engineering tasks.\n\n# Tone and style\n* When providing output or explanation to the user, try to limit your response to 100 words or less.\n* Be concise in routine responses. For complex tasks, briefly explain your approach before implementing.\n\n# Search and delegation\n* Give sub-ag…(22429 chars)"
+          },
+          {
+            "role": "user",
+            "content": "<current_datetime>2026-11-14T16:40:22.771-05:00</current_datetime>\n\nReply with the single word: ok",
+            "__copilotAutoApprovalHumanMessageIndex": 0,
+            "copilotBillingMetadata": {
+              "billable": false
+            }
+          },
+          {
+            "content": "ok",
+            "refusal": null,
+            "role": "assistant",
+            "responses_message_status": "completed",
+            "phase": "final_answer",
+            "serverTools": {
+              "provider": "openai-responses"
+            },
+            "apiCallId": "1zhSszIUgudM0BZZuq60X974zyNpVrin4xGiaIcv+LewSyjx5kNDG4oBUjQ6VrQxTs7ohWMSHfxkt9W/3jdFMSCaBjEAf5XGSVoOA9RPBqajAKLjPRMFa+e9XatVGgNlKzdAJc8lStJDNa9i7SZl7uH8Gl5EcXH2h6+c2N3HVoOxjGlf0gpFqIyD1iUirJcZpp0yAMaThOGXvN2fyXpgW+gS3AiB4uxWoAcAiSp4CQ4DpqhNnF84yLJ9vLrIA1pD42bybw0auoq4MEQVw0dvdnVZbjnX3cDE85c+AgXtzuBR156bU+gnvC7ckgeuLNQOblVxZPYR6uYdyKNzrRuAVqve1wxWwgP7NrdkuIIOuhaN4ozDviYOU3zvtYAIilLVcFdnLnXpAyS3QBGD…(516 chars)",
+            "outputTokens": 5,
+            "providerId": "copilot"
+          }
+        ]
+      },
+      "ephemeral": true,
+      "id": "abff042a-9ce3-40b1-8d49-292a9b183f71",
+      "timestamp": "2026-11-14T21:40:24.941Z",
+      "parentId": "55a25e56-62c2-4eb9-a163-0cd5f1ae1c9f"
+    },
+    {
+      "type": "session.usage_checkpoint",
+      "data": {
+        "totalNanoAiu": 203500000,
+        "totalPremiumRequests": 1,
+        "modelCacheState": [
+          {
+            "modelId": "mai-code-1.1-flash",
+            "cacheExpiresAt": "2026-11-14T22:10:23.002Z",
+            "cacheTtlSeconds": 1800
+          }
+        ],
+        "promptCacheBreakState": [
+          {
+            "conversation": "main",
+            "models": {
+              "mai-code-1.1-flash": {
+                "model": "mai-code-1.1-flash",
+                "vendor": "openai",
+                "model_call_id": "1zhSszIUgudM0BZZuq60X974zyNpVrin4xGiaIcv+LewSyjx5kNDG4oBUjQ6VrQxTs7ohWMSHfxkt9W/3jdFMSCaBjEAf5XGSVoOA9RPBqajAKLjPRMFa+e9XatVGgNlKzdAJc8lStJDNa9i7SZl7uH8Gl5EcXH2h6+c2N3HVoOxjGlf0gpFqIyD1iUirJcZpp0yAMaThOGXvN2fyXpgW+gS3AiB4uxWoAcAiSp4CQ4DpqhNnF84yLJ9vLrIA1pD42bybw0auoq4MEQVw0dvdnVZbjnX3cDE85c+AgXtzuBR156bU+gnvC7ckgeuLNQOblVxZPYR6uYdyKNzrRuAVqve1wxWwgP7NrdkuIIOuhaN4ozDviYOU3zvtYAIilLVcFdnLnXpAyS3QBGD…(516 chars)",
+                "request_id": "00000-50582591-bce2-469a-91f7-8b061d44b37a",
+                "github_request_id": "90b67208-7c1a-4d28-98c1-514293db7b68",
+                "api_endpoint": "ws:/responses",
+                "transport": "websocket",
+                "session_mode": "interactive",
+                "reasoning_effort": "medium",
+                "initiator": "user",
+                "tool_count": 25,
+                "tool_tokens": 7788,
+                "tools": [
+                  {
+                    "name": "bash",
+                    "schema_hash": "5aff88e14e77",
+                    "safe": true
+                  },
+                  {
+                    "name": "read_bash",
+                    "schema_hash": "78bdc74b3707",
+                    "safe": true
+                  },
+                  {
+                    "name": "stop_bash",
+                    "schema_hash": "dd8c0c97e7c9",
+                    "safe": true
+                  },
+                  {
+                    "name": "list_bash",
+                    "schema_hash": "3209638ac5d6",
+                    "safe": true
+                  },
+                  {
+                    "name": "view",
+                    "schema_hash": "3e73851b027b",
+                    "safe": true
+                  },
+                  {
+                    "name": "create",
+                    "schema_hash": "d7e30321149d",
+                    "safe": true
+                  },
+                  {
+                    "name": "edit",
+                    "schema_hash": "0be632c6eeaa",
+                    "safe": true
+                  },
+                  {
+                    "name": "web_fetch",
+                    "schema_hash": "a0829f05c5fd",
+                    "safe": true
+                  },
+                  {
+                    "name": "search_code_subagent",
+                    "schema_hash": "3c5f0f30dd6a",
+                    "safe": true
+                  },
+                  {
+                    "name": "semantic_code_search",
+                    "schema_hash": "a9a3d6d96921",
+                    "safe": false
+                  },
+                  {
+                    "name": "skill",
+                    "schema_hash": "a7ac9beec0b8",
+                    "safe": true
+                  },
+                  {
+                    "name": "run_dynamic_workflow",
+                    "schema_hash": "d4f938d51048",
+                    "safe": true
+                  },
+                  {
+                    "name": "dynamic_workflows_manage",
+                    "schema_hash": "5d3e79db7ecb",
+                    "safe": false
+                  },
+                  {
+                    "name": "sql",
+                    "schema_hash": "5756c3fc79ed",
+                    "safe": true
+                  },
+                  {
+                    "name": "read_agent",
+                    "schema_hash": "fb2b527fdba4",
+                    "safe": true
+                  },
+                  {
+                    "name": "list_agents",
+                    "schema_hash": "bb480bb53a47",
+                    "safe": true
+                  },
+                  {
+                    "name": "write_agent",
+                    "schema_hash": "d4ba47acdccd",
+                    "safe": true
+                  },
+                  {
+                    "name": "grep",
+                    "schema_hash": "d0b58b80eaaf",
+                    "safe": true
+                  },
+                  {
+                    "name": "glob",
+                    "schema_hash": "40089e3a3ba4",
+                    "safe": true
+                  },
+                  {
+                    "name": "task",
+                    "schema_hash": "ce7cf447089e",
+                    "safe": true
+                  },
+                  {
+                    "name": "github-mcp-server-get_copilot_space",
+                    "schema_hash": "c8adccdafb84",
+                    "safe": true
+                  },
+                  {
+                    "name": "github-mcp-server-get_file_contents",
+                    "schema_hash": "6cf17f9abfd4",
+                    "safe": true
+                  },
+                  {
+                    "name": "github-mcp-server-list_copilot_spaces",
+                    "schema_hash": "32e5d3fd470f",
+                    "safe": true
+                  },
+                  {
+                    "name": "github-mcp-server-search_code",
+                    "schema_hash": "679d4765fec5",
+                    "safe": true
+                  },
+                  {
+                    "name": "github-mcp-server-search_users",
+                    "schema_hash": "da0cf089bedb",
+                    "safe": true
+                  }
+                ],
+                "tools_truncated": 0,
+                "system_segments": [
+                  {
+                    "segment": "identity_preamble",
+                    "hash": "bb194c21624a",
+                    "tokens": 16
+                  },
+                  {
+                    "segment": "interaction_mode",
+                    "hash": "e5959028ccdd",
+                    "tokens": 13
+                  },
+                  {
+                    "segment": "tone_and_style",
+                    "hash": "cd4c10cfdb57",
+                    "tokens": 45
+                  },
+                  {
+                    "segment": "search_and_delegation",
+                    "hash": "745ad2d45bb4",
+                    "tokens": 138
+                  },
+                  {
+                    "segment": "tool_efficiency",
+                    "hash": "cb7de732a200",
+                    "tokens": 200
+                  },
+                  {
+                    "segment": "version_information",
+                    "hash": "9082bee48598",
+                    "tokens": 17
+                  },
+                  {
+                    "segment": "model_information",
+                    "hash": "5e67dc60f292",
+                    "tokens": 54
+                  },
+                  {
+                    "segment": "environment_context",
+                    "hash": "b9e448980258",
+                    "tokens": 98
+                  },
+                  {
+                    "segment": "identity_task_instructions",
+                    "hash": "adb5ce208724",
+                    "tokens": 11
+                  },
+                  {
+                    "segment": "code_change_instructions",
+                    "hash": "ae7d2a78e12d",
+                    "tokens": 228
+                  },
+                  {
+                    "segment": "dynamic_guidelines",
+                    "hash": "b41ed4d2e2eb",
+                    "tokens": 82
+                  },
+                  {
+                    "segment": "environment_limitations",
+                    "hash": "8cf9cbce1516",
+                    "tokens": 244
+                  },
+                  {
+                    "segment": "tool_intro",
+                    "hash": "2c07d9f78963",
+                    "tokens": 20
+                  },
+                  {
+                    "segment": "tool_instructions",
+                    "hash": "41f19b5793c7",
+                    "tokens": 3199
+                  },
+                  {
+                    "segment": "system_notifications",
+                    "hash": "06e72cdc5231",
+                    "tokens": 86
+                  },
+                  {
+                    "segment": "workspace_context",
+                    "hash": "4437462d84d8",
+                    "tokens": 79
+                  },
+                  {
+                    "segment": "git_commit_trailer",
+                    "hash": "1d737bc1da62",
+                    "tokens": 67
+                  },
+                  {
+                    "segment": "final_instructions",
+                    "hash": "42885e06aebe",
+                    "tokens": 223
+                  }
+                ],
+                "conversation": {
+                  "message_count": 1,
+                  "points": [
+                    {
+                      "index": 0,
+                      "hash": "59c7072edbd1"
+                    }
+                  ]
+                },
+                "cache_config": {
+                  "arm": "control",
+                  "marks_system_prompt": false,
+                  "marks_conversation": false,
+                  "advisor_tool": false,
+                  "incremental_input": false,
+                  "system_prompt_layout": "legacy"
+                },
+                "prompt_tokens": 11297,
+                "cache_read": 1280,
+                "cache_write": 0,
+                "cache_details_reported": true,
+                "frontier_tokens": 1280,
+                "frontier_source": "reported_writes",
+                "ttl_seconds": 1800,
+                "cache_expires_at": "2026-11-14T22:10:23.002Z",
+                "completed_at": "2026-11-14T21:40:24.935Z"
+              }
+            },
+            "lastActiveModel": "mai-code-1.1-flash",
+            "pendingRewriteSources": []
+          }
+        ],
+        "accountingSnapshot": {
+          "totalPremiumRequestCost": 1,
+          "totalUserRequests": 1,
+          "totalNanoAiu": 203500000,
+          "aiCreditsStatus": "complete",
+          "tokenDetails": {
+            "input": {
+              "tokenCount": 10017
+            },
+            "cache_read": {
+              "tokenCount": 1280
+            },
+            "cache_write": {
+              "tokenCount": 0
+            },
+            "output": {
+              "tokenCount": 5
+            }
+          },
+          "totalApiDurationMs": 1933,
+          "sessionStartTime": "2026-11-14T21:40:22.081Z",
+          "codeChanges": {
+            "linesAdded": 0,
+            "linesRemoved": 0,
+            "filesModifiedCount": 0,
+            "filesModified": []
+          },
+          "modelMetrics": {
+            "mai-code-1.1-flash": {
+              "requests": {
+                "count": 1,
+                "cost": 1
+              },
+              "usage": {
+                "inputTokens": 11297,
+                "outputTokens": 5,
+                "cacheReadTokens": 1280,
+                "cacheWriteTokens": 0,
+                "reasoningTokens": 0
+              },
+              "cacheExpiresAt": "2026-11-14T22:10:23.002Z",
+              "totalNanoAiu": 203500000,
+              "aiCreditsStatus": "complete",
+              "tokenDetails": {
+                "input": {
+                  "tokenCount": 10017
+                },
+                "cache_read": {
+                  "tokenCount": 1280
+                },
+                "cache_write": {
+                  "tokenCount": 0
+                },
+                "output": {
+                  "tokenCount": 5
+                }
+              }
+            }
+          },
+          "agentMetrics": {
+            "main": {
+              "totalApiDurationMs": 1933,
+              "totalNanoAiu": 203500000,
+              "modelMetrics": {
+                "mai-code-1.1-flash": {
+                  "requests": {
+                    "count": 1,
+                    "cost": 1
+                  },
+                  "usage": {
+                    "inputTokens": 11297,
+                    "outputTokens": 5,
+                    "cacheReadTokens": 1280,
+                    "cacheWriteTokens": 0,
+                    "reasoningTokens": 0
+                  },
+                  "totalNanoAiu": 203500000,
+                  "tokenDetails": {
+                    "input": {
+                      "tokenCount": 10017
+                    },
+                    "cache_read": {
+                      "tokenCount": 1280
+                    },
+                    "cache_write": {
+                      "tokenCount": 0
+                    },
+                    "output": {
+                      "tokenCount": 5
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "providerModelMetrics": [
+            {
+              "provider": {
+                "id": "copilot",
+                "label": "GitHub Copilot",
+                "kind": "copilot"
+              },
+              "modelId": "mai-code-1.1-flash",
+              "metrics": {
+                "requests": {
+                  "count": 1,
+                  "cost": 1
+                },
+                "usage": {
+                  "inputTokens": 11297,
+                  "outputTokens": 5,
+                  "cacheReadTokens": 1280,
+                  "cacheWriteTokens": 0,
+                  "reasoningTokens": 0
+                },
+                "totalNanoAiu": 203500000,
+                "aiCreditsStatus": "complete",
+                "tokenDetails": {
+                  "input": {
+                    "tokenCount": 10017
+                  },
+                  "cache_read": {
+                    "tokenCount": 1280
+                  },
+                  "cache_write": {
+                    "tokenCount": 0
+                  },
+                  "output": {
+                    "tokenCount": 5
+                  }
+                }
+              },
+              "modelDisplayName": "MAI-Code-1.1-Flash"
+            }
+          ],
+          "currentModel": "mai-code-1.1-flash",
+          "lastCallInputTokens": 11297,
+          "lastCallOutputTokens": 5
+        },
+        "providerModelMetrics": [
+          {
+            "provider": {
+              "id": "copilot",
+              "label": "GitHub Copilot",
+              "kind": "copilot"
+            },
+            "modelId": "mai-code-1.1-flash",
+            "metrics": {
+              "requests": {
+                "count": 1,
+                "cost": 1
+              },
+              "usage": {
+                "inputTokens": 11297,
+                "outputTokens": 5,
+                "cacheReadTokens": 1280,
+                "cacheWriteTokens": 0,
+                "reasoningTokens": 0
+              },
+              "totalNanoAiu": 203500000,
+              "aiCreditsStatus": "complete",
+              "tokenDetails": {
+                "input": {
+                  "tokenCount": 10017
+                },
+                "cache_read": {
+                  "tokenCount": 1280
+                },
+                "cache_write": {
+                  "tokenCount": 0
+                },
+                "output": {
+                  "tokenCount": 5
+                }
+              }
+            },
+            "modelDisplayName": "MAI-Code-1.1-Flash"
+          }
+        ],
+        "usageAccountingWatermarks": {
+          "35ea092f-657e-4ab9-b667-9857b7125925": 1
+        }
+      },
+      "id": "9fba08ef-e5d8-4cd2-aa3d-eb121cbc88d6",
+      "timestamp": "2026-11-14T21:40:24.943Z",
+      "parentId": "55a25e56-62c2-4eb9-a163-0cd5f1ae1c9f"
+    },
+    {
+      "type": "assistant.idle",
+      "data": {},
+      "ephemeral": true,
+      "id": "a4a6b287-3f78-4340-826e-a5ae37f80c9d",
+      "timestamp": "2026-11-14T21:40:24.944Z",
+      "parentId": "9fba08ef-e5d8-4cd2-aa3d-eb121cbc88d6"
+    },
+    {
+      "type": "session.idle",
+      "data": {
+        "mode": "interactive"
+      },
+      "ephemeral": true,
+      "id": "4d129222-c0aa-4bf0-9e30-86235a5d91e6",
+      "timestamp": "2026-11-14T21:40:24.946Z",
+      "parentId": "9fba08ef-e5d8-4cd2-aa3d-eb121cbc88d6"
+    },
+    {
+      "type": "session.shutdown",
+      "data": {
+        "accountingSnapshot": {
+          "totalPremiumRequestCost": 1,
+          "totalUserRequests": 1,
+          "totalNanoAiu": 203500000,
+          "aiCreditsStatus": "complete",
+          "tokenDetails": {
+            "input": {
+              "tokenCount": 10017
+            },
+            "cache_read": {
+              "tokenCount": 1280
+            },
+            "cache_write": {
+              "tokenCount": 0
+            },
+            "output": {
+              "tokenCount": 5
+            }
+          },
+          "totalApiDurationMs": 1933,
+          "sessionStartTime": "2026-11-14T21:40:22.081Z",
+          "codeChanges": {
+            "linesAdded": 0,
+            "linesRemoved": 0,
+            "filesModifiedCount": 0,
+            "filesModified": []
+          },
+          "modelMetrics": {
+            "mai-code-1.1-flash": {
+              "requests": {
+                "count": 1,
+                "cost": 1
+              },
+              "usage": {
+                "inputTokens": 11297,
+                "outputTokens": 5,
+                "cacheReadTokens": 1280,
+                "cacheWriteTokens": 0,
+                "reasoningTokens": 0
+              },
+              "cacheExpiresAt": "2026-11-14T22:10:23.002Z",
+              "totalNanoAiu": 203500000,
+              "aiCreditsStatus": "complete",
+              "tokenDetails": {
+                "input": {
+                  "tokenCount": 10017
+                },
+                "cache_read": {
+                  "tokenCount": 1280
+                },
+                "cache_write": {
+                  "tokenCount": 0
+                },
+                "output": {
+                  "tokenCount": 5
+                }
+              }
+            }
+          },
+          "agentMetrics": {
+            "main": {
+              "totalApiDurationMs": 1933,
+              "totalNanoAiu": 203500000,
+              "modelMetrics": {
+                "mai-code-1.1-flash": {
+                  "requests": {
+                    "count": 1,
+                    "cost": 1
+                  },
+                  "usage": {
+                    "inputTokens": 11297,
+                    "outputTokens": 5,
+                    "cacheReadTokens": 1280,
+                    "cacheWriteTokens": 0,
+                    "reasoningTokens": 0
+                  },
+                  "totalNanoAiu": 203500000,
+                  "tokenDetails": {
+                    "input": {
+                      "tokenCount": 10017
+                    },
+                    "cache_read": {
+                      "tokenCount": 1280
+                    },
+                    "cache_write": {
+                      "tokenCount": 0
+                    },
+                    "output": {
+                      "tokenCount": 5
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "providerModelMetrics": [
+            {
+              "provider": {
+                "id": "copilot",
+                "label": "GitHub Copilot",
+                "kind": "copilot"
+              },
+              "modelId": "mai-code-1.1-flash",
+              "metrics": {
+                "requests": {
+                  "count": 1,
+                  "cost": 1
+                },
+                "usage": {
+                  "inputTokens": 11297,
+                  "outputTokens": 5,
+                  "cacheReadTokens": 1280,
+                  "cacheWriteTokens": 0,
+                  "reasoningTokens": 0
+                },
+                "totalNanoAiu": 203500000,
+                "aiCreditsStatus": "complete",
+                "tokenDetails": {
+                  "input": {
+                    "tokenCount": 10017
+                  },
+                  "cache_read": {
+                    "tokenCount": 1280
+                  },
+                  "cache_write": {
+                    "tokenCount": 0
+                  },
+                  "output": {
+                    "tokenCount": 5
+                  }
+                }
+              },
+              "modelDisplayName": "MAI-Code-1.1-Flash"
+            }
+          ],
+          "currentModel": "mai-code-1.1-flash",
+          "lastCallInputTokens": 11297,
+          "lastCallOutputTokens": 5
+        },
+        "providerModelMetrics": [
+          {
+            "provider": {
+              "id": "copilot",
+              "label": "GitHub Copilot",
+              "kind": "copilot"
+            },
+            "modelId": "mai-code-1.1-flash",
+            "metrics": {
+              "requests": {
+                "count": 1,
+                "cost": 1
+              },
+              "usage": {
+                "inputTokens": 11297,
+                "outputTokens": 5,
+                "cacheReadTokens": 1280,
+                "cacheWriteTokens": 0,
+                "reasoningTokens": 0
+              },
+              "totalNanoAiu": 203500000,
+              "aiCreditsStatus": "complete",
+              "tokenDetails": {
+                "input": {
+                  "tokenCount": 10017
+                },
+                "cache_read": {
+                  "tokenCount": 1280
+                },
+                "cache_write": {
+                  "tokenCount": 0
+                },
+                "output": {
+                  "tokenCount": 5
+                }
+              }
+            },
+            "modelDisplayName": "MAI-Code-1.1-Flash"
+          }
+        ],
+        "usageAccountingWatermarks": {
+          "35ea092f-657e-4ab9-b667-9857b7125925": 1
+        },
+        "shutdownType": "routine",
+        "totalPremiumRequests": 1,
+        "totalNanoAiu": 203500000,
+        "tokenDetails": {
+          "input": {
+            "tokenCount": 10017
+          },
+          "cache_read": {
+            "tokenCount": 1280
+          },
+          "cache_write": {
+            "tokenCount": 0
+          },
+          "output": {
+            "tokenCount": 5
+          }
+        },
+        "totalApiDurationMs": 1933,
+        "sessionStartTime": 1794692422081,
+        "eventsFileSizeBytes": 36960,
+        "codeChanges": {
+          "linesAdded": 0,
+          "linesRemoved": 0,
+          "filesModified": []
+        },
+        "modelMetrics": {
+          "mai-code-1.1-flash": {
+            "requests": {
+              "count": 1,
+              "cost": 1
+            },
+            "usage": {
+              "inputTokens": 11297,
+              "outputTokens": 5,
+              "cacheReadTokens": 1280,
+              "cacheWriteTokens": 0,
+              "reasoningTokens": 0
+            },
+            "totalNanoAiu": 203500000,
+            "tokenDetails": {
+              "input": {
+                "tokenCount": 10017
+              },
+              "cache_read": {
+                "tokenCount": 1280
+              },
+              "cache_write": {
+                "tokenCount": 0
+              },
+              "output": {
+                "tokenCount": 5
+              }
+            }
+          }
+        },
+        "agentMetrics": {
+          "main": {
+            "totalApiDurationMs": 1933,
+            "totalNanoAiu": 203500000,
+            "modelMetrics": {
+              "mai-code-1.1-flash": {
+                "requests": {
+                  "count": 1,
+                  "cost": 1
+                },
+                "usage": {
+                  "inputTokens": 11297,
+                  "outputTokens": 5,
+                  "cacheReadTokens": 1280,
+                  "cacheWriteTokens": 0,
+                  "reasoningTokens": 0
+                },
+                "totalNanoAiu": 203500000,
+                "tokenDetails": {
+                  "input": {
+                    "tokenCount": 10017
+                  },
+                  "cache_read": {
+                    "tokenCount": 1280
+                  },
+                  "cache_write": {
+                    "tokenCount": 0
+                  },
+                  "output": {
+                    "tokenCount": 5
+                  }
+                }
+              }
+            }
+          }
+        },
+        "currentModel": "mai-code-1.1-flash",
+        "currentTokens": 11985,
+        "systemTokens": 4820,
+        "conversationTokens": 42,
+        "toolDefinitionsTokens": 7120
+      },
+      "id": "9e7526f6-8631-4324-9a89-1fb97def982b",
+      "timestamp": "2026-11-14T21:40:24.954Z",
+      "parentId": "9fba08ef-e5d8-4cd2-aa3d-eb121cbc88d6"
+    }
+  ],
+  "metrics": {
+    "totalPremiumRequestCost": 1,
+    "totalUserRequests": 1,
+    "totalNanoAiu": 203500000,
+    "aiCreditsStatus": "complete",
+    "tokenDetails": {
+      "input": {
+        "tokenCount": 10017
+      },
+      "cache_read": {
+        "tokenCount": 1280
+      },
+      "cache_write": {
+        "tokenCount": 0
+      },
+      "output": {
+        "tokenCount": 5
+      }
+    },
+    "totalApiDurationMs": 1933,
+    "sessionStartTime": "2026-11-14T21:40:22.081Z",
+    "codeChanges": {
+      "linesAdded": 0,
+      "linesRemoved": 0,
+      "filesModifiedCount": 0,
+      "filesModified": []
+    },
+    "modelMetrics": {
+      "mai-code-1.1-flash": {
+        "requests": {
+          "count": 1,
+          "cost": 1
+        },
+        "usage": {
+          "inputTokens": 11297,
+          "outputTokens": 5,
+          "cacheReadTokens": 1280,
+          "cacheWriteTokens": 0,
+          "reasoningTokens": 0
+        },
+        "cacheExpiresAt": "2026-11-14T22:10:23.002Z",
+        "totalNanoAiu": 203500000,
+        "aiCreditsStatus": "complete",
+        "tokenDetails": {
+          "input": {
+            "tokenCount": 10017
+          },
+          "cache_read": {
+            "tokenCount": 1280
+          },
+          "cache_write": {
+            "tokenCount": 0
+          },
+          "output": {
+            "tokenCount": 5
+          }
+        }
+      }
+    },
+    "agentMetrics": {
+      "main": {
+        "totalApiDurationMs": 1933,
+        "totalNanoAiu": 203500000,
+        "modelMetrics": {
+          "mai-code-1.1-flash": {
+            "requests": {
+              "count": 1,
+              "cost": 1
+            },
+            "usage": {
+              "inputTokens": 11297,
+              "outputTokens": 5,
+              "cacheReadTokens": 1280,
+              "cacheWriteTokens": 0,
+              "reasoningTokens": 0
+            },
+            "totalNanoAiu": 203500000,
+            "tokenDetails": {
+              "input": {
+                "tokenCount": 10017
+              },
+              "cache_read": {
+                "tokenCount": 1280
+              },
+              "cache_write": {
+                "tokenCount": 0
+              },
+              "output": {
+                "tokenCount": 5
+              }
+            }
+          }
+        }
+      }
+    },
+    "providerModelMetrics": [
+      {
+        "provider": {
+          "id": "copilot",
+          "label": "GitHub Copilot",
+          "kind": "copilot"
+        },
+        "modelId": "mai-code-1.1-flash",
+        "metrics": {
+          "requests": {
+            "count": 1,
+            "cost": 1
+          },
+          "usage": {
+            "inputTokens": 11297,
+            "outputTokens": 5,
+            "cacheReadTokens": 1280,
+            "cacheWriteTokens": 0,
+            "reasoningTokens": 0
+          },
+          "totalNanoAiu": 203500000,
+          "aiCreditsStatus": "complete",
+          "tokenDetails": {
+            "input": {
+              "tokenCount": 10017
+            },
+            "cache_read": {
+              "tokenCount": 1280
+            },
+            "cache_write": {
+              "tokenCount": 0
+            },
+            "output": {
+              "tokenCount": 5
+            }
+          }
+        },
+        "modelDisplayName": "MAI-Code-1.1-Flash"
+      }
+    ],
+    "currentModel": "mai-code-1.1-flash",
+    "lastCallInputTokens": 11297,
+    "lastCallOutputTokens": 5
+  }
+}

@@ -79,7 +79,7 @@ REST endpoints: `GET /user/teams`, `GET /orgs/{org}/teams/{team_slug}/repos` (pa
 
 | # | Assumption | Spike | If false |
 |---|---|---|---|
-| A1 | The signed-in user's Copilot plan (any of Free, Pro, Pro+, Business, Enterprise) permits CLI/SDK use and returns a model list; token prices may be absent on some plans (D-16) | S-01 | Ask the org admin to enable it; BYOK as a stopgap |
+| A1 | The signed-in user's Copilot plan (any of Free, Pro, Pro+, Business, Enterprise) permits CLI/SDK use and returns a model list; token prices may be absent on some plans (D-16). **Confirmed** for Free by S-01: sign-in works, `models.list` offers only the virtual `auto` model with no prices, and a prompt on the default routes to a concrete model and reports usage in nano-AIU. Business was not tested: it cannot be signed in from the development Mac ([findings](docs/spikes/S-01.md)) | S-01 | Ask the org admin to enable it; BYOK as a stopgap |
 | A2 | SDK `onPreToolUse` fires for sub-agent tool calls and identifies the calling agent | S-02 | Delegate through engine-managed child sessions, where identity is known by construction |
 | A3 | A deny with a reason reliably makes the main agent delegate | S-02 | Expose an engine `delegate` tool and remove the direct large-read path from the main agent |
 | A4 | A sub-agent's `model` override is honored and billed at that model's rate | S-03 | Engine-managed child sessions with an explicit model |
@@ -110,7 +110,7 @@ REST endpoints: `GET /user/teams`, `GET /orgs/{org}/teams/{team_slug}/repos` (pa
 | D-13 | Minimum macOS 26; built with the current SDK; standard controls so system materials are adopted automatically. The macOS CI job runs on GitHub's `macos-26` image | Owner answered Q-03: macOS 15 is too old to keep supporting (was macOS 15, 2026-11-12) | 2026-11-13 |
 | D-14 | The engine is a child process of the app in v1; sessions survive restarts by resume, not by a background daemon | Simplest lifecycle; a launch agent can come later without protocol changes | 2026-11-12 |
 | D-15 | CI is split by cost (§8.1): `make verify-engine` on Linux for every PR; `make verify-app` on macOS only when app, protocol, codegen or `Makefile` change; no UI tests and no runs on pushes to `main`. Full local `make verify` remains the merge gate | Running full `make verify` on macOS for every PR update and push to `main` used the month's Actions minutes in one day (82 runs, ~200 macOS minutes on 2026-11-13), mostly for engine-only changes. Owner moved to GitHub Pro for more minutes; landed in #27 | 2026-11-14 |
-| D-16 | Pica is plan-agnostic: it must work without friction on every Copilot plan (Free, Pro, Pro+, Business, Enterprise). Nothing depends on a specific plan, model or org policy; tiers resolve against whatever `models.list` returns (D-09), and features that need data some plans lack (token prices, org budgets, pooled credits) degrade to a stated "not available on this plan" state instead of failing. The owner's own environment, Copilot Business with most standard models (Claude except Fable, Gemini 4, GPT-6 and 6.1, Grok 4.7), is the development reference, not a requirement | Owner answered Q-01 and asked for a product usable on all plans | 2026-11-14 |
+| D-16 | Pica is plan-agnostic: it must work without friction on every Copilot plan (Free, Pro, Pro+, Business, Enterprise). Nothing depends on a specific plan, model or org policy; tiers resolve against whatever `models.list` returns (D-09), and features that need data some plans lack (token prices, org budgets, pooled credits) degrade to a stated "not available on this plan" state instead of failing. The owner's own environment, Copilot Business with most standard models (Claude except Fable, Gemini 4, GPT-6 and 6.1, Grok 4.7), is the development reference, not a requirement. S-01 found that Copilot Free is a default-model-only plan: `models.list` holds just the virtual `auto` model (routed per call, e.g. to GPT-6 Luna or MAI Code 1.1 Flash) with no token prices, so Pica must offer no model picker there, only the effort or routing tiers the runtime advertises, and show no per-token cost when prices are absent; credits come from the usage events' nano-AIU totals instead | Owner answered Q-01 and asked for a product usable on all plans | 2026-11-14 |
 | D-17 | v1 ships as an ad-hoc signed (`codesign -s -`), hardened-runtime app attached to GitHub Releases, not notarized and not distributed through MDM. Install docs cover clearing Gatekeeper's quarantine (System Settings › Privacy & Security › Open Anyway). Developer ID signing and notarization are added to the release workflow later, behind credentials, without design changes. Sparkle updates use their own EdDSA signatures, independent of Apple signing | Owner answered Q-04: no Developer ID yet, open to one later; GitHub Releases is acceptable for now | 2026-11-14 |
 
 ---
@@ -387,9 +387,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **S-01 · Runtime access and auth** — none
 - Build: script that creates a session as the signed-in user, lists models, sends one prompt. Records which `models.list` fields are plan-dependent (D-16).
 - Verify:
-  - [ ] **(live)** `models.list` returns at least one model with `billing.tokenPrices`; the list is saved to `docs/spikes/S-01-models.json`.
-  - [ ] **(live)** A prompt reaches `session.idle` and emits at least one `assistant.usage`.
-  - [ ] A1 in §2.4 is marked confirmed or its fallback is recorded as a decision.
+  - [x] **(live)** `models.list` returns at least one model, or the runtime exposes a default model a prompt can use; token prices are recorded when present (D-16). The result is saved to `docs/spikes/S-01-models.json`.
+  - [x] **(live)** A prompt reaches `session.idle` and emits at least one `assistant.usage`; with no priced model listed it uses the plan's default model.
+  - [x] A1 in §2.4 is marked confirmed or its fallback is recorded as a decision.
 
 **S-02 · Hook enforcement and delegation** — S-01
 - Build: session with a `bulk-reader` custom agent and an `onPreToolUse` that denies main-agent reads over 32 KB.
@@ -952,7 +952,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 
 | ID | Unit | Depends on | Status |
 |---|---|---|---|
-| S-01 | Runtime access and auth | — | todo |
+| S-01 | Runtime access and auth | — | done |
 | S-02 | Hook enforcement and delegation | S-01 | todo |
 | S-03 | Per-agent model and attribution | S-02 | todo |
 | S-04 | Multi-root access | S-01 | todo |

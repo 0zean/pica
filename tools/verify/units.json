@@ -1,15 +1,18 @@
 {
   "S-01": [
     {
-      "check": "`models.list` returns at least one model with `billing.tokenPrices`; the list is saved to `docs/spikes/S-01-models.json`.",
-      "live": true
+      "check": "`models.list` returns at least one model, or the runtime exposes a default model a prompt can use; token prices are recorded when present (D-16). The result is saved to `docs/spikes/S-01-models.json`.",
+      "live": true,
+      "run": "node spikes/s-01-runtime/s01.mjs models"
     },
     {
-      "check": "A prompt reaches `session.idle` and emits at least one `assistant.usage`.",
-      "live": true
+      "check": "A prompt reaches `session.idle` and emits at least one `assistant.usage`; with no priced model listed it uses the plan's default model.",
+      "live": true,
+      "run": "node spikes/s-01-runtime/s01.mjs prompt"
     },
     {
-      "check": "A1 in §2.4 is marked confirmed or its fallback is recorded as a decision."
+      "check": "A1 in §2.4 is marked confirmed or its fallback is recorded as a decision.",
+      "run": "test -s docs/spikes/S-01.md && grep -q \"^| A1 .*Confirmed\" PLAN.md"
     }
   ],
   "S-02": [
