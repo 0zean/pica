@@ -1,0 +1,33 @@
+name: app
+
+# Swift packages and the app build on macOS, only when app or protocol code changes (PLAN.md §8.1).
+# UI tests are not run here; they are part of local `make verify`.
+on:
+  pull_request:
+    paths:
+      - "app/**"
+      - "engine/packages/protocol/**"
+      - "engine/tools/swift-codegen/**"
+      - "engine/tools/protocol-schema/**"
+      - "Makefile"
+      - ".github/workflows/app.yml"
+
+concurrency:
+  group: app-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify-app:
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - run: make -k verify-app
+      - name: Upload snapshot failures
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapshot-failures
+          path: app/Packages/*/.snapshot-failures/
+          if-no-files-found: ignore
+          include-hidden-files: true
