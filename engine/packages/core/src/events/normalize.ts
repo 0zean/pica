@@ -142,7 +142,7 @@ const handlers: Handlers = {
         inputTokens: event.data.inputTokens,
         cachedInputTokens: event.data.cachedInputTokens,
         outputTokens: event.data.outputTokens,
-        // TODO(C-08): price the tokens with the model's tokenPrices.
+        // Priced by the usage ledger as the event is logged (core/src/usage).
         credits: 0,
         timestamp: event.timestamp,
       }),

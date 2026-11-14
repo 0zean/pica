@@ -115,9 +115,11 @@ describe("store migrations", () => {
         cachedTokens: 0,
         outputTokens: 2,
         credits: 0.1,
+        tier: "worker",
         timestamp: "2026-11-12T10:00:03.000Z",
       }),
     );
+    expect(value(store.usage.listBySession("session-1")).map((record) => record.tier).at(-1)).toBe("worker");
     store.close();
 
     const upgraded = new DatabaseSync(path);
@@ -125,5 +127,14 @@ describe("store migrations", () => {
     expect(normalizedSchema(upgraded)).toEqual(normalizedSchema(databaseAtVersion(latestSchemaVersion)));
     healthy(upgraded);
     upgraded.close();
+  });
+
+  it("keep usage rows from schema 2 with an unknown tier", () => {
+    const db = new DatabaseSync(":memory:");
+    db.exec(readFileSync(fixturePath(2), "utf8"));
+    value(migrate(db));
+    expect(db.prepare("SELECT agent, credits, tier FROM usage_records").all()).toEqual([
+      { agent: "main", credits: 0.25, tier: null },
+    ]);
   });
 });

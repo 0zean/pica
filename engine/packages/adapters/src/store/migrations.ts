@@ -84,6 +84,15 @@ export const migrations: readonly Migration[] = [
       CREATE INDEX usage_by_session ON usage_records (session_id, id);
     `,
   },
+  {
+    version: 3,
+    name: "usage tier and time index",
+    sql: `
+      ALTER TABLE usage_records ADD COLUMN tier TEXT CHECK (tier IN ('reasoning', 'worker'));
+
+      CREATE INDEX usage_by_time ON usage_records (julianday(timestamp));
+    `,
+  },
 ];
 
 export const latestSchemaVersion = migrations.length;

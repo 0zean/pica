@@ -391,13 +391,16 @@
   ],
   "C-08": [
     {
-      "check": "Ledger totals equal fixture totals for a multi-agent scenario."
+      "check": "Ledger totals equal fixture totals for a multi-agent scenario.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/usage/ledger.test.ts"
     },
     {
-      "check": "Rollup queries by session, agent, model, workspace, and day return expected rows."
+      "check": "Rollup queries by session, agent, model, workspace, and day return expected rows.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/store/usage-rollup.test.ts"
     },
     {
-      "check": "Savings estimate matches a hand-computed fixture."
+      "check": "Savings estimate matches a hand-computed fixture.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/usage/savings.test.ts"
     }
   ],
   "C-09": [
