@@ -66,9 +66,9 @@ The billing change is why this project pays off: token-heavy, low-reasoning work
 
 | Server | Transport | Endpoint | Auth | Notes |
 |---|---|---|---|---|
-| GitHub | Remote HTTP | `https://api.githubcopilot.com/mcp/` | OAuth or PAT | Endpoint from secondary sources; confirm in S-06. |
-| Datadog | Remote HTTP | `https://mcp.datadoghq.com/…` (per Datadog site) | OAuth or API + app key | Path differs by site; confirm in S-06. |
-| ClickUp | Remote HTTP | `https://mcp.clickup.com/mcp` | OAuth | Confirm in S-06. |
+| GitHub | Remote HTTP | `https://api.githubcopilot.com/mcp/` | The Copilot sign-in, which the runtime attaches itself (no header); or a PAT as `Authorization: Bearer` | **Connected** in S-06: 46 tools, 13,835 tool-definition tokens ([findings](docs/spikes/S-06.md)). |
+| Datadog | Remote HTTP | `https://mcp.<site>/api/unstable/mcp-server/mcp` (US1: `mcp.datadoghq.com`) | OAuth (DCR, PKCE, scope `mcp_all`), or `DD-API-KEY` + `DD-APPLICATION-KEY` headers | S-06 reached the consent step on US1; connecting waits on the owner. |
+| ClickUp | Remote HTTP | `https://mcp.clickup.com/mcp` | OAuth only (DCR, PKCE, scopes `read`, `write`) | S-06 reached the consent step; connecting waits on the owner. |
 | Snowflake | Remote HTTP | `https://<account_url>/api/v2/databases/{db}/schemas/{schema}/mcp-servers/{name}` | Snowflake OAuth, external OAuth, or PAT | Admin creates the server with `CREATE MCP SERVER`. Tools only, max 50, SQL read-only by default, no dynamic client registration [13]. |
 
 ### 2.3 GitHub repository discovery
@@ -84,9 +84,9 @@ REST endpoints: `GET /user/teams`, `GET /orgs/{org}/teams/{team_slug}/repos` (pa
 | A3 | A deny with a reason reliably makes the main agent delegate. **Confirmed** by S-02 on Copilot Free (`auto`): 20 of 20 trials on a 219 KB file ended with `bulk-reader` reading it and no file content reaching the main agent, each after a single deny ([findings](docs/spikes/S-02.md)) | S-02 | Expose an engine `delegate` tool and remove the direct large-read path from the main agent |
 | A4 | A sub-agent's `model` override is honored and billed at that model's rate. S-02 found that on Free it is not: `subagent.started.model` reports the override but `assistant.usage.model` is the `auto` pick, with no error ([findings](docs/spikes/S-02.md)) | S-03 | Engine-managed child sessions with an explicit model |
 | A5 | Usage can be attributed per agent | S-03 | Attribute by `toolCallId` window, or by child session |
-| A7 | Node, the engine bundle, and the Copilot CLI can be ad-hoc signed inside the app and run on a Mac without developer tools after a GitHub Releases download; Developer ID signing and notarization come later (D-17). **Confirmed** by S-05, with a different install path: the ad-hoc, hardened-runtime bundle passes `--deep --strict`, survives zip/unzip, and runs once installed without quarantine. On macOS 27 a quarantined ad-hoc app offers no "Open Anyway", so the quarantine is cleared before the first launch: an install script (curl, sha256, signature check) or a documented `xattr -dr com.apple.quarantine` step. `copilot-runtime` needs `disable-library-validation` when re-signed ad-hoc. The second-account check of that path is pending with the owner ([findings](docs/spikes/S-05.md)) | S-05 | Install the engine separately (pkg or Homebrew) |
 | A6 | A session can read outside its `workingDirectory` once the host approves. **Confirmed** by S-04: the runtime raises a `read` permission request for the path and reads it on `approve-once`; `additionalDirectories` halves the requests but does not remove them. A `preToolUse` deny blocks file-tool and shell writes to a reference root, but R-07's shell parser misses argument writes such as `touch` and `cp` ([findings](docs/spikes/S-04.md)) | S-04 | Session root directory of symlinks, or cross-repo access only through engine tools |
-| A8 | All four MCP servers connect through the SDK, including OAuth | S-06 | Host-managed tokens supplied by Pica |
+| A7 | Node, the engine bundle, and the Copilot CLI can be ad-hoc signed inside the app and run on a Mac without developer tools after a GitHub Releases download; Developer ID signing and notarization come later (D-17). **Confirmed** by S-05, with a different install path: the ad-hoc, hardened-runtime bundle passes `--deep --strict`, survives zip/unzip, and runs once installed without quarantine. On macOS 27 a quarantined ad-hoc app offers no "Open Anyway", so the quarantine is cleared before the first launch: an install script (curl, sha256, signature check) or a documented `xattr -dr com.apple.quarantine` step. `copilot-runtime` needs `disable-library-validation` when re-signed ad-hoc. The second-account check of that path is pending with the owner ([findings](docs/spikes/S-05.md)) | S-05 | Install the engine separately (pkg or Homebrew) |
+| A8 | All four MCP servers connect through the SDK, including OAuth. **Partly confirmed** by S-06: GitHub connects with no prompt; the runtime runs OAuth for Datadog and ClickUp up to consent and also accepts host-supplied tokens; Snowflake is untried (Q-06) ([findings](docs/spikes/S-06.md)) | S-06 | Host-managed tokens supplied by Pica |
 | A9 | Event streaming over a Unix socket meets the throughput budget. **Confirmed** by S-07: 50,000 events at 25,000/s in order, p99 write-to-decoded ≈ 0.1 ms ([findings](docs/spikes/S-07.md)) | S-07 | Coalesce events per display frame in the engine |
 
 ---
@@ -955,9 +955,9 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | S-01 | Runtime access and auth | — | done |
 | S-02 | Hook enforcement and delegation | S-01 | done |
 | S-03 | Per-agent model and attribution | S-02 | todo |
-| S-05 | Packaging | — | doing (awaiting owner's manual check) |
 | S-04 | Multi-root access | S-01 | done |
-| S-06 | MCP connectivity | S-01 | todo |
+| S-05 | Packaging | — | doing (awaiting owner's manual check) |
+| S-06 | MCP connectivity | S-01 | todo (GitHub done; Datadog and ClickUp need the owner's OAuth consent, Snowflake needs Q-06) |
 | S-07 | IPC throughput | — | done |
 | F-01 | Repository scaffold | — | done |
 | F-02 | Architecture guardrails | F-01 | done |
