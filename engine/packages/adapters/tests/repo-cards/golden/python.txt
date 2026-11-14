@@ -1,0 +1,7 @@
+repo: acme/python @ ff190a38a588
+languages: Python 5
+build: python -m build
+test: make test; pytest
+entry points: acme_tool.cli:main (acme-tool), src/acme_tool/__main__.py
+manifests: Makefile, pyproject.toml
+owners: * @acme/data

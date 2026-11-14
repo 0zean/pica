@@ -540,13 +540,16 @@
   ],
   "R-09": [
     {
-      "check": "Golden cards for fixture repos in four ecosystems."
+      "check": "Golden cards for fixture repos in four ecosystems.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/repo-cards/golden.test.ts"
     },
     {
-      "check": "The cache is reused on the same commit and rebuilt on a new one."
+      "check": "The cache is reused on the same commit and rebuilt on a new one.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/repo-cards/cache.test.ts"
     },
     {
-      "check": "A card never exceeds its size cap."
+      "check": "A card never exceeds its size cap.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/repo-cards/card.test.ts packages/adapters/tests/repo-cards/size-cap.test.ts"
     }
   ],
   "R-10": [
