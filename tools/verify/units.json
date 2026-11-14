@@ -869,10 +869,12 @@
   ],
   "H-03": [
     {
-      "check": "A corpus of token formats is fully redacted."
+      "check": "A corpus of token formats is fully redacted.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/redaction/token-corpus.test.ts"
     },
     {
-      "check": "The diagnostics bundle for a fixture session contains no file contents and no secrets."
+      "check": "The diagnostics bundle for a fixture session contains no file contents and no secrets.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/redaction/diagnostics-bundle.test.ts"
     }
   ],
   "H-04": [

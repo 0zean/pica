@@ -878,8 +878,8 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 **H-03 · Redaction** — M-03
 - Build: scrubber for logs, events, and diagnostics.
 - Verify:
-  - [ ] A corpus of token formats is fully redacted.
-  - [ ] The diagnostics bundle for a fixture session contains no file contents and no secrets.
+  - [x] A corpus of token formats is fully redacted.
+  - [x] The diagnostics bundle for a fixture session contains no file contents and no secrets.
 
 **H-04 · Observability** — E-05
 - Build: structured engine logs, diagnostics bundle, optional OpenTelemetry export of usage metrics.
@@ -1018,7 +1018,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | X-03 | User hooks | C-03 | todo |
 | H-01 | Managed policy | E-04, C-03, M-05 | todo |
 | H-02 | Audit log | C-03, E-07 | todo |
-| H-03 | Redaction | M-03 | todo |
+| H-03 | Redaction | M-03 | done |
 | H-04 | Observability | E-05 | todo |
 | H-05 | Reliability | E-08, A-01 | todo |
 | H-06 | Distribution | S-05, A-01 | todo |
