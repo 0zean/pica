@@ -12,6 +12,7 @@ export * from "./events/index.ts";
 export * from "./mcp/index.ts";
 export * from "./mcp-attach/index.ts";
 export * from "./github/index.ts";
+export * from "./discovery/index.ts";
 export * from "./repos/index.ts";
 export * from "./mcp-auth/index.ts";
 export * from "./routing/index.ts";
