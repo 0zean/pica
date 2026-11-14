@@ -1,5 +1,5 @@
 import { mainAgent, oversizedOutputRule } from "../policy/index.ts";
-import type { PolicyContext, ToolCall } from "../policy/index.ts";
+import type { PolicyContext, PolicyDecision, ToolCall } from "../policy/index.ts";
 import type { PostToolUseInput, PostToolUseOutcome, RuntimeHooks } from "../runtime/index.ts";
 import type { SessionArtifacts } from "./artifacts.ts";
 import { truncateHeadTail, utf8ByteLength } from "./truncate-output.ts";
@@ -7,6 +7,8 @@ import { truncateHeadTail, utf8ByteLength } from "./truncate-output.ts";
 export interface OutputGuardDeps {
   readonly artifacts: SessionArtifacts;
   readonly policyContext: (sessionId: string) => PolicyContext;
+  // H-02: receives every decision made, to emit as an event and write to the audit log.
+  readonly onDecision?: (sessionId: string, decision: PolicyDecision) => void;
 }
 
 export type PostToolUseHook = (input: PostToolUseInput) => Promise<PostToolUseOutcome>;
@@ -23,6 +25,9 @@ export function createOutputGuard(deps: OutputGuardDeps): PostToolUseHook {
       result: { bytes: utf8ByteLength(content) },
     };
     const decision = oversizedOutputRule(call, deps.policyContext(input.sessionId));
+    if (decision !== undefined) {
+      deps.onDecision?.(input.sessionId, decision);
+    }
     if (decision?.outcome !== "rewrite") {
       return { kind: "keep" };
     }
