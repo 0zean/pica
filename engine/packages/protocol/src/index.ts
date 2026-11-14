@@ -5,6 +5,7 @@ export * from "./events.ts";
 export * from "./methods.ts";
 export * from "./json-schema.ts";
 export * from "./config-file.ts";
+export * from "./managed-policy-file.ts";
 export * from "./mcp-file.ts";
 export * from "./dto/agents.ts";
 export * from "./dto/config.ts";

@@ -10,6 +10,16 @@ export interface BudgetSettings {
   readonly workspaceDailyCredits?: number | undefined;
   // Fractions of the session limit at which `budget.warning` is emitted, once each per limit.
   readonly warningThresholds?: readonly number[] | undefined;
+  // The managed ceiling (H-01): no session limit, requested or raised, may exceed it.
+  readonly maxSessionCredits?: number | undefined;
+}
+
+export function withinSessionCeiling(credits: number | undefined, settings: BudgetSettings | undefined): number | undefined {
+  const ceiling = settings?.maxSessionCredits;
+  if (ceiling === undefined) {
+    return credits;
+  }
+  return credits === undefined ? ceiling : Math.min(credits, ceiling);
 }
 
 export const defaultWarningThresholds: readonly number[] = [0.75, 0.9];
