@@ -36,12 +36,7 @@ export async function gitHubGetJson(
   let response: Response;
   try {
     response = await doFetch(`${host.apiBaseUrl}${path}`, {
-      headers: {
-        accept: "application/vnd.github+json",
-        authorization: `Bearer ${token}`,
-        "user-agent": "pica",
-        "x-github-api-version": apiVersion,
-      },
+      headers: gitHubRequestHeaders(token),
     });
   } catch (error) {
     return err(gitHubRequestFailed(host, `could not reach ${host.apiBaseUrl}: ${errorMessage(error)}`));
@@ -52,6 +47,15 @@ export async function gitHubGetJson(
     return err(classifyGitHubFailure(host, provider, { status: response.status, headers, message: bodyMessage(body) }));
   }
   return ok({ body, headers });
+}
+
+export function gitHubRequestHeaders(token: string): Record<string, string> {
+  return {
+    accept: "application/vnd.github+json",
+    authorization: `Bearer ${token}`,
+    "user-agent": "pica",
+    "x-github-api-version": apiVersion,
+  };
 }
 
 export function createGitHubTokenVerifier(options: GitHubHttpOptions = {}): GitHubTokenVerifier {
@@ -90,7 +94,7 @@ function loginOf(body: unknown): string | undefined {
   return typeof body.login === "string" ? body.login : undefined;
 }
 
-function bodyMessage(body: unknown): string | undefined {
+export function bodyMessage(body: unknown): string | undefined {
   if (typeof body !== "object" || body === null || !("message" in body)) {
     return undefined;
   }

@@ -18,6 +18,7 @@ export interface RecordedRequest {
   readonly method: string;
   readonly path: string;
   readonly authorization: string | undefined;
+  readonly ifNoneMatch: string | undefined;
   readonly body: string;
 }
 
@@ -38,13 +39,15 @@ export async function startStubGitHub(routes: Record<string, StubRoute>): Promis
         method: incoming.method ?? "GET",
         path: incoming.url ?? "/",
         authorization: incoming.headers.authorization,
+        ifNoneMatch: incoming.headers["if-none-match"],
         body,
       };
       requests.push(request);
       const route = routes[`${request.method} ${request.path}`];
       const reply = route === undefined ? { status: 404, body: { message: "Not Found" } } : route(request);
-      outgoing.writeHead(reply.status ?? 200, { "content-type": "application/json", ...reply.headers });
-      outgoing.end(JSON.stringify(reply.body ?? {}));
+      const status = reply.status ?? 200;
+      outgoing.writeHead(status, { "content-type": "application/json", ...reply.headers });
+      outgoing.end(status === 304 ? undefined : JSON.stringify(reply.body ?? {}));
     });
   });
   await listen(server);
