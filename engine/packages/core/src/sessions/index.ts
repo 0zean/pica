@@ -14,7 +14,7 @@ export type { BudgetSettings, BudgetWarning, SessionBudget } from "./budget.ts";
 export { createReadGate } from "./pre-tool-use.ts";
 export type { ReadGateDeps } from "./pre-tool-use.ts";
 export { createSessionService } from "./service.ts";
-export type { CreateSessionRequest, SessionService, SessionServiceDeps } from "./service.ts";
+export type { CreateSessionRequest, SessionLifecycleEvent, SessionService, SessionServiceDeps } from "./service.ts";
 export { isLiveSessionState, sessionStates, sessionTransitions, sessionTriggers, transitionSession } from "./transitions.ts";
 export type { SessionTransitionError, SessionTrigger } from "./transitions.ts";
 export type { SessionArtifactError, SessionArtifacts } from "./artifacts.ts";

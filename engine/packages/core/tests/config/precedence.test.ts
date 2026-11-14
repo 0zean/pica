@@ -104,6 +104,7 @@ describe("config precedence", () => {
       },
       budget: { sessionCredits: 300, workspaceDailyCredits: 3000 },
       permissions: { mode: "ask" },
+      hooks: { sessionStart: [], sessionEnd: [], beforeCommit: [] },
     });
     expect([...resolved.values.values()].every((value) => value.layer === "default" && !value.locked)).toBe(true);
   });

@@ -848,13 +848,16 @@
   ],
   "X-03": [
     {
-      "check": "A hook exiting non-zero before commit blocks the commit and surfaces its output."
+      "check": "A hook exiting non-zero before commit blocks the commit and surfaces its output.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/hooks/before-commit.test.ts"
     },
     {
-      "check": "A hook exceeding its timeout is killed and reported."
+      "check": "A hook exceeding its timeout is killed and reported.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/hooks/shell-hook-runner.test.ts"
     },
     {
-      "check": "A user hook cannot change a managed policy outcome (policy case)."
+      "check": "A user hook cannot change a managed policy outcome (policy case).",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/hooks/managed-policy.test.ts packages/core/tests/policy/decide.test.ts"
     }
   ],
   "H-01": [

@@ -27,6 +27,9 @@ const configKeys: Readonly<Record<string, readonly [JsonValue, JsonValue]>> = {
   "budget.workspaceDailyCredits": [1, 2],
   "permissions.mode": ["auto", "ask"],
   "permissions.mcpTools": [[{ tool: "github/*", permission: "allow" }], [{ tool: "github/*", permission: "deny" }]],
+  "hooks.sessionStart": [[{ command: "user-setup" }], [{ command: "org-setup" }]],
+  "hooks.sessionEnd": [[], [{ command: "org-cleanup", timeoutSeconds: 10 }]],
+  "hooks.beforeCommit": [[{ command: "true" }], [{ name: "secret scan", command: "org-scan" }]],
 };
 
 const nonManagedLayers: readonly ConfigFileLayer[] = ["user", "workspace", "repo"];

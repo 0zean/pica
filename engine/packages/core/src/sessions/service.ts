@@ -34,6 +34,16 @@ export interface SessionServiceDeps {
   // C-09: without `usage` the workspace daily cap is not checked and spend starts at zero on resume.
   readonly budget?: BudgetSettings;
   readonly usage?: Pick<UsageRepository, "rollup">;
+  // X-03: awaited once the runtime is ready and once the session has ended; it does not block either.
+  readonly lifecycle?: (event: SessionLifecycleEvent) => Promise<void>;
+}
+
+export interface SessionLifecycleEvent {
+  readonly kind: "sessionStart" | "sessionEnd";
+  readonly sessionId: string;
+  readonly directory: string;
+  readonly writeRoots: readonly string[];
+  readonly referenceRoots: readonly string[];
 }
 
 export interface CreateSessionRequest {
@@ -401,6 +411,11 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     return session.writeRoots[0] ?? session.referenceRoots[0];
   }
 
+  async function lifecycle(kind: SessionLifecycleEvent["kind"], session: Session): Promise<void> {
+    const { id, writeRoots, referenceRoots } = session;
+    await deps.lifecycle?.({ kind, sessionId: id, directory: workingDirectory(session) ?? "/", writeRoots, referenceRoots });
+  }
+
   function runtimeHooks(sessionId: string): { readonly hooks?: RuntimeHooks } {
     return deps.hooks === undefined ? {} : { hooks: deps.hooks(sessionId) };
   }
@@ -455,7 +470,11 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
       await session.runtime.close();
     }
     const moved = move(sessionId, "end");
-    return moved.ok ? ok(undefined) : moved;
+    if (!moved.ok) {
+      return moved;
+    }
+    await lifecycle("sessionEnd", stored.value);
+    return ok(undefined);
   }
 
   async function create(request: CreateSessionRequest): Promise<SessionResult<SessionInfo>> {
@@ -512,6 +531,9 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     }
     attach(session.id, opened.value, budgetFor(limit, 0));
     const ready = move(session.id, "runtime_ready");
+    if (ready.ok) {
+      await lifecycle("sessionStart", session);
+    }
     if (!ready.ok || prompt === undefined || prompt === "") {
       return ready;
     }

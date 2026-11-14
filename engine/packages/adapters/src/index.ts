@@ -9,4 +9,5 @@ export * from "./secrets/index.ts";
 export * from "./mcp-oauth/index.ts";
 export * from "./mcp-client/index.ts";
 export * from "./audit/index.ts";
+export * from "./hooks/index.ts";
 export * from "./observability/index.ts";

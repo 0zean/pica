@@ -11,6 +11,7 @@ import {
   createSessionService,
   createUsageReport,
   emitPolicyDecisions,
+  userHookLifecycle,
   meteredUsage,
   withAuditLog,
   withOutputGuard,
@@ -30,6 +31,7 @@ import type {
   Store,
   TokenPrices,
   UsagePricing,
+  UserHookDeps,
   UsageRepository,
   WorkspaceService,
 } from "@pica/core";
@@ -63,6 +65,8 @@ export interface EngineSessionOptions {
   readonly budget?: BudgetSettings;
   // H-02: tool calls, approvals and policy decisions are appended to this hash-chained log.
   readonly audit?: AuditLog;
+  // X-03: `hooks.sessionStart` and `hooks.sessionEnd` from config; a failing hook is logged.
+  readonly userHooks?: UserHookDeps;
   // H-04: exports usage metrics over OTLP. Off unless given; the caller stops it.
   readonly metricsExport?: UsageMetricsExporter;
   readonly newFanOutId?: () => string;
@@ -162,6 +166,7 @@ function startSessions(
     usage: options.store.usage,
     ...(options.budget === undefined ? {} : { budget: options.budget }),
     ...sessionHooks(options, eventLog, clock),
+    ...lifecycleHooks(options.userHooks, log),
   });
   const recovered = service.recover();
   if (!recovered.ok) {
@@ -217,4 +222,19 @@ function sessionHooks(
     return { hooks: withOutputGuard(options.hooks, createOutputGuard({ ...options.outputGuard, onDecision })) };
   }
   return options.hooks === undefined ? {} : { hooks: options.hooks };
+}
+
+function lifecycleHooks(
+  userHooks: UserHookDeps | undefined,
+  log: Logger,
+): Pick<Parameters<typeof createSessionService>[0], "lifecycle"> {
+  if (userHooks === undefined) {
+    return {};
+  }
+  const lifecycle = userHookLifecycle(userHooks, (report, sessionId) => {
+    if (report.failure !== undefined) {
+      log.warn(`session ${sessionId}: ${report.event} ${report.failure.code}: ${report.failure.message}`);
+    }
+  });
+  return { lifecycle };
 }
