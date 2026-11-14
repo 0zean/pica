@@ -573,9 +573,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **C-06 · Output guard** — C-03, E-08
 - Build: `onPostToolUse` truncation with spill to a session artifact and a pointer line.
 - Verify:
-  - [ ] Golden tests for head and tail truncation on text, JSON, and binary-looking output.
-  - [ ] The spilled artifact is byte-equal to the original result.
-  - [ ] Fuzz test: the returned result never exceeds the cap.
+  - [x] Golden tests for head and tail truncation on text, JSON, and binary-looking output.
+  - [x] The spilled artifact is byte-equal to the original result.
+  - [x] Fuzz test: the returned result never exceeds the cap.
 
 **C-07 · Delegator** — C-02, C-05, G0
 - Build: the `Delegator` port and the implementation chosen by D-08.
@@ -975,7 +975,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | C-03 | Policy engine | E-04 | done |
 | C-04 | Read delegation gate | C-03, E-08 | done |
 | C-05 | Routing profiles | C-02, C-03 | done |
-| C-06 | Output guard | C-03, E-08 | todo |
+| C-06 | Output guard | C-03, E-08 | done |
 | C-07 | Delegator | C-02, C-05, G0 | todo |
 | C-08 | Usage ledger | E-07, C-01 | todo |
 | C-09 | Budgets | C-08 | todo |
