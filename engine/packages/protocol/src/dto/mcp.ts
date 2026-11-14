@@ -37,6 +37,8 @@ export const McpServerStatus = z.object({
   latencyMs: z.number().nonnegative().nullable(),
   toolDefinitionTokens: Count.nullable(),
   checkedAt: Timestamp.nullable(),
+  // Restarts of a crashed stdio server since it was last stable.
+  restarts: Count,
 });
 
 export type SecretRef = z.infer<typeof SecretRef>;

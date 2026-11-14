@@ -363,6 +363,20 @@ public enum Methods {
         public static let direction = MethodDirection.client
     }
 
+    public enum McpStatusList: PicaMethod {
+        public typealias Params = Empty
+        public typealias Result = McpStatusListResult
+        public static let name = "mcp.statusList"
+        public static let direction = MethodDirection.client
+    }
+
+    public enum McpRestart: PicaMethod {
+        public typealias Params = ById
+        public typealias Result = Ok
+        public static let name = "mcp.restart"
+        public static let direction = MethodDirection.client
+    }
+
     public enum McpLogin: PicaMethod {
         public typealias Params = ById
         public typealias Result = Ok
