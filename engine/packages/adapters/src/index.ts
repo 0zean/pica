@@ -8,3 +8,4 @@ export * from "./fs/index.ts";
 export * from "./secrets/index.ts";
 export * from "./mcp-oauth/index.ts";
 export * from "./mcp-client/index.ts";
+export * from "./audit/index.ts";

@@ -9,12 +9,16 @@ import {
   createSecretScrubber,
   createSessionService,
   createUsageReport,
+  emitPolicyDecisions,
+  withAuditLog,
   withOutputGuard,
   withUsageLedger,
 } from "@pica/core";
 import type {
   AgentRuntime,
+  AuditLog,
   BudgetSettings,
+  EventLog,
   McpHealthMonitor,
   McpSecretRedactor,
   OutputGuardDeps,
@@ -51,6 +55,8 @@ export interface EngineSessionOptions {
   readonly outputGuard?: OutputGuardDeps;
   // C-09: `budget.*` from config; without it sessions have no default limit and no daily cap.
   readonly budget?: BudgetSettings;
+  // H-02: tool calls, approvals and policy decisions are appended to this hash-chained log.
+  readonly audit?: AuditLog;
 }
 
 export interface EngineOptions {
@@ -118,7 +124,7 @@ function startSessions(
   onChanged: NonNullable<Parameters<typeof createSessionService>[0]["onChanged"]>,
 ): SessionService {
   const usage = options.usage ?? {};
-  const eventLog = withUsageLedger(createRedactingEventLog(createEventLog(options.store.events), scrubber), {
+  const ledger = withUsageLedger(createRedactingEventLog(createEventLog(options.store.events), scrubber), {
     usage: options.store.usage,
     pricing: {
       pricesFor: usage.pricesFor ?? (() => null),
@@ -128,16 +134,18 @@ function startSessions(
       log.warn(`usage not recorded in full: ${error.message}`);
     },
   });
+  const eventLog = auditedEventLog(ledger, options, log);
+  const clock = options.clock ?? (() => new Date().toISOString());
   const service = createSessionService({
     store: options.store,
     events: eventLog,
     runtime: options.runtime,
-    clock: options.clock ?? (() => new Date().toISOString()),
+    clock,
     newSessionId: options.newSessionId ?? randomUUID,
     onChanged,
     usage: options.store.usage,
     ...(options.budget === undefined ? {} : { budget: options.budget }),
-    ...sessionHooks(options),
+    ...sessionHooks(options, eventLog, clock),
   });
   const recovered = service.recover();
   if (!recovered.ok) {
@@ -154,9 +162,23 @@ function startSessions(
   return service;
 }
 
-function sessionHooks(options: EngineSessionOptions): { readonly hooks?: (sessionId: string) => RuntimeHooks } {
+function auditedEventLog(eventLog: EventLog, options: EngineSessionOptions, log: Logger): EventLog {
+  if (options.audit === undefined) {
+    return eventLog;
+  }
+  return withAuditLog(eventLog, options.audit, (error) => {
+    log.warn(`audit entry not written: ${error.message}`);
+  });
+}
+
+function sessionHooks(
+  options: EngineSessionOptions,
+  eventLog: EventLog,
+  clock: () => string,
+): { readonly hooks?: (sessionId: string) => RuntimeHooks } {
   if (options.outputGuard !== undefined) {
-    return { hooks: withOutputGuard(options.hooks, createOutputGuard(options.outputGuard)) };
+    const onDecision = options.outputGuard.onDecision ?? emitPolicyDecisions(eventLog, clock);
+    return { hooks: withOutputGuard(options.hooks, createOutputGuard({ ...options.outputGuard, onDecision })) };
   }
   return options.hooks === undefined ? {} : { hooks: options.hooks };
 }

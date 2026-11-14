@@ -863,10 +863,12 @@
   ],
   "H-02": [
     {
-      "check": "Altering any line makes verification fail at that line."
+      "check": "Altering any line makes verification fail at that line.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/audit/tamper.test.ts"
     },
     {
-      "check": "Every policy decision in a scenario appears exactly once."
+      "check": "Every policy decision in a scenario appears exactly once.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/audit/policy-decisions.test.ts packages/server/tests/audit/engine-audit.test.ts"
     }
   ],
   "H-03": [

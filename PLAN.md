@@ -872,8 +872,8 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 **H-02 · Audit log** — C-03, E-07
 - Build: append-only JSONL of tool calls, approvals, and policy decisions with a hash chain; export.
 - Verify:
-  - [ ] Altering any line makes verification fail at that line.
-  - [ ] Every policy decision in a scenario appears exactly once.
+  - [x] Altering any line makes verification fail at that line.
+  - [x] Every policy decision in a scenario appears exactly once.
 
 **H-03 · Redaction** — M-03
 - Build: scrubber for logs, events, and diagnostics.
@@ -1017,7 +1017,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | X-02 | Agents, skills, and rules management | C-02, A-14 | todo |
 | X-03 | User hooks | C-03 | todo |
 | H-01 | Managed policy | E-04, C-03, M-05 | done |
-| H-02 | Audit log | C-03, E-07 | todo |
+| H-02 | Audit log | C-03, E-07 | done |
 | H-03 | Redaction | M-03 | done |
 | H-04 | Observability | E-05 | todo |
 | H-05 | Reliability | E-08, A-01 | todo |

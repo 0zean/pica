@@ -1,7 +1,15 @@
 import { toolKind } from "../agents/index.ts";
 import type { JsonObject, JsonValue } from "../json.ts";
 import { decide, defaultCommandDenyList, mainAgent } from "../policy/index.ts";
-import type { CommandRule, LineRange, ManagedRule, PolicyConfig, PolicyContext, ToolCall } from "../policy/index.ts";
+import type {
+  CommandRule,
+  LineRange,
+  ManagedRule,
+  PolicyConfig,
+  PolicyContext,
+  PolicyDecision,
+  ToolCall,
+} from "../policy/index.ts";
 import { resolvePath } from "../policy/paths.ts";
 import type { PreToolUseDecision, RuntimeHooks, ToolUseInput } from "../runtime/index.ts";
 import { withRealPaths, type RealPathResolver } from "../sandbox/index.ts";
@@ -18,6 +26,8 @@ export interface ReadGateDeps {
   readonly commandDenyList?: readonly CommandRule[];
   // Without it paths are judged lexically and a symlink can lead out of the roots (R-07).
   readonly realPath?: RealPathResolver;
+  // H-02: receives every decision made, to emit as an event and write to the audit log.
+  readonly onDecision?: (sessionId: string, decision: PolicyDecision) => void;
 }
 
 interface ReadArguments {
@@ -48,6 +58,7 @@ async function gateRead(deps: ReadGateDeps, sessionId: string, input: ToolUseInp
     target: { kind: "read", path: read.path, sizeBytes, ...(read.range === undefined ? {} : { range: read.range }) },
   };
   const decision = decide(call, deps.realPath === undefined ? context : await withRealPaths(call, context, deps.realPath));
+  deps.onDecision?.(sessionId, decision);
   switch (decision.outcome) {
     case "deny":
       return { decision: "deny", reason: decision.reason };
