@@ -558,10 +558,10 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **C-04 · Read delegation gate** — C-03, E-08
 - Build: large-read rule wired into `onPreToolUse`, with range exemption and per-path exclusions.
 - Verify:
-  - [ ] FakeRuntime: a main-agent read of a 200 KB file is denied with a reason naming `bulk-reader`.
-  - [ ] The same read from a sub-agent is allowed.
-  - [ ] A 10 KB read and a 300-line ranged read of the large file are allowed.
-  - [ ] Changing `read.minBytes` in workspace config changes the outcome without restarting the session.
+  - [x] FakeRuntime: a main-agent read of a 200 KB file is denied with a reason naming `bulk-reader`.
+  - [x] The same read from a sub-agent is allowed.
+  - [x] A 10 KB read and a 300-line ranged read of the large file are allowed.
+  - [x] Changing `read.minBytes` in workspace config changes the outcome without restarting the session.
 
 **C-05 · Routing profiles** — C-02, C-03
 - Build: `off`, `balanced`, `strict` mapped to per-agent tool visibility and the delegation guide text.
@@ -973,7 +973,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | C-01 | Model catalog and tiers | E-09 | done |
 | C-02 | Agent definitions | E-04 | done |
 | C-03 | Policy engine | E-04 | done |
-| C-04 | Read delegation gate | C-03, E-08 | todo |
+| C-04 | Read delegation gate | C-03, E-08 | done |
 | C-05 | Routing profiles | C-02, C-03 | done |
 | C-06 | Output guard | C-03, E-08 | todo |
 | C-07 | Delegator | C-02, C-05, G0 | todo |

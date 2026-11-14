@@ -337,16 +337,20 @@
   ],
   "C-04": [
     {
-      "check": "FakeRuntime: a main-agent read of a 200 KB file is denied with a reason naming `bulk-reader`."
+      "check": "FakeRuntime: a main-agent read of a 200 KB file is denied with a reason naming `bulk-reader`.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/sessions/pre-tool-use.test.ts && pnpm exec vitest run packages/adapters/tests/sessions/read-gate.test.ts -t 'denies a main-agent read of a 200 KB file'"
     },
     {
-      "check": "The same read from a sub-agent is allowed."
+      "check": "The same read from a sub-agent is allowed.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/sessions/read-gate.test.ts -t 'allows the same read from a sub-agent'"
     },
     {
-      "check": "A 10 KB read and a 300-line ranged read of the large file are allowed."
+      "check": "A 10 KB read and a 300-line ranged read of the large file are allowed.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/sessions/read-gate.test.ts -t 'allows a 10 KB read and a 300-line ranged read'"
     },
     {
-      "check": "Changing `read.minBytes` in workspace config changes the outcome without restarting the session."
+      "check": "Changing `read.minBytes` in workspace config changes the outcome without restarting the session.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/sessions/read-gate.test.ts -t 'applies a changed read.minBytes'"
     }
   ],
   "C-05": [

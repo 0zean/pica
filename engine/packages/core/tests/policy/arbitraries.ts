@@ -66,7 +66,11 @@ const config: fc.Arbitrary<PolicyConfig> = fc.record({
   routing: fc.record({
     profile: fc.constantFrom("off", "balanced", "strict"),
     delegation: fc.record({
-      read: fc.record({ minBytes: bytes, rangeExemptLines: fc.integer({ min: 1, max: 2000 }) }),
+      read: fc.record({
+        minBytes: bytes,
+        rangeExemptLines: fc.integer({ min: 1, max: 2000 }),
+        exclude: fc.array(fc.constantFrom("**", "*.sql", "/a/**"), { maxLength: 2 }),
+      }),
       output: fc.record({ maxBytes: bytes }),
     }),
   }),
