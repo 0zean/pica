@@ -1,4 +1,5 @@
 import type { Tier } from "@pica/protocol";
+import type { DiscoverySnapshot } from "../discovery/sync.ts";
 import type { JsonObject, JsonValue } from "../json.ts";
 
 // Store-local shapes of the PLAN.md §4.4 entities. Timestamps are ISO 8601 strings chosen by the caller.
@@ -17,10 +18,14 @@ export interface Repo {
 export type RepoSourceKind = "manual" | "team" | "topic" | "property";
 
 export interface RepoSource {
+  readonly id: string;
   readonly kind: RepoSourceKind;
   readonly org: string | null;
   readonly selector: string;
   readonly lastSyncAt: string | null;
+  // What the last sync resolved to (R-06): the ETag snapshot to revalidate with, and the Repo ids it selected.
+  readonly snapshot: DiscoverySnapshot | null;
+  readonly repoIds: readonly string[];
 }
 
 export interface Workspace {
@@ -28,6 +33,7 @@ export interface Workspace {
   readonly name: string;
   readonly sources: readonly RepoSource[];
   readonly pinnedRepoIds: readonly string[];
+  // The workspace layer of the E-04 configuration (a partial `config.jsonc`).
   readonly settingsOverrides: JsonObject;
 }
 
