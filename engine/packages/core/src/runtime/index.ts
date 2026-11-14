@@ -18,6 +18,8 @@ export type {
 export type {
   AgentRuntime,
   CustomAgentDefinition,
+  EngineTool,
+  EngineToolOutput,
   ModelUsage,
   QuotaInfo,
   ResumeOptions,

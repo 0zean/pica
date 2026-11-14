@@ -3,6 +3,7 @@ import { performance } from "node:perf_hooks";
 import {
   agentTier,
   createEventLog,
+  createFanOutService,
   createOutputGuard,
   createRedactingEventLog,
   createRedactingLogger,
@@ -11,6 +12,7 @@ import {
   createUsageReport,
   emitPolicyDecisions,
   userHookLifecycle,
+  meteredUsage,
   withAuditLog,
   withOutputGuard,
   withUsageLedger,
@@ -20,6 +22,7 @@ import type {
   AuditLog,
   BudgetSettings,
   EventLog,
+  FanOutInfo,
   McpHealthMonitor,
   McpSecretRedactor,
   OutputGuardDeps,
@@ -29,13 +32,16 @@ import type {
   TokenPrices,
   UsagePricing,
   UserHookDeps,
+  UsageRepository,
   WorkspaceService,
 } from "@pica/core";
 import { registerEngineHandlers } from "./engine-handlers.ts";
+import { registerFanOutHandlers, toFanOutDto } from "./fanout-handlers.ts";
 import { registerMcpHealthHandlers } from "./mcp-handlers.ts";
 import { SocketListener } from "./listener.ts";
 import type { ConnectionLimits } from "./connection.ts";
 import type { Logger } from "./logger.ts";
+import type { UsageMetricsExporter } from "./metrics-export.ts";
 import { MethodRouter } from "./router.ts";
 import { registerSessionHandlers, toSessionDto } from "./session-handlers.ts";
 import { registerUsageHandlers } from "./usage-handlers.ts";
@@ -61,6 +67,9 @@ export interface EngineSessionOptions {
   readonly audit?: AuditLog;
   // X-03: `hooks.sessionStart` and `hooks.sessionEnd` from config; a failing hook is logged.
   readonly userHooks?: UserHookDeps;
+  // H-04: exports usage metrics over OTLP. Off unless given; the caller stops it.
+  readonly metricsExport?: UsageMetricsExporter;
+  readonly newFanOutId?: () => string;
 }
 
 export interface EngineOptions {
@@ -84,12 +93,18 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
   const router = new MethodRouter();
   // Session changes can only be broadcast once the listener exists; recovery runs before it does.
   const started: { listener?: SocketListener } = {};
+  const fanOut = {
+    ...(options.workspaces === undefined ? {} : { workspaces: options.workspaces }),
+    onChanged: (info: FanOutInfo) => {
+      started.listener?.broadcast("fanout.changed", { fanOut: toFanOutDto(info) });
+    },
+  };
   const sessions =
     options.sessions === undefined
       ? undefined
       : startSessions(router, options.sessions, log, scrubber, (session) => {
           started.listener?.broadcast("session.changed", { session: toSessionDto(session) });
-        });
+        }, fanOut);
   registerEngineHandlers(router, {
     uptimeMs: () => performance.now() - startedAt,
     sessionsRunning: () => sessions?.runningCount() ?? 0,
@@ -126,10 +141,11 @@ function startSessions(
   log: Logger,
   scrubber: McpSecretRedactor,
   onChanged: NonNullable<Parameters<typeof createSessionService>[0]["onChanged"]>,
+  fanOut: { readonly workspaces?: WorkspaceService; readonly onChanged: (fanOut: FanOutInfo) => void },
 ): SessionService {
   const usage = options.usage ?? {};
   const ledger = withUsageLedger(createRedactingEventLog(createEventLog(options.store.events), scrubber), {
-    usage: options.store.usage,
+    usage: ledgerUsage(options, log),
     pricing: {
       pricesFor: usage.pricesFor ?? (() => null),
       tierOf: usage.tierOf ?? agentTier({ rootAgent: "main" }),
@@ -160,11 +176,31 @@ function startSessions(
     log.warn(`${String(recovered.value.length)} session(s) from the previous engine are resumable`);
   }
   registerSessionHandlers(router, { sessions: service, log: eventLog, events: options.store.events });
+  // R-11: fan-out runs drive sessions through the same service and follow them on the same log.
+  registerFanOutHandlers(
+    router,
+    createFanOutService({
+      sessions: service,
+      events: eventLog,
+      clock,
+      newFanOutId: options.newFanOutId ?? randomUUID,
+      onChanged: fanOut.onChanged,
+      ...(fanOut.workspaces === undefined ? {} : { workspaces: fanOut.workspaces }),
+    }),
+  );
   registerUsageHandlers(
     router,
     createUsageReport({ usage: options.store.usage, reasoningPrices: usage.reasoningPrices ?? (() => null) }),
   );
   return service;
+}
+
+function ledgerUsage(options: EngineSessionOptions, log: Logger): UsageRepository {
+  if (options.metricsExport === undefined) {
+    return options.store.usage;
+  }
+  options.metricsExport.start(log);
+  return meteredUsage(options.store.usage, options.metricsExport.meter);
 }
 
 function auditedEventLog(eventLog: EventLog, options: EngineSessionOptions, log: Logger): EventLog {

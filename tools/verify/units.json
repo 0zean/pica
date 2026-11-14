@@ -542,13 +542,16 @@
   ],
   "R-08": [
     {
-      "check": "On a three-repo fixture, search returns `repo:path:line` hits in a deterministic order within the result cap."
+      "check": "On a three-repo fixture, search returns `repo:path:line` hits in a deterministic order within the result cap.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/repo-tools/search.test.ts"
     },
     {
-      "check": "`repo_read` refuses paths outside workspace repos."
+      "check": "`repo_read` refuses paths outside workspace repos.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/repo-tools/read.test.ts packages/adapters/tests/repo-tools/session-tools.test.ts"
     },
     {
-      "check": "Mention parser table tests, including ambiguous and missing repos."
+      "check": "Mention parser table tests, including ambiguous and missing repos.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/repo-tools/mentions.test.ts"
     }
   ],
   "R-09": [
@@ -581,13 +584,16 @@
   ],
   "R-11": [
     {
-      "check": "FakeRuntime: with 6 repos and a cap of 3, no more than 3 sessions run at once."
+      "check": "FakeRuntime: with 6 repos and a cap of 3, no more than 3 sessions run at once.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/fanout/fanout.test.ts -t 'no more than 3 sessions run at once'"
     },
     {
-      "check": "One failing session does not cancel the others; the aggregate reports each result."
+      "check": "One failing session does not cancel the others; the aggregate reports each result.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/fanout && pnpm exec vitest run packages/server/tests/fanout/fanout.test.ts -t 'one failing session'"
     },
     {
-      "check": "Cancelling the fan-out aborts every running session."
+      "check": "Cancelling the fan-out aborts every running session.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/fanout/fanout.test.ts -t 'aborts every running session'"
     }
   ],
   "M-01": [
@@ -886,10 +892,12 @@
   ],
   "H-04": [
     {
-      "check": "With export disabled, the engine opens no outbound connection other than the runtime's (asserted with a network stub)."
+      "check": "With export disabled, the engine opens no outbound connection other than the runtime's (asserted with a network stub).",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/observability/no-outbound.test.ts"
     },
     {
-      "check": "Exported metrics for a fixture match the ledger."
+      "check": "Exported metrics for a fixture match the ledger.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/observability/metrics-export.test.ts"
     }
   ],
   "H-05": [

@@ -192,7 +192,7 @@ Session states: `starting → idle ⇄ running ⇄ awaiting_approval`, then `end
 
 ### 4.5 Protocol shape
 
-Namespaces: `engine.*` (handshake, version, health), `workspace.*`, `repo.*`, `github.*`, `session.*`, `events.*`, `approval.*`, `git.*`, `files.*`, `mcp.*`, `agents.*`, `models.*`, `usage.*`, `config.*`, `secrets.*` (engine → client requests).
+Namespaces: `engine.*` (handshake, version, health), `workspace.*`, `repo.*`, `github.*`, `session.*`, `fanout.*`, `events.*`, `approval.*`, `git.*`, `files.*`, `mcp.*`, `agents.*`, `models.*`, `usage.*`, `config.*`, `secrets.*` (engine → client requests).
 
 Rules:
 - `engine.hello` exchanges protocol versions; a major mismatch refuses the connection.
@@ -663,9 +663,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **R-08 · Cross-repo tools** — R-06, R-07
 - Build: `repo_search`, `repo_read`, `repo_list` as engine tools; `@repo:path` mention parsing.
 - Verify:
-  - [ ] On a three-repo fixture, search returns `repo:path:line` hits in a deterministic order within the result cap.
-  - [ ] `repo_read` refuses paths outside workspace repos.
-  - [ ] Mention parser table tests, including ambiguous and missing repos.
+  - [x] On a three-repo fixture, search returns `repo:path:line` hits in a deterministic order within the result cap.
+  - [x] `repo_read` refuses paths outside workspace repos.
+  - [x] Mention parser table tests, including ambiguous and missing repos.
 
 **R-09 · Repo cards** — R-03
 - Build: model-free summary cached by HEAD commit.
@@ -684,9 +684,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **R-11 · Fan-out runs** — R-06, E-08
 - Build: one task as parallel sessions over selected repos with a concurrency cap and an aggregate view.
 - Verify:
-  - [ ] FakeRuntime: with 6 repos and a cap of 3, no more than 3 sessions run at once.
-  - [ ] One failing session does not cancel the others; the aggregate reports each result.
-  - [ ] Cancelling the fan-out aborts every running session.
+  - [x] FakeRuntime: with 6 repos and a cap of 3, no more than 3 sessions run at once.
+  - [x] One failing session does not cancel the others; the aggregate reports each result.
+  - [x] Cancelling the fan-out aborts every running session.
 
 **Milestone M3 — multi-repo slice:** **(live)** from the CLI, import a GitHub team, start a session in one repo that answers a question about code in another, and see the lookup attributed to `repo-scout` on the worker tier.
 
@@ -884,8 +884,8 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 **H-04 · Observability** — E-05
 - Build: structured engine logs, diagnostics bundle, optional OpenTelemetry export of usage metrics.
 - Verify:
-  - [ ] With export disabled, the engine opens no outbound connection other than the runtime's (asserted with a network stub).
-  - [ ] Exported metrics for a fixture match the ledger.
+  - [x] With export disabled, the engine opens no outbound connection other than the runtime's (asserted with a network stub).
+  - [x] Exported metrics for a fixture match the ledger.
 
 **H-05 · Reliability** — E-08, A-01
 - Verify:
@@ -987,10 +987,10 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | R-05 | Team discovery | R-04 | done |
 | R-06 | Workspace model | R-03, R-05 | done |
 | R-07 | Session scope and sandbox | C-03, R-02 | done |
-| R-08 | Cross-repo tools | R-06, R-07 | todo |
+| R-08 | Cross-repo tools | R-06, R-07 | done |
 | R-09 | Repo cards | R-03 | done |
 | R-10 | Multi-repo change sets | R-02, R-07 | done |
-| R-11 | Fan-out runs | R-06, E-08 | todo |
+| R-11 | Fan-out runs | R-06, E-08 | done |
 | M-01 | MCP registry and configuration | E-04 | done |
 | M-02 | MCP presets | M-01, S-06 | todo |
 | M-03 | Secrets and OAuth | M-01, E-05 | done |
@@ -1019,7 +1019,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | H-01 | Managed policy | E-04, C-03, M-05 | done |
 | H-02 | Audit log | C-03, E-07 | done |
 | H-03 | Redaction | M-03 | done |
-| H-04 | Observability | E-05 | todo |
+| H-04 | Observability | E-05 | done |
 | H-05 | Reliability | E-08, A-01 | todo |
 | H-06 | Distribution | S-05, A-01 | todo |
 | H-07 | Performance gate | all A units | todo |

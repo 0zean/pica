@@ -1,7 +1,7 @@
 import type { EventDraft, EventLog } from "../events/index.ts";
 import { createRuntimeEventRecorder } from "../events/index.ts";
 import type { RuntimeEventRecorder } from "../events/index.ts";
-import type { AgentRuntime, RuntimeEvent, RuntimeHooks, RuntimeSession } from "../runtime/index.ts";
+import type { AgentRuntime, EngineTool, RuntimeEvent, RuntimeHooks, RuntimeSession } from "../runtime/index.ts";
 import { ok } from "../result.ts";
 import type { Session, SessionState, Store, StoreError, UsageRepository } from "../store/index.ts";
 import { checkWorkspaceDailyCap, createSessionBudget, sessionSpend, withinSessionCeiling } from "./budget.ts";
@@ -28,6 +28,8 @@ export interface SessionServiceDeps {
   readonly rootAgent?: string;
   // Tool-call hooks for one session's runtime; the policy engine (C-03) supplies them.
   readonly hooks?: (sessionId: string) => RuntimeHooks;
+  // Engine-implemented tools for one session, such as the R-08 repo tools over its workspace.
+  readonly tools?: (session: Session) => readonly EngineTool[];
   readonly onChanged?: (session: SessionInfo) => void;
   // C-09: without `usage` the workspace daily cap is not checked and spend starts at zero on resume.
   readonly budget?: BudgetSettings;
@@ -418,6 +420,10 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     return deps.hooks === undefined ? {} : { hooks: deps.hooks(sessionId) };
   }
 
+  function engineTools(session: Session): { readonly tools?: readonly EngineTool[] } {
+    return deps.tools === undefined ? {} : { tools: deps.tools(session) };
+  }
+
   async function resume(sessionId: string): Promise<SessionResult<SessionInfo>> {
     const stored = read(sessionId);
     if (!stored.ok) {
@@ -437,6 +443,7 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
       workingDirectory: directory,
       ...(limit === null ? {} : { maxAiCredits: limit }),
       ...runtimeHooks(sessionId),
+      ...engineTools(stored.value),
     });
     if (!resumed.ok) {
       append(sessionId, { type: "session.error", payload: { code: resumed.error.code, message: resumed.error.message }, timestamp: clock() });
@@ -515,6 +522,7 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
       workingDirectory: directory,
       ...(limit === null ? {} : { maxAiCredits: limit }),
       ...runtimeHooks(session.id),
+      ...engineTools(session),
     });
     if (!opened.ok) {
       append(session.id, { type: "session.error", payload: { code: opened.error.code, message: opened.error.message }, timestamp: clock() });
