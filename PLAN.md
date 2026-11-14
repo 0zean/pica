@@ -53,7 +53,7 @@ Facts the design depends on, with sources in [§13](#13-sources). Items marked *
 - **SDK.** The Copilot SDK went GA in June 2026 with official clients for TypeScript, Python, Go, .NET, Java, and Rust. There is no Swift client [3][4]. It drives the Copilot CLI runtime over JSON-RPC; the Node package bundles the CLI and manages it as a child process [4].
 - **Auth.** Signed-in user (CLI login), OAuth GitHub App user tokens, `COPILOT_GITHUB_TOKEN`/`GH_TOKEN`/`GITHUB_TOKEN`, or BYOK. A Copilot subscription is required unless using BYOK [4].
 - **Sub-agents.** `customAgents` entries take `name`, `prompt`, `description`, `tools`, `mcpServers`, `skills`, `infer`, **`model`**, and `reasoningEffort`. A sub-agent can run on a different model than its parent. `defaultAgent.excludedTools` hides tools from the main agent while leaving them available to sub-agents. Events: `subagent.started/completed/failed` with `toolCallId`, `model`, `totalTokens` [5].
-- **Hooks.** SDK callbacks `onPreToolUse` (returns `permissionDecision` allow/deny/ask and a reason), `onPostToolUse` (returns `modifiedResult`), `onUserPromptSubmitted`, `onSessionStart` (returns `additionalContext`), `onSessionEnd`, `onErrorOccurred` [6]. The CLI hooks reference says hooks firing inside a sub-agent carry `agentId`, `agentType`, `parentAgentId` [7]. Whether the SDK callbacks receive the same for sub-agent tool calls is *unverified* (S-02).
+- **Hooks.** SDK callbacks `onPreToolUse` (returns `permissionDecision` allow/deny/ask and a reason), `onPostToolUse` (returns `modifiedResult`), `onUserPromptSubmitted`, `onSessionStart` (returns `additionalContext`), `onSessionEnd`, `onErrorOccurred` [6]. The CLI hooks reference says hooks firing inside a sub-agent carry `agentId`, `agentType`, `parentAgentId` [7]. S-02 confirmed the SDK callbacks receive them: a sub-agent's tool calls carry `agentId`, `agentType` (the custom agent's name) and `parentAgentId`, and main-agent calls carry none ([findings](docs/spikes/S-02.md)).
 - **Usage.** `assistant.usage` fires per model call including sub-agent calls, with `model`, `inputTokens`, `outputTokens`. `session.usage_info` gives `currentTokens`/`tokenLimit`. `session.usage.getMetrics` returns totals and per-model metrics. `models.list` returns `billing.tokenPrices`. `session.metadata.contextInfo` breaks context into system, conversation, and tool-definition tokens [8].
 - **Budgets.** `sessionLimits.maxAiCredits` is a soft cap checked after each model call; exhaustion raises `session_limits_exhausted.requested` and blocks the next call until answered [9].
 - **Sessions.** Persisted under `~/.copilot/session-state/{sessionId}/`; resumable by ID with `workingDirectory`; no built-in session locking [10].
@@ -80,12 +80,12 @@ REST endpoints: `GET /user/teams`, `GET /orgs/{org}/teams/{team_slug}/repos` (pa
 | # | Assumption | Spike | If false |
 |---|---|---|---|
 | A1 | The signed-in user's Copilot plan (any of Free, Pro, Pro+, Business, Enterprise) permits CLI/SDK use and returns a model list; token prices may be absent on some plans (D-16). **Confirmed** for Free by S-01: sign-in works, `models.list` offers only the virtual `auto` model with no prices, and a prompt on the default routes to a concrete model and reports usage in nano-AIU. Business was not tested: it cannot be signed in from the development Mac ([findings](docs/spikes/S-01.md)) | S-01 | Ask the org admin to enable it; BYOK as a stopgap |
-| A2 | SDK `onPreToolUse` fires for sub-agent tool calls and identifies the calling agent | S-02 | Delegate through engine-managed child sessions, where identity is known by construction |
-| A3 | A deny with a reason reliably makes the main agent delegate | S-02 | Expose an engine `delegate` tool and remove the direct large-read path from the main agent |
-| A4 | A sub-agent's `model` override is honored and billed at that model's rate | S-03 | Engine-managed child sessions with an explicit model |
+| A2 | SDK `onPreToolUse` fires for sub-agent tool calls and identifies the calling agent. **Confirmed** by S-02: sub-agent calls carry `agentId` (equal to the `subagent.started` envelope `agentId`), `agentType` and `parentAgentId`; main-agent calls have no `agentId` ([findings](docs/spikes/S-02.md)) | S-02 | Delegate through engine-managed child sessions, where identity is known by construction |
+| A3 | A deny with a reason reliably makes the main agent delegate. **Confirmed** by S-02 on Copilot Free (`auto`): 20 of 20 trials on a 219 KB file ended with `bulk-reader` reading it and no file content reaching the main agent, each after a single deny ([findings](docs/spikes/S-02.md)) | S-02 | Expose an engine `delegate` tool and remove the direct large-read path from the main agent |
+| A4 | A sub-agent's `model` override is honored and billed at that model's rate. S-02 found that on Free it is not: `subagent.started.model` reports the override but `assistant.usage.model` is the `auto` pick, with no error ([findings](docs/spikes/S-02.md)) | S-03 | Engine-managed child sessions with an explicit model |
 | A5 | Usage can be attributed per agent | S-03 | Attribute by `toolCallId` window, or by child session |
-| A6 | A session can read outside its `workingDirectory` once the host approves | S-04 | Session root directory of symlinks, or cross-repo access only through engine tools |
-| A7 | Node, the engine bundle, and the Copilot CLI can be ad-hoc signed inside the app and run on a Mac without developer tools after a GitHub Releases download; Developer ID signing and notarization come later (D-17) | S-05 | Install the engine separately (pkg or Homebrew) |
+| A6 | A session can read outside its `workingDirectory` once the host approves. **Confirmed** by S-04: the runtime raises a `read` permission request for the path and reads it on `approve-once`; `additionalDirectories` halves the requests but does not remove them. A `preToolUse` deny blocks file-tool and shell writes to a reference root, but R-07's shell parser misses argument writes such as `touch` and `cp` ([findings](docs/spikes/S-04.md)) | S-04 | Session root directory of symlinks, or cross-repo access only through engine tools |
+| A7 | Node, the engine bundle, and the Copilot CLI can be ad-hoc signed inside the app and run on a Mac without developer tools after a GitHub Releases download; Developer ID signing and notarization come later (D-17). **Confirmed** by S-05, with a different install path: the ad-hoc, hardened-runtime bundle passes `--deep --strict`, survives zip/unzip, and runs once installed without quarantine. On macOS 27 a quarantined ad-hoc app offers no "Open Anyway", so the quarantine is cleared before the first launch: an install script (curl, sha256, signature check) or a documented `xattr -dr com.apple.quarantine` step. `copilot-runtime` needs `disable-library-validation` when re-signed ad-hoc. The second-account check of that path is pending with the owner ([findings](docs/spikes/S-05.md)) | S-05 | Install the engine separately (pkg or Homebrew) |
 | A8 | All four MCP servers connect through the SDK, including OAuth. **Partly confirmed** by S-06: GitHub connects with no prompt; the runtime runs OAuth for Datadog and ClickUp up to consent and also accepts host-supplied tokens; Snowflake is untried (Q-06) ([findings](docs/spikes/S-06.md)) | S-06 | Host-managed tokens supplied by Pica |
 | A9 | Event streaming over a Unix socket meets the throughput budget. **Confirmed** by S-07: 50,000 events at 25,000/s in order, p99 write-to-decoded ≈ 0.1 ms ([findings](docs/spikes/S-07.md)) | S-07 | Coalesce events per display frame in the engine |
 
@@ -102,7 +102,7 @@ REST endpoints: `GET /user/teams`, `GET /orgs/{org}/teams/{team_slug}/repos` (pa
 | D-05 | Protocol types are defined once (zod → JSON Schema) and generated for Swift | One source of truth; drift fails CI | 2026-11-12 |
 | D-06 | Sessions are event-sourced into SQLite with per-session sequence numbers | Crash recovery, reconnect without gaps, and deterministic replay tests | 2026-11-12 |
 | D-07 | Engine follows ports-and-adapters; `core` has no I/O imports | Lets a scripted fake runtime stand in for Copilot in every test | 2026-11-12 |
-| D-08 | Delegation uses runtime-native `customAgents` if S-02/S-03 pass, otherwise engine-managed child sessions; both sit behind one `Delegator` port | Keeps the fallback cheap | 2026-11-12 |
+| D-08 | Delegation uses runtime-native `customAgents` if S-02/S-03 pass, otherwise engine-managed child sessions; both sit behind one `Delegator` port. S-02 passed: hooks identify the sub-agent and a deny makes the main agent delegate through `task`, so enforcement keeps `customAgents`. The per-agent `model` half is S-03's; on Free the override is not honored ([S-02](docs/spikes/S-02.md)) | Keeps the fallback cheap | 2026-11-14 |
 | D-09 | Model IDs are never hard-coded; tiers resolve against `models.list` | Model availability is set by org policy and changes often | 2026-11-12 |
 | D-10 | Secrets live in the macOS Keychain, brokered by the app; the engine holds references only. CLI mode reads environment variables | Keychain items scoped to the signed app; nothing sensitive in config or the database | 2026-11-12 |
 | D-11 | Config is layered JSONC with a published JSON Schema | Matches the MCP and Copilot config ecosystem; editor validation for free | 2026-11-12 |
@@ -111,7 +111,7 @@ REST endpoints: `GET /user/teams`, `GET /orgs/{org}/teams/{team_slug}/repos` (pa
 | D-14 | The engine is a child process of the app in v1; sessions survive restarts by resume, not by a background daemon | Simplest lifecycle; a launch agent can come later without protocol changes | 2026-11-12 |
 | D-15 | CI is split by cost (§8.1): `make verify-engine` on Linux for every PR; `make verify-app` on macOS only when app, protocol, codegen or `Makefile` change; no UI tests and no runs on pushes to `main`. Full local `make verify` remains the merge gate | Running full `make verify` on macOS for every PR update and push to `main` used the month's Actions minutes in one day (82 runs, ~200 macOS minutes on 2026-11-13), mostly for engine-only changes. Owner moved to GitHub Pro for more minutes; landed in #27 | 2026-11-14 |
 | D-16 | Pica is plan-agnostic: it must work without friction on every Copilot plan (Free, Pro, Pro+, Business, Enterprise). Nothing depends on a specific plan, model or org policy; tiers resolve against whatever `models.list` returns (D-09), and features that need data some plans lack (token prices, org budgets, pooled credits) degrade to a stated "not available on this plan" state instead of failing. The owner's own environment, Copilot Business with most standard models (Claude except Fable, Gemini 4, GPT-6 and 6.1, Grok 4.7), is the development reference, not a requirement. S-01 found that Copilot Free is a default-model-only plan: `models.list` holds just the virtual `auto` model (routed per call, e.g. to GPT-6 Luna or MAI Code 1.1 Flash) with no token prices, so Pica must offer no model picker there, only the effort or routing tiers the runtime advertises, and show no per-token cost when prices are absent; credits come from the usage events' nano-AIU totals instead | Owner answered Q-01 and asked for a product usable on all plans | 2026-11-14 |
-| D-17 | v1 ships as an ad-hoc signed (`codesign -s -`), hardened-runtime app attached to GitHub Releases, not notarized and not distributed through MDM. Install docs cover clearing Gatekeeper's quarantine (System Settings › Privacy & Security › Open Anyway). Developer ID signing and notarization are added to the release workflow later, behind credentials, without design changes. Sparkle updates use their own EdDSA signatures, independent of Apple signing | Owner answered Q-04: no Developer ID yet, open to one later; GitHub Releases is acceptable for now | 2026-11-14 |
+| D-17 | v1 ships as an ad-hoc signed (`codesign -s -`), hardened-runtime app attached to GitHub Releases, not notarized and not distributed through MDM. On macOS 27 a quarantined ad-hoc app cannot be approved with "Open Anyway" (S-05), so it is installed without quarantine: the primary route is an install script (`curl` download, which sets no quarantine; SHA-256 checked against the release's `SHA256SUMS`; `codesign --verify`), and the fallback is a documented `xattr -dr com.apple.quarantine /Applications/Pica.app` before the first launch. Developer ID signing and notarization are added to the release workflow later, behind credentials, without design changes. Sparkle updates use their own EdDSA signatures, independent of Apple signing | Owner answered Q-04: no Developer ID yet, open to one later; GitHub Releases is acceptable for now | 2026-11-14 |
 
 ---
 
@@ -394,10 +394,10 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **S-02 · Hook enforcement and delegation** — S-01
 - Build: session with a `bulk-reader` custom agent and an `onPreToolUse` that denies main-agent reads over 32 KB.
 - Verify:
-  - [ ] **(live)** Hook invocations for main-agent and sub-agent tool calls are distinguishable; the distinguishing field is recorded.
-  - [ ] **(live)** Over 20 trials asking about a 200 KB fixture file, at least 19 end with the sub-agent reading the file and the main agent never receiving its content.
-  - [ ] The built-in tool names and argument shapes for read, write, edit, search, and shell are recorded in `docs/spikes/S-02-tools.json`.
-  - [ ] A2 and A3 are resolved and D-08 is confirmed or changed.
+  - [x] **(live)** Hook invocations for main-agent and sub-agent tool calls are distinguishable; the distinguishing field is recorded.
+  - [x] **(live)** Over 20 trials asking about a 200 KB fixture file, at least 19 end with the sub-agent reading the file and the main agent never receiving its content.
+  - [x] The built-in tool names and argument shapes for read, write, edit, search, and shell are recorded in `docs/spikes/S-02-tools.json`.
+  - [x] A2 and A3 are resolved and D-08 is confirmed or changed.
 
 **S-03 · Per-agent model and attribution** — S-02
 - Verify:
@@ -409,17 +409,17 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 
 **S-04 · Multi-root access** — S-01
 - Verify:
-  - [ ] **(live)** A session rooted in repo A reads a file in repo B after host approval; the mechanism is recorded.
-  - [ ] **(live)** A write to repo B is blocked by the hook, including via a shell command.
-  - [ ] **(live)** Two sessions with different working directories run concurrently on one client without cross-talk.
-  - [ ] A6 is resolved.
+  - [x] **(live)** A session rooted in repo A reads a file in repo B after host approval; the mechanism is recorded.
+  - [x] **(live)** A write to repo B is blocked by the hook, including via a shell command.
+  - [x] **(live)** Two sessions with different working directories run concurrently on one client without cross-talk.
+  - [x] A6 is resolved.
 
 **S-05 · Packaging** — none
 - Build: minimal ad-hoc signed, hardened-runtime `.app` containing a Node binary, a bundled "hello" engine, and the Copilot CLI, zipped as a GitHub Releases asset would be (D-17).
 - Verify:
-  - [ ] `codesign --verify --deep --strict` passes on the ad-hoc signed app, and every nested Mach-O binary is signed with the hardened runtime.
-  - [ ] **(manual)** On a second macOS user account with no developer tools, the zip downloaded with the quarantine attribute set opens after "Open Anyway", and the engine answers a ping. The exact steps are recorded for the install guide.
-  - [ ] A7 is resolved.
+  - [x] `codesign --verify --deep --strict` passes on the ad-hoc signed app, and every nested Mach-O binary is signed with the hardened runtime.
+  - [ ] **(manual)** On a second macOS user account with no developer tools, the app installed by the install script, and separately a quarantined zip whose app had `xattr -dr com.apple.quarantine` run before its first launch, both open with no Gatekeeper dialog, and the engine answers a ping. The exact steps are recorded for the install guide. *Waiting on the owner; checklist in [docs/spikes/S-05.md](docs/spikes/S-05.md#manual-check-owner-second-account-without-developer-tools).*
+  - [x] A7 is resolved.
 
 **S-06 · MCP connectivity** — S-01
 - Verify:
@@ -896,7 +896,7 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
   - [ ] One hundred consecutive kill-and-resume cycles lose no event.
 
 **H-06 · Distribution** — S-05, A-01
-- Build: release workflow publishing ad-hoc signed, hardened-runtime builds to GitHub Releases; Sparkle updates with an appcast served from GitHub Releases; Developer ID signing and notarization as an optional step that runs only when credentials are configured (D-17).
+- Build: release workflow publishing ad-hoc signed, hardened-runtime builds to GitHub Releases with a `SHA256SUMS` asset; an `install.sh` release asset that downloads with `curl`, checks the checksum and signature, and installs without quarantine (prototype in `spikes/s-05-packaging/install.sh`); Sparkle updates with an appcast served from GitHub Releases; Developer ID signing and notarization as an optional step that runs only when credentials are configured (D-17).
 - Verify:
   - [ ] The release workflow produces a zip whose app passes `codesign --verify --deep --strict` and attaches it to a draft GitHub release.
   - [ ] An update from version N to N+1 through a local appcast succeeds and the engine version matches the app.
@@ -928,7 +928,7 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 | Worker model gives wrong answers about large files | Bad decisions by the main agent | Citations required; main agent can do ranged reads to check; eval suite tracks success, not just tokens |
 | Denied reads make the main agent loop | Wasted reasoning tokens | S-02 measures it; fallback is the explicit `delegate` tool; a repeat-deny counter escalates to the user |
 | MCP tool definitions bloat the context | Higher cost on every turn | Attach on demand; per-server allowlists; token cost shown before attaching |
-| Unnotarized builds (D-17) meet Gatekeeper friction, and ad-hoc signatures change each build so Keychain items may prompt again after updates | Rough install and update experience | S-05 records the exact install steps; Developer ID and notarization added to H-06 once available; separate engine install as fallback |
+| Unnotarized builds (D-17) are blocked outright by Gatekeeper when downloaded in a browser (no "Open Anyway" for ad-hoc apps on macOS 27), and ad-hoc signatures change each build so Keychain items prompt again after updates | Install needs Terminal; a user who double-clicks first must reinstall; one Keychain prompt per item per update | Install script as the primary route, `xattr` step as fallback (S-05); few Keychain items (M-03); Developer ID and notarization added to H-06 once available; separate engine install as fallback |
 | Two processes mean two places for bugs | Debugging cost | Engine-only reproduction through `pica`; event log is the shared truth |
 | GitHub team discovery blocked by SSO or app approval | Team import unavailable | Auth chain with three providers; manual add always works |
 
@@ -953,10 +953,10 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | ID | Unit | Depends on | Status |
 |---|---|---|---|
 | S-01 | Runtime access and auth | — | done |
-| S-02 | Hook enforcement and delegation | S-01 | todo |
+| S-02 | Hook enforcement and delegation | S-01 | done |
 | S-03 | Per-agent model and attribution | S-02 | todo |
-| S-04 | Multi-root access | S-01 | todo |
-| S-05 | Packaging | — | todo |
+| S-04 | Multi-root access | S-01 | done |
+| S-05 | Packaging | — | doing (awaiting owner's manual check) |
 | S-06 | MCP connectivity | S-01 | todo (GitHub done; Datadog and ClickUp need the owner's OAuth consent, Snowflake needs Q-06) |
 | S-07 | IPC throughput | — | done |
 | F-01 | Repository scaffold | — | done |
