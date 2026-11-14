@@ -31,6 +31,7 @@ export const ranged = (startLine: number, endLine: number): ToolTarget => ({
 export const routing = (routingOverrides: unknown, permissions: unknown = {}): Partial<PolicyContext> => ({
   config: policyConfig({ routing: routingOverrides, permissions }),
 });
+export const excluding = (...exclude: string[]): Partial<PolicyContext> => routing({ delegation: { read: { exclude } } });
 export const auto: Partial<PolicyContext> = { config: policyConfig({ permissions: { mode: "auto" } }) };
 export const managed = (...rules: PolicyContext["managed"]): Partial<PolicyContext> => ({ managed: rules });
 export const block = { id: "block", reason: "Blocked by the organization" };
@@ -134,6 +135,16 @@ export const largeReadCases: Case[] = [
   { name: "a raised rangeExemptLines from config applies", call: toolCall(ranged(1, 1000)), context: routing({ delegation: { read: { rangeExemptLines: 1000 } } }), outcome: "allow", ruleId: "permission.read-only" },
   { name: "the large-read gate does not apply to results", call: withResult(largeRead(), 100), outcome: "allow", ruleId: "permission.result" },
   { name: "the large-read gate does not apply to writes", call: toolCall(write(`${writeRoot}/schema.sql`)), context: auto, outcome: "allow", ruleId: "permission.auto" },
+  { name: "an excluded directory glob exempts a large read", call: toolCall(largeRead(`${writeRoot}/docs/PLAN.md`)), context: excluding("docs/**"), outcome: "allow", ruleId: "permission.read-only" },
+  { name: "a **/ exclusion matches at any depth", call: toolCall(largeRead(`${writeRoot}/a/b/pnpm-lock.yaml`)), context: excluding("**/pnpm-lock.yaml"), outcome: "allow", ruleId: "permission.read-only" },
+  { name: "a * exclusion does not cross directories", call: toolCall(largeRead(`${writeRoot}/db/schema.sql`)), context: excluding("*.sql"), outcome: "deny", ruleId: "cost.large-read" },
+  { name: "a ? exclusion matches one character", call: toolCall(largeRead()), context: excluding("schema.sq?"), outcome: "allow", ruleId: "permission.read-only" },
+  { name: "exclusion punctuation is literal", call: toolCall(largeRead(`${writeRoot}/a+b.(1).json`)), context: excluding("a+b.(1).json"), outcome: "allow", ruleId: "permission.read-only" },
+  { name: "exclusion punctuation does not act as a pattern", call: toolCall(largeRead(`${writeRoot}/aab.x1y.json`)), context: excluding("a+b.(1).json"), outcome: "deny", ruleId: "cost.large-read" },
+  { name: "a relative exclusion matches inside a reference root", call: toolCall(largeRead(`${referenceRoot}/vendor/lib.js`)), context: excluding("vendor/*.js"), outcome: "allow", ruleId: "permission.read-only" },
+  { name: "an absolute exclusion matches a relative read path", call: toolCall(largeRead("gen/api.ts")), context: excluding(`${writeRoot}/gen/**`), outcome: "allow", ruleId: "permission.read-only" },
+  { name: "an absolute exclusion is not matched relative to a root", call: toolCall(largeRead(`${writeRoot}/gen/api.ts`)), context: excluding("/gen/**"), outcome: "deny", ruleId: "cost.large-read" },
+  { name: "a read matching no exclusion is still denied", call: toolCall(largeRead()), context: excluding("docs/**", "*.lock"), outcome: "deny", ruleId: "cost.large-read" },
 ];
 
 export const outputCases: Case[] = [

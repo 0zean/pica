@@ -4152,20 +4152,23 @@ public struct UsageRecord: Codable, Hashable, Sendable {
 
 public struct UsageRollupParams: Codable, Hashable, Sendable {
     public var groupBy: UsageGroupBy
-    public var from: Timestamp
-    public var to: Timestamp
+    public var from: Timestamp?
+    public var to: Timestamp?
     public var workspaceId: Id?
+    public var sessionId: Id?
 
     public init(
         groupBy: UsageGroupBy,
-        from: Timestamp,
-        to: Timestamp,
-        workspaceId: Id? = nil
+        from: Timestamp? = nil,
+        to: Timestamp? = nil,
+        workspaceId: Id? = nil,
+        sessionId: Id? = nil
     ) {
         self.groupBy = groupBy
         self.from = from
         self.to = to
         self.workspaceId = workspaceId
+        self.sessionId = sessionId
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -4173,22 +4176,25 @@ public struct UsageRollupParams: Codable, Hashable, Sendable {
         case from
         case to
         case workspaceId
+        case sessionId
     }
 
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         groupBy = try container.decode(UsageGroupBy.self, forKey: .groupBy)
-        from = try container.decode(Timestamp.self, forKey: .from)
-        to = try container.decode(Timestamp.self, forKey: .to)
+        from = try container.decodeIfPresent(Timestamp.self, forKey: .from)
+        to = try container.decodeIfPresent(Timestamp.self, forKey: .to)
         workspaceId = try container.decodeIfPresent(Id.self, forKey: .workspaceId)
+        sessionId = try container.decodeIfPresent(Id.self, forKey: .sessionId)
     }
 
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(groupBy, forKey: .groupBy)
-        try container.encode(from, forKey: .from)
-        try container.encode(to, forKey: .to)
+        try container.encodeIfPresent(from, forKey: .from)
+        try container.encodeIfPresent(to, forKey: .to)
         try container.encodeIfPresent(workspaceId, forKey: .workspaceId)
+        try container.encodeIfPresent(sessionId, forKey: .sessionId)
     }
 }
 
@@ -4224,6 +4230,7 @@ public struct UsageRollupResult: Codable, Hashable, Sendable {
 
 public struct UsageRollupRow: Codable, Hashable, Sendable {
     public var key: String
+    public var calls: Count
     public var inputTokens: Count
     public var cachedInputTokens: Count
     public var outputTokens: Count
@@ -4231,12 +4238,14 @@ public struct UsageRollupRow: Codable, Hashable, Sendable {
 
     public init(
         key: String,
+        calls: Count,
         inputTokens: Count,
         cachedInputTokens: Count,
         outputTokens: Count,
         credits: Credits
     ) {
         self.key = key
+        self.calls = calls
         self.inputTokens = inputTokens
         self.cachedInputTokens = cachedInputTokens
         self.outputTokens = outputTokens
@@ -4245,6 +4254,7 @@ public struct UsageRollupRow: Codable, Hashable, Sendable {
 
     private enum CodingKeys: String, CodingKey {
         case key
+        case calls
         case inputTokens
         case cachedInputTokens
         case outputTokens
@@ -4254,6 +4264,7 @@ public struct UsageRollupRow: Codable, Hashable, Sendable {
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         key = try container.decode(String.self, forKey: .key)
+        calls = try container.decode(Count.self, forKey: .calls)
         inputTokens = try container.decode(Count.self, forKey: .inputTokens)
         cachedInputTokens = try container.decode(Count.self, forKey: .cachedInputTokens)
         outputTokens = try container.decode(Count.self, forKey: .outputTokens)
@@ -4263,6 +4274,7 @@ public struct UsageRollupRow: Codable, Hashable, Sendable {
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(key, forKey: .key)
+        try container.encode(calls, forKey: .calls)
         try container.encode(inputTokens, forKey: .inputTokens)
         try container.encode(cachedInputTokens, forKey: .cachedInputTokens)
         try container.encode(outputTokens, forKey: .outputTokens)

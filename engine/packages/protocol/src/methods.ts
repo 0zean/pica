@@ -191,8 +191,15 @@ export const methods = {
   ),
   "models.tiers": clientMethod(Empty, z.object({ tiers: z.array(TierAssignment) })),
 
+  // `from` is inclusive and `to` exclusive; `day` groups by UTC calendar day.
   "usage.rollup": clientMethod(
-    z.object({ groupBy: UsageGroupBy, from: Timestamp, to: Timestamp, workspaceId: Id.optional() }),
+    z.object({
+      groupBy: UsageGroupBy,
+      from: Timestamp.optional(),
+      to: Timestamp.optional(),
+      workspaceId: Id.optional(),
+      sessionId: Id.optional(),
+    }),
     z.object({ rows: z.array(UsageRollupRow), savings: SavingsEstimate }),
   ),
 

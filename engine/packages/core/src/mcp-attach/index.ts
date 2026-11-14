@@ -6,6 +6,7 @@ export {
   type McpAttachmentIssue,
   type McpAttachmentIssueCode,
 } from "./errors.ts";
+export { mcpToolTarget } from "./tool-target.ts";
 export {
   mcpSessionConfig,
   type McpAgentSessionConfig,
@@ -32,6 +33,7 @@ export type {
   McpAttachment,
   McpAttachmentPlan,
   McpAttachmentTarget,
+  McpToolAnnotations,
   McpToolCatalog,
   McpToolDefinition,
 } from "./types.ts";

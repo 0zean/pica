@@ -1,3 +1,4 @@
+import { isExcludedRead } from "./read-exclusions.ts";
 import { mainAgent, type LineRange, type Rule } from "./types.ts";
 
 export const largeReadRule: Rule = (call, context) => {
@@ -7,7 +8,11 @@ export const largeReadRule: Rule = (call, context) => {
     return undefined;
   }
   const { minBytes, rangeExemptLines } = delegation.read;
-  if (target.sizeBytes < minBytes || isExemptRange(target.range, rangeExemptLines)) {
+  if (
+    target.sizeBytes < minBytes ||
+    isExemptRange(target.range, rangeExemptLines) ||
+    isExcludedRead(target.path, context)
+  ) {
     return undefined;
   }
   return {

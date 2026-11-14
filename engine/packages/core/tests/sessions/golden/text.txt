@@ -1,0 +1,17 @@
+line 001: ok
+line 002: ok
+line 003: ok
+line 004: ok
+line 005: ok
+line 006: ok
+line 007: ok
+l
+[pica] Output truncated to 320 of 1039 bytes. Full output: /artifacts/session-1/tool-output/call-text.txt (ask bulk-reader to read it).
+
+line 074: ok
+line 075: ok
+line 076: ok
+line 077: ok
+line 078: ok
+line 079: ok
+line 080: ok

@@ -58,6 +58,15 @@
                   "type": "integer",
                   "exclusiveMinimum": 0,
                   "maximum": 9007199254740991
+                },
+                "exclude": {
+                  "default": [],
+                  "description": "Glob patterns (relative to a session repo root, or absolute) the main agent may read whole at any size",
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
                 }
               },
               "additionalProperties": false
@@ -109,6 +118,33 @@
             "ask",
             "auto"
           ]
+        },
+        "mcpTools": {
+          "description": "Per-tool MCP permissions; an exact tool beats server/*. Overrides mode and the write-class default",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "tool": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*\\/([A-Za-z0-9._-]+|\\*)$",
+                "description": "\"server/tool\" or \"server/*\""
+              },
+              "permission": {
+                "type": "string",
+                "enum": [
+                  "allow",
+                  "ask",
+                  "deny"
+                ]
+              }
+            },
+            "required": [
+              "tool",
+              "permission"
+            ],
+            "additionalProperties": false
+          }
         }
       },
       "additionalProperties": false
