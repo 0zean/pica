@@ -2,13 +2,14 @@ import { describe, expect, it } from "vitest";
 import { decide } from "../../src/index.ts";
 import { groups, largeRead, managed, maxBytes, other, rangeExemptLines, shell, withResult } from "./cases.ts";
 import { baseContext, toolCall } from "./fixtures.ts";
+import { mcpPermissionCases } from "./mcp-cases.ts";
 
 describe("decide", () => {
   it("has at least 60 table cases", () => {
     expect(Object.values(groups).flat().length).toBeGreaterThanOrEqual(60);
   });
 
-  for (const [group, cases] of Object.entries(groups)) {
+  for (const [group, cases] of Object.entries({ ...groups, "MCP permissions (M-05)": mcpPermissionCases })) {
     describe(group, () => {
       it.each(cases)("$name", ({ call, context, outcome, ruleId }) => {
         const decision = decide(call, baseContext(context));
