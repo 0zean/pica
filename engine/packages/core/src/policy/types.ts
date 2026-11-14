@@ -79,6 +79,8 @@ export interface PolicyContext {
   readonly managed: readonly ManagedRule[];
   readonly managedMcpAllowlist?: ManagedMcpAllowlist;
   readonly commandDenyList: readonly CommandRule[];
+  /** Symlink-free paths for the call's paths and roots, from the sandbox (R-07). Absent: lexical only. */
+  readonly realPaths?: ReadonlyMap<string, string>;
 }
 
 export type RuleGroup = "managed" | "safety" | "cost" | "permission";
@@ -88,6 +90,7 @@ export type RuleId =
   | "safety.outside-roots"
   | "safety.outside-write-roots"
   | `safety.command-denied:${string}`
+  | "safety.shell-outside-write-roots"
   | "cost.large-read"
   | "cost.oversized-output"
   | `permission.mcp-tool:${string}`

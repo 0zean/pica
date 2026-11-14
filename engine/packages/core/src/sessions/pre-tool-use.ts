@@ -1,9 +1,10 @@
 import { toolKind } from "../agents/index.ts";
 import type { JsonObject, JsonValue } from "../json.ts";
 import { decide, defaultCommandDenyList, mainAgent } from "../policy/index.ts";
-import type { CommandRule, LineRange, ManagedRule, PolicyConfig, PolicyContext } from "../policy/index.ts";
+import type { CommandRule, LineRange, ManagedRule, PolicyConfig, PolicyContext, ToolCall } from "../policy/index.ts";
 import { resolvePath } from "../policy/paths.ts";
 import type { PreToolUseDecision, RuntimeHooks, ToolUseInput } from "../runtime/index.ts";
+import { withRealPaths, type RealPathResolver } from "../sandbox/index.ts";
 import type { Session, Store } from "../store/index.ts";
 import { isRoutingProfile } from "./info.ts";
 
@@ -15,6 +16,8 @@ export interface ReadGateDeps {
   readonly fileSize: (path: string) => Promise<number | undefined>;
   readonly managed?: readonly ManagedRule[];
   readonly commandDenyList?: readonly CommandRule[];
+  // Without it paths are judged lexically and a symlink can lead out of the roots (R-07).
+  readonly realPath?: RealPathResolver;
 }
 
 interface ReadArguments {
@@ -38,15 +41,13 @@ async function gateRead(deps: ReadGateDeps, sessionId: string, input: ToolUseInp
   }
   const context = policyContext(deps, session.value);
   const sizeBytes = (await deps.fileSize(resolvePath(context.cwd, read.path))) ?? 0;
-  const decision = decide(
-    {
-      id: input.toolCallId,
-      tool: input.toolName,
-      agent: input.agentId ?? mainAgent,
-      target: { kind: "read", path: read.path, sizeBytes, ...(read.range === undefined ? {} : { range: read.range }) },
-    },
-    context,
-  );
+  const call: ToolCall = {
+    id: input.toolCallId,
+    tool: input.toolName,
+    agent: input.agentId ?? mainAgent,
+    target: { kind: "read", path: read.path, sizeBytes, ...(read.range === undefined ? {} : { range: read.range }) },
+  };
+  const decision = decide(call, deps.realPath === undefined ? context : await withRealPaths(call, context, deps.realPath));
   switch (decision.outcome) {
     case "deny":
       return { decision: "deny", reason: decision.reason };

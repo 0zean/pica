@@ -518,13 +518,16 @@
   ],
   "R-07": [
     {
-      "check": "Policy cases: write to a reference root is denied; a symlink or `..` escaping every root is denied."
+      "check": "Policy cases: write to a reference root is denied; a symlink or `..` escaping every root is denied.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/policy/decide.test.ts -t 'session scope \\(R-07\\)' && pnpm exec vitest run packages/adapters/tests/fs/real-path.test.ts"
     },
     {
-      "check": "A shell command whose working directory or redirect target is outside the write roots yields `ask` or `deny` per permission mode."
+      "check": "A shell command whose working directory or redirect target is outside the write roots yields `ask` or `deny` per permission mode.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/policy/decide.test.ts -t 'shell scope \\(R-07\\)'"
     },
     {
-      "check": "Fuzzed paths never resolve outside the roots while being allowed."
+      "check": "Fuzzed paths never resolve outside the roots while being allowed.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/sandbox/scope.property.test.ts"
     }
   ],
   "R-08": [

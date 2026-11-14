@@ -656,9 +656,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **R-07 · Session scope and sandbox** — C-03, R-02
 - Build: write roots and reference roots on the session; path resolution guard; safety rules.
 - Verify:
-  - [ ] Policy cases: write to a reference root is denied; a symlink or `..` escaping every root is denied.
-  - [ ] A shell command whose working directory or redirect target is outside the write roots yields `ask` or `deny` per permission mode.
-  - [ ] Fuzzed paths never resolve outside the roots while being allowed.
+  - [x] Policy cases: write to a reference root is denied; a symlink or `..` escaping every root is denied.
+  - [x] A shell command whose working directory or redirect target is outside the write roots yields `ask` or `deny` per permission mode.
+  - [x] Fuzzed paths never resolve outside the roots while being allowed.
 
 **R-08 · Cross-repo tools** — R-06, R-07
 - Build: `repo_search`, `repo_read`, `repo_list` as engine tools; `@repo:path` mention parsing.
@@ -986,7 +986,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | R-04 | GitHub auth | E-05 | done |
 | R-05 | Team discovery | R-04 | todo |
 | R-06 | Workspace model | R-03, R-05 | todo |
-| R-07 | Session scope and sandbox | C-03, R-02 | todo |
+| R-07 | Session scope and sandbox | C-03, R-02 | done |
 | R-08 | Cross-repo tools | R-06, R-07 | todo |
 | R-09 | Repo cards | R-03 | todo |
 | R-10 | Multi-repo change sets | R-02, R-07 | todo |
