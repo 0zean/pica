@@ -1,9 +1,24 @@
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
-import { decide } from "../../src/index.ts";
+import { decide, type PolicyContext } from "../../src/index.ts";
 import { contextArbitrary, managedRuleArbitrary, toolCallArbitrary } from "./arbitraries.ts";
 
 const runs = { numRuns: 5000, seed: 3003 };
+
+// Everything but the managed parts comes from `other`.
+function withManaged(other: PolicyContext, context: PolicyContext): PolicyContext {
+  const { writeRoots, referenceRoots, config, commandDenyList } = other;
+  const { cwd, managed, managedMcpAllowlist } = context;
+  return {
+    cwd,
+    writeRoots,
+    referenceRoots,
+    config,
+    managed,
+    commandDenyList,
+    ...(managedMcpAllowlist === undefined ? {} : { managedMcpAllowlist }),
+  };
+}
 
 describe("managed deny", () => {
   it("is never overridden when a managed rule matches the call", () => {
@@ -31,7 +46,7 @@ describe("managed deny", () => {
           const first = decide(call, context);
           fc.pre(first.ruleGroup === "managed");
           const changedCall = resultBytes === undefined ? call : { ...call, result: { bytes: resultBytes } };
-          const second = decide(changedCall, { ...other, cwd: context.cwd, managed: context.managed });
+          const second = decide(changedCall, withManaged(other, context));
           expect(first.outcome).toBe("deny");
           expect(second).toMatchObject({ outcome: "deny", ruleId: first.ruleId });
         },

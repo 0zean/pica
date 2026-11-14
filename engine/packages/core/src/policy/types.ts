@@ -6,7 +6,13 @@ export type ToolTarget =
   | { readonly kind: "write"; readonly path: string }
   | { readonly kind: "search"; readonly paths: readonly string[] }
   | { readonly kind: "shell"; readonly command: string; readonly cwd: string }
-  | { readonly kind: "mcp"; readonly server: string }
+  | {
+      readonly kind: "mcp";
+      readonly server: string;
+      // The tool's name on its server, and whether it is read-class (docs/mcp-permissions.md).
+      readonly tool?: string;
+      readonly readOnly?: boolean;
+    }
   | { readonly kind: "other" };
 
 export type PolicyToolKind = ToolTarget["kind"];
@@ -40,6 +46,19 @@ export interface ManagedRule {
   readonly commandPattern?: RegExp;
 }
 
+// The managed list of MCP servers a session may use; a server not on it cannot be attached or called.
+export interface ManagedMcpAllowlist {
+  readonly id: string;
+  readonly servers: readonly ManagedMcpServer[];
+}
+
+// A given `url` or `command` pins the entry to that endpoint, so a renamed server does not pass.
+export interface ManagedMcpServer {
+  readonly id: string;
+  readonly url?: string;
+  readonly command?: string;
+}
+
 export interface CommandRule {
   readonly id: string;
   readonly pattern: RegExp;
@@ -58,6 +77,7 @@ export interface PolicyContext {
   readonly referenceRoots: readonly string[];
   readonly config: PolicyConfig;
   readonly managed: readonly ManagedRule[];
+  readonly managedMcpAllowlist?: ManagedMcpAllowlist;
   readonly commandDenyList: readonly CommandRule[];
 }
 
@@ -70,6 +90,8 @@ export type RuleId =
   | `safety.command-denied:${string}`
   | "cost.large-read"
   | "cost.oversized-output"
+  | `permission.mcp-tool:${string}`
+  | "permission.mcp-read-only"
   | "permission.auto"
   | "permission.read-only"
   | "permission.ask"
