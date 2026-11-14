@@ -79,13 +79,13 @@ REST endpoints: `GET /user/teams`, `GET /orgs/{org}/teams/{team_slug}/repos` (pa
 
 | # | Assumption | Spike | If false |
 |---|---|---|---|
-| A1 | The org's Copilot policy permits CLI/SDK use and returns a model list with token prices | S-01 | Ask the org admin to enable it; BYOK as a stopgap |
+| A1 | The signed-in user's Copilot plan (any of Free, Pro, Pro+, Business, Enterprise) permits CLI/SDK use and returns a model list; token prices may be absent on some plans (D-16) | S-01 | Ask the org admin to enable it; BYOK as a stopgap |
 | A2 | SDK `onPreToolUse` fires for sub-agent tool calls and identifies the calling agent | S-02 | Delegate through engine-managed child sessions, where identity is known by construction |
 | A3 | A deny with a reason reliably makes the main agent delegate | S-02 | Expose an engine `delegate` tool and remove the direct large-read path from the main agent |
 | A4 | A sub-agent's `model` override is honored and billed at that model's rate | S-03 | Engine-managed child sessions with an explicit model |
 | A5 | Usage can be attributed per agent | S-03 | Attribute by `toolCallId` window, or by child session |
 | A6 | A session can read outside its `workingDirectory` once the host approves | S-04 | Session root directory of symlinks, or cross-repo access only through engine tools |
-| A7 | Node, the engine bundle, and the Copilot CLI can be signed and notarized inside the app | S-05 | Install the engine separately (pkg or Homebrew) |
+| A7 | Node, the engine bundle, and the Copilot CLI can be ad-hoc signed inside the app and run on a Mac without developer tools after a GitHub Releases download; Developer ID signing and notarization come later (D-17) | S-05 | Install the engine separately (pkg or Homebrew) |
 | A8 | All four MCP servers connect through the SDK, including OAuth | S-06 | Host-managed tokens supplied by Pica |
 | A9 | Event streaming over a Unix socket meets the throughput budget. **Confirmed** by S-07: 50,000 events at 25,000/s in order, p99 write-to-decoded ≈ 0.1 ms ([findings](docs/spikes/S-07.md)) | S-07 | Coalesce events per display frame in the engine |
 
@@ -106,10 +106,12 @@ REST endpoints: `GET /user/teams`, `GET /orgs/{org}/teams/{team_slug}/repos` (pa
 | D-09 | Model IDs are never hard-coded; tiers resolve against `models.list` | Model availability is set by org policy and changes often | 2026-11-12 |
 | D-10 | Secrets live in the macOS Keychain, brokered by the app; the engine holds references only. CLI mode reads environment variables | Keychain items scoped to the signed app; nothing sensitive in config or the database | 2026-11-12 |
 | D-11 | Config is layered JSONC with a published JSON Schema | Matches the MCP and Copilot config ecosystem; editor validation for free | 2026-11-12 |
-| D-12 | No App Sandbox; hardened runtime; Developer ID distribution outside the Mac App Store | A developer tool must spawn processes and reach arbitrary repo paths | 2026-11-12 |
+| D-12 | No App Sandbox; hardened runtime; distribution outside the Mac App Store (signing identity per D-17) | A developer tool must spawn processes and reach arbitrary repo paths | 2026-11-12 |
 | D-13 | Minimum macOS 26; built with the current SDK; standard controls so system materials are adopted automatically. The macOS CI job runs on GitHub's `macos-26` image | Owner answered Q-03: macOS 15 is too old to keep supporting (was macOS 15, 2026-11-12) | 2026-11-13 |
 | D-14 | The engine is a child process of the app in v1; sessions survive restarts by resume, not by a background daemon | Simplest lifecycle; a launch agent can come later without protocol changes | 2026-11-12 |
 | D-15 | CI is split by cost (§8.1): `make verify-engine` on Linux for every PR; `make verify-app` on macOS only when app, protocol, codegen or `Makefile` change; no UI tests and no runs on pushes to `main`. Full local `make verify` remains the merge gate | Running full `make verify` on macOS for every PR update and push to `main` used the month's Actions minutes in one day (82 runs, ~200 macOS minutes on 2026-11-13), mostly for engine-only changes. Owner moved to GitHub Pro for more minutes; landed in #27 | 2026-11-14 |
+| D-16 | Pica is plan-agnostic: it must work without friction on every Copilot plan (Free, Pro, Pro+, Business, Enterprise). Nothing depends on a specific plan, model or org policy; tiers resolve against whatever `models.list` returns (D-09), and features that need data some plans lack (token prices, org budgets, pooled credits) degrade to a stated "not available on this plan" state instead of failing. The owner's own environment, Copilot Business with most standard models (Claude except Fable, Gemini 4, GPT-6 and 6.1, Grok 4.7), is the development reference, not a requirement | Owner answered Q-01 and asked for a product usable on all plans | 2026-11-14 |
+| D-17 | v1 ships as an ad-hoc signed (`codesign -s -`), hardened-runtime app attached to GitHub Releases, not notarized and not distributed through MDM. Install docs cover clearing Gatekeeper's quarantine (System Settings › Privacy & Security › Open Anyway). Developer ID signing and notarization are added to the release workflow later, behind credentials, without design changes. Sparkle updates use their own EdDSA signatures, independent of Apple signing | Owner answered Q-04: no Developer ID yet, open to one later; GitHub Releases is acceptable for now | 2026-11-14 |
 
 ---
 
@@ -383,7 +385,7 @@ Format: **ID · name** — dependencies. *Build* says what exists afterwards. *V
 Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its assertions hold, plus a findings note in `docs/spikes/`. Their purpose is to settle §2.4.
 
 **S-01 · Runtime access and auth** — none
-- Build: script that creates a session as the signed-in user, lists models, sends one prompt.
+- Build: script that creates a session as the signed-in user, lists models, sends one prompt. Records which `models.list` fields are plan-dependent (D-16).
 - Verify:
   - [ ] **(live)** `models.list` returns at least one model with `billing.tokenPrices`; the list is saved to `docs/spikes/S-01-models.json`.
   - [ ] **(live)** A prompt reaches `session.idle` and emits at least one `assistant.usage`.
@@ -413,10 +415,10 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
   - [ ] A6 is resolved.
 
 **S-05 · Packaging** — none
-- Build: minimal `.app` containing a Node binary, a bundled "hello" engine, and the Copilot CLI.
+- Build: minimal ad-hoc signed, hardened-runtime `.app` containing a Node binary, a bundled "hello" engine, and the Copilot CLI, zipped as a GitHub Releases asset would be (D-17).
 - Verify:
-  - [ ] `codesign --verify --deep --strict` passes and `spctl --assess --type execute` accepts the notarized app.
-  - [ ] **(manual)** On a second macOS user account with no developer tools, the app launches and the engine answers a ping.
+  - [ ] `codesign --verify --deep --strict` passes on the ad-hoc signed app, and every nested Mach-O binary is signed with the hardened runtime.
+  - [ ] **(manual)** On a second macOS user account with no developer tools, the zip downloaded with the quarantine attribute set opens after "Open Anyway", and the engine answers a ping. The exact steps are recorded for the install guide.
   - [ ] A7 is resolved.
 
 **S-06 · MCP connectivity** — S-01
@@ -894,9 +896,9 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
   - [ ] One hundred consecutive kill-and-resume cycles lose no event.
 
 **H-06 · Distribution** — S-05, A-01
-- Build: Developer ID signing, hardened runtime, notarization, Sparkle updates, release workflow.
+- Build: release workflow publishing ad-hoc signed, hardened-runtime builds to GitHub Releases; Sparkle updates with an appcast served from GitHub Releases; Developer ID signing and notarization as an optional step that runs only when credentials are configured (D-17).
 - Verify:
-  - [ ] The release workflow produces an artifact that `spctl` accepts.
+  - [ ] The release workflow produces a zip whose app passes `codesign --verify --deep --strict` and attaches it to a draft GitHub release.
   - [ ] An update from version N to N+1 through a local appcast succeeds and the engine version matches the app.
   - [ ] An appcast entry with a bad signature is refused.
 
@@ -920,13 +922,13 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 
 | Risk | Impact | Mitigation |
 |---|---|---|
-| Org policy blocks the Copilot CLI/SDK or the cheap models | No product | S-01 runs first; BYOK fallback; admin ask is small and specific |
+| A plan or org policy blocks the Copilot CLI/SDK or the cheap models | No product for those users | S-01 runs first; BYOK fallback; admin ask is small and specific |
 | SDK or runtime changes break the adapter | Sessions fail after an update | Version pinned; replay-server contract tests; update only through a PR that re-records transcripts |
 | Delegation latency (10–30 s) annoys users on mid-sized files | Profile gets turned off | Threshold tuned by C-10; range exemption; per-workspace override; timeline shows why a redirect happened |
 | Worker model gives wrong answers about large files | Bad decisions by the main agent | Citations required; main agent can do ranged reads to check; eval suite tracks success, not just tokens |
 | Denied reads make the main agent loop | Wasted reasoning tokens | S-02 measures it; fallback is the explicit `delegate` tool; a repeat-deny counter escalates to the user |
 | MCP tool definitions bloat the context | Higher cost on every turn | Attach on demand; per-server allowlists; token cost shown before attaching |
-| Notarizing bundled Node and CLI binaries fails | Cannot ship a single app | S-05 early; separate engine install as fallback |
+| Unnotarized builds (D-17) meet Gatekeeper friction, and ad-hoc signatures change each build so Keychain items may prompt again after updates | Rough install and update experience | S-05 records the exact install steps; Developer ID and notarization added to H-06 once available; separate engine install as fallback |
 | Two processes mean two places for bugs | Debugging cost | Engine-only reproduction through `pica`; event log is the shared truth |
 | GitHub team discovery blocked by SSO or app approval | Team import unavailable | Auth chain with three providers; manual add always works |
 
@@ -934,10 +936,10 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 
 | ID | Question | Needed by |
 |---|---|---|
-| Q-01 | Copilot Business or Enterprise, and which models does org policy allow? | S-01 |
+| Q-01 | ~~Copilot Business or Enterprise, and which models does org policy allow?~~ Answered 2026-11-14: Business with most standard models; Pica must be plan-agnostic (D-16) | S-01 |
 | Q-02 | GitHub.com, GitHub Enterprise Cloud with data residency, or GitHub Enterprise Server? | R-04 |
 | Q-03 | ~~Can the minimum be raised above macOS 15 across the fleet?~~ Answered 2026-11-13: yes, to macOS 26 (D-13) | A-03 |
-| Q-04 | Is an Apple Developer ID available for signing, and will distribution go through MDM? | S-05, H-06 |
+| Q-04 | ~~Is an Apple Developer ID available for signing, and will distribution go through MDM?~~ Answered 2026-11-14: no Developer ID yet (maybe later); GitHub Releases, no MDM (D-17) | S-05, H-06 |
 | Q-05 | Can the org register a GitHub App or OAuth App for team discovery, or must Pica rely on `gh` and PATs? | R-04 |
 | Q-06 | Is the Snowflake MCP server already created by an admin, and with which auth? | S-06 |
 | Q-07 | Is this for one team or the whole engineering org? This sets the priority of H-01 and H-04. | Phase 6 |

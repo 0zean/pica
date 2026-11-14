@@ -68,10 +68,10 @@
   ],
   "S-05": [
     {
-      "check": "`codesign --verify --deep --strict` passes and `spctl --assess --type execute` accepts the notarized app."
+      "check": "`codesign --verify --deep --strict` passes on the ad-hoc signed app, and every nested Mach-O binary is signed with the hardened runtime."
     },
     {
-      "check": "On a second macOS user account with no developer tools, the app launches and the engine answers a ping.",
+      "check": "On a second macOS user account with no developer tools, the zip downloaded with the quarantine attribute set opens after \"Open Anyway\", and the engine answers a ping. The exact steps are recorded for the install guide.",
       "manual": true
     },
     {
@@ -913,7 +913,7 @@
   ],
   "H-06": [
     {
-      "check": "The release workflow produces an artifact that `spctl` accepts."
+      "check": "The release workflow produces a zip whose app passes `codesign --verify --deep --strict` and attaches it to a draft GitHub release."
     },
     {
       "check": "An update from version N to N+1 through a local appcast succeeds and the engine version matches the app."
