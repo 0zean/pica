@@ -111,7 +111,7 @@
       "run": "make verify"
     },
     {
-      "check": "CI runs `make verify` on pull requests and passes.",
+      "check": "CI runs `make verify-engine` on every pull request, and `make verify-app` on pull requests that touch app or protocol code, and they pass.",
       "manual": true
     }
   ],

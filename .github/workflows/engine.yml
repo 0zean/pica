@@ -1,0 +1,26 @@
+name: engine
+
+# Lint, architecture rules, typecheck, codegen drift and engine tests on Linux (PLAN.md §8.1).
+# Runs on pull requests only: main receives merges of branches that already passed here.
+on:
+  pull_request:
+
+concurrency:
+  group: engine-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify-engine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: engine/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          cache-dependency-path: engine/pnpm-lock.yaml
+      - run: make -k verify-engine

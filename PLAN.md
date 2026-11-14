@@ -107,7 +107,7 @@ REST endpoints: `GET /user/teams`, `GET /orgs/{org}/teams/{team_slug}/repos` (pa
 | D-10 | Secrets live in the macOS Keychain, brokered by the app; the engine holds references only. CLI mode reads environment variables | Keychain items scoped to the signed app; nothing sensitive in config or the database | 2026-11-12 |
 | D-11 | Config is layered JSONC with a published JSON Schema | Matches the MCP and Copilot config ecosystem; editor validation for free | 2026-11-12 |
 | D-12 | No App Sandbox; hardened runtime; Developer ID distribution outside the Mac App Store | A developer tool must spawn processes and reach arbitrary repo paths | 2026-11-12 |
-| D-13 | Minimum macOS 26; built with the current SDK; standard controls so system materials are adopted automatically. CI runs on GitHub's `macos-26` image | Owner answered Q-03: macOS 15 is too old to keep supporting (was macOS 15, 2026-11-12) | 2026-11-13 |
+| D-13 | Minimum macOS 26; built with the current SDK; standard controls so system materials are adopted automatically. The macOS CI job runs on GitHub's `macos-26` image | Owner answered Q-03: macOS 15 is too old to keep supporting (was macOS 15, 2026-11-12) | 2026-11-13 |
 | D-14 | The engine is a child process of the app in v1; sessions survive restarts by resume, not by a background daemon | Simplest lifecycle; a launch agent can come later without protocol changes | 2026-11-12 |
 
 ---
@@ -338,6 +338,7 @@ Theme (accent, density, code font and size), keybindings, inspector layout, rout
 ### 8.1 Verification convention
 
 - `make verify` runs lint, architecture rules, type checks, codegen drift, and all deterministic tests for engine and app.
+- CI runs a cheaper subset on pull requests only: `make verify-engine` (lint, architecture rules, type checks, codegen drift, engine tests) on Linux for every PR, and `make verify-app` (Swift packages and the app build) on macOS only when `app/`, the protocol package, codegen tools, or the `Makefile` change. UI tests and pushes to `main` are not run in CI; the full local `make verify` is the gate.
 - `make verify UNIT=<ID>` runs exactly the checks mapped to that unit in `tools/verify/units.json`. A unit's checkboxes below are the contents of that mapping.
 - Each mapped check has a `run` command, or is marked `manual`, or `live` (run only with `PICA_LIVE=1`). A check with no command yet is reported as pending and fails the unit.
 - Checks marked **(live)** need a Copilot login. Checks marked **(manual)** need a person; they are kept to a minimum and each says exactly what to observe.
@@ -348,7 +349,7 @@ Theme (accent, density, code font and size), keybindings, inspector layout, rout
 2. `make verify` exits 0.
 3. No new lint suppressions; no `TODO` without a unit ID.
 4. The unit index status is updated.
-5. The unit's work is opened as a pull request against `main` as soon as it is finished, with Auto-fix turned on so CI failures, merge conflicts, and review comments are handled on the PR. A unit is not `done` until that PR's CI passes and it is merged.
+5. The unit's work is opened as a pull request against `main` as soon as it is finished, with Auto-fix turned on so CI failures, merge conflicts, and review comments are handled on the PR. A unit is not `done` until that PR's CI checks (§8.1) pass and it is merged. When landing, merge `main` into the branch and rerun `make verify` locally; push again only if the merge changed something.
 
 ---
 
@@ -438,7 +439,7 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 - Build: git repo, pnpm workspace with empty packages, strict tsconfig, eslint, vitest, Xcode project with empty local packages, `Makefile`, CI on a macOS runner.
 - Verify:
   - [x] On a clean clone, `make verify` exits 0.
-  - [x] CI runs `make verify` on pull requests and passes.
+  - [x] CI runs `make verify-engine` on every pull request, and `make verify-app` on pull requests that touch app or protocol code, and they pass.
 
 **F-02 · Architecture guardrails** — F-01
 - Build: import rules for the engine (§4.3) and a package-graph check for the app.
