@@ -67,6 +67,7 @@ describe("sqlite store repositories", () => {
       cachedTokens: 100,
       outputTokens: 8,
       credits: 0.25,
+      tier: "reasoning" as const,
       timestamp: "2026-11-12T10:00:00.000Z",
     };
     value(store.usage.record(usage));

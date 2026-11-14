@@ -1,3 +1,4 @@
+import type { Tier } from "@pica/protocol";
 import type { JsonObject, JsonValue } from "../json.ts";
 
 // Store-local shapes of the PLAN.md §4.4 entities. Timestamps are ISO 8601 strings chosen by the caller.
@@ -70,5 +71,28 @@ export interface UsageRecord {
   readonly cachedTokens: number;
   readonly outputTokens: number;
   readonly credits: number;
+  // The tier of the agent that made the call; null for records written before tiers were stored.
+  readonly tier: Tier | null;
   readonly timestamp: string;
+}
+
+export type UsageGrouping = "session" | "agent" | "model" | "workspace" | "day" | "tier";
+
+// `from` is inclusive and `to` exclusive; both are compared as instants, so offsets are honoured.
+// Days are UTC calendar days.
+export interface UsageQuery {
+  readonly groupBy: UsageGrouping;
+  readonly sessionId?: string | undefined;
+  readonly workspaceId?: string | undefined;
+  readonly from?: string | undefined;
+  readonly to?: string | undefined;
+}
+
+export interface UsageTotals {
+  readonly key: string;
+  readonly calls: number;
+  readonly inputTokens: number;
+  readonly cachedTokens: number;
+  readonly outputTokens: number;
+  readonly credits: number;
 }

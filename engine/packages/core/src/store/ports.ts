@@ -5,7 +5,9 @@ import type {
   Session,
   SessionEvent,
   SessionState,
+  UsageQuery,
   UsageRecord,
+  UsageTotals,
   Workspace,
 } from "./entities.ts";
 
@@ -55,6 +57,8 @@ export interface EventRepository {
 export interface UsageRepository {
   record(usage: UsageRecord): StoreResult<void>;
   listBySession(sessionId: string): StoreResult<readonly UsageRecord[]>;
+  // One row per group, ordered by key. Groups with no records are absent.
+  rollup(query: UsageQuery): StoreResult<readonly UsageTotals[]>;
 }
 
 export interface Store {

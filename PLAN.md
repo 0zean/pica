@@ -588,9 +588,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **C-08 · Usage ledger** — E-07, C-01
 - Build: `UsageRecord` persistence, rollups, savings estimate.
 - Verify:
-  - [ ] Ledger totals equal fixture totals for a multi-agent scenario.
-  - [ ] Rollup queries by session, agent, model, workspace, and day return expected rows.
-  - [ ] Savings estimate matches a hand-computed fixture.
+  - [x] Ledger totals equal fixture totals for a multi-agent scenario.
+  - [x] Rollup queries by session, agent, model, workspace, and day return expected rows.
+  - [x] Savings estimate matches a hand-computed fixture.
 
 **C-09 · Budgets** — C-08
 - Build: session credit limit passed to the runtime, workspace daily cap in the engine, warning thresholds, exhausted flow as an approval.
@@ -977,7 +977,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | C-05 | Routing profiles | C-02, C-03 | done |
 | C-06 | Output guard | C-03, E-08 | done |
 | C-07 | Delegator | C-02, C-05, G0 | todo |
-| C-08 | Usage ledger | E-07, C-01 | todo |
+| C-08 | Usage ledger | E-07, C-01 | done |
 | C-09 | Budgets | C-08 | todo |
 | C-10 | Eval harness | C-04, C-05, C-06, C-07, C-08 | todo |
 | R-01 | Git service | F-01 | done |

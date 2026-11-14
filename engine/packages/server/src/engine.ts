@@ -1,13 +1,34 @@
 import { randomUUID } from "node:crypto";
 import { performance } from "node:perf_hooks";
-import { createEventLog, createOutputGuard, createSessionService, withOutputGuard } from "@pica/core";
-import type { AgentRuntime, OutputGuardDeps, RuntimeHooks, SessionService, Store } from "@pica/core";
+import {
+  agentTier,
+  createEventLog,
+  createOutputGuard,
+  createSessionService,
+  createUsageReport,
+  withOutputGuard,
+  withUsageLedger,
+} from "@pica/core";
+import type {
+  AgentRuntime,
+  OutputGuardDeps,
+  RuntimeHooks,
+  SessionService,
+  Store,
+  TokenPrices,
+  UsagePricing,
+} from "@pica/core";
 import { registerEngineHandlers } from "./engine-handlers.ts";
 import { SocketListener } from "./listener.ts";
 import type { ConnectionLimits } from "./connection.ts";
 import type { Logger } from "./logger.ts";
 import { MethodRouter } from "./router.ts";
 import { registerSessionHandlers, toSessionDto } from "./session-handlers.ts";
+import { registerUsageHandlers } from "./usage-handlers.ts";
+
+export interface EngineUsageOptions extends Partial<UsagePricing> {
+  readonly reasoningPrices?: () => TokenPrices | null;
+}
 
 export interface EngineSessionOptions {
   readonly store: Store;
@@ -15,6 +36,8 @@ export interface EngineSessionOptions {
   readonly clock?: () => string;
   readonly newSessionId?: () => string;
   readonly hooks?: (sessionId: string) => RuntimeHooks;
+  // Without prices, usage is recorded at zero credits and the savings estimate is zero.
+  readonly usage?: EngineUsageOptions;
   // C-06: truncates oversized tool results and spills them to session artifacts.
   readonly outputGuard?: OutputGuardDeps;
 }
@@ -59,7 +82,17 @@ function startSessions(
   log: Logger,
   onChanged: NonNullable<Parameters<typeof createSessionService>[0]["onChanged"]>,
 ): SessionService {
-  const eventLog = createEventLog(options.store.events);
+  const usage = options.usage ?? {};
+  const eventLog = withUsageLedger(createEventLog(options.store.events), {
+    usage: options.store.usage,
+    pricing: {
+      pricesFor: usage.pricesFor ?? (() => null),
+      tierOf: usage.tierOf ?? agentTier({ rootAgent: "main" }),
+    },
+    onError: (error) => {
+      log.warn(`usage not recorded in full: ${error.message}`);
+    },
+  });
   const service = createSessionService({
     store: options.store,
     events: eventLog,
@@ -77,6 +110,10 @@ function startSessions(
     log.warn(`${String(recovered.value.length)} session(s) from the previous engine are resumable`);
   }
   registerSessionHandlers(router, { sessions: service, log: eventLog, events: options.store.events });
+  registerUsageHandlers(
+    router,
+    createUsageReport({ usage: options.store.usage, reasoningPrices: usage.reasoningPrices ?? (() => null) }),
+  );
   return service;
 }
 
