@@ -1,14 +1,19 @@
 SWIFT_PACKAGES := $(wildcard app/Packages/*)
 
-.PHONY: verify lint lint-arch typecheck test build engine-install codegen codegen-drift app-packages app-build app-ui-test
+.PHONY: verify verify-engine verify-app lint lint-arch typecheck test build engine-install codegen codegen-drift app-packages app-build app-ui-test
 
 # `make verify UNIT=<ID>` runs only that unit's checks from tools/verify/units.json (PLAN.md §8.1).
 ifdef UNIT
 verify:
 	@tools/verify/run.sh "$(UNIT)"
 else
-verify: lint lint-arch typecheck codegen-drift test build app-ui-test
+verify: verify-engine verify-app app-ui-test
 endif
+
+# The CI subsets (PLAN.md §8.1): verify-engine runs on Linux, verify-app on macOS when app or protocol files change.
+verify-engine: lint lint-arch typecheck codegen-drift test
+
+verify-app: build
 
 engine-install:
 	cd engine && pnpm install --frozen-lockfile
@@ -44,7 +49,7 @@ app-build:
 	xcodebuild -project app/Pica.xcodeproj -scheme Pica -configuration Debug \
 		-derivedDataPath app/.derived -quiet CODE_SIGNING_ALLOWED=NO build
 
-# UI tests need macOS automation mode; GitHub's macOS runners have it enabled. Locally, run
+# UI tests need macOS automation mode and run only locally, not in CI. Run
 # `automationmodetool enable-automationmode-without-authentication` once, or approve the prompt.
 app-ui-test:
 	rm -rf app/.derived/ui-tests.xcresult
