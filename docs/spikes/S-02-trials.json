@@ -1,0 +1,2470 @@
+{
+  "count": 20,
+  "ran": 20,
+  "passed": 20,
+  "quotaBefore": {
+    "chat": {
+      "isUnlimitedEntitlement": false,
+      "entitlementRequests": 200,
+      "usedRequests": 0,
+      "usageAllowedWithExhaustedQuota": false,
+      "overage": 0,
+      "overageAllowedWithExhaustedQuota": false,
+      "remainingPercentage": 99.8,
+      "resetDate": "2026-11-14T22:32:04.379Z",
+      "hasQuota": true,
+      "tokenBasedBilling": true
+    },
+    "completions": {
+      "isUnlimitedEntitlement": false,
+      "entitlementRequests": 2000,
+      "usedRequests": 10,
+      "usageAllowedWithExhaustedQuota": false,
+      "overage": 0,
+      "overageAllowedWithExhaustedQuota": false,
+      "remainingPercentage": 99.5,
+      "resetDate": "2026-11-14T22:32:04.379Z",
+      "hasQuota": true,
+      "tokenBasedBilling": true
+    },
+    "premium_interactions": {
+      "isUnlimitedEntitlement": false,
+      "entitlementRequests": 0,
+      "usedRequests": 0,
+      "usageAllowedWithExhaustedQuota": false,
+      "overage": 0,
+      "overageAllowedWithExhaustedQuota": false,
+      "remainingPercentage": 0,
+      "resetDate": "2026-11-14T22:32:04.379Z",
+      "hasQuota": false,
+      "tokenBasedBilling": true
+    }
+  },
+  "quotaAfter": {
+    "chat": {
+      "isUnlimitedEntitlement": false,
+      "entitlementRequests": 200,
+      "usedRequests": 0,
+      "usageAllowedWithExhaustedQuota": false,
+      "overage": 0,
+      "overageAllowedWithExhaustedQuota": false,
+      "remainingPercentage": 99.8,
+      "resetDate": "2026-11-14T22:32:04.379Z",
+      "hasQuota": true,
+      "tokenBasedBilling": true
+    },
+    "completions": {
+      "isUnlimitedEntitlement": false,
+      "entitlementRequests": 2000,
+      "usedRequests": 10,
+      "usageAllowedWithExhaustedQuota": false,
+      "overage": 0,
+      "overageAllowedWithExhaustedQuota": false,
+      "remainingPercentage": 99.5,
+      "resetDate": "2026-11-14T22:32:04.379Z",
+      "hasQuota": true,
+      "tokenBasedBilling": true
+    },
+    "premium_interactions": {
+      "isUnlimitedEntitlement": false,
+      "entitlementRequests": 0,
+      "usedRequests": 0,
+      "usageAllowedWithExhaustedQuota": false,
+      "overage": 0,
+      "overageAllowedWithExhaustedQuota": false,
+      "remainingPercentage": 0,
+      "resetDate": "2026-11-14T22:32:04.379Z",
+      "hasQuota": false,
+      "tokenBasedBilling": true
+    }
+  },
+  "results": [
+    {
+      "trial": 1,
+      "seconds": 10.7,
+      "reachedIdle": true,
+      "delegated": true,
+      "subagents": [
+        {
+          "agentId": "549ea65a-3e6d-4371-9e68-cae50d1523a4",
+          "agentName": "bulk-reader",
+          "agentType": "bulk-reader",
+          "model": "mai-code-1.1-flash",
+          "modelSelectionSource": "session_inheritance",
+          "toolCallId": "call_35CVorX5nrWz3oCNHXbA1v5X"
+        }
+      ],
+      "subReadFixture": true,
+      "mainDenies": [
+        {
+          "tool": "view",
+          "gate": "view"
+        }
+      ],
+      "mainToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt",
+            "view_range": [
+              1,
+              250
+            ]
+          }
+        },
+        {
+          "tool": "task",
+          "args": {
+            "description": "Find retention_days value for the service entry",
+            "prompt": "Read services-registry.txt and identify the retention_days value for the entry kestrel-ledger-prod-77. Return only the numeric value with no extra text.",
+            "agent_type": "bulk-reader",
+            "name": "lookup-retention",
+            "mode": "sync"
+          }
+        }
+      ],
+      "subToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt",
+            "view_range": [
+              1,
+              250
+            ]
+          }
+        },
+        {
+          "tool": "grep",
+          "args": {
+            "pattern": "kestrel-ledger-prod-77",
+            "paths": "<workdir>/services-registry.txt",
+            "output_mode": "content",
+            "n": true,
+            "head_limit": 20
+          }
+        }
+      ],
+      "taskArgs": [
+        {
+          "description": "Find retention_days value for the service entry",
+          "prompt": "Read services-registry.txt and identify the retention_days value for the entry kestrel-ledger-prod-77. Return only the numeric value with no extra text.",
+          "agent_type": "bulk-reader",
+          "name": "lookup-retention",
+          "mode": "sync"
+        }
+      ],
+      "leakedToMain": 0,
+      "answer": "981",
+      "finalAnswer": "981",
+      "correct": true,
+      "usage": [
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 99004000,
+          "input": 11369,
+          "output": 63
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 33984000,
+          "input": 11496,
+          "output": 76
+        },
+        {
+          "agentId": "549ea65a-3e6d-4371-9e68-cae50d1523a4",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 12544000,
+          "input": 1286,
+          "output": 63
+        },
+        {
+          "agentId": "549ea65a-3e6d-4371-9e68-cae50d1523a4",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 163500000,
+          "input": 8301,
+          "output": 171
+        },
+        {
+          "agentId": "549ea65a-3e6d-4371-9e68-cae50d1523a4",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 21896000,
+          "input": 8554,
+          "output": 24
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 24900000,
+          "input": 11583,
+          "output": 5
+        }
+      ],
+      "errors": [],
+      "hookAgentIdsMatchSubagentStarted": true,
+      "pass": true
+    },
+    {
+      "trial": 2,
+      "seconds": 7.6,
+      "reachedIdle": true,
+      "delegated": true,
+      "subagents": [
+        {
+          "agentId": "77676501-d60e-467e-a804-b4927c0d1016",
+          "agentName": "bulk-reader",
+          "agentType": "bulk-reader",
+          "model": "mai-code-1.1-flash",
+          "modelSelectionSource": "session_inheritance",
+          "toolCallId": "call_cVk6Y4IkbbEU1QLSqQzW1CnF"
+        }
+      ],
+      "subReadFixture": true,
+      "mainDenies": [
+        {
+          "tool": "view",
+          "gate": "view"
+        }
+      ],
+      "mainToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt"
+          }
+        },
+        {
+          "tool": "task",
+          "args": {
+            "description": "Inspect registry file for target service retention value",
+            "prompt": "Read services-registry.txt and find the retention_days value for kestrel-ledger-prod-77. Return only the numeric value.",
+            "agent_type": "bulk-reader",
+            "name": "read-registry",
+            "mode": "sync"
+          }
+        }
+      ],
+      "subToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt"
+          }
+        },
+        {
+          "tool": "grep",
+          "args": {
+            "pattern": "kestrel-ledger-prod-77|retention_days",
+            "path": "<workdir>/services-registry.txt",
+            "output_mode": "content",
+            "n": true,
+            "C": 3,
+            "head_limit": 50
+          }
+        }
+      ],
+      "taskArgs": [
+        {
+          "description": "Inspect registry file for target service retention value",
+          "prompt": "Read services-registry.txt and find the retention_days value for kestrel-ledger-prod-77. Return only the numeric value.",
+          "agent_type": "bulk-reader",
+          "name": "read-registry",
+          "mode": "sync"
+        }
+      ],
+      "leakedToMain": 0,
+      "answer": "636",
+      "finalAnswer": "636",
+      "correct": true,
+      "usage": [
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 98244000,
+          "input": 11367,
+          "output": 57
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 32864000,
+          "input": 11488,
+          "output": 68
+        },
+        {
+          "agentId": "77676501-d60e-467e-a804-b4927c0d1016",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 11724000,
+          "input": 1281,
+          "output": 57
+        },
+        {
+          "agentId": "77676501-d60e-467e-a804-b4927c0d1016",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 15520000,
+          "input": 1382,
+          "output": 91
+        },
+        {
+          "agentId": "77676501-d60e-467e-a804-b4927c0d1016",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 7656000,
+          "input": 1620,
+          "output": 5
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 24580000,
+          "input": 11567,
+          "output": 5
+        }
+      ],
+      "errors": [],
+      "hookAgentIdsMatchSubagentStarted": true,
+      "pass": true
+    },
+    {
+      "trial": 3,
+      "seconds": 10.5,
+      "reachedIdle": true,
+      "delegated": true,
+      "subagents": [
+        {
+          "agentId": "6f740ecc-c62b-42f7-8b4a-0eccdfdd62c3",
+          "agentName": "bulk-reader",
+          "agentType": "bulk-reader",
+          "model": "mai-code-1.1-flash",
+          "modelSelectionSource": "session_inheritance",
+          "toolCallId": "call_Y37Jju2qA1szxzUith3zNhzJ"
+        }
+      ],
+      "subReadFixture": true,
+      "mainDenies": [
+        {
+          "tool": "view",
+          "gate": "view"
+        }
+      ],
+      "mainToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt"
+          }
+        },
+        {
+          "tool": "task",
+          "args": {
+            "description": "Find registry retention_days for service",
+            "prompt": "Read services-registry.txt and locate the entry for kestrel-ledger-prod-77. Return only the numeric retention_days value for that entry.",
+            "agent_type": "bulk-reader",
+            "name": "registry-reader",
+            "mode": "sync"
+          }
+        }
+      ],
+      "subToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt",
+            "view_range": [
+              1,
+              250
+            ]
+          }
+        },
+        {
+          "tool": "grep",
+          "args": {
+            "pattern": "kestrel-ledger-prod-77\\s*\\|",
+            "path": "<workdir>/services-registry.txt",
+            "output_mode": "content",
+            "-n": true,
+            "head_limit": 20
+          }
+        }
+      ],
+      "taskArgs": [
+        {
+          "description": "Find registry retention_days for service",
+          "prompt": "Read services-registry.txt and locate the entry for kestrel-ledger-prod-77. Return only the numeric retention_days value for that entry.",
+          "agent_type": "bulk-reader",
+          "name": "registry-reader",
+          "mode": "sync"
+        }
+      ],
+      "leakedToMain": 0,
+      "answer": "337",
+      "finalAnswer": "337",
+      "correct": true,
+      "usage": [
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 98444000,
+          "input": 11371,
+          "output": 58
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 33444000,
+          "input": 11493,
+          "output": 72
+        },
+        {
+          "agentId": "6f740ecc-c62b-42f7-8b4a-0eccdfdd62c3",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 12764000,
+          "input": 1285,
+          "output": 65
+        },
+        {
+          "agentId": "6f740ecc-c62b-42f7-8b4a-0eccdfdd62c3",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 164120000,
+          "input": 8302,
+          "output": 176
+        },
+        {
+          "agentId": "6f740ecc-c62b-42f7-8b4a-0eccdfdd62c3",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 154284000,
+          "input": 8565,
+          "output": 31
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 24760000,
+          "input": 11576,
+          "output": 5
+        }
+      ],
+      "errors": [],
+      "hookAgentIdsMatchSubagentStarted": true,
+      "pass": true
+    },
+    {
+      "trial": 4,
+      "seconds": 13.6,
+      "reachedIdle": true,
+      "delegated": true,
+      "subagents": [
+        {
+          "agentId": "d558c4f0-4ae8-416b-b633-a8ae89a2e0a9",
+          "agentName": "bulk-reader",
+          "agentType": "bulk-reader",
+          "model": "mai-code-1.1-flash",
+          "modelSelectionSource": "session_inheritance",
+          "toolCallId": "call_6FnSLWUe1P7q0YwQ3nl5c46J"
+        }
+      ],
+      "subReadFixture": true,
+      "mainDenies": [
+        {
+          "tool": "view",
+          "gate": "view"
+        }
+      ],
+      "mainToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt",
+            "view_range": [
+              1,
+              250
+            ]
+          }
+        },
+        {
+          "tool": "task",
+          "args": {
+            "description": "Find retention_days for a service entry",
+            "prompt": "Read services-registry.txt and find the line/item for kestrel-ledger-prod-77. Report the retention_days value only.",
+            "agent_type": "bulk-reader",
+            "name": "find-retention",
+            "mode": "sync"
+          }
+        }
+      ],
+      "subToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt",
+            "view_range": [
+              1,
+              250
+            ]
+          }
+        },
+        {
+          "tool": "grep",
+          "args": {
+            "pattern": "kestrel-ledger-prod-77",
+            "paths": "<workdir>/services-registry.txt",
+            "output_mode": "content",
+            "-n": true,
+            "head_limit": 20
+          }
+        }
+      ],
+      "taskArgs": [
+        {
+          "description": "Find retention_days for a service entry",
+          "prompt": "Read services-registry.txt and find the line/item for kestrel-ledger-prod-77. Report the retention_days value only.",
+          "agent_type": "bulk-reader",
+          "name": "find-retention",
+          "mode": "sync"
+        }
+      ],
+      "leakedToMain": 0,
+      "answer": "582",
+      "finalAnswer": "582",
+      "correct": true,
+      "usage": [
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 99104000,
+          "input": 11368,
+          "output": 64
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 33144000,
+          "input": 11496,
+          "output": 69
+        },
+        {
+          "agentId": "d558c4f0-4ae8-416b-b633-a8ae89a2e0a9",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 12564000,
+          "input": 1281,
+          "output": 64
+        },
+        {
+          "agentId": "d558c4f0-4ae8-416b-b633-a8ae89a2e0a9",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 168460000,
+          "input": 8297,
+          "output": 213
+        },
+        {
+          "agentId": "d558c4f0-4ae8-416b-b633-a8ae89a2e0a9",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 28016000,
+          "input": 8596,
+          "output": 68
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 24760000,
+          "input": 11576,
+          "output": 5
+        }
+      ],
+      "errors": [],
+      "hookAgentIdsMatchSubagentStarted": true,
+      "pass": true
+    },
+    {
+      "trial": 5,
+      "seconds": 10.8,
+      "reachedIdle": true,
+      "delegated": true,
+      "subagents": [
+        {
+          "agentId": "7b861fa7-8b87-4b8e-a0ba-d6fe2571f545",
+          "agentName": "bulk-reader",
+          "agentType": "bulk-reader",
+          "model": "mai-code-1.1-flash",
+          "modelSelectionSource": "session_inheritance",
+          "toolCallId": "call_gf6qtFPXl8QLI7yrpnbCy0aH"
+        }
+      ],
+      "subReadFixture": true,
+      "mainDenies": [
+        {
+          "tool": "view",
+          "gate": "view"
+        }
+      ],
+      "mainToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt"
+          }
+        },
+        {
+          "tool": "task",
+          "args": {
+            "description": "Find retention_days for service",
+            "prompt": "Read services-registry.txt and locate the entry for kestrel-ledger-prod-77. Report only the retention_days value for that service, as a number.",
+            "agent_type": "bulk-reader",
+            "name": "lookup-service-retention",
+            "mode": "sync"
+          }
+        }
+      ],
+      "subToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt",
+            "view_range": [
+              1,
+              250
+            ]
+          }
+        },
+        {
+          "tool": "grep",
+          "args": {
+            "pattern": "^kestrel-ledger-prod-77 \\|",
+            "path": "<workdir>/services-registry.txt",
+            "output_mode": "content",
+            "-n": true
+          }
+        }
+      ],
+      "taskArgs": [
+        {
+          "description": "Find retention_days for service",
+          "prompt": "Read services-registry.txt and locate the entry for kestrel-ledger-prod-77. Report only the retention_days value for that service, as a number.",
+          "agent_type": "bulk-reader",
+          "name": "lookup-service-retention",
+          "mode": "sync"
+        }
+      ],
+      "leakedToMain": 0,
+      "answer": "342",
+      "finalAnswer": "342",
+      "correct": true,
+      "usage": [
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 98164000,
+          "input": 11369,
+          "output": 56
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 33364000,
+          "input": 11489,
+          "output": 72
+        },
+        {
+          "agentId": "7b861fa7-8b87-4b8e-a0ba-d6fe2571f545",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 12544000,
+          "input": 1286,
+          "output": 63
+        },
+        {
+          "agentId": "7b861fa7-8b87-4b8e-a0ba-d6fe2571f545",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 162660000,
+          "input": 8301,
+          "output": 164
+        },
+        {
+          "agentId": "7b861fa7-8b87-4b8e-a0ba-d6fe2571f545",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 24336000,
+          "input": 8550,
+          "output": 45
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 24680000,
+          "input": 11572,
+          "output": 5
+        }
+      ],
+      "errors": [],
+      "hookAgentIdsMatchSubagentStarted": true,
+      "pass": true
+    },
+    {
+      "trial": 6,
+      "seconds": 9.6,
+      "reachedIdle": true,
+      "delegated": true,
+      "subagents": [
+        {
+          "agentId": "6b2c1283-6a46-4b7f-a528-6e7c39cad4d9",
+          "agentName": "bulk-reader",
+          "agentType": "bulk-reader",
+          "model": "mai-code-1.1-flash",
+          "modelSelectionSource": "session_inheritance",
+          "toolCallId": "call_lcTAbvoVOoEsP3AMWtA3r4vt"
+        }
+      ],
+      "subReadFixture": true,
+      "mainDenies": [
+        {
+          "tool": "view",
+          "gate": "view"
+        }
+      ],
+      "mainToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt"
+          }
+        },
+        {
+          "tool": "task",
+          "args": {
+            "description": "Find retention_days for service entry",
+            "prompt": "Read services-registry.txt and locate the line for kestrel-ledger-prod-77, then report just the retention_days value as a number.",
+            "agent_type": "bulk-reader",
+            "name": "service-retention-lookup",
+            "mode": "sync"
+          }
+        }
+      ],
+      "subToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt",
+            "view_range": [
+              1,
+              250
+            ]
+          }
+        },
+        {
+          "tool": "grep",
+          "args": {
+            "pattern": "^kestrel-ledger-prod-77 \\|",
+            "paths": "<workdir>/services-registry.txt",
+            "output_mode": "content",
+            "n": true
+          }
+        }
+      ],
+      "taskArgs": [
+        {
+          "description": "Find retention_days for service entry",
+          "prompt": "Read services-registry.txt and locate the line for kestrel-ledger-prod-77, then report just the retention_days value as a number.",
+          "agent_type": "bulk-reader",
+          "name": "service-retention-lookup",
+          "mode": "sync"
+        }
+      ],
+      "leakedToMain": 0,
+      "answer": "567",
+      "finalAnswer": "567",
+      "correct": true,
+      "usage": [
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 98264000,
+          "input": 11368,
+          "output": 57
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 33244000,
+          "input": 11489,
+          "output": 71
+        },
+        {
+          "agentId": "6b2c1283-6a46-4b7f-a528-6e7c39cad4d9",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 12624000,
+          "input": 1284,
+          "output": 64
+        },
+        {
+          "agentId": "6b2c1283-6a46-4b7f-a528-6e7c39cad4d9",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 161440000,
+          "input": 8300,
+          "output": 154
+        },
+        {
+          "agentId": "6b2c1283-6a46-4b7f-a528-6e7c39cad4d9",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 22156000,
+          "input": 8537,
+          "output": 29
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 24660000,
+          "input": 11571,
+          "output": 5
+        }
+      ],
+      "errors": [],
+      "hookAgentIdsMatchSubagentStarted": true,
+      "pass": true
+    },
+    {
+      "trial": 7,
+      "seconds": 7.3,
+      "reachedIdle": true,
+      "delegated": true,
+      "subagents": [
+        {
+          "agentId": "e26322ff-1b84-4642-9212-e96716535aa2",
+          "agentName": "bulk-reader",
+          "agentType": "bulk-reader",
+          "model": "mai-code-1.1-flash",
+          "modelSelectionSource": "session_inheritance",
+          "toolCallId": "call_CL3BfeDSOtRPBfHqI88QgpC6"
+        }
+      ],
+      "subReadFixture": true,
+      "mainDenies": [
+        {
+          "tool": "view",
+          "gate": "view"
+        }
+      ],
+      "mainToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt"
+          }
+        },
+        {
+          "tool": "task",
+          "args": {
+            "description": "Find retention_days for service",
+            "prompt": "Open services-registry.txt in the current directory, locate the entry for kestrel-ledger-prod-77, and report only the retention_days value as a plain number with no extra text.",
+            "agent_type": "bulk-reader",
+            "name": "lookup-retention",
+            "mode": "sync"
+          }
+        }
+      ],
+      "subToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt"
+          }
+        },
+        {
+          "tool": "rg",
+          "args": {
+            "pattern": "kestrel-ledger-prod-77",
+            "paths": "<workdir>/services-registry.txt",
+            "output_mode": "content",
+            "-n": true,
+            "-C": 2
+          }
+        }
+      ],
+      "taskArgs": [
+        {
+          "description": "Find retention_days for service",
+          "prompt": "Open services-registry.txt in the current directory, locate the entry for kestrel-ledger-prod-77, and report only the retention_days value as a plain number with no extra text.",
+          "agent_type": "bulk-reader",
+          "name": "lookup-retention",
+          "mode": "sync"
+        }
+      ],
+      "leakedToMain": 0,
+      "answer": "585",
+      "finalAnswer": "585",
+      "correct": true,
+      "usage": [
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 98344000,
+          "input": 11372,
+          "output": 57
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 34164000,
+          "input": 11493,
+          "output": 78
+        },
+        {
+          "agentId": "e26322ff-1b84-4642-9212-e96716535aa2",
+          "model": "gpt-6-luna",
+          "nanoAiu": 6413000,
+          "input": 1420,
+          "output": 57
+        },
+        {
+          "agentId": "e26322ff-1b84-4642-9212-e96716535aa2",
+          "model": "gpt-6-luna",
+          "nanoAiu": 6909500,
+          "input": 1521,
+          "output": 84
+        },
+        {
+          "agentId": "e26322ff-1b84-4642-9212-e96716535aa2",
+          "model": "gpt-6-luna",
+          "nanoAiu": 7648000,
+          "input": 1989,
+          "output": 5
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 24880000,
+          "input": 11582,
+          "output": 5
+        }
+      ],
+      "errors": [],
+      "hookAgentIdsMatchSubagentStarted": true,
+      "pass": true
+    },
+    {
+      "trial": 8,
+      "seconds": 11.8,
+      "reachedIdle": true,
+      "delegated": true,
+      "subagents": [
+        {
+          "agentId": "a8e7205c-9a2a-49a5-a7f0-e5b0b00a583d",
+          "agentName": "bulk-reader",
+          "agentType": "bulk-reader",
+          "model": "mai-code-1.1-flash",
+          "modelSelectionSource": "session_inheritance",
+          "toolCallId": "call_vCOzuSIKePvGszOaZRUxX3MY"
+        }
+      ],
+      "subReadFixture": true,
+      "mainDenies": [
+        {
+          "tool": "view",
+          "gate": "view"
+        }
+      ],
+      "mainToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt",
+            "view_range": [
+              1,
+              -1
+            ],
+            "forceReadLargeFiles": true
+          }
+        },
+        {
+          "tool": "task",
+          "args": {
+            "description": "Read registry file and find retention_days for service",
+            "prompt": "Open services-registry.txt in the current directory and locate the entry for kestrel-ledger-prod-77. Report only the retention_days value for that entry as a plain number.",
+            "agent_type": "bulk-reader",
+            "name": "read-registry",
+            "mode": "sync"
+          }
+        }
+      ],
+      "subToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt",
+            "view_range": [
+              1,
+              250
+            ]
+          }
+        },
+        {
+          "tool": "grep",
+          "args": {
+            "pattern": "^kestrel-ledger-prod-77 \\|",
+            "path": "<workdir>/services-registry.txt",
+            "output_mode": "content",
+            "-n": true
+          }
+        }
+      ],
+      "taskArgs": [
+        {
+          "description": "Read registry file and find retention_days for service",
+          "prompt": "Open services-registry.txt in the current directory and locate the entry for kestrel-ledger-prod-77. Report only the retention_days value for that entry as a plain number.",
+          "agent_type": "bulk-reader",
+          "name": "read-registry",
+          "mode": "sync"
+        }
+      ],
+      "leakedToMain": 0,
+      "answer": "928",
+      "finalAnswer": "928",
+      "correct": true,
+      "usage": [
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 99904000,
+          "input": 11366,
+          "output": 71
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 34684000,
+          "input": 11501,
+          "output": 81
+        },
+        {
+          "agentId": "a8e7205c-9a2a-49a5-a7f0-e5b0b00a583d",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 12764000,
+          "input": 1291,
+          "output": 64
+        },
+        {
+          "agentId": "a8e7205c-9a2a-49a5-a7f0-e5b0b00a583d",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 165660000,
+          "input": 8307,
+          "output": 188
+        },
+        {
+          "agentId": "a8e7205c-9a2a-49a5-a7f0-e5b0b00a583d",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 22436000,
+          "input": 8581,
+          "output": 24
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 25100000,
+          "input": 11593,
+          "output": 5
+        }
+      ],
+      "errors": [],
+      "hookAgentIdsMatchSubagentStarted": true,
+      "pass": true
+    },
+    {
+      "trial": 9,
+      "seconds": 8.9,
+      "reachedIdle": true,
+      "delegated": true,
+      "subagents": [
+        {
+          "agentId": "850457ca-39a9-4eee-b88d-e479c9055463",
+          "agentName": "bulk-reader",
+          "agentType": "bulk-reader",
+          "model": "mai-code-1.1-flash",
+          "modelSelectionSource": "session_inheritance",
+          "toolCallId": "call_4MAj0f4whw94W6izFn3u67lZ"
+        }
+      ],
+      "subReadFixture": true,
+      "mainDenies": [
+        {
+          "tool": "view",
+          "gate": "view"
+        }
+      ],
+      "mainToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt",
+            "view_range": [
+              1,
+              -1
+            ]
+          }
+        },
+        {
+          "tool": "task",
+          "args": {
+            "description": "Find retention days for a service entry",
+            "prompt": "Read the file services-registry.txt in the current directory and find the entry for kestrel-ledger-prod-77. Return only the numeric value of retention_days for that service. Do not include any extra text beyond the number.",
+            "agent_type": "bulk-reader",
+            "name": "lookup-retention",
+            "mode": "sync"
+          }
+        }
+      ],
+      "subToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt"
+          }
+        },
+        {
+          "tool": "grep",
+          "args": {
+            "pattern": "kestrel-ledger-prod-77",
+            "path": "<workdir>/services-registry.txt",
+            "output_mode": "content",
+            "-n": true,
+            "C": 3
+          }
+        }
+      ],
+      "taskArgs": [
+        {
+          "description": "Find retention days for a service entry",
+          "prompt": "Read the file services-registry.txt in the current directory and find the entry for kestrel-ledger-prod-77. Return only the numeric value of retention_days for that service. Do not include any extra text beyond the number.",
+          "agent_type": "bulk-reader",
+          "name": "lookup-retention",
+          "mode": "sync"
+        }
+      ],
+      "leakedToMain": 0,
+      "answer": "962",
+      "finalAnswer": "962",
+      "correct": true,
+      "usage": [
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 99204000,
+          "input": 11367,
+          "output": 65
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 35304000,
+          "input": 11496,
+          "output": 87
+        },
+        {
+          "agentId": "850457ca-39a9-4eee-b88d-e479c9055463",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 12264000,
+          "input": 1302,
+          "output": 58
+        },
+        {
+          "agentId": "850457ca-39a9-4eee-b88d-e479c9055463",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 15120000,
+          "input": 1404,
+          "output": 84
+        },
+        {
+          "agentId": "850457ca-39a9-4eee-b88d-e479c9055463",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 13956000,
+          "input": 1575,
+          "output": 65
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 25120000,
+          "input": 11594,
+          "output": 5
+        }
+      ],
+      "errors": [],
+      "hookAgentIdsMatchSubagentStarted": true,
+      "pass": true
+    },
+    {
+      "trial": 10,
+      "seconds": 6.3,
+      "reachedIdle": true,
+      "delegated": true,
+      "subagents": [
+        {
+          "agentId": "7bceca18-a953-463b-8f02-1fb8ad100c89",
+          "agentName": "bulk-reader",
+          "agentType": "bulk-reader",
+          "model": "mai-code-1.1-flash",
+          "modelSelectionSource": "session_inheritance",
+          "toolCallId": "call_ggT7jMb20ZozOfQxk9BZgM23"
+        }
+      ],
+      "subReadFixture": true,
+      "mainDenies": [
+        {
+          "tool": "view",
+          "gate": "view"
+        }
+      ],
+      "mainToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt",
+            "view_range": [
+              1,
+              -1
+            ]
+          }
+        },
+        {
+          "tool": "task",
+          "args": {
+            "description": "Read registry entry",
+            "prompt": "Find the retention_days value for kestrel-ledger-prod-77 in services-registry.txt and report only the numeric value.",
+            "agent_type": "bulk-reader",
+            "name": "read-registry",
+            "mode": "sync"
+          }
+        }
+      ],
+      "subToolCalls": [
+        {
+          "tool": "rg",
+          "args": {
+            "pattern": "kestrel-ledger-prod-77",
+            "paths": "<workdir>/services-registry.txt",
+            "output_mode": "content",
+            "-n": true,
+            "-A": 5
+          }
+        }
+      ],
+      "taskArgs": [
+        {
+          "description": "Read registry entry",
+          "prompt": "Find the retention_days value for kestrel-ledger-prod-77 in services-registry.txt and report only the numeric value.",
+          "agent_type": "bulk-reader",
+          "name": "read-registry",
+          "mode": "sync"
+        }
+      ],
+      "leakedToMain": 0,
+      "answer": "788",
+      "finalAnswer": "788",
+      "correct": true,
+      "usage": [
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 98824000,
+          "input": 11366,
+          "output": 62
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 32224000,
+          "input": 11492,
+          "output": 62
+        },
+        {
+          "agentId": "7bceca18-a953-463b-8f02-1fb8ad100c89",
+          "model": "gpt-6-luna",
+          "nanoAiu": 7475500,
+          "input": 1405,
+          "output": 82
+        },
+        {
+          "agentId": "7bceca18-a953-463b-8f02-1fb8ad100c89",
+          "model": "gpt-6-luna",
+          "nanoAiu": 8519500,
+          "input": 1952,
+          "output": 5
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 24540000,
+          "input": 11565,
+          "output": 5
+        }
+      ],
+      "errors": [],
+      "hookAgentIdsMatchSubagentStarted": true,
+      "pass": true
+    },
+    {
+      "trial": 11,
+      "seconds": 10.5,
+      "reachedIdle": true,
+      "delegated": true,
+      "subagents": [
+        {
+          "agentId": "62f8b3ad-9a06-4df5-89d3-7cd8b847eb06",
+          "agentName": "bulk-reader",
+          "agentType": "bulk-reader",
+          "model": "mai-code-1.1-flash",
+          "modelSelectionSource": "session_inheritance",
+          "toolCallId": "call_gYFls1cdjNnkgpBG7m4NSndh"
+        }
+      ],
+      "subReadFixture": true,
+      "mainDenies": [
+        {
+          "tool": "view",
+          "gate": "view"
+        }
+      ],
+      "mainToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt",
+            "view_range": [
+              1,
+              -1
+            ]
+          }
+        },
+        {
+          "tool": "task",
+          "args": {
+            "description": "Find retention_days for service entry",
+            "prompt": "Read services-registry.txt and locate the line/record for kestrel-ledger-prod-77. Return only the numeric retention_days value for that service entry.",
+            "agent_type": "bulk-reader",
+            "name": "lookup-service-retention",
+            "mode": "sync"
+          }
+        }
+      ],
+      "subToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt",
+            "view_range": [
+              1,
+              250
+            ]
+          }
+        },
+        {
+          "tool": "grep",
+          "args": {
+            "pattern": "^kestrel-ledger-prod-77 \\|",
+            "paths": "<workdir>/services-registry.txt",
+            "output_mode": "content",
+            "n": true
+          }
+        }
+      ],
+      "taskArgs": [
+        {
+          "description": "Find retention_days for service entry",
+          "prompt": "Read services-registry.txt and locate the line/record for kestrel-ledger-prod-77. Return only the numeric retention_days value for that service entry.",
+          "agent_type": "bulk-reader",
+          "name": "lookup-service-retention",
+          "mode": "sync"
+        }
+      ],
+      "leakedToMain": 0,
+      "answer": "230",
+      "finalAnswer": "230",
+      "correct": true,
+      "usage": [
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 99004000,
+          "input": 11363,
+          "output": 64
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 33524000,
+          "input": 11491,
+          "output": 73
+        },
+        {
+          "agentId": "62f8b3ad-9a06-4df5-89d3-7cd8b847eb06",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 12684000,
+          "input": 1287,
+          "output": 64
+        },
+        {
+          "agentId": "62f8b3ad-9a06-4df5-89d3-7cd8b847eb06",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 166060000,
+          "input": 8303,
+          "output": 192
+        },
+        {
+          "agentId": "62f8b3ad-9a06-4df5-89d3-7cd8b847eb06",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 23096000,
+          "input": 8578,
+          "output": 30
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 24740000,
+          "input": 11575,
+          "output": 5
+        }
+      ],
+      "errors": [],
+      "hookAgentIdsMatchSubagentStarted": true,
+      "pass": true
+    },
+    {
+      "trial": 12,
+      "seconds": 8.9,
+      "reachedIdle": true,
+      "delegated": true,
+      "subagents": [
+        {
+          "agentId": "67ae69ed-d86f-4b48-a263-48f3af216f90",
+          "agentName": "bulk-reader",
+          "agentType": "bulk-reader",
+          "model": "mai-code-1.1-flash",
+          "modelSelectionSource": "session_inheritance",
+          "toolCallId": "call_2oZxPWJctaRdlSGkH9dJNbPm"
+        }
+      ],
+      "subReadFixture": true,
+      "mainDenies": [
+        {
+          "tool": "view",
+          "gate": "view"
+        }
+      ],
+      "mainToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt"
+          }
+        },
+        {
+          "tool": "task",
+          "args": {
+            "description": "Inspect registry entry",
+            "prompt": "Read services-registry.txt and find the retention_days value for kestrel-ledger-prod-77. Return only the number.",
+            "agent_type": "bulk-reader",
+            "name": "registry-reader",
+            "mode": "sync"
+          }
+        }
+      ],
+      "subToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt",
+            "view_range": [
+              1,
+              400
+            ]
+          }
+        },
+        {
+          "tool": "grep",
+          "args": {
+            "pattern": "kestrel-ledger-prod-77",
+            "path": "<workdir>/services-registry.txt",
+            "output_mode": "content",
+            "-n": true,
+            "head_limit": 20
+          }
+        }
+      ],
+      "taskArgs": [
+        {
+          "description": "Inspect registry entry",
+          "prompt": "Read services-registry.txt and find the retention_days value for kestrel-ledger-prod-77. Return only the number.",
+          "agent_type": "bulk-reader",
+          "name": "registry-reader",
+          "mode": "sync"
+        }
+      ],
+      "leakedToMain": 0,
+      "answer": "266",
+      "finalAnswer": "266",
+      "correct": true,
+      "usage": [
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 98204000,
+          "input": 11365,
+          "output": 57
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 32464000,
+          "input": 11486,
+          "output": 65
+        },
+        {
+          "agentId": "67ae69ed-d86f-4b48-a263-48f3af216f90",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 12544000,
+          "input": 1280,
+          "output": 64
+        },
+        {
+          "agentId": "67ae69ed-d86f-4b48-a263-48f3af216f90",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 164840000,
+          "input": 8296,
+          "output": 183
+        },
+        {
+          "agentId": "67ae69ed-d86f-4b48-a263-48f3af216f90",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 22116000,
+          "input": 8565,
+          "output": 24
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 24480000,
+          "input": 11562,
+          "output": 5
+        }
+      ],
+      "errors": [],
+      "hookAgentIdsMatchSubagentStarted": true,
+      "pass": true
+    },
+    {
+      "trial": 13,
+      "seconds": 9.4,
+      "reachedIdle": true,
+      "delegated": true,
+      "subagents": [
+        {
+          "agentId": "ffbd1802-8a51-4485-b0a9-1889d7fd83c0",
+          "agentName": "bulk-reader",
+          "agentType": "bulk-reader",
+          "model": "mai-code-1.1-flash",
+          "modelSelectionSource": "session_inheritance",
+          "toolCallId": "call_bpmtcWZXNwVnKFzUABVwx4JH"
+        }
+      ],
+      "subReadFixture": true,
+      "mainDenies": [
+        {
+          "tool": "view",
+          "gate": "view"
+        }
+      ],
+      "mainToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt",
+            "view_range": [
+              1,
+              -1
+            ]
+          }
+        },
+        {
+          "tool": "task",
+          "args": {
+            "description": "Find retention_days for service entry",
+            "prompt": "Read services-registry.txt and locate the entry for kestrel-ledger-prod-77. Report only the retention_days value as a number with no extra text.",
+            "agent_type": "bulk-reader",
+            "name": "lookup-retention",
+            "mode": "sync"
+          }
+        }
+      ],
+      "subToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt",
+            "view_range": [
+              1,
+              250
+            ]
+          }
+        },
+        {
+          "tool": "grep",
+          "args": {
+            "pattern": "^kestrel-ledger-prod-77 \\|",
+            "paths": "<workdir>/services-registry.txt",
+            "output_mode": "content",
+            "-n": true,
+            "head_limit": 20
+          }
+        }
+      ],
+      "taskArgs": [
+        {
+          "description": "Find retention_days for service entry",
+          "prompt": "Read services-registry.txt and locate the entry for kestrel-ledger-prod-77. Report only the retention_days value as a number with no extra text.",
+          "agent_type": "bulk-reader",
+          "name": "lookup-retention",
+          "mode": "sync"
+        }
+      ],
+      "leakedToMain": 0,
+      "answer": "278",
+      "finalAnswer": "278",
+      "correct": true,
+      "usage": [
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 99104000,
+          "input": 11368,
+          "output": 64
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 33744000,
+          "input": 11496,
+          "output": 74
+        },
+        {
+          "agentId": "ffbd1802-8a51-4485-b0a9-1889d7fd83c0",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 12684000,
+          "input": 1287,
+          "output": 64
+        },
+        {
+          "agentId": "ffbd1802-8a51-4485-b0a9-1889d7fd83c0",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 165700000,
+          "input": 8303,
+          "output": 189
+        },
+        {
+          "agentId": "ffbd1802-8a51-4485-b0a9-1889d7fd83c0",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 21776000,
+          "input": 8578,
+          "output": 19
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 24860000,
+          "input": 11581,
+          "output": 5
+        }
+      ],
+      "errors": [],
+      "hookAgentIdsMatchSubagentStarted": true,
+      "pass": true
+    },
+    {
+      "trial": 14,
+      "seconds": 9.6,
+      "reachedIdle": true,
+      "delegated": true,
+      "subagents": [
+        {
+          "agentId": "1ad49ba8-e0d8-41d6-9f14-5263e93f5a34",
+          "agentName": "bulk-reader",
+          "agentType": "bulk-reader",
+          "model": "mai-code-1.1-flash",
+          "modelSelectionSource": "session_inheritance",
+          "toolCallId": "call_JXPoRiFJPDC2zRErg3ZZYKoy"
+        }
+      ],
+      "subReadFixture": true,
+      "mainDenies": [
+        {
+          "tool": "view",
+          "gate": "view"
+        }
+      ],
+      "mainToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt"
+          }
+        },
+        {
+          "tool": "task",
+          "args": {
+            "description": "Find retention_days for service entry",
+            "prompt": "Read services-registry.txt and locate the entry for kestrel-ledger-prod-77. Return only the retention_days numeric value for that entry.",
+            "agent_type": "bulk-reader",
+            "name": "service-retention-query",
+            "mode": "sync"
+          }
+        }
+      ],
+      "subToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt",
+            "view_range": [
+              1,
+              250
+            ]
+          }
+        },
+        {
+          "tool": "grep",
+          "args": {
+            "pattern": "^kestrel-ledger-prod-77 \\|",
+            "path": "<workdir>/services-registry.txt",
+            "output_mode": "content",
+            "n": true
+          }
+        }
+      ],
+      "taskArgs": [
+        {
+          "description": "Find retention_days for service entry",
+          "prompt": "Read services-registry.txt and locate the entry for kestrel-ledger-prod-77. Return only the retention_days numeric value for that entry.",
+          "agent_type": "bulk-reader",
+          "name": "service-retention-query",
+          "mode": "sync"
+        }
+      ],
+      "leakedToMain": 0,
+      "answer": "262",
+      "finalAnswer": "262",
+      "correct": true,
+      "usage": [
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 98324000,
+          "input": 11371,
+          "output": 57
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 33184000,
+          "input": 11492,
+          "output": 70
+        },
+        {
+          "agentId": "1ad49ba8-e0d8-41d6-9f14-5263e93f5a34",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 12624000,
+          "input": 1284,
+          "output": 64
+        },
+        {
+          "agentId": "1ad49ba8-e0d8-41d6-9f14-5263e93f5a34",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 162760000,
+          "input": 8300,
+          "output": 165
+        },
+        {
+          "agentId": "1ad49ba8-e0d8-41d6-9f14-5263e93f5a34",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 24896000,
+          "input": 8548,
+          "output": 50
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 24700000,
+          "input": 11573,
+          "output": 5
+        }
+      ],
+      "errors": [],
+      "hookAgentIdsMatchSubagentStarted": true,
+      "pass": true
+    },
+    {
+      "trial": 15,
+      "seconds": 8.6,
+      "reachedIdle": true,
+      "delegated": true,
+      "subagents": [
+        {
+          "agentId": "46634c23-ec8a-439e-b4f4-6e362a252d04",
+          "agentName": "bulk-reader",
+          "agentType": "bulk-reader",
+          "model": "mai-code-1.1-flash",
+          "modelSelectionSource": "session_inheritance",
+          "toolCallId": "call_paBLST8ru9FsEZeiprWaFdBO"
+        }
+      ],
+      "subReadFixture": true,
+      "mainDenies": [
+        {
+          "tool": "view",
+          "gate": "view"
+        }
+      ],
+      "mainToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt"
+          }
+        },
+        {
+          "tool": "task",
+          "args": {
+            "description": "Find retention_days for service",
+            "prompt": "Read services-registry.txt and identify the retention_days value for kestrel-ledger-prod-77. Return only the number, no extra text.",
+            "agent_type": "bulk-reader",
+            "name": "lookup-retention",
+            "mode": "sync"
+          }
+        }
+      ],
+      "subToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt",
+            "view_range": [
+              1,
+              -1
+            ]
+          }
+        },
+        {
+          "tool": "grep",
+          "args": {
+            "pattern": "kestrel-ledger-prod-77",
+            "paths": "<workdir>/services-registry.txt",
+            "output_mode": "content",
+            "n": true,
+            "head_limit": 20
+          }
+        }
+      ],
+      "taskArgs": [
+        {
+          "description": "Find retention_days for service",
+          "prompt": "Read services-registry.txt and identify the retention_days value for kestrel-ledger-prod-77. Return only the number, no extra text.",
+          "agent_type": "bulk-reader",
+          "name": "lookup-retention",
+          "mode": "sync"
+        }
+      ],
+      "leakedToMain": 0,
+      "answer": "234",
+      "finalAnswer": "234",
+      "correct": true,
+      "usage": [
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 98284000,
+          "input": 11369,
+          "output": 57
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 33384000,
+          "input": 11490,
+          "output": 72
+        },
+        {
+          "agentId": "46634c23-ec8a-439e-b4f4-6e362a252d04",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 12624000,
+          "input": 1284,
+          "output": 64
+        },
+        {
+          "agentId": "46634c23-ec8a-439e-b4f4-6e362a252d04",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 164680000,
+          "input": 8300,
+          "output": 181
+        },
+        {
+          "agentId": "46634c23-ec8a-439e-b4f4-6e362a252d04",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 21736000,
+          "input": 8564,
+          "output": 21
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 24700000,
+          "input": 11573,
+          "output": 5
+        }
+      ],
+      "errors": [],
+      "hookAgentIdsMatchSubagentStarted": true,
+      "pass": true
+    },
+    {
+      "trial": 16,
+      "seconds": 8.8,
+      "reachedIdle": true,
+      "delegated": true,
+      "subagents": [
+        {
+          "agentId": "7eadc2fd-cc15-4694-a90e-0c302b8ae087",
+          "agentName": "bulk-reader",
+          "agentType": "bulk-reader",
+          "model": "mai-code-1.1-flash",
+          "modelSelectionSource": "session_inheritance",
+          "toolCallId": "call_92ezCpDXlonOJAk2pluZZ6I5"
+        }
+      ],
+      "subReadFixture": true,
+      "mainDenies": [
+        {
+          "tool": "view",
+          "gate": "view"
+        }
+      ],
+      "mainToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt",
+            "view_range": [
+              1,
+              -1
+            ]
+          }
+        },
+        {
+          "tool": "task",
+          "args": {
+            "description": "Find retention_days for service entry",
+            "prompt": "Open services-registry.txt in the current directory and locate the entry for kestrel-ledger-prod-77. Report only the retention_days value as a number, with no extra text.",
+            "agent_type": "bulk-reader",
+            "name": "lookup-retention",
+            "mode": "sync"
+          }
+        }
+      ],
+      "subToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt",
+            "view_range": [
+              1,
+              250
+            ]
+          }
+        },
+        {
+          "tool": "grep",
+          "args": {
+            "pattern": "^kestrel-ledger-prod-77 \\|",
+            "paths": "<workdir>/services-registry.txt",
+            "output_mode": "content",
+            "n": true
+          }
+        }
+      ],
+      "taskArgs": [
+        {
+          "description": "Find retention_days for service entry",
+          "prompt": "Open services-registry.txt in the current directory and locate the entry for kestrel-ledger-prod-77. Report only the retention_days value as a number, with no extra text.",
+          "agent_type": "bulk-reader",
+          "name": "lookup-retention",
+          "mode": "sync"
+        }
+      ],
+      "leakedToMain": 0,
+      "answer": "153",
+      "finalAnswer": "153",
+      "correct": true,
+      "usage": [
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 98904000,
+          "input": 11364,
+          "output": 63
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 34244000,
+          "input": 11491,
+          "output": 79
+        },
+        {
+          "agentId": "7eadc2fd-cc15-4694-a90e-0c302b8ae087",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 12644000,
+          "input": 1291,
+          "output": 63
+        },
+        {
+          "agentId": "7eadc2fd-cc15-4694-a90e-0c302b8ae087",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 163720000,
+          "input": 8306,
+          "output": 172
+        },
+        {
+          "agentId": "7eadc2fd-cc15-4694-a90e-0c302b8ae087",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 19736000,
+          "input": 8560,
+          "output": 5
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 24860000,
+          "input": 11581,
+          "output": 5
+        }
+      ],
+      "errors": [],
+      "hookAgentIdsMatchSubagentStarted": true,
+      "pass": true
+    },
+    {
+      "trial": 17,
+      "seconds": 6.2,
+      "reachedIdle": true,
+      "delegated": true,
+      "subagents": [
+        {
+          "agentId": "865c9cec-a2b8-4928-9a5c-4a3602b53010",
+          "agentName": "bulk-reader",
+          "agentType": "bulk-reader",
+          "model": "mai-code-1.1-flash",
+          "modelSelectionSource": "session_inheritance",
+          "toolCallId": "call_6VIwtK9DpiEwhS9MndvOSGqC"
+        }
+      ],
+      "subReadFixture": true,
+      "mainDenies": [
+        {
+          "tool": "view",
+          "gate": "view"
+        }
+      ],
+      "mainToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt"
+          }
+        },
+        {
+          "tool": "task",
+          "args": {
+            "description": "Find retention_days for a service entry",
+            "prompt": "Read services-registry.txt in the current directory and locate the entry for kestrel-ledger-prod-77. Return only the numeric retention_days value for that entry.",
+            "agent_type": "bulk-reader",
+            "name": "lookup-retention",
+            "mode": "sync"
+          }
+        }
+      ],
+      "subToolCalls": [
+        {
+          "tool": "rg",
+          "args": {
+            "pattern": "kestrel-ledger-prod-77",
+            "paths": "<workdir>/services-registry.txt",
+            "output_mode": "content",
+            "-n": true,
+            "-A": 4,
+            "-B": 2
+          }
+        }
+      ],
+      "taskArgs": [
+        {
+          "description": "Find retention_days for a service entry",
+          "prompt": "Read services-registry.txt in the current directory and locate the entry for kestrel-ledger-prod-77. Return only the numeric retention_days value for that entry.",
+          "agent_type": "bulk-reader",
+          "name": "lookup-retention",
+          "mode": "sync"
+        }
+      ],
+      "leakedToMain": 0,
+      "answer": "208",
+      "finalAnswer": "208",
+      "correct": true,
+      "usage": [
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 98304000,
+          "input": 11370,
+          "output": 57
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 33644000,
+          "input": 11491,
+          "output": 74
+        },
+        {
+          "agentId": "865c9cec-a2b8-4928-9a5c-4a3602b53010",
+          "model": "gpt-6-luna",
+          "nanoAiu": 7950500,
+          "input": 1415,
+          "output": 89
+        },
+        {
+          "agentId": "865c9cec-a2b8-4928-9a5c-4a3602b53010",
+          "model": "gpt-6-luna",
+          "nanoAiu": 9779500,
+          "input": 2062,
+          "output": 5
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 24760000,
+          "input": 11576,
+          "output": 5
+        }
+      ],
+      "errors": [],
+      "hookAgentIdsMatchSubagentStarted": true,
+      "pass": true
+    },
+    {
+      "trial": 18,
+      "seconds": 9.7,
+      "reachedIdle": true,
+      "delegated": true,
+      "subagents": [
+        {
+          "agentId": "3d94f888-d746-498b-af42-0cc072507a8c",
+          "agentName": "bulk-reader",
+          "agentType": "bulk-reader",
+          "model": "mai-code-1.1-flash",
+          "modelSelectionSource": "session_inheritance",
+          "toolCallId": "call_7hsP3R1jOnu6VhHhKYEl49Tv"
+        }
+      ],
+      "subReadFixture": true,
+      "mainDenies": [
+        {
+          "tool": "view",
+          "gate": "view"
+        }
+      ],
+      "mainToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt",
+            "view_range": [
+              1,
+              -1
+            ]
+          }
+        },
+        {
+          "tool": "task",
+          "args": {
+            "description": "Find retention_days for service entry",
+            "prompt": "Read services-registry.txt and locate the entry for kestrel-ledger-prod-77. Return only the numeric retention_days value for that service.",
+            "agent_type": "bulk-reader",
+            "name": "lookup-retention",
+            "mode": "sync"
+          }
+        }
+      ],
+      "subToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt",
+            "view_range": [
+              1,
+              250
+            ]
+          }
+        },
+        {
+          "tool": "grep",
+          "args": {
+            "pattern": "kestrel-ledger-prod-77",
+            "paths": "<workdir>/services-registry.txt",
+            "output_mode": "content",
+            "-n": true,
+            "head_limit": 20
+          }
+        }
+      ],
+      "taskArgs": [
+        {
+          "description": "Find retention_days for service entry",
+          "prompt": "Read services-registry.txt and locate the entry for kestrel-ledger-prod-77. Return only the numeric retention_days value for that service.",
+          "agent_type": "bulk-reader",
+          "name": "lookup-retention",
+          "mode": "sync"
+        }
+      ],
+      "leakedToMain": 0,
+      "answer": "923",
+      "finalAnswer": "923",
+      "correct": true,
+      "usage": [
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 98884000,
+          "input": 11363,
+          "output": 63
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 33024000,
+          "input": 11490,
+          "output": 69
+        },
+        {
+          "agentId": "3d94f888-d746-498b-af42-0cc072507a8c",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 12484000,
+          "input": 1283,
+          "output": 63
+        },
+        {
+          "agentId": "3d94f888-d746-498b-af42-0cc072507a8c",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 160200000,
+          "input": 8298,
+          "output": 144
+        },
+        {
+          "agentId": "3d94f888-d746-498b-af42-0cc072507a8c",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 25080000,
+          "input": 8526,
+          "output": 36
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 24640000,
+          "input": 11570,
+          "output": 5
+        }
+      ],
+      "errors": [],
+      "hookAgentIdsMatchSubagentStarted": true,
+      "pass": true
+    },
+    {
+      "trial": 19,
+      "seconds": 8.3,
+      "reachedIdle": true,
+      "delegated": true,
+      "subagents": [
+        {
+          "agentId": "ffab3620-b929-459e-953a-a5c2b3bc3efd",
+          "agentName": "bulk-reader",
+          "agentType": "bulk-reader",
+          "model": "mai-code-1.1-flash",
+          "modelSelectionSource": "session_inheritance",
+          "toolCallId": "call_zTxgYAey3Usl2GkJfbPBTSD1"
+        }
+      ],
+      "subReadFixture": true,
+      "mainDenies": [
+        {
+          "tool": "view",
+          "gate": "view"
+        }
+      ],
+      "mainToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt"
+          }
+        },
+        {
+          "tool": "task",
+          "args": {
+            "description": "Find retention_days for kestrel-ledger-prod-77 in services registry",
+            "prompt": "Read services-registry.txt in the current directory and locate the entry for kestrel-ledger-prod-77. Report only its retention_days value as a bare number.",
+            "agent_type": "bulk-reader",
+            "name": "registrylookup",
+            "mode": "sync"
+          }
+        }
+      ],
+      "subToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt",
+            "view_range": [
+              1,
+              250
+            ]
+          }
+        },
+        {
+          "tool": "grep",
+          "args": {
+            "pattern": "kestrel-ledger-prod-77",
+            "path": "<workdir>/services-registry.txt",
+            "output_mode": "content",
+            "-n": true,
+            "head_limit": 20
+          }
+        }
+      ],
+      "taskArgs": [
+        {
+          "description": "Find retention_days for kestrel-ledger-prod-77 in services registry",
+          "prompt": "Read services-registry.txt in the current directory and locate the entry for kestrel-ledger-prod-77. Report only its retention_days value as a bare number.",
+          "agent_type": "bulk-reader",
+          "name": "registrylookup",
+          "mode": "sync"
+        }
+      ],
+      "leakedToMain": 0,
+      "answer": "789",
+      "finalAnswer": "789",
+      "correct": true,
+      "usage": [
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 98304000,
+          "input": 11370,
+          "output": 57
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 34364000,
+          "input": 11491,
+          "output": 80
+        },
+        {
+          "agentId": "ffab3620-b929-459e-953a-a5c2b3bc3efd",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 12704000,
+          "input": 1288,
+          "output": 64
+        },
+        {
+          "agentId": "ffab3620-b929-459e-953a-a5c2b3bc3efd",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 168960000,
+          "input": 8304,
+          "output": 216
+        },
+        {
+          "agentId": "ffab3620-b929-459e-953a-a5c2b3bc3efd",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 23176000,
+          "input": 8606,
+          "output": 26
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 24880000,
+          "input": 11582,
+          "output": 5
+        }
+      ],
+      "errors": [],
+      "hookAgentIdsMatchSubagentStarted": true,
+      "pass": true
+    },
+    {
+      "trial": 20,
+      "seconds": 9.7,
+      "reachedIdle": true,
+      "delegated": true,
+      "subagents": [
+        {
+          "agentId": "3cbf315f-aaa5-43d2-944e-1b0d8d9c5635",
+          "agentName": "bulk-reader",
+          "agentType": "bulk-reader",
+          "model": "mai-code-1.1-flash",
+          "modelSelectionSource": "session_inheritance",
+          "toolCallId": "call_IOGIRxJXpI9nPbfhycOT21yk"
+        }
+      ],
+      "subReadFixture": true,
+      "mainDenies": [
+        {
+          "tool": "view",
+          "gate": "view"
+        }
+      ],
+      "mainToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt"
+          }
+        },
+        {
+          "tool": "task",
+          "args": {
+            "description": "Find retention_days for a service in registry",
+            "prompt": "Read services-registry.txt in the current directory and find the entry for kestrel-ledger-prod-77. Report only its retention_days value as a plain number.",
+            "agent_type": "bulk-reader",
+            "name": "lookup-retention-days",
+            "mode": "sync"
+          }
+        }
+      ],
+      "subToolCalls": [
+        {
+          "tool": "view",
+          "args": {
+            "path": "<workdir>/services-registry.txt",
+            "view_range": [
+              1,
+              250
+            ]
+          }
+        },
+        {
+          "tool": "grep",
+          "args": {
+            "pattern": "kestrel-ledger-prod-77",
+            "paths": "<workdir>/services-registry.txt",
+            "output_mode": "content",
+            "-n": true,
+            "head_limit": 20
+          }
+        }
+      ],
+      "taskArgs": [
+        {
+          "description": "Find retention_days for a service in registry",
+          "prompt": "Read services-registry.txt in the current directory and find the entry for kestrel-ledger-prod-77. Report only its retention_days value as a plain number.",
+          "agent_type": "bulk-reader",
+          "name": "lookup-retention-days",
+          "mode": "sync"
+        }
+      ],
+      "leakedToMain": 0,
+      "answer": "246",
+      "finalAnswer": "246",
+      "correct": true,
+      "usage": [
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 98444000,
+          "input": 11371,
+          "output": 58
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 34164000,
+          "input": 11493,
+          "output": 78
+        },
+        {
+          "agentId": "3cbf315f-aaa5-43d2-944e-1b0d8d9c5635",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 12844000,
+          "input": 1289,
+          "output": 65
+        },
+        {
+          "agentId": "3cbf315f-aaa5-43d2-944e-1b0d8d9c5635",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 166960000,
+          "input": 8306,
+          "output": 199
+        },
+        {
+          "agentId": "3cbf315f-aaa5-43d2-944e-1b0d8d9c5635",
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 23616000,
+          "input": 8592,
+          "output": 32
+        },
+        {
+          "model": "mai-code-1.1-flash",
+          "nanoAiu": 24880000,
+          "input": 11582,
+          "output": 5
+        }
+      ],
+      "errors": [],
+      "hookAgentIdsMatchSubagentStarted": true,
+      "pass": true
+    }
+  ]
+}
