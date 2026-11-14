@@ -7,6 +7,7 @@ export const sessionServiceErrorCodes = [
   "session.invalid_state",
   "session.invalid_request",
   "session.approval_not_found",
+  "session.budget_exhausted",
   "session.runtime_failed",
   "session.store_failed",
 ] as const;
@@ -18,6 +19,8 @@ export interface SessionServiceError {
   readonly message: string;
   // Set for `session.runtime_failed`, so callers can report the runtime's stable code.
   readonly runtimeCode?: RuntimeErrorCode;
+  // Set for `session.budget_exhausted`: when the workspace's daily cap resets.
+  readonly resetAt?: string;
 }
 
 export type SessionResult<T> = Result<T, SessionServiceError>;

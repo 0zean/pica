@@ -72,6 +72,9 @@ export interface RuntimeSession {
   send(prompt: string): RuntimeResult<{ readonly messageId: string }>;
   abort(): RuntimeResult<undefined>;
   resolvePermission(requestId: string, approved: boolean): RuntimeResult<undefined>;
+  // Answers `session_limits_exhausted.requested`: a number raises the limit to it and lets the
+  // blocked call run; null cancels that call and ends the turn.
+  resolveSessionLimit(requestId: string, maxAiCredits: number | null): RuntimeResult<undefined>;
   usage(): RuntimeResult<UsageMetrics>;
   close(): RuntimeResult<undefined>;
 }

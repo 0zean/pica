@@ -415,13 +415,16 @@
   ],
   "C-09": [
     {
-      "check": "FakeRuntime: crossing the session budget blocks the next model call and emits `budget.exhausted`."
+      "check": "FakeRuntime: crossing the session budget blocks the next model call and emits `budget.exhausted`.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/testkit/tests/runtime/session-limit.test.ts packages/server/tests/budgets/session-limit.test.ts"
     },
     {
-      "check": "Raising the budget through the approval resumes the run."
+      "check": "Raising the budget through the approval resumes the run.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/budgets/raise-budget.test.ts"
     },
     {
-      "check": "The workspace daily cap blocks a new session and reports the reset time."
+      "check": "The workspace daily cap blocks a new session and reports the reset time.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/budgets/daily-cap.test.ts"
     }
   ],
   "C-10": [

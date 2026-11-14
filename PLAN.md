@@ -595,9 +595,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **C-09 · Budgets** — C-08
 - Build: session credit limit passed to the runtime, workspace daily cap in the engine, warning thresholds, exhausted flow as an approval.
 - Verify:
-  - [ ] FakeRuntime: crossing the session budget blocks the next model call and emits `budget.exhausted`.
-  - [ ] Raising the budget through the approval resumes the run.
-  - [ ] The workspace daily cap blocks a new session and reports the reset time.
+  - [x] FakeRuntime: crossing the session budget blocks the next model call and emits `budget.exhausted`.
+  - [x] Raising the budget through the approval resumes the run.
+  - [x] The workspace daily cap blocks a new session and reports the reset time.
 
 **C-10 · Eval harness** — C-04, C-05, C-06, C-07, C-08
 - Build: at least 12 tasks over fixture repos (large-file questions, test scaffolding, config generation, multi-file mechanical edits), each with a programmatic success check; a runner that executes the suite per profile and writes a JSON and Markdown report.
@@ -978,7 +978,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | C-06 | Output guard | C-03, E-08 | done |
 | C-07 | Delegator | C-02, C-05, G0 | todo |
 | C-08 | Usage ledger | E-07, C-01 | done |
-| C-09 | Budgets | C-08 | todo |
+| C-09 | Budgets | C-08 | done |
 | C-10 | Eval harness | C-04, C-05, C-06, C-07, C-08 | todo |
 | R-01 | Git service | F-01 | done |
 | R-02 | Worktrees | R-01 | done |

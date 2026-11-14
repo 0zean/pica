@@ -87,6 +87,21 @@ export class CopilotRuntimeSession implements RuntimeSession {
     );
   }
 
+  async resolveSessionLimit(requestId: string, maxAiCredits: number | null): RuntimeResult<undefined> {
+    if (this.sdk === undefined) {
+      return err({ code: "runtime.session_closed", message: `session ${this.id} is closed` });
+    }
+    const response = maxAiCredits === null ? { action: "cancel" as const } : { action: "set" as const, maxAiCredits };
+    try {
+      const answered = await this.sdk.rpc.ui.handlePendingSessionLimitsExhausted({ requestId, response });
+      return answered.success
+        ? ok(undefined)
+        : err({ code: "runtime.limit_request_not_found", message: `no pending session limit request ${requestId}` });
+    } catch (error) {
+      return err(toRuntimeError(error));
+    }
+  }
+
   usage(): RuntimeResult<UsageMetrics> {
     return Promise.resolve(ok(this.usageTotals.metrics()));
   }

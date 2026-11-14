@@ -11,6 +11,7 @@ import {
 } from "@pica/core";
 import type {
   AgentRuntime,
+  BudgetSettings,
   McpHealthMonitor,
   OutputGuardDeps,
   RuntimeHooks,
@@ -42,6 +43,8 @@ export interface EngineSessionOptions {
   readonly usage?: EngineUsageOptions;
   // C-06: truncates oversized tool results and spills them to session artifacts.
   readonly outputGuard?: OutputGuardDeps;
+  // C-09: `budget.*` from config; without it sessions have no default limit and no daily cap.
+  readonly budget?: BudgetSettings;
 }
 
 export interface EngineOptions {
@@ -112,6 +115,8 @@ function startSessions(
     clock: options.clock ?? (() => new Date().toISOString()),
     newSessionId: options.newSessionId ?? randomUUID,
     onChanged,
+    usage: options.store.usage,
+    ...(options.budget === undefined ? {} : { budget: options.budget }),
     ...sessionHooks(options),
   });
   const recovered = service.recover();

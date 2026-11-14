@@ -28,6 +28,7 @@ function spyOnPermissions(runtime: AgentRuntime): { readonly runtime: AgentRunti
       calls.push({ requestId, approved });
       return session.resolvePermission(requestId, approved);
     },
+    resolveSessionLimit: (requestId, maxAiCredits) => session.resolveSessionLimit(requestId, maxAiCredits),
     usage: () => session.usage(),
     close: () => session.close(),
   });

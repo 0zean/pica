@@ -8,6 +8,7 @@ export const runtimeErrorCodes = [
   "runtime.session_busy",
   "runtime.session_closed",
   "runtime.permission_not_found",
+  "runtime.limit_request_not_found",
   "runtime.invalid_argument",
   "runtime.failed",
 ] as const;
@@ -34,6 +35,7 @@ const protocolCodes: Readonly<Record<RuntimeErrorCode, ProtocolErrorCode>> = {
   "runtime.session_busy": "invalid_state",
   "runtime.session_closed": "invalid_state",
   "runtime.permission_not_found": "not_found",
+  "runtime.limit_request_not_found": "not_found",
   "runtime.invalid_argument": "invalid_params",
   "runtime.failed": "runtime_failed",
 };
