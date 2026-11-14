@@ -884,8 +884,8 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 **H-04 · Observability** — E-05
 - Build: structured engine logs, diagnostics bundle, optional OpenTelemetry export of usage metrics.
 - Verify:
-  - [ ] With export disabled, the engine opens no outbound connection other than the runtime's (asserted with a network stub).
-  - [ ] Exported metrics for a fixture match the ledger.
+  - [x] With export disabled, the engine opens no outbound connection other than the runtime's (asserted with a network stub).
+  - [x] Exported metrics for a fixture match the ledger.
 
 **H-05 · Reliability** — E-08, A-01
 - Verify:
@@ -1019,7 +1019,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | H-01 | Managed policy | E-04, C-03, M-05 | done |
 | H-02 | Audit log | C-03, E-07 | done |
 | H-03 | Redaction | M-03 | done |
-| H-04 | Observability | E-05 | todo |
+| H-04 | Observability | E-05 | done |
 | H-05 | Reliability | E-08, A-01 | todo |
 | H-06 | Distribution | S-05, A-01 | todo |
 | H-07 | Performance gate | all A units | todo |

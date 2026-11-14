@@ -1,7 +1,6 @@
 import { parseArgs } from "node:util";
-import { scrubSecrets } from "@pica/core";
+import { createSecretScrubber, createStructuredLog } from "@pica/core";
 import { startEngine } from "./engine.ts";
-import { stderrLogger } from "./logger.ts";
 import { DEFAULT_SOCKET_PATH } from "./paths.ts";
 
 function socketPathFromArgs(): string {
@@ -9,8 +8,17 @@ function socketPathFromArgs(): string {
   return values.socket ?? process.env["PICA_SOCKET"] ?? DEFAULT_SOCKET_PATH;
 }
 
+// H-04: one JSON object per stderr line; supervisors send stderr to picad.log.
+const log = createStructuredLog({
+  write: (line) => {
+    process.stderr.write(`${line}\n`);
+  },
+  clock: () => new Date().toISOString(),
+  redactor: createSecretScrubber(),
+}).logger("picad");
+
 async function main(): Promise<void> {
-  const listener = await startEngine({ socketPath: socketPathFromArgs(), log: stderrLogger });
+  const listener = await startEngine({ socketPath: socketPathFromArgs(), log });
   const stop = (): void => {
     void listener.close().then(() => process.exit(0));
   };
@@ -21,6 +29,6 @@ async function main(): Promise<void> {
 }
 
 main().catch((error: unknown) => {
-  stderrLogger.error(scrubSecrets(error instanceof Error ? error.message : String(error)));
+  log.error(error instanceof Error ? error.message : String(error));
   process.exit(1);
 });

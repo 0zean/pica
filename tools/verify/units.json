@@ -883,10 +883,12 @@
   ],
   "H-04": [
     {
-      "check": "With export disabled, the engine opens no outbound connection other than the runtime's (asserted with a network stub)."
+      "check": "With export disabled, the engine opens no outbound connection other than the runtime's (asserted with a network stub).",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/observability/no-outbound.test.ts"
     },
     {
-      "check": "Exported metrics for a fixture match the ledger."
+      "check": "Exported metrics for a fixture match the ledger.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/observability/metrics-export.test.ts"
     }
   ],
   "H-05": [
