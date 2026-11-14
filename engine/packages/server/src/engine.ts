@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { performance } from "node:perf_hooks";
-import { createEventLog, createSessionService } from "@pica/core";
-import type { AgentRuntime, RuntimeHooks, SessionService, Store } from "@pica/core";
+import { createEventLog, createOutputGuard, createSessionService, withOutputGuard } from "@pica/core";
+import type { AgentRuntime, OutputGuardDeps, RuntimeHooks, SessionService, Store } from "@pica/core";
 import { registerEngineHandlers } from "./engine-handlers.ts";
 import { SocketListener } from "./listener.ts";
 import type { ConnectionLimits } from "./connection.ts";
@@ -15,6 +15,8 @@ export interface EngineSessionOptions {
   readonly clock?: () => string;
   readonly newSessionId?: () => string;
   readonly hooks?: (sessionId: string) => RuntimeHooks;
+  // C-06: truncates oversized tool results and spills them to session artifacts.
+  readonly outputGuard?: OutputGuardDeps;
 }
 
 export interface EngineOptions {
@@ -65,7 +67,7 @@ function startSessions(
     clock: options.clock ?? (() => new Date().toISOString()),
     newSessionId: options.newSessionId ?? randomUUID,
     onChanged,
-    ...(options.hooks === undefined ? {} : { hooks: options.hooks }),
+    ...sessionHooks(options),
   });
   const recovered = service.recover();
   if (!recovered.ok) {
@@ -76,4 +78,11 @@ function startSessions(
   }
   registerSessionHandlers(router, { sessions: service, log: eventLog, events: options.store.events });
   return service;
+}
+
+function sessionHooks(options: EngineSessionOptions): { readonly hooks?: (sessionId: string) => RuntimeHooks } {
+  if (options.outputGuard !== undefined) {
+    return { hooks: withOutputGuard(options.hooks, createOutputGuard(options.outputGuard)) };
+  }
+  return options.hooks === undefined ? {} : { hooks: options.hooks };
 }

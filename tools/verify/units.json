@@ -365,13 +365,16 @@
   ],
   "C-06": [
     {
-      "check": "Golden tests for head and tail truncation on text, JSON, and binary-looking output."
+      "check": "Golden tests for head and tail truncation on text, JSON, and binary-looking output.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/sessions/output-guard.golden.test.ts"
     },
     {
-      "check": "The spilled artifact is byte-equal to the original result."
+      "check": "The spilled artifact is byte-equal to the original result.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/fs/session-artifacts.test.ts packages/server/tests/sessions/output-guard.test.ts"
     },
     {
-      "check": "Fuzz test: the returned result never exceeds the cap."
+      "check": "Fuzz test: the returned result never exceeds the cap.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/sessions/output-guard.fuzz.test.ts"
     }
   ],
   "C-07": [
