@@ -11,3 +11,15 @@ export {
   vscodeMcpConfigPath,
   type McpFileSource,
 } from "./mcp-paths.ts";
+export {
+  ManagedPolicyLoader,
+  nodeManagedPolicyFileSystem,
+  type ManagedPolicyCandidate,
+  type ManagedPolicyFileSystem,
+} from "./managed-policy-loader.ts";
+export {
+  managedPolicyCandidates,
+  managedPolicyFilePath,
+  managedPreferencesDomain,
+  managedPreferencesPaths,
+} from "./managed-policy-paths.ts";

@@ -853,10 +853,12 @@
   ],
   "H-01": [
     {
-      "check": "Each lockable key has a test where user config is ignored."
+      "check": "Each lockable key has a test where user config is ignored.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/managed-policy/lockable-keys.test.ts packages/server/tests/budgets/managed-ceiling.test.ts"
     },
     {
-      "check": "A policy file not owned by root is ignored with a warning."
+      "check": "A policy file not owned by root is ignored with a warning.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/config/managed-policy-ownership.test.ts"
     }
   ],
   "H-02": [

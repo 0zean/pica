@@ -4,7 +4,7 @@ import type { RuntimeEventRecorder } from "../events/index.ts";
 import type { AgentRuntime, RuntimeEvent, RuntimeHooks, RuntimeSession } from "../runtime/index.ts";
 import { ok } from "../result.ts";
 import type { Session, SessionState, Store, StoreError, UsageRepository } from "../store/index.ts";
-import { checkWorkspaceDailyCap, createSessionBudget, sessionSpend } from "./budget.ts";
+import { checkWorkspaceDailyCap, createSessionBudget, sessionSpend, withinSessionCeiling } from "./budget.ts";
 import type { BudgetSettings, SessionBudget } from "./budget.ts";
 import { runtimeFailure, sessionFailure } from "./errors.ts";
 import type { SessionResult } from "./errors.ts";
@@ -390,11 +390,9 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
   }
 
   function raisedLimit(budget: SessionBudget, requested: number | undefined): number {
-    if (requested !== undefined) {
-      return requested;
-    }
     const current = budget.limit() ?? budget.spent();
-    return current + (deps.budget?.sessionCredits ?? current);
+    const raised = requested ?? current + (deps.budget?.sessionCredits ?? current);
+    return withinSessionCeiling(raised, deps.budget) ?? raised;
   }
 
   function workingDirectory(session: Pick<Session, "writeRoots" | "referenceRoots">): string | undefined {
@@ -418,7 +416,7 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
       return capped;
     }
     const directory = workingDirectory(stored.value) ?? "/";
-    const limit = stored.value.budgetMaxCredits;
+    const limit = withinSessionCeiling(stored.value.budgetMaxCredits ?? undefined, deps.budget) ?? null;
     const resumed = await deps.runtime.resumeSession({
       sessionId,
       workingDirectory: directory,
@@ -466,7 +464,7 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     if (!capped.ok) {
       return capped;
     }
-    const budgetCredits = request.budgetCredits ?? deps.budget?.sessionCredits;
+    const budgetCredits = withinSessionCeiling(request.budgetCredits ?? deps.budget?.sessionCredits, deps.budget);
     const at = clock();
     const session: Session = {
       id: deps.newSessionId(),

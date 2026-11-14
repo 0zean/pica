@@ -866,8 +866,8 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 **H-01 · Managed policy** — E-04, C-03, M-05
 - Build: organization policy from a managed preferences domain or a root-owned file: model allowlist, MCP allowlist, budget ceilings, permission-mode floor.
 - Verify:
-  - [ ] Each lockable key has a test where user config is ignored.
-  - [ ] A policy file not owned by root is ignored with a warning.
+  - [x] Each lockable key has a test where user config is ignored.
+  - [x] A policy file not owned by root is ignored with a warning.
 
 **H-02 · Audit log** — C-03, E-07
 - Build: append-only JSONL of tool calls, approvals, and policy decisions with a hash chain; export.
@@ -1016,7 +1016,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | X-01 | Themes and density | A-03, A-14 | todo |
 | X-02 | Agents, skills, and rules management | C-02, A-14 | todo |
 | X-03 | User hooks | C-03 | todo |
-| H-01 | Managed policy | E-04, C-03, M-05 | todo |
+| H-01 | Managed policy | E-04, C-03, M-05 | done |
 | H-02 | Audit log | C-03, E-07 | todo |
 | H-03 | Redaction | M-03 | done |
 | H-04 | Observability | E-05 | todo |

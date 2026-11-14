@@ -12,10 +12,22 @@ export function validateLayer(file: string, value: unknown): Result<JsonObject, 
   if (parsed.success) {
     return ok(value as JsonObject);
   }
+  return err(configError("config.invalid", file, schemaIssues(parsed.error.issues)));
+}
+
+// Structural, so core needs no direct zod import.
+interface SchemaIssue {
+  readonly code: string;
+  readonly path: readonly PropertyKey[];
+  readonly message: string;
+  readonly keys?: readonly string[];
+}
+
+export function schemaIssues(zodIssues: readonly SchemaIssue[], prefix: readonly string[] = []): ConfigIssue[] {
   const issues: ConfigIssue[] = [];
-  for (const issue of parsed.error.issues) {
-    const path = issue.path.map(String);
-    if (issue.code === "unrecognized_keys") {
+  for (const issue of zodIssues) {
+    const path = [...prefix, ...issue.path.map(String)];
+    if (issue.code === "unrecognized_keys" && issue.keys !== undefined) {
       for (const key of issue.keys) {
         issues.push({ keyPath: [...path, key].join("."), message: "unknown key" });
       }
@@ -23,5 +35,5 @@ export function validateLayer(file: string, value: unknown): Result<JsonObject, 
       issues.push({ keyPath: path.join("."), message: issue.message });
     }
   }
-  return err(configError("config.invalid", file, issues));
+  return issues;
 }

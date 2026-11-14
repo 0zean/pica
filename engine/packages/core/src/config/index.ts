@@ -9,4 +9,4 @@ export {
   type ResolvedConfig,
   type ResolvedValue,
 } from "./resolve.ts";
-export { validateLayer } from "./validate.ts";
+export { schemaIssues, validateLayer } from "./validate.ts";
