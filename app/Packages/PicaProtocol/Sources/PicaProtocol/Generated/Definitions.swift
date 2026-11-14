@@ -1038,6 +1038,467 @@ public struct EventsUnsubscribeParams: Codable, Hashable, Sendable {
     }
 }
 
+public struct FanOut: Codable, Hashable, Sendable {
+    public var id: Id
+    public var workspaceId: Id
+    public var prompt: String
+    public var concurrency: Int
+    public var state: FanOutState
+    public var runs: [FanOutRun]
+    public var counts: Counts
+    public var createdAt: Timestamp
+    public var updatedAt: Timestamp
+
+    public init(
+        id: Id,
+        workspaceId: Id,
+        prompt: String,
+        concurrency: Int,
+        state: FanOutState,
+        runs: [FanOutRun],
+        counts: Counts,
+        createdAt: Timestamp,
+        updatedAt: Timestamp
+    ) {
+        self.id = id
+        self.workspaceId = workspaceId
+        self.prompt = prompt
+        self.concurrency = concurrency
+        self.state = state
+        self.runs = runs
+        self.counts = counts
+        self.createdAt = createdAt
+        self.updatedAt = updatedAt
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case workspaceId
+        case prompt
+        case concurrency
+        case state
+        case runs
+        case counts
+        case createdAt
+        case updatedAt
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(Id.self, forKey: .id)
+        workspaceId = try container.decode(Id.self, forKey: .workspaceId)
+        prompt = try container.decode(String.self, forKey: .prompt)
+        concurrency = try container.decode(Int.self, forKey: .concurrency)
+        state = try container.decode(FanOutState.self, forKey: .state)
+        runs = try container.decode([FanOutRun].self, forKey: .runs)
+        counts = try container.decode(Counts.self, forKey: .counts)
+        createdAt = try container.decode(Timestamp.self, forKey: .createdAt)
+        updatedAt = try container.decode(Timestamp.self, forKey: .updatedAt)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(workspaceId, forKey: .workspaceId)
+        try container.encode(prompt, forKey: .prompt)
+        try container.encode(concurrency, forKey: .concurrency)
+        try container.encode(state, forKey: .state)
+        try container.encode(runs, forKey: .runs)
+        try container.encode(counts, forKey: .counts)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encode(updatedAt, forKey: .updatedAt)
+    }
+
+    public struct Counts: Codable, Hashable, Sendable {
+        public var queued: Count
+        public var active: Count
+        public var succeeded: Count
+        public var failed: Count
+        public var cancelled: Count
+
+        public init(
+            queued: Count,
+            active: Count,
+            succeeded: Count,
+            failed: Count,
+            cancelled: Count
+        ) {
+            self.queued = queued
+            self.active = active
+            self.succeeded = succeeded
+            self.failed = failed
+            self.cancelled = cancelled
+        }
+
+        private enum CodingKeys: String, CodingKey {
+            case queued
+            case active
+            case succeeded
+            case failed
+            case cancelled
+        }
+
+        public init(from decoder: any Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            queued = try container.decode(Count.self, forKey: .queued)
+            active = try container.decode(Count.self, forKey: .active)
+            succeeded = try container.decode(Count.self, forKey: .succeeded)
+            failed = try container.decode(Count.self, forKey: .failed)
+            cancelled = try container.decode(Count.self, forKey: .cancelled)
+        }
+
+        public func encode(to encoder: any Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(queued, forKey: .queued)
+            try container.encode(active, forKey: .active)
+            try container.encode(succeeded, forKey: .succeeded)
+            try container.encode(failed, forKey: .failed)
+            try container.encode(cancelled, forKey: .cancelled)
+        }
+    }
+}
+
+public struct FanOutRun: Codable, Hashable, Sendable {
+    public var repoId: Id
+    public var sessionId: Id?
+    public var status: FanOutRunStatus
+    public var error: Error?
+
+    public init(
+        repoId: Id,
+        sessionId: Id?,
+        status: FanOutRunStatus,
+        error: Error?
+    ) {
+        self.repoId = repoId
+        self.sessionId = sessionId
+        self.status = status
+        self.error = error
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case repoId
+        case sessionId
+        case status
+        case error
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        repoId = try container.decode(Id.self, forKey: .repoId)
+        sessionId = try container.decode(Id?.self, forKey: .sessionId)
+        status = try container.decode(FanOutRunStatus.self, forKey: .status)
+        error = try container.decode(Error?.self, forKey: .error)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(repoId, forKey: .repoId)
+        try container.encode(sessionId, forKey: .sessionId)
+        try container.encode(status, forKey: .status)
+        try container.encode(error, forKey: .error)
+    }
+
+    public struct Error: Codable, Hashable, Sendable {
+        public var code: String
+        public var message: String
+
+        public init(
+            code: String,
+            message: String
+        ) {
+            self.code = code
+            self.message = message
+        }
+
+        private enum CodingKeys: String, CodingKey {
+            case code
+            case message
+        }
+
+        public init(from decoder: any Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            code = try container.decode(String.self, forKey: .code)
+            message = try container.decode(String.self, forKey: .message)
+        }
+
+        public func encode(to encoder: any Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(code, forKey: .code)
+            try container.encode(message, forKey: .message)
+        }
+    }
+}
+
+public enum FanOutRunStatus: String, CaseIterable, Codable, Hashable, Sendable {
+    case queued
+    case starting
+    case running
+    case awaitingApproval = "awaiting_approval"
+    case succeeded
+    case failed
+    case cancelled
+}
+
+public enum FanOutState: String, CaseIterable, Codable, Hashable, Sendable {
+    case running
+    case cancelling
+    case completed
+    case cancelled
+}
+
+public struct FanoutCancelParams: Codable, Hashable, Sendable {
+    public var fanOutId: Id
+
+    public init(
+        fanOutId: Id
+    ) {
+        self.fanOutId = fanOutId
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case fanOutId
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        fanOutId = try container.decode(Id.self, forKey: .fanOutId)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(fanOutId, forKey: .fanOutId)
+    }
+}
+
+public struct FanoutCancelResult: Codable, Hashable, Sendable {
+    public var fanOut: FanOut
+
+    public init(
+        fanOut: FanOut
+    ) {
+        self.fanOut = fanOut
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case fanOut
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        fanOut = try container.decode(FanOut.self, forKey: .fanOut)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(fanOut, forKey: .fanOut)
+    }
+}
+
+public struct FanoutChangedNotification: Codable, Hashable, Sendable {
+    public var fanOut: FanOut
+
+    public init(
+        fanOut: FanOut
+    ) {
+        self.fanOut = fanOut
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case fanOut
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        fanOut = try container.decode(FanOut.self, forKey: .fanOut)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(fanOut, forKey: .fanOut)
+    }
+}
+
+public struct FanoutGetParams: Codable, Hashable, Sendable {
+    public var fanOutId: Id
+
+    public init(
+        fanOutId: Id
+    ) {
+        self.fanOutId = fanOutId
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case fanOutId
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        fanOutId = try container.decode(Id.self, forKey: .fanOutId)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(fanOutId, forKey: .fanOutId)
+    }
+}
+
+public struct FanoutGetResult: Codable, Hashable, Sendable {
+    public var fanOut: FanOut
+
+    public init(
+        fanOut: FanOut
+    ) {
+        self.fanOut = fanOut
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case fanOut
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        fanOut = try container.decode(FanOut.self, forKey: .fanOut)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(fanOut, forKey: .fanOut)
+    }
+}
+
+public struct FanoutListParams: Codable, Hashable, Sendable {
+    public var workspaceId: Id?
+
+    public init(
+        workspaceId: Id? = nil
+    ) {
+        self.workspaceId = workspaceId
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case workspaceId
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        workspaceId = try container.decodeIfPresent(Id.self, forKey: .workspaceId)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(workspaceId, forKey: .workspaceId)
+    }
+}
+
+public struct FanoutListResult: Codable, Hashable, Sendable {
+    public var fanOuts: [FanOut]
+
+    public init(
+        fanOuts: [FanOut]
+    ) {
+        self.fanOuts = fanOuts
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case fanOuts
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        fanOuts = try container.decode([FanOut].self, forKey: .fanOuts)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(fanOuts, forKey: .fanOuts)
+    }
+}
+
+public struct FanoutStartParams: Codable, Hashable, Sendable {
+    public var workspaceId: Id
+    public var repoIds: [Id]
+    public var prompt: String
+    public var concurrency: Int?
+    public var referenceRepoIds: [Id]?
+    public var routingProfile: RoutingProfile?
+    public var budgetCredits: Credits?
+
+    public init(
+        workspaceId: Id,
+        repoIds: [Id],
+        prompt: String,
+        concurrency: Int? = nil,
+        referenceRepoIds: [Id]? = nil,
+        routingProfile: RoutingProfile? = nil,
+        budgetCredits: Credits? = nil
+    ) {
+        self.workspaceId = workspaceId
+        self.repoIds = repoIds
+        self.prompt = prompt
+        self.concurrency = concurrency
+        self.referenceRepoIds = referenceRepoIds
+        self.routingProfile = routingProfile
+        self.budgetCredits = budgetCredits
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case workspaceId
+        case repoIds
+        case prompt
+        case concurrency
+        case referenceRepoIds
+        case routingProfile
+        case budgetCredits
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        workspaceId = try container.decode(Id.self, forKey: .workspaceId)
+        repoIds = try container.decode([Id].self, forKey: .repoIds)
+        prompt = try container.decode(String.self, forKey: .prompt)
+        concurrency = try container.decodeIfPresent(Int.self, forKey: .concurrency)
+        referenceRepoIds = try container.decodeIfPresent([Id].self, forKey: .referenceRepoIds)
+        routingProfile = try container.decodeIfPresent(RoutingProfile.self, forKey: .routingProfile)
+        budgetCredits = try container.decodeIfPresent(Credits.self, forKey: .budgetCredits)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(workspaceId, forKey: .workspaceId)
+        try container.encode(repoIds, forKey: .repoIds)
+        try container.encode(prompt, forKey: .prompt)
+        try container.encodeIfPresent(concurrency, forKey: .concurrency)
+        try container.encodeIfPresent(referenceRepoIds, forKey: .referenceRepoIds)
+        try container.encodeIfPresent(routingProfile, forKey: .routingProfile)
+        try container.encodeIfPresent(budgetCredits, forKey: .budgetCredits)
+    }
+}
+
+public struct FanoutStartResult: Codable, Hashable, Sendable {
+    public var fanOut: FanOut
+
+    public init(
+        fanOut: FanOut
+    ) {
+        self.fanOut = fanOut
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case fanOut
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        fanOut = try container.decode(FanOut.self, forKey: .fanOut)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(fanOut, forKey: .fanOut)
+    }
+}
+
 public enum FileChangeKind: String, CaseIterable, Codable, Hashable, Sendable {
     case added
     case modified
