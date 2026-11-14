@@ -37,6 +37,16 @@ export interface McpToolDefinition {
   readonly name: string;
   readonly description?: string;
   readonly inputSchema: JsonObject;
+  readonly annotations?: McpToolAnnotations;
+}
+
+// MCP tool annotations (spec 2025-03-26 and later). Hints only; see docs/mcp-permissions.md.
+export interface McpToolAnnotations {
+  readonly title?: string;
+  readonly readOnlyHint?: boolean;
+  readonly destructiveHint?: boolean;
+  readonly idempotentHint?: boolean;
+  readonly openWorldHint?: boolean;
 }
 
 // Tool lists by server id, from M-06's health checks or a fixture.

@@ -558,10 +558,10 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **C-04 · Read delegation gate** — C-03, E-08
 - Build: large-read rule wired into `onPreToolUse`, with range exemption and per-path exclusions.
 - Verify:
-  - [ ] FakeRuntime: a main-agent read of a 200 KB file is denied with a reason naming `bulk-reader`.
-  - [ ] The same read from a sub-agent is allowed.
-  - [ ] A 10 KB read and a 300-line ranged read of the large file are allowed.
-  - [ ] Changing `read.minBytes` in workspace config changes the outcome without restarting the session.
+  - [x] FakeRuntime: a main-agent read of a 200 KB file is denied with a reason naming `bulk-reader`.
+  - [x] The same read from a sub-agent is allowed.
+  - [x] A 10 KB read and a 300-line ranged read of the large file are allowed.
+  - [x] Changing `read.minBytes` in workspace config changes the outcome without restarting the session.
 
 **C-05 · Routing profiles** — C-02, C-03
 - Build: `off`, `balanced`, `strict` mapped to per-agent tool visibility and the delegation guide text.
@@ -573,9 +573,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **C-06 · Output guard** — C-03, E-08
 - Build: `onPostToolUse` truncation with spill to a session artifact and a pointer line.
 - Verify:
-  - [ ] Golden tests for head and tail truncation on text, JSON, and binary-looking output.
-  - [ ] The spilled artifact is byte-equal to the original result.
-  - [ ] Fuzz test: the returned result never exceeds the cap.
+  - [x] Golden tests for head and tail truncation on text, JSON, and binary-looking output.
+  - [x] The spilled artifact is byte-equal to the original result.
+  - [x] Fuzz test: the returned result never exceeds the cap.
 
 **C-07 · Delegator** — C-02, C-05, G0
 - Build: the `Delegator` port and the implementation chosen by D-08.
@@ -722,8 +722,8 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **M-05 · MCP permissions** — C-03, M-04
 - Build: per-tool allow, ask, deny; write-class tools default to ask; managed allowlist.
 - Verify:
-  - [ ] Policy cases for each outcome.
-  - [ ] A server absent from the managed allowlist cannot be attached, and the error names the policy.
+  - [x] Policy cases for each outcome.
+  - [x] A server absent from the managed allowlist cannot be attached, and the error names the policy.
 
 **M-06 · Health and diagnostics** — M-04
 - Build: connection status, last error, tool list, latency.
@@ -973,9 +973,9 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | C-01 | Model catalog and tiers | E-09 | done |
 | C-02 | Agent definitions | E-04 | done |
 | C-03 | Policy engine | E-04 | done |
-| C-04 | Read delegation gate | C-03, E-08 | todo |
+| C-04 | Read delegation gate | C-03, E-08 | done |
 | C-05 | Routing profiles | C-02, C-03 | done |
-| C-06 | Output guard | C-03, E-08 | todo |
+| C-06 | Output guard | C-03, E-08 | done |
 | C-07 | Delegator | C-02, C-05, G0 | todo |
 | C-08 | Usage ledger | E-07, C-01 | done |
 | C-09 | Budgets | C-08 | todo |
@@ -995,7 +995,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | M-02 | MCP presets | M-01, S-06 | todo |
 | M-03 | Secrets and OAuth | M-01, E-05 | done |
 | M-04 | Scoping and tool budgets | M-01, C-02 | done |
-| M-05 | MCP permissions | C-03, M-04 | todo |
+| M-05 | MCP permissions | C-03, M-04 | done |
 | M-06 | Health and diagnostics | M-04 | todo |
 | A-01 | App shell and engine supervision | E-05, S-05 | todo |
 | A-02 | EngineClient | E-02 | done |

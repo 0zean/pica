@@ -1,7 +1,23 @@
 import { randomUUID } from "node:crypto";
 import { performance } from "node:perf_hooks";
-import { agentTier, createEventLog, createSessionService, createUsageReport, withUsageLedger } from "@pica/core";
-import type { AgentRuntime, RuntimeHooks, SessionService, Store, TokenPrices, UsagePricing } from "@pica/core";
+import {
+  agentTier,
+  createEventLog,
+  createOutputGuard,
+  createSessionService,
+  createUsageReport,
+  withOutputGuard,
+  withUsageLedger,
+} from "@pica/core";
+import type {
+  AgentRuntime,
+  OutputGuardDeps,
+  RuntimeHooks,
+  SessionService,
+  Store,
+  TokenPrices,
+  UsagePricing,
+} from "@pica/core";
 import { registerEngineHandlers } from "./engine-handlers.ts";
 import { SocketListener } from "./listener.ts";
 import type { ConnectionLimits } from "./connection.ts";
@@ -22,6 +38,8 @@ export interface EngineSessionOptions {
   readonly hooks?: (sessionId: string) => RuntimeHooks;
   // Without prices, usage is recorded at zero credits and the savings estimate is zero.
   readonly usage?: EngineUsageOptions;
+  // C-06: truncates oversized tool results and spills them to session artifacts.
+  readonly outputGuard?: OutputGuardDeps;
 }
 
 export interface EngineOptions {
@@ -82,7 +100,7 @@ function startSessions(
     clock: options.clock ?? (() => new Date().toISOString()),
     newSessionId: options.newSessionId ?? randomUUID,
     onChanged,
-    ...(options.hooks === undefined ? {} : { hooks: options.hooks }),
+    ...sessionHooks(options),
   });
   const recovered = service.recover();
   if (!recovered.ok) {
@@ -97,4 +115,11 @@ function startSessions(
     createUsageReport({ usage: options.store.usage, reasoningPrices: usage.reasoningPrices ?? (() => null) }),
   );
   return service;
+}
+
+function sessionHooks(options: EngineSessionOptions): { readonly hooks?: (sessionId: string) => RuntimeHooks } {
+  if (options.outputGuard !== undefined) {
+    return { hooks: withOutputGuard(options.hooks, createOutputGuard(options.outputGuard)) };
+  }
+  return options.hooks === undefined ? {} : { hooks: options.hooks };
 }

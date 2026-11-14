@@ -337,16 +337,20 @@
   ],
   "C-04": [
     {
-      "check": "FakeRuntime: a main-agent read of a 200 KB file is denied with a reason naming `bulk-reader`."
+      "check": "FakeRuntime: a main-agent read of a 200 KB file is denied with a reason naming `bulk-reader`.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/sessions/pre-tool-use.test.ts && pnpm exec vitest run packages/adapters/tests/sessions/read-gate.test.ts -t 'denies a main-agent read of a 200 KB file'"
     },
     {
-      "check": "The same read from a sub-agent is allowed."
+      "check": "The same read from a sub-agent is allowed.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/sessions/read-gate.test.ts -t 'allows the same read from a sub-agent'"
     },
     {
-      "check": "A 10 KB read and a 300-line ranged read of the large file are allowed."
+      "check": "A 10 KB read and a 300-line ranged read of the large file are allowed.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/sessions/read-gate.test.ts -t 'allows a 10 KB read and a 300-line ranged read'"
     },
     {
-      "check": "Changing `read.minBytes` in workspace config changes the outcome without restarting the session."
+      "check": "Changing `read.minBytes` in workspace config changes the outcome without restarting the session.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/sessions/read-gate.test.ts -t 'applies a changed read.minBytes'"
     }
   ],
   "C-05": [
@@ -365,13 +369,16 @@
   ],
   "C-06": [
     {
-      "check": "Golden tests for head and tail truncation on text, JSON, and binary-looking output."
+      "check": "Golden tests for head and tail truncation on text, JSON, and binary-looking output.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/sessions/output-guard.golden.test.ts"
     },
     {
-      "check": "The spilled artifact is byte-equal to the original result."
+      "check": "The spilled artifact is byte-equal to the original result.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/fs/session-artifacts.test.ts packages/server/tests/sessions/output-guard.test.ts"
     },
     {
-      "check": "Fuzz test: the returned result never exceeds the cap."
+      "check": "Fuzz test: the returned result never exceeds the cap.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/sessions/output-guard.fuzz.test.ts"
     }
   ],
   "C-07": [
@@ -613,10 +620,12 @@
   ],
   "M-05": [
     {
-      "check": "Policy cases for each outcome."
+      "check": "Policy cases for each outcome.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/policy/mcp-permissions.test.ts"
     },
     {
-      "check": "A server absent from the managed allowlist cannot be attached, and the error names the policy."
+      "check": "A server absent from the managed allowlist cannot be attached, and the error names the policy.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/mcp-attach/managed-allowlist.test.ts"
     }
   ],
   "M-06": [

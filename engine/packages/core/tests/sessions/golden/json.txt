@@ -1,0 +1,18 @@
+{
+  "total": 40,
+  "items": [
+    {
+      "id": 1,
+      "name": "item-1",
+      "tags": [
+ 
+[pica] Output truncated to 320 of 4136 bytes. Full output: /artifacts/session-1/tool-output/call-json.txt (ask bulk-reader to read it).
+: 40,
+      "name": "item-40",
+      "tags": [
+        "a",
+        "b"
+      ]
+    }
+  ]
+}
