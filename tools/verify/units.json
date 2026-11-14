@@ -84,14 +84,17 @@
   "S-06": [
     {
       "check": "GitHub, Datadog, ClickUp, and Snowflake each connect and list tools; the exact endpoint and auth method used are recorded, replacing the entries in §2.2.",
-      "live": true
+      "live": true,
+      "run": "node spikes/s-06-mcp/s06.mjs connect"
     },
     {
       "check": "Tool-definition token cost per server is recorded from `contextInfo`.",
-      "live": true
+      "live": true,
+      "run": "node spikes/s-06-mcp/s06.mjs tokens"
     },
     {
-      "check": "A8 is resolved."
+      "check": "A8 is resolved.",
+      "run": "test -s docs/spikes/S-06.md && grep -q \"^| A8 .*\\*\\*Confirmed\\*\\*\" PLAN.md"
     }
   ],
   "S-07": [
