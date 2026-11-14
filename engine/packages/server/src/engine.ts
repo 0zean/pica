@@ -11,6 +11,7 @@ import {
   createSessionService,
   createUsageReport,
   emitPolicyDecisions,
+  meteredUsage,
   withAuditLog,
   withOutputGuard,
   withUsageLedger,
@@ -29,6 +30,7 @@ import type {
   Store,
   TokenPrices,
   UsagePricing,
+  UsageRepository,
   WorkspaceService,
 } from "@pica/core";
 import { registerEngineHandlers } from "./engine-handlers.ts";
@@ -37,6 +39,7 @@ import { registerMcpHealthHandlers } from "./mcp-handlers.ts";
 import { SocketListener } from "./listener.ts";
 import type { ConnectionLimits } from "./connection.ts";
 import type { Logger } from "./logger.ts";
+import type { UsageMetricsExporter } from "./metrics-export.ts";
 import { MethodRouter } from "./router.ts";
 import { registerSessionHandlers, toSessionDto } from "./session-handlers.ts";
 import { registerUsageHandlers } from "./usage-handlers.ts";
@@ -60,6 +63,8 @@ export interface EngineSessionOptions {
   readonly budget?: BudgetSettings;
   // H-02: tool calls, approvals and policy decisions are appended to this hash-chained log.
   readonly audit?: AuditLog;
+  // H-04: exports usage metrics over OTLP. Off unless given; the caller stops it.
+  readonly metricsExport?: UsageMetricsExporter;
   readonly newFanOutId?: () => string;
 }
 
@@ -136,7 +141,7 @@ function startSessions(
 ): SessionService {
   const usage = options.usage ?? {};
   const ledger = withUsageLedger(createRedactingEventLog(createEventLog(options.store.events), scrubber), {
-    usage: options.store.usage,
+    usage: ledgerUsage(options, log),
     pricing: {
       pricesFor: usage.pricesFor ?? (() => null),
       tierOf: usage.tierOf ?? agentTier({ rootAgent: "main" }),
@@ -183,6 +188,14 @@ function startSessions(
     createUsageReport({ usage: options.store.usage, reasoningPrices: usage.reasoningPrices ?? (() => null) }),
   );
   return service;
+}
+
+function ledgerUsage(options: EngineSessionOptions, log: Logger): UsageRepository {
+  if (options.metricsExport === undefined) {
+    return options.store.usage;
+  }
+  options.metricsExport.start(log);
+  return meteredUsage(options.store.usage, options.metricsExport.meter);
 }
 
 function auditedEventLog(eventLog: EventLog, options: EngineSessionOptions, log: Logger): EventLog {
