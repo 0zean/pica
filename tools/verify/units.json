@@ -564,13 +564,16 @@
   ],
   "R-10": [
     {
-      "check": "A two-repo change set creates two worktrees and two branches with the same name."
+      "check": "A two-repo change set creates two worktrees and two branches with the same name.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/changesets/create.test.ts"
     },
     {
-      "check": "Against a stub API, both pull requests are created and each body links the other."
+      "check": "Against a stub API, both pull requests are created and each body links the other.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/changesets/body.test.ts && pnpm exec vitest run packages/adapters/tests/changesets/pull-requests.test.ts -t 'each body links the other'"
     },
     {
-      "check": "A failure creating the second pull request reports partial state without rolling back the first."
+      "check": "A failure creating the second pull request reports partial state without rolling back the first.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/changesets/pull-requests.test.ts -t 'partial state|failed push'"
     }
   ],
   "R-11": [
