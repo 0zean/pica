@@ -5,6 +5,7 @@ export * from "./errors.ts";
 export * from "./framing.ts";
 export * from "./listener.ts";
 export * from "./logger.ts";
+export * from "./paths.ts";
 export * from "./router.ts";
 export * from "./client-requests.ts";
 export * from "./session-handlers.ts";

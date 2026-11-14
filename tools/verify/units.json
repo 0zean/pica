@@ -280,13 +280,16 @@
   ],
   "E-10": [
     {
-      "check": "End-to-end tests against an engine with FakeRuntime compare stdout to golden files."
+      "check": "End-to-end tests against an engine with FakeRuntime compare stdout to golden files.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/cli/tests/e2e.test.ts"
     },
     {
-      "check": "`pica` starts an engine when none is running and reuses one that is."
+      "check": "`pica` starts an engine when none is running and reuses one that is.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/cli/tests/engine-lifecycle.test.ts"
     },
     {
-      "check": "Non-zero exit codes are distinct for usage error, engine error, and session failure."
+      "check": "Non-zero exit codes are distinct for usage error, engine error, and session failure.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/cli/tests/exit-codes.test.ts"
     }
   ],
   "C-01": [

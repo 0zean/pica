@@ -525,9 +525,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **E-10 · CLI** — E-08
 - Build: `pica session new|send|attach|list`, `pica usage`, `--json` output.
 - Verify:
-  - [ ] End-to-end tests against an engine with FakeRuntime compare stdout to golden files.
-  - [ ] `pica` starts an engine when none is running and reuses one that is.
-  - [ ] Non-zero exit codes are distinct for usage error, engine error, and session failure.
+  - [x] End-to-end tests against an engine with FakeRuntime compare stdout to golden files.
+  - [x] `pica` starts an engine when none is running and reuses one that is.
+  - [x] Non-zero exit codes are distinct for usage error, engine error, and session failure.
 
 **Milestone M1 — headless slice:** **(live)** `pica session new --repo . "summarize the README"` completes against Copilot, and `pica usage` shows the tokens.
 
@@ -969,7 +969,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | E-07 | Event normalization and log | E-03, E-06 | done |
 | E-08 | Session service | E-05, E-07 | done |
 | E-09 | Copilot adapter | E-06 | done |
-| E-10 | CLI | E-08 | todo |
+| E-10 | CLI | E-08 | done |
 | C-01 | Model catalog and tiers | E-09 | done |
 | C-02 | Agent definitions | E-04 | done |
 | C-03 | Policy engine | E-04 | done |

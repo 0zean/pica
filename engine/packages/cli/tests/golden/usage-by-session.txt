@@ -1,0 +1,2 @@
+SESSION    INPUT  CACHED  OUTPUT  CREDITS
+session-1  2000   1200    150     0
