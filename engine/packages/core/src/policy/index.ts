@@ -5,6 +5,8 @@ export {
   mainAgent,
   type CommandRule,
   type LineRange,
+  type ManagedMcpAllowlist,
+  type ManagedMcpServer,
   type ManagedRule,
   type PolicyConfig,
   type PolicyContext,

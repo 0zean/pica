@@ -9,6 +9,8 @@ export type {
   SessionSendMode,
   SessionWorktreeInfo,
 } from "./info.ts";
+export { createReadGate } from "./pre-tool-use.ts";
+export type { ReadGateDeps } from "./pre-tool-use.ts";
 export { createSessionService } from "./service.ts";
 export type { CreateSessionRequest, SessionService, SessionServiceDeps } from "./service.ts";
 export { isLiveSessionState, sessionStates, sessionTransitions, sessionTriggers, transitionSession } from "./transitions.ts";

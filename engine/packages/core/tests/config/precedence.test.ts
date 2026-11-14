@@ -77,7 +77,7 @@ describe("config precedence", () => {
       minBytesLayer("managed"),
       { layer: "repo", source: "repo.jsonc", value: { routing: { delegation: { read: { minBytes: 1, rangeExemptLines: 50 } } } } },
     ]);
-    expect(resolved.config.routing.delegation.read).toEqual({ minBytes: valueFor.managed, rangeExemptLines: 50 });
+    expect(resolved.config.routing.delegation.read).toEqual({ minBytes: valueFor.managed, rangeExemptLines: 50, exclude: [] });
     expect(resolved.values.get("routing.delegation.read.rangeExemptLines")).toEqual({
       keyPath: "routing.delegation.read.rangeExemptLines",
       value: 50,
@@ -100,7 +100,7 @@ describe("config precedence", () => {
       routing: {
         profile: "balanced",
         tiers: { reasoning: "auto", worker: "auto" },
-        delegation: { read: { minBytes: 32768, rangeExemptLines: 400 }, output: { maxBytes: 16384 } },
+        delegation: { read: { minBytes: 32768, rangeExemptLines: 400, exclude: [] }, output: { maxBytes: 16384 } },
       },
       budget: { sessionCredits: 300, workspaceDailyCredits: 3000 },
       permissions: { mode: "ask" },

@@ -23,6 +23,12 @@ const agent = fc.constantFrom("main", "bulk-reader", "code-writer", "repo-scout"
 const tool = fc.constantFrom("view", "edit", "create", "grep", "bash", "github-search", "think");
 const server = fc.constantFrom("github", "linear", "sentry");
 const bytes = fc.nat({ max: 1_000_000 });
+const mcpToolName = fc.constantFrom("search_issues", "create_issue", "drop_table");
+const mcpToolRule = fc.record({
+  tool: fc.tuple(server, fc.oneof(mcpToolName, fc.constant("*"))).map(([id, name]) => `${id}/${name}`),
+  permission: fc.constantFrom("allow", "ask", "deny"),
+});
+const managedMcpAllowlist = fc.record({ id: fc.constant("org-mcp"), servers: fc.subarray([{ id: "github" }, { id: "linear" }]) });
 
 const target: fc.Arbitrary<ToolTarget> = fc.oneof(
   fc.record(
@@ -37,7 +43,10 @@ const target: fc.Arbitrary<ToolTarget> = fc.oneof(
   fc.record({ kind: fc.constant("write" as const), path }),
   fc.record({ kind: fc.constant("search" as const), paths: fc.array(path, { maxLength: 3 }) }),
   fc.record({ kind: fc.constant("shell" as const), command, cwd: path }),
-  fc.record({ kind: fc.constant("mcp" as const), server }),
+  fc.record(
+    { kind: fc.constant("mcp" as const), server, tool: mcpToolName, readOnly: fc.boolean() },
+    { requiredKeys: ["kind", "server"] },
+  ),
   fc.constant({ kind: "other" as const }),
 );
 
@@ -66,18 +75,29 @@ const config: fc.Arbitrary<PolicyConfig> = fc.record({
   routing: fc.record({
     profile: fc.constantFrom("off", "balanced", "strict"),
     delegation: fc.record({
-      read: fc.record({ minBytes: bytes, rangeExemptLines: fc.integer({ min: 1, max: 2000 }) }),
+      read: fc.record({
+        minBytes: bytes,
+        rangeExemptLines: fc.integer({ min: 1, max: 2000 }),
+        exclude: fc.array(fc.constantFrom("**", "*.sql", "/a/**"), { maxLength: 2 }),
+      }),
       output: fc.record({ maxBytes: bytes }),
     }),
   }),
-  permissions: fc.record({ mode: fc.constantFrom("ask", "auto") }),
+  permissions: fc.record(
+    { mode: fc.constantFrom("ask", "auto"), mcpTools: fc.array(mcpToolRule, { maxLength: 3 }) },
+    { requiredKeys: ["mode"] },
+  ),
 });
 
-export const contextArbitrary: fc.Arbitrary<PolicyContext> = fc.record({
+export const contextArbitrary: fc.Arbitrary<PolicyContext> = fc.record(
+  {
   cwd: path,
   writeRoots: fc.array(path, { maxLength: 3 }),
   referenceRoots: fc.array(path, { maxLength: 3 }),
   config,
   managed: fc.array(managedRuleArbitrary, { maxLength: 3 }),
+  managedMcpAllowlist,
   commandDenyList: fc.subarray([...defaultCommandDenyList]),
-});
+  },
+  { requiredKeys: ["cwd", "writeRoots", "referenceRoots", "config", "managed", "commandDenyList"] },
+);
