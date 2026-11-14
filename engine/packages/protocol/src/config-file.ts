@@ -18,6 +18,10 @@ const TierSettings = z.strictObject({
 const ReadDelegation = z.strictObject({
   minBytes: ByteCount.default(32768).describe("Main-agent reads at or above this size go to bulk-reader"),
   rangeExemptLines: z.number().int().positive().default(400).describe("Ranged reads up to this many lines stay with the main agent"),
+  exclude: z
+    .array(z.string().min(1))
+    .default([])
+    .describe("Glob patterns (relative to a session repo root, or absolute) the main agent may read whole at any size"),
 });
 
 const OutputDelegation = z.strictObject({

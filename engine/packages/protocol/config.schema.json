@@ -58,6 +58,15 @@
                   "type": "integer",
                   "exclusiveMinimum": 0,
                   "maximum": 9007199254740991
+                },
+                "exclude": {
+                  "default": [],
+                  "description": "Glob patterns (relative to a session repo root, or absolute) the main agent may read whole at any size",
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
                 }
               },
               "additionalProperties": false
