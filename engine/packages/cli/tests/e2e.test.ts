@@ -35,6 +35,7 @@ describe("pica against a FakeRuntime engine", { timeout: PROCESS_TEST_TIMEOUT_MS
     await expectGolden("session-attach-after.txt", await ok(["session", "attach", "session-1", "--after", "12"]));
     await expectGolden("usage.txt", await ok(["usage"]));
     await expectGolden("usage-by-session.txt", await ok(["usage", "--by", "session"]));
+    await expectGolden("usage-by-agent.txt", await ok(["usage", "--by", "agent", "--session", "session-1"]));
   });
 
   it("prints one JSON object per line with --json", async () => {

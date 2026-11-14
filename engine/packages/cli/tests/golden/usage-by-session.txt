@@ -1,2 +1,3 @@
-SESSION    INPUT  CACHED  OUTPUT  CREDITS
-session-1  2000   1200    150     0
+SESSION    CALLS  INPUT  CACHED  OUTPUT  CREDITS
+session-1  3      2000   1200    150     0.7235
+Savings vs. all-reasoning-tier (estimate): 0.1375 credits

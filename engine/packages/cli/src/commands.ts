@@ -1,11 +1,10 @@
 import type { SessionEvent } from "@pica/protocol";
-import type { Command, UsageGrouping } from "./args.ts";
+import type { Command } from "./args.ts";
 import type { EngineConnection } from "./client.ts";
 import { EngineError, SessionFailure } from "./errors.ts";
 import { follow, isBusy, isSessionEnd, isTurnEnd } from "./follow.ts";
 import type { Followed, Until } from "./follow.ts";
 import { renderEvent, renderSessions, renderUsage } from "./render.ts";
-import type { UsageRow } from "./render.ts";
 
 export interface Output {
   readonly json: boolean;
@@ -161,51 +160,11 @@ async function sessionList(
   out.write(out.json ? JSON.stringify({ sessions: result.sessions }) : renderSessions(result.sessions));
 }
 
-// Totals come from each session's `usage.recorded` events until the engine serves `usage.rollup`.
 async function usage(command: Extract<Command, { kind: "usage" }>, connection: EngineConnection, out: Output): Promise<void> {
-  const sessions =
-    command.sessionId === undefined
-      ? (await connection.request("session.list", command.workspaceId === undefined ? {} : { workspaceId: command.workspaceId }))
-          .sessions
-      : [(await connection.request("session.get", { sessionId: command.sessionId })).session];
-  const totals = new Map<string, UsageRow>();
-  for (const session of sessions) {
-    await follow(
-      connection,
-      session.id,
-      0,
-      (event) => {
-        if (event.type === "usage.recorded") {
-          add(totals, usageKey(command.groupBy, event.payload), event.payload);
-        }
-      },
-      (subscribed) => Promise.resolve({ kind: "seq", seq: subscribed.lastSeq }),
-    );
-  }
-  const rows = [...totals.values()].sort((a, b) => a.key.localeCompare(b.key));
-  out.write(out.json ? JSON.stringify({ groupBy: command.groupBy, rows }) : renderUsage(command.groupBy, rows));
-}
-
-type UsageRecord = Extract<SessionEvent, { type: "usage.recorded" }>["payload"];
-
-function usageKey(groupBy: UsageGrouping, record: UsageRecord): string {
-  switch (groupBy) {
-    case "session":
-      return record.sessionId;
-    case "model":
-      return record.model;
-    case "agent":
-      return record.agent;
-  }
-}
-
-function add(totals: Map<string, UsageRow>, key: string, record: UsageRecord): void {
-  const row = totals.get(key) ?? { key, inputTokens: 0, cachedInputTokens: 0, outputTokens: 0, credits: 0 };
-  totals.set(key, {
-    key,
-    inputTokens: row.inputTokens + record.inputTokens,
-    cachedInputTokens: row.cachedInputTokens + record.cachedInputTokens,
-    outputTokens: row.outputTokens + record.outputTokens,
-    credits: row.credits + record.credits,
+  const result = await connection.request("usage.rollup", {
+    groupBy: command.groupBy,
+    ...(command.sessionId === undefined ? {} : { sessionId: command.sessionId }),
+    ...(command.workspaceId === undefined ? {} : { workspaceId: command.workspaceId }),
   });
+  out.write(out.json ? JSON.stringify({ groupBy: command.groupBy, ...result }) : renderUsage(command.groupBy, result));
 }

@@ -1,3 +1,5 @@
+· idle → running
+> now deploy it
 [main] Deploying.
 $ model-a in 500 cached 400 out 20
 ! runtime.quota_exhausted: Monthly premium requests are used up.

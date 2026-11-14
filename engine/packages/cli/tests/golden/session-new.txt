@@ -7,5 +7,7 @@ Session session-1
 ✓ view (28 bytes)
 $ model-a in 1200 cached 800 out 90
 [main] The README describes the Acme payments API.
+↳ bulk-reader started on model-b
 $ model-b in 300 cached 0 out 40
+↳ bulk-reader done: 340 tokens
 · running → idle

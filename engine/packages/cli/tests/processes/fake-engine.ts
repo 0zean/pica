@@ -41,6 +41,13 @@ store.value.repos.save({
 });
 store.value.workspaces.save({ id: "ws-1", name: "Payments", sources: [], pinnedRepoIds: [], settingsOverrides: {} });
 
+// Credits per million tokens; model-a is priced as the reasoning tier, model-b as a worker.
+const reasoningPrices = { input: 300, cachedInput: 30, output: 1500 };
+const prices = new Map([
+  ["model-a", reasoningPrices],
+  ["model-b", { input: 25, cachedInput: 2.5, output: 125 }],
+]);
+
 const ids = sequentialIds();
 const listener = await startEngine({
   socketPath: required("--socket", values.socket),
@@ -54,6 +61,7 @@ const listener = await startEngine({
     }),
     clock: steppingClock("2026-11-14T09:00:00.000Z"),
     newSessionId: () => ids("session"),
+    usage: { pricesFor: (model) => prices.get(model) ?? null, reasoningPrices: () => reasoningPrices },
   },
 });
 appendFileSync(required("PICA_TEST_STARTS", process.env["PICA_TEST_STARTS"]), `${String(process.pid)}\n`);

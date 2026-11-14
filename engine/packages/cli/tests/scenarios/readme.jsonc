@@ -1,4 +1,4 @@
-// Two turns: a summary that reads a file, then a follow-up that fails partway.
+// Two turns: a summary that reads a file and delegates to a worker, then a follow-up that fails partway.
 {
   "version": 1,
   "models": [
@@ -13,7 +13,12 @@
         { "type": "toolCall", "name": "view", "arguments": { "path": "README.md" }, "result": "# Acme API\nPayments service." },
         { "type": "usage", "model": "model-a", "inputTokens": 1200, "cachedInputTokens": 800, "outputTokens": 90 },
         { "type": "text", "content": "The README describes the Acme payments API." },
-        { "type": "usage", "model": "model-b", "inputTokens": 300, "outputTokens": 40 }
+        {
+          "type": "subagent",
+          "agentName": "bulk-reader",
+          "model": "model-b",
+          "steps": [{ "type": "usage", "model": "model-b", "inputTokens": 300, "outputTokens": 40 }]
+        }
       ]
     },
     {

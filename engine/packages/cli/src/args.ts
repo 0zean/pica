@@ -1,10 +1,10 @@
 import { parseArgs } from "node:util";
 import type { ParseArgsConfig } from "node:util";
-import { RoutingProfile, SendMode } from "@pica/protocol";
+import { RoutingProfile, SendMode, UsageGroupBy } from "@pica/protocol";
 import type * as z from "zod";
 import { UsageError } from "./errors.ts";
 
-export type UsageGrouping = "session" | "model" | "agent";
+export type UsageGrouping = z.output<typeof UsageGroupBy>;
 
 export type Command =
   | { readonly kind: "help" }
@@ -45,8 +45,8 @@ Commands:
       Print the session's events after <seq> (default 0), then the running turn if there is one.
       --follow keeps printing until the session ends.
   session list [--workspace <id>]
-  usage [--session <id>] [--workspace <id>] [--by session|model|agent]
-      Token and credit totals from the sessions' usage events.
+  usage [--session <id>] [--workspace <id>] [--by session|agent|model|workspace|day]
+      Calls, tokens and credits from the engine's usage ledger, with the estimated savings.
 
 Options:
   --json           Machine-readable output: one JSON object per line.
@@ -64,7 +64,7 @@ const globalOptions = {
 } as const satisfies ParseArgsConfig["options"];
 
 const sendModes = SendMode.options;
-const groupings: readonly UsageGrouping[] = ["session", "model", "agent"];
+const groupings = UsageGroupBy.options;
 
 export function parseInvocation(argv: readonly string[]): Invocation {
   const [first, second] = commandWords(argv);

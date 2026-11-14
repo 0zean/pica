@@ -1,2 +1,2 @@
 ID         WORKSPACE  STATE  PROFILE   EVENTS  UPDATED
-session-1  ws-1       idle   balanced  10      2026-11-14T09:00:00.004Z
+session-1  ws-1       idle   balanced  12      2026-11-14T09:00:00.004Z

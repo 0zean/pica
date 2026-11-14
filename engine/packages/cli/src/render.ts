@@ -2,7 +2,7 @@ import type { SessionEvent } from "@pica/protocol";
 import type { Result } from "./client.ts";
 
 type SessionDto = Result<"session.get">["session"];
-export type UsageRow = Result<"usage.rollup">["rows"][number];
+type UsageRollup = Result<"usage.rollup">;
 
 // One line per event, or none for events that only matter to a live UI (deltas, context size).
 export function renderEvent(event: SessionEvent): string | undefined {
@@ -66,20 +66,22 @@ export function renderSessions(sessions: readonly SessionDto[]): string {
   );
 }
 
-export function renderUsage(header: string, rows: readonly UsageRow[]): string {
-  if (rows.length === 0) {
+export function renderUsage(header: string, rollup: UsageRollup): string {
+  if (rollup.rows.length === 0) {
     return "No usage recorded.";
   }
-  return table(
-    [header.toUpperCase(), "INPUT", "CACHED", "OUTPUT", "CREDITS"],
-    rows.map((row) => [
+  const rows = table(
+    [header.toUpperCase(), "CALLS", "INPUT", "CACHED", "OUTPUT", "CREDITS"],
+    rollup.rows.map((row) => [
       row.key,
+      String(row.calls),
       String(row.inputTokens),
       String(row.cachedInputTokens),
       String(row.outputTokens),
       String(row.credits),
     ]),
   );
+  return `${rows}\nSavings vs. all-reasoning-tier (estimate): ${String(rollup.savings.credits)} credits`;
 }
 
 function table(header: readonly string[], rows: readonly (readonly string[])[]): string {
