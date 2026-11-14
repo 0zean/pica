@@ -18,17 +18,21 @@
   "S-02": [
     {
       "check": "Hook invocations for main-agent and sub-agent tool calls are distinguishable; the distinguishing field is recorded.",
-      "live": true
+      "live": true,
+      "run": "node spikes/s-02-hooks/s02.mjs probe"
     },
     {
       "check": "Over 20 trials asking about a 200 KB fixture file, at least 19 end with the sub-agent reading the file and the main agent never receiving its content.",
-      "live": true
+      "live": true,
+      "run": "node spikes/s-02-hooks/s02.mjs trials 20"
     },
     {
-      "check": "The built-in tool names and argument shapes for read, write, edit, search, and shell are recorded in `docs/spikes/S-02-tools.json`."
+      "check": "The built-in tool names and argument shapes for read, write, edit, search, and shell are recorded in `docs/spikes/S-02-tools.json`.",
+      "run": "node spikes/s-02-hooks/s02.mjs check-tools"
     },
     {
-      "check": "A2 and A3 are resolved and D-08 is confirmed or changed."
+      "check": "A2 and A3 are resolved and D-08 is confirmed or changed.",
+      "run": "test -s docs/spikes/S-02.md && grep -q \"^| A2 .*Confirmed\" PLAN.md && grep -q \"^| A3 .*Confirmed\" PLAN.md && grep -q \"^| D-08 .*S-02\" PLAN.md"
     }
   ],
   "S-03": [
@@ -55,18 +59,22 @@
   "S-04": [
     {
       "check": "A session rooted in repo A reads a file in repo B after host approval; the mechanism is recorded.",
-      "live": true
+      "live": true,
+      "run": "node --experimental-strip-types --disable-warning=ExperimentalWarning spikes/s-04-multi-root/s04.mjs read"
     },
     {
       "check": "A write to repo B is blocked by the hook, including via a shell command.",
-      "live": true
+      "live": true,
+      "run": "node --experimental-strip-types --disable-warning=ExperimentalWarning spikes/s-04-multi-root/s04.mjs write"
     },
     {
       "check": "Two sessions with different working directories run concurrently on one client without cross-talk.",
-      "live": true
+      "live": true,
+      "run": "node --experimental-strip-types --disable-warning=ExperimentalWarning spikes/s-04-multi-root/s04.mjs concurrent"
     },
     {
-      "check": "A6 is resolved."
+      "check": "A6 is resolved.",
+      "run": "test -s docs/spikes/S-04.md && grep -q \"^| A6 .*Confirmed\" PLAN.md && node --experimental-strip-types --disable-warning=ExperimentalWarning spikes/s-04-multi-root/s04.mjs guard"
     }
   ],
   "S-05": [
