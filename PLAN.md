@@ -53,7 +53,7 @@ Facts the design depends on, with sources in [§13](#13-sources). Items marked *
 - **SDK.** The Copilot SDK went GA in June 2026 with official clients for TypeScript, Python, Go, .NET, Java, and Rust. There is no Swift client [3][4]. It drives the Copilot CLI runtime over JSON-RPC; the Node package bundles the CLI and manages it as a child process [4].
 - **Auth.** Signed-in user (CLI login), OAuth GitHub App user tokens, `COPILOT_GITHUB_TOKEN`/`GH_TOKEN`/`GITHUB_TOKEN`, or BYOK. A Copilot subscription is required unless using BYOK [4].
 - **Sub-agents.** `customAgents` entries take `name`, `prompt`, `description`, `tools`, `mcpServers`, `skills`, `infer`, **`model`**, and `reasoningEffort`. A sub-agent can run on a different model than its parent. `defaultAgent.excludedTools` hides tools from the main agent while leaving them available to sub-agents. Events: `subagent.started/completed/failed` with `toolCallId`, `model`, `totalTokens` [5].
-- **Hooks.** SDK callbacks `onPreToolUse` (returns `permissionDecision` allow/deny/ask and a reason), `onPostToolUse` (returns `modifiedResult`), `onUserPromptSubmitted`, `onSessionStart` (returns `additionalContext`), `onSessionEnd`, `onErrorOccurred` [6]. The CLI hooks reference says hooks firing inside a sub-agent carry `agentId`, `agentType`, `parentAgentId` [7]. Whether the SDK callbacks receive the same for sub-agent tool calls is *unverified* (S-02).
+- **Hooks.** SDK callbacks `onPreToolUse` (returns `permissionDecision` allow/deny/ask and a reason), `onPostToolUse` (returns `modifiedResult`), `onUserPromptSubmitted`, `onSessionStart` (returns `additionalContext`), `onSessionEnd`, `onErrorOccurred` [6]. The CLI hooks reference says hooks firing inside a sub-agent carry `agentId`, `agentType`, `parentAgentId` [7]. S-02 confirmed the SDK callbacks receive them: a sub-agent's tool calls carry `agentId`, `agentType` (the custom agent's name) and `parentAgentId`, and main-agent calls carry none ([findings](docs/spikes/S-02.md)).
 - **Usage.** `assistant.usage` fires per model call including sub-agent calls, with `model`, `inputTokens`, `outputTokens`. `session.usage_info` gives `currentTokens`/`tokenLimit`. `session.usage.getMetrics` returns totals and per-model metrics. `models.list` returns `billing.tokenPrices`. `session.metadata.contextInfo` breaks context into system, conversation, and tool-definition tokens [8].
 - **Budgets.** `sessionLimits.maxAiCredits` is a soft cap checked after each model call; exhaustion raises `session_limits_exhausted.requested` and blocks the next call until answered [9].
 - **Sessions.** Persisted under `~/.copilot/session-state/{sessionId}/`; resumable by ID with `workingDirectory`; no built-in session locking [10].
@@ -80,9 +80,9 @@ REST endpoints: `GET /user/teams`, `GET /orgs/{org}/teams/{team_slug}/repos` (pa
 | # | Assumption | Spike | If false |
 |---|---|---|---|
 | A1 | The signed-in user's Copilot plan (any of Free, Pro, Pro+, Business, Enterprise) permits CLI/SDK use and returns a model list; token prices may be absent on some plans (D-16). **Confirmed** for Free by S-01: sign-in works, `models.list` offers only the virtual `auto` model with no prices, and a prompt on the default routes to a concrete model and reports usage in nano-AIU. Business was not tested: it cannot be signed in from the development Mac ([findings](docs/spikes/S-01.md)) | S-01 | Ask the org admin to enable it; BYOK as a stopgap |
-| A2 | SDK `onPreToolUse` fires for sub-agent tool calls and identifies the calling agent | S-02 | Delegate through engine-managed child sessions, where identity is known by construction |
-| A3 | A deny with a reason reliably makes the main agent delegate | S-02 | Expose an engine `delegate` tool and remove the direct large-read path from the main agent |
-| A4 | A sub-agent's `model` override is honored and billed at that model's rate | S-03 | Engine-managed child sessions with an explicit model |
+| A2 | SDK `onPreToolUse` fires for sub-agent tool calls and identifies the calling agent. **Confirmed** by S-02: sub-agent calls carry `agentId` (equal to the `subagent.started` envelope `agentId`), `agentType` and `parentAgentId`; main-agent calls have no `agentId` ([findings](docs/spikes/S-02.md)) | S-02 | Delegate through engine-managed child sessions, where identity is known by construction |
+| A3 | A deny with a reason reliably makes the main agent delegate. **Confirmed** by S-02 on Copilot Free (`auto`): 20 of 20 trials on a 219 KB file ended with `bulk-reader` reading it and no file content reaching the main agent, each after a single deny ([findings](docs/spikes/S-02.md)) | S-02 | Expose an engine `delegate` tool and remove the direct large-read path from the main agent |
+| A4 | A sub-agent's `model` override is honored and billed at that model's rate. S-02 found that on Free it is not: `subagent.started.model` reports the override but `assistant.usage.model` is the `auto` pick, with no error ([findings](docs/spikes/S-02.md)) | S-03 | Engine-managed child sessions with an explicit model |
 | A5 | Usage can be attributed per agent | S-03 | Attribute by `toolCallId` window, or by child session |
 | A6 | A session can read outside its `workingDirectory` once the host approves. **Confirmed** by S-04: the runtime raises a `read` permission request for the path and reads it on `approve-once`; `additionalDirectories` halves the requests but does not remove them. A `preToolUse` deny blocks file-tool and shell writes to a reference root, but R-07's shell parser misses argument writes such as `touch` and `cp` ([findings](docs/spikes/S-04.md)) | S-04 | Session root directory of symlinks, or cross-repo access only through engine tools |
 | A7 | Node, the engine bundle, and the Copilot CLI can be ad-hoc signed inside the app and run on a Mac without developer tools after a GitHub Releases download; Developer ID signing and notarization come later (D-17) | S-05 | Install the engine separately (pkg or Homebrew) |
@@ -102,7 +102,7 @@ REST endpoints: `GET /user/teams`, `GET /orgs/{org}/teams/{team_slug}/repos` (pa
 | D-05 | Protocol types are defined once (zod → JSON Schema) and generated for Swift | One source of truth; drift fails CI | 2026-11-12 |
 | D-06 | Sessions are event-sourced into SQLite with per-session sequence numbers | Crash recovery, reconnect without gaps, and deterministic replay tests | 2026-11-12 |
 | D-07 | Engine follows ports-and-adapters; `core` has no I/O imports | Lets a scripted fake runtime stand in for Copilot in every test | 2026-11-12 |
-| D-08 | Delegation uses runtime-native `customAgents` if S-02/S-03 pass, otherwise engine-managed child sessions; both sit behind one `Delegator` port | Keeps the fallback cheap | 2026-11-12 |
+| D-08 | Delegation uses runtime-native `customAgents` if S-02/S-03 pass, otherwise engine-managed child sessions; both sit behind one `Delegator` port. S-02 passed: hooks identify the sub-agent and a deny makes the main agent delegate through `task`, so enforcement keeps `customAgents`. The per-agent `model` half is S-03's; on Free the override is not honored ([S-02](docs/spikes/S-02.md)) | Keeps the fallback cheap | 2026-11-14 |
 | D-09 | Model IDs are never hard-coded; tiers resolve against `models.list` | Model availability is set by org policy and changes often | 2026-11-12 |
 | D-10 | Secrets live in the macOS Keychain, brokered by the app; the engine holds references only. CLI mode reads environment variables | Keychain items scoped to the signed app; nothing sensitive in config or the database | 2026-11-12 |
 | D-11 | Config is layered JSONC with a published JSON Schema | Matches the MCP and Copilot config ecosystem; editor validation for free | 2026-11-12 |
@@ -394,10 +394,10 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **S-02 · Hook enforcement and delegation** — S-01
 - Build: session with a `bulk-reader` custom agent and an `onPreToolUse` that denies main-agent reads over 32 KB.
 - Verify:
-  - [ ] **(live)** Hook invocations for main-agent and sub-agent tool calls are distinguishable; the distinguishing field is recorded.
-  - [ ] **(live)** Over 20 trials asking about a 200 KB fixture file, at least 19 end with the sub-agent reading the file and the main agent never receiving its content.
-  - [ ] The built-in tool names and argument shapes for read, write, edit, search, and shell are recorded in `docs/spikes/S-02-tools.json`.
-  - [ ] A2 and A3 are resolved and D-08 is confirmed or changed.
+  - [x] **(live)** Hook invocations for main-agent and sub-agent tool calls are distinguishable; the distinguishing field is recorded.
+  - [x] **(live)** Over 20 trials asking about a 200 KB fixture file, at least 19 end with the sub-agent reading the file and the main agent never receiving its content.
+  - [x] The built-in tool names and argument shapes for read, write, edit, search, and shell are recorded in `docs/spikes/S-02-tools.json`.
+  - [x] A2 and A3 are resolved and D-08 is confirmed or changed.
 
 **S-03 · Per-agent model and attribution** — S-02
 - Verify:
@@ -953,7 +953,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | ID | Unit | Depends on | Status |
 |---|---|---|---|
 | S-01 | Runtime access and auth | — | done |
-| S-02 | Hook enforcement and delegation | S-01 | todo |
+| S-02 | Hook enforcement and delegation | S-01 | done |
 | S-03 | Per-agent model and attribution | S-02 | todo |
 | S-04 | Multi-root access | S-01 | done |
 | S-05 | Packaging | — | todo |

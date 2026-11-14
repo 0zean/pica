@@ -1,0 +1,3157 @@
+{
+  "requestedSubagentModel": "claude-haiku-4.5",
+  "summary": {
+    "trial": 0,
+    "seconds": 9.7,
+    "reachedIdle": true,
+    "delegated": true,
+    "subagents": [
+      {
+        "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+        "agentName": "bulk-reader",
+        "agentType": "bulk-reader",
+        "model": "claude-haiku-4.5",
+        "modelSelectionSource": "agent_definition_default",
+        "toolCallId": "call_QCG2nRfNoHJLpKRsSgya3X6v"
+      }
+    ],
+    "subReadFixture": true,
+    "mainDenies": [
+      {
+        "tool": "view",
+        "gate": "view"
+      }
+    ],
+    "mainToolCalls": [
+      "view",
+      "task"
+    ],
+    "subToolCalls": [
+      "view",
+      "grep"
+    ],
+    "taskArgs": [
+      {
+        "description": "Find retention_days for the specified service in registry file",
+        "prompt": "Read services-registry.txt and find the entry for kestrel-ledger-prod-77, then report its retention_days value only as a number.",
+        "agent_type": "bulk-reader",
+        "name": "lookup-retention",
+        "mode": "sync"
+      }
+    ],
+    "leakedToMain": 0,
+    "answer": "776",
+    "finalAnswer": "776",
+    "correct": true,
+    "usage": [
+      {
+        "model": "mai-code-1.1-flash",
+        "nanoAiu": 100264000,
+        "input": 11372,
+        "output": 73
+      },
+      {
+        "model": "mai-code-1.1-flash",
+        "nanoAiu": 33884000,
+        "input": 11509,
+        "output": 73
+      },
+      {
+        "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+        "model": "mai-code-1.1-flash",
+        "nanoAiu": 33640000,
+        "input": 1286,
+        "output": 66
+      },
+      {
+        "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+        "model": "mai-code-1.1-flash",
+        "nanoAiu": 191040000,
+        "input": 8304,
+        "output": 208
+      },
+      {
+        "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+        "model": "mai-code-1.1-flash",
+        "nanoAiu": 24356000,
+        "input": 8599,
+        "output": 37
+      },
+      {
+        "model": "mai-code-1.1-flash",
+        "nanoAiu": 25100000,
+        "input": 11593,
+        "output": 5
+      }
+    ],
+    "errors": [],
+    "hookAgentIdsMatchSubagentStarted": true,
+    "pass": true
+  },
+  "quotaBefore": {
+    "chat": {
+      "isUnlimitedEntitlement": false,
+      "entitlementRequests": 200,
+      "usedRequests": 0,
+      "usageAllowedWithExhaustedQuota": false,
+      "overage": 0,
+      "overageAllowedWithExhaustedQuota": false,
+      "remainingPercentage": 99.8,
+      "resetDate": "2026-11-14T22:32:04.379Z",
+      "hasQuota": true,
+      "tokenBasedBilling": true
+    },
+    "completions": {
+      "isUnlimitedEntitlement": false,
+      "entitlementRequests": 2000,
+      "usedRequests": 10,
+      "usageAllowedWithExhaustedQuota": false,
+      "overage": 0,
+      "overageAllowedWithExhaustedQuota": false,
+      "remainingPercentage": 99.5,
+      "resetDate": "2026-11-14T22:32:04.379Z",
+      "hasQuota": true,
+      "tokenBasedBilling": true
+    },
+    "premium_interactions": {
+      "isUnlimitedEntitlement": false,
+      "entitlementRequests": 0,
+      "usedRequests": 0,
+      "usageAllowedWithExhaustedQuota": false,
+      "overage": 0,
+      "overageAllowedWithExhaustedQuota": false,
+      "remainingPercentage": 0,
+      "resetDate": "2026-11-14T22:32:04.379Z",
+      "hasQuota": false,
+      "tokenBasedBilling": true
+    }
+  },
+  "quotaAfter": {
+    "chat": {
+      "isUnlimitedEntitlement": false,
+      "entitlementRequests": 200,
+      "usedRequests": 0,
+      "usageAllowedWithExhaustedQuota": false,
+      "overage": 0,
+      "overageAllowedWithExhaustedQuota": false,
+      "remainingPercentage": 99.8,
+      "resetDate": "2026-11-14T22:32:04.379Z",
+      "hasQuota": true,
+      "tokenBasedBilling": true
+    },
+    "completions": {
+      "isUnlimitedEntitlement": false,
+      "entitlementRequests": 2000,
+      "usedRequests": 10,
+      "usageAllowedWithExhaustedQuota": false,
+      "overage": 0,
+      "overageAllowedWithExhaustedQuota": false,
+      "remainingPercentage": 99.5,
+      "resetDate": "2026-11-14T22:32:04.379Z",
+      "hasQuota": true,
+      "tokenBasedBilling": true
+    },
+    "premium_interactions": {
+      "isUnlimitedEntitlement": false,
+      "entitlementRequests": 0,
+      "usedRequests": 0,
+      "usageAllowedWithExhaustedQuota": false,
+      "overage": 0,
+      "overageAllowedWithExhaustedQuota": false,
+      "remainingPercentage": 0,
+      "resetDate": "2026-11-14T22:32:04.379Z",
+      "hasQuota": false,
+      "tokenBasedBilling": true
+    }
+  },
+  "fixtureBytes": 224278,
+  "prompt": "In services-registry.txt in the current directory, what is the retention_days value for kestrel-ledger-prod-77? Reply with just the number.",
+  "hooks": [
+    {
+      "toolName": "view",
+      "hookSessionId": "d85bd44e-1e11-4994-8af9-c1dff2f635f3",
+      "invocationSessionId": "d85bd44e-1e11-4994-8af9-c1dff2f635f3",
+      "toolArgs": {
+        "path": "<workdir>/services-registry.txt",
+        "view_range": [
+          1,
+          -1
+        ],
+        "forceReadLargeFiles": true
+      },
+      "inputKeys": [
+        "sessionId",
+        "timestamp",
+        "toolName",
+        "toolArgs",
+        "workingDirectory"
+      ],
+      "decision": {
+        "permissionDecision": "deny",
+        "gate": "view"
+      }
+    },
+    {
+      "toolName": "task",
+      "hookSessionId": "d85bd44e-1e11-4994-8af9-c1dff2f635f3",
+      "invocationSessionId": "d85bd44e-1e11-4994-8af9-c1dff2f635f3",
+      "toolArgs": {
+        "description": "Find retention_days for the specified service in registry file",
+        "prompt": "Read services-registry.txt and find the entry for kestrel-ledger-prod-77, then report its retention_days value only as a number.",
+        "agent_type": "bulk-reader",
+        "name": "lookup-retention",
+        "mode": "sync"
+      },
+      "inputKeys": [
+        "sessionId",
+        "timestamp",
+        "toolName",
+        "toolArgs",
+        "workingDirectory"
+      ],
+      "decision": {
+        "permissionDecision": "allow"
+      }
+    },
+    {
+      "toolName": "view",
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "agentType": "bulk-reader",
+      "parentAgentId": "d85bd44e-1e11-4994-8af9-c1dff2f635f3",
+      "hookSessionId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "invocationSessionId": "d85bd44e-1e11-4994-8af9-c1dff2f635f3",
+      "toolArgs": {
+        "path": "<workdir>/services-registry.txt",
+        "view_range": [
+          1,
+          250
+        ]
+      },
+      "inputKeys": [
+        "sessionId",
+        "timestamp",
+        "toolName",
+        "toolArgs",
+        "agentId",
+        "agentType",
+        "parentAgentId",
+        "workingDirectory"
+      ],
+      "decision": {
+        "permissionDecision": "allow"
+      }
+    },
+    {
+      "toolName": "grep",
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "agentType": "bulk-reader",
+      "parentAgentId": "d85bd44e-1e11-4994-8af9-c1dff2f635f3",
+      "hookSessionId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "invocationSessionId": "d85bd44e-1e11-4994-8af9-c1dff2f635f3",
+      "toolArgs": {
+        "pattern": "kestrel-ledger-prod-77",
+        "path": "<workdir>/services-registry.txt",
+        "output_mode": "content",
+        "-n": true,
+        "head_limit": 20
+      },
+      "inputKeys": [
+        "sessionId",
+        "timestamp",
+        "toolName",
+        "toolArgs",
+        "agentId",
+        "agentType",
+        "parentAgentId",
+        "workingDirectory"
+      ],
+      "decision": {
+        "permissionDecision": "allow"
+      }
+    }
+  ],
+  "posts": [
+    {
+      "toolName": "view",
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "agentType": "bulk-reader",
+      "resultChars": 42695,
+      "inputKeys": [
+        "sessionId",
+        "timestamp",
+        "toolName",
+        "toolArgs",
+        "toolResult",
+        "agentId",
+        "agentType",
+        "parentAgentId",
+        "workingDirectory"
+      ]
+    },
+    {
+      "toolName": "grep",
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "agentType": "bulk-reader",
+      "resultChars": 503,
+      "inputKeys": [
+        "sessionId",
+        "timestamp",
+        "toolName",
+        "toolArgs",
+        "toolResult",
+        "agentId",
+        "agentType",
+        "parentAgentId",
+        "workingDirectory"
+      ]
+    },
+    {
+      "toolName": "task",
+      "resultChars": 563,
+      "inputKeys": [
+        "sessionId",
+        "timestamp",
+        "toolName",
+        "toolArgs",
+        "toolResult",
+        "workingDirectory"
+      ]
+    }
+  ],
+  "permissions": [],
+  "events": [
+    {
+      "type": "session.start",
+      "data": {
+        "sessionId": "d85bd44e-1e11-4994-8af9-c1dff2f635f3",
+        "version": 1,
+        "producer": "copilot-agent",
+        "copilotVersion": "1.0.105",
+        "startTime": "2026-11-14T22:32:43.898Z",
+        "contextTier": null,
+        "context": {
+          "cwd": "<workdir>"
+        },
+        "remoteSteerable": false,
+        "alreadyInUse": false
+      },
+      "id": "17a0fa64-0971-4d82-8208-0b5b3cb2bc9f",
+      "timestamp": "2026-11-14T22:32:43.941Z",
+      "parentId": null
+    },
+    {
+      "type": "session.managed_settings_resolved",
+      "data": {
+        "source": "none",
+        "serverManaged": false,
+        "deviceManaged": false,
+        "clientManaged": false,
+        "policyHelperManaged": false,
+        "failClosed": false,
+        "sandboxEnabledByUndeterminedPolicy": false,
+        "bypassPermissionsDisabled": false,
+        "managedKeys": [],
+        "permissionsContext": {
+          "failClosed": false
+        }
+      },
+      "ephemeral": true,
+      "id": "29e8c42c-d926-496e-91c4-db745c00e238",
+      "timestamp": "2026-11-14T22:32:43.941Z",
+      "parentId": "17a0fa64-0971-4d82-8208-0b5b3cb2bc9f"
+    },
+    {
+      "type": "pending_messages.modified",
+      "data": {},
+      "ephemeral": true,
+      "id": "8cbbd3eb-174d-4ba0-b4f3-db15dc097c66",
+      "timestamp": "2026-11-14T22:32:43.956Z",
+      "parentId": "17a0fa64-0971-4d82-8208-0b5b3cb2bc9f"
+    },
+    {
+      "type": "pending_messages.modified",
+      "data": {},
+      "ephemeral": true,
+      "id": "5aa6cc02-46b9-4ea5-93bd-2d2387a61edc",
+      "timestamp": "2026-11-14T22:32:43.959Z",
+      "parentId": "17a0fa64-0971-4d82-8208-0b5b3cb2bc9f"
+    },
+    {
+      "type": "session.title_changed",
+      "data": {
+        "title": "In services-registry.txt in the current directory, what is the retention_days value for kestrel-ledger-prod-77? Reply with just the number."
+      },
+      "ephemeral": true,
+      "id": "73d86eb8-dddc-4279-9f76-c3e5267d1d3d",
+      "timestamp": "2026-11-14T22:32:43.960Z",
+      "parentId": "20492a61-076c-427b-b00f-5553a1a10b68"
+    },
+    {
+      "type": "session.model_change",
+      "data": {
+        "previousModel": null,
+        "newModel": "auto",
+        "previousReasoningEffort": null,
+        "reasoningEffort": null,
+        "previousReasoningSummary": null,
+        "reasoningSummary": null,
+        "source": "startup",
+        "contextTier": null,
+        "autoTier": null
+      },
+      "id": "ae4c5229-4b9c-49d8-8094-e5434129be02",
+      "timestamp": "2026-11-14T22:32:44.352Z",
+      "parentId": "169a2b84-fdfa-46ff-8b4a-b3324a6880ec"
+    },
+    {
+      "type": "session.auto_mode_resolved",
+      "data": {
+        "chosenModel": "mai-code-1.1-flash",
+        "selectionReason": "Auto selected MAI-Code-1.1-Flash because it was the best choice out of the models available in your plan.",
+        "categoryScores": {
+          "tool_use": 0.024,
+          "debugging": 0.0015,
+          "code_gen": 0.0587,
+          "reasoning": 0.067
+        },
+        "candidateModels": [
+          "mai-code-1.1-flash"
+        ],
+        "routingMethod": "auto_v2",
+        "fallback": false,
+        "availableModels": [
+          "mai-code-1.1-flash"
+        ],
+        "endToEndLatencyMs": 149.828208,
+        "hasImage": false
+      },
+      "id": "4b73415d-303c-47a2-8d29-d4b815a6a9ee",
+      "timestamp": "2026-11-14T22:32:44.504Z",
+      "parentId": "ae4c5229-4b9c-49d8-8094-e5434129be02"
+    },
+    {
+      "type": "session.skills_loaded",
+      "data": {
+        "skills": [
+          {
+            "name": "customize-cloud-agent",
+            "commandName": "customize-cloud-agent",
+            "description": "Skill for customizing the Copilot cloud agent (formerly known as Copilot coding agent) environment, including copilot-setup-steps.yml configuration, preinstalling tools and dependencies, runners, and settings. Use when the user mentions copilot-setup-steps, copilot setup steps, or wants to configure the cloud agent environment.",
+            "source": "builtin",
+            "userInvocable": false,
+            "enabled": true,
+            "path": "~/Documents/repos/pica/.claude/worktrees/r-04-gh-auth-029512/engine/node_modules/.pnpm/@github+copilot-sdk-darwin-arm64@1.0.28/node_modules/@github/copilot-sdk-darwin-arm64/builtin/customize-cloud-agent/SKILL.md"
+          },
+          {
+            "name": "github-pr-media",
+            "commandName": "github-pr-media",
+            "description": "Upload an image or video to GitHub's user attachments API and embed it in a pull request description or comment. Use when asked to add screenshots, diagrams, recordings, or other media to a PR or GitHub comment.",
+            "source": "builtin",
+            "userInvocable": false,
+            "enabled": true,
+            "path": "~/Documents/repos/pica/.claude/worktrees/r-04-gh-auth-029512/engine/node_modules/.pnpm/@github+copilot-sdk-darwin-arm64@1.0.28/node_modules/@github/copilot-sdk-darwin-arm64/builtin/github-pr-media/SKILL.md"
+          }
+        ]
+      },
+      "ephemeral": true,
+      "id": "934a9002-af17-455a-96d5-c0daeed1765c",
+      "timestamp": "2026-11-14T22:32:44.509Z",
+      "parentId": "4b73415d-303c-47a2-8d29-d4b815a6a9ee"
+    },
+    {
+      "type": "session.mcp_server_status_changed",
+      "data": {
+        "serverName": "github-mcp-server",
+        "status": "pending"
+      },
+      "ephemeral": true,
+      "id": "5e5f4f81-c0dd-400b-99d6-338903410610",
+      "timestamp": "2026-11-14T22:32:44.520Z",
+      "parentId": "4b73415d-303c-47a2-8d29-d4b815a6a9ee"
+    },
+    {
+      "type": "session.mcp_server_status_changed",
+      "data": {
+        "serverName": "github-mcp-server",
+        "status": "connected",
+        "configSource": "builtin"
+      },
+      "ephemeral": true,
+      "id": "c8841fed-d087-4e9c-894f-847ee71cba00",
+      "timestamp": "2026-11-14T22:32:44.715Z",
+      "parentId": "4b73415d-303c-47a2-8d29-d4b815a6a9ee"
+    },
+    {
+      "type": "session.mcp_servers_loaded",
+      "ephemeral": true,
+      "data": {
+        "servers": [
+          {
+            "name": "github-mcp-server",
+            "status": "connected",
+            "source": "builtin",
+            "displayName": "GitHub MCP Server",
+            "serverMetadata": {
+              "instructions": "The GitHub MCP Server provides tools to interact with GitHub platform.\n\nTool selection guidance:\n\t1. Use 'list_*' tools for broad, simple retrieval and pagination of all items of a type (e.g., all issues, all PRs, all branches) with basic filtering.\n\t2. Use 'search_*' tools for targeted queries with specific criteria, keywords, or complex filters (e.g., issues with certain text, PRs by author, code containing functions).\n\nContext management:\n\t1. Use pagination whenever possible with batches of 5-10 items.\n\t2. Use minimal_output parameter set to true if the full information is not needed to acc…(903 chars)"
+            }
+          }
+        ]
+      },
+      "id": "f5a15174-e436-4c0a-aab9-91922346025b",
+      "timestamp": "2026-11-14T22:32:44.715Z",
+      "parentId": "4b73415d-303c-47a2-8d29-d4b815a6a9ee"
+    },
+    {
+      "type": "session.mcp_server_tools_loaded",
+      "data": {
+        "serverName": "github-mcp-server",
+        "toolCount": 5
+      },
+      "ephemeral": true,
+      "id": "7e4694ce-437f-4351-afa6-e11be9e099e0",
+      "timestamp": "2026-11-14T22:32:44.865Z",
+      "parentId": "4b73415d-303c-47a2-8d29-d4b815a6a9ee"
+    },
+    {
+      "type": "session.tools_updated",
+      "data": {
+        "model": "mai-code-1.1-flash"
+      },
+      "ephemeral": true,
+      "id": "81019810-7a14-47b7-9b97-885ba00cd3aa",
+      "timestamp": "2026-11-14T22:32:44.878Z",
+      "parentId": "4b73415d-303c-47a2-8d29-d4b815a6a9ee"
+    },
+    {
+      "type": "user.message",
+      "data": {
+        "content": "In services-registry.txt in the current directory, what is the retention_days value for kestrel-ledger-prod-77? Reply with just the number.",
+        "transformedContent": "<current_datetime>2026-11-14T17:32:44.879-05:00</current_datetime>\n\nIn services-registry.txt in the current directory, what is the retention_days value for kestrel-ledger-prod-77? Reply with just the number.",
+        "messageId": "4b2b45e9-953c-4410-b573-2a16722eae32",
+        "supportedNativeDocumentMimeTypes": [],
+        "delivery": "idle",
+        "interactionId": "f6a346a5-4d5e-4200-92c4-7022d1d49564",
+        "turnId": "0",
+        "parentAgentTaskId": "7d87bb77-c210-4ae2-a7fc-0f83a39f7913"
+      },
+      "id": "ab488969-f92f-40dc-806a-a1539f7e7333",
+      "timestamp": "2026-11-14T22:32:44.880Z",
+      "parentId": "6ac28512-dd2e-4452-afab-bb23e26b1ba4"
+    },
+    {
+      "type": "system.message",
+      "data": {
+        "role": "system",
+        "content": "You are GitHub Copilot, an AI coding agent built by GitHub. You are an interactive tool that helps users with software engineering tasks.\n\n# Tone and style\n* When providing output or explanation to the user, try to limit your response to 100 words or less.\n* Be concise in routine responses. For complex tasks, briefly explain your approach before implementing.\n\n# Search and delegation\n* Give sub-agents comprehensive context; response-brevity rules do not apply to their prompts.\n* Search files/text only in the cwd or its descendants unless absolutely necessary. For code, prefer: available code i…(22429 chars)",
+        "contentBlocks": [
+          {
+            "content": "You are GitHub Copilot, an AI coding agent built by GitHub. You are an interactive tool that helps users with software engineering tasks.\n\n# Tone and style\n* When providing output or explanation to the user, try to limit your response to 100 words or less.\n* Be concise in routine responses. For complex tasks, briefly explain your approach before implementing.\n\n# Search and delegation\n* Give sub-agents comprehensive context; response-brevity rules do not apply to their prompts.\n* Search files/text only in the cwd or its descendants unless absolutely necessary. For code, prefer: available code i…(4806 chars)",
+            "isStatic": true
+          },
+          {
+            "content": "<version_information>Version number: 1.0.105</version_information>\n\n<model_information>Auto mode is active. The concrete model is selected dynamically and may change during the conversation.\nWhen asked which model you are or what model is being used, explain that Auto mode selects the model and do not name a specific underlying model.</model_information>\n\n<environment_context>\nYou are working in the following environment. You do not need to make additional tool calls to verify this.\n* Current working directory: <workdir>\n* Git repository r…(17621 chars)"
+          }
+        ],
+        "interactionId": "f6a346a5-4d5e-4200-92c4-7022d1d49564",
+        "metadata": {
+          "variables": {
+            "gitCommitTrailer": {
+              "sessionId": null,
+              "clientName": "sdk",
+              "coauthorEnabled": true
+            }
+          }
+        }
+      },
+      "id": "4c0b35bc-f5d9-4ba0-85d1-ef7780104268",
+      "timestamp": "2026-11-14T22:32:44.880Z",
+      "parentId": "ab488969-f92f-40dc-806a-a1539f7e7333"
+    },
+    {
+      "type": "assistant.turn_start",
+      "data": {
+        "turnId": "0",
+        "interactionId": "f6a346a5-4d5e-4200-92c4-7022d1d49564"
+      },
+      "id": "0bc82505-8797-447a-9bfa-a01a41006e64",
+      "timestamp": "2026-11-14T22:32:44.882Z",
+      "parentId": "4c0b35bc-f5d9-4ba0-85d1-ef7780104268"
+    },
+    {
+      "type": "assistant.usage",
+      "data": {
+        "model": "mai-code-1.1-flash",
+        "provider": {
+          "id": "copilot",
+          "kind": "copilot",
+          "label": "GitHub Copilot"
+        },
+        "modelDisplayName": "MAI-Code-1.1-Flash",
+        "inputTokens": 11372,
+        "outputTokens": 73,
+        "cacheReadTokens": 7552,
+        "cacheWriteTokens": 0,
+        "reasoningTokens": 0,
+        "cost": 1,
+        "duration": 1050,
+        "timeToFirstTokenMs": 858.5968330000001,
+        "outputTtftMs": 858.5972079999999,
+        "cacheExpiresAt": "2026-11-14T23:02:45.122Z",
+        "interTokenLatencyMs": 4.3897812499999995,
+        "initiator": "user",
+        "interactionType": "conversation-agent",
+        "isByok": false,
+        "isAuto": true,
+        "maxPromptTokens": 128000,
+        "transport": "websocket",
+        "requestBodyBytes": 59242,
+        "requestBodyWireBytes": 59242,
+        "requestBodyEncoding": "identity",
+        "apiCallId": "RF6pOEE57O33SNrFsuIllPkGzviUr/8SqJmKDg2Ma1ncecy4RkT6lXub2XTPv3vQMhKeUAsIS8IhUsdlJO7OrVvGVt4vEZYLu8ivBAsVZQG2jRtWZd0XCWKps6F+mqP2nikdrxIRUUOXBMgoH+9r7qPrka/a5Y//0o36lUAtcZeQv3xfqDeiZGojPDUz4giw8/QaKq3y+hWItSb4KLzgJSz7gyJ4W3tqGqvRjEl7SYBNyOE82Z/ciyf/NugZQIv/9pe0oYB1MjiQivpYxupLybwPBnXJ2JLpsQotoA5wCv90Fn7m5AWteCctZ8V680pOU0aMWigPMlukWQaHA/UvmEVIIZnFfM6jGlUVPRIXc09o3D/u6YzL0z6EnQwpz+eLMgNZvy9HmRf9aDEwwDmkhU19dSwSdG17JhfRvg5d9jpBS3tFmcmRCM9EFc4mjz1JZJ38ABvvK1KEeBbLVvWO1nj3CEQGx85UFIJEkfFUTb10gt9sZlWCfjBpJoZqN7dcGAMvrlYH",
+        "providerCallId": "00000-a6eb9155-adf8-474b-8e1f-7ddff6698dc7",
+        "serviceRequestId": "e49f9734-0b06-468f-a7a0-efeba9005b8f",
+        "rte": true,
+        "apiEndpoint": "ws:/responses",
+        "quotaSnapshots": {
+          "chat": {
+            "isUnlimitedEntitlement": false,
+            "entitlementRequests": 200,
+            "usedRequests": 1,
+            "usageAllowedWithExhaustedQuota": false,
+            "overage": 0,
+            "overageAllowedWithExhaustedQuota": false,
+            "remainingPercentage": 99.6,
+            "resetDate": "2026-12-01T00:00:00Z"
+          },
+          "completions": {
+            "isUnlimitedEntitlement": false,
+            "entitlementRequests": 2000,
+            "usedRequests": 10,
+            "usageAllowedWithExhaustedQuota": false,
+            "overage": 0,
+            "overageAllowedWithExhaustedQuota": false,
+            "remainingPercentage": 99.5,
+            "resetDate": "2026-12-01T00:00:00Z"
+          },
+          "premium_interactions": {
+            "isUnlimitedEntitlement": false,
+            "entitlementRequests": 0,
+            "usedRequests": 0,
+            "usageAllowedWithExhaustedQuota": false,
+            "overage": 0,
+            "overageAllowedWithExhaustedQuota": false,
+            "remainingPercentage": 0,
+            "resetDate": "2026-12-01T00:00:00Z"
+          }
+        },
+        "copilotUsage": {
+          "tokenDetails": [
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 20000000000,
+              "tokenCount": 3820,
+              "tokenType": "input",
+              "model": "mai-code-1.1-flash"
+            },
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 2000000000,
+              "tokenCount": 7552,
+              "tokenType": "cache_read",
+              "model": "mai-code-1.1-flash"
+            },
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 25000000000,
+              "tokenCount": 0,
+              "tokenType": "cache_write",
+              "model": "mai-code-1.1-flash"
+            },
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 120000000000,
+              "tokenCount": 73,
+              "tokenType": "output",
+              "model": "mai-code-1.1-flash"
+            }
+          ],
+          "totalNanoAiu": 100264000
+        },
+        "aiCreditsStatus": "complete",
+        "reasoningEffort": "medium",
+        "reasoningSummary": "detailed",
+        "availableToolCount": 25,
+        "toolTokenCount": 7832,
+        "customToolCallCount": 0,
+        "unmatchedToolResultCount": 0,
+        "orphanToolCallCount": 0,
+        "frontierSource": "reported_writes",
+        "cacheTtlSeconds": 1800,
+        "cacheDetailsReported": true,
+        "numToolCalls": 1,
+        "toolCounts": {
+          "view": 1
+        },
+        "finishReason": "tool_calls",
+        "contentFilterTriggered": false,
+        "accounting": {
+          "sourceSessionId": "d85bd44e-1e11-4994-8af9-c1dff2f635f3",
+          "sequence": 1,
+          "usageId": "RF6pOEE57O33SNrFsuIllPkGzviUr/8SqJmKDg2Ma1ncecy4RkT6lXub2XTPv3vQMhKeUAsIS8IhUsdlJO7OrVvGVt4vEZYLu8ivBAsVZQG2jRtWZd0XCWKps6F+mqP2nikdrxIRUUOXBMgoH+9r7qPrka/a5Y//0o36lUAtcZeQv3xfqDeiZGojPDUz4giw8/QaKq3y+hWItSb4KLzgJSz7gyJ4W3tqGqvRjEl7SYBNyOE82Z/ciyf/NugZQIv/9pe0oYB1MjiQivpYxupLybwPBnXJ2JLpsQotoA5wCv90Fn7m5AWteCctZ8V680pOU0aMWigPMlukWQaHA/UvmEVIIZnFfM6jGlUVPRIXc09o3D/u6YzL0z6EnQwpz+eLMgNZvy9HmRf9aDEwwDmkhU19dSwSdG17JhfRvg5d9jpBS3tFmcmRCM9EFc4mjz1JZJ38ABvvK1KEeBbLVvWO1nj3CEQGx85UFIJEkfFUTb10gt9sZlWCfjBpJoZqN7dcGAMvrlYH"
+        }
+      },
+      "ephemeral": true,
+      "id": "71a023ba-e813-4eac-879b-38cf9231f0f8",
+      "timestamp": "2026-11-14T22:32:46.172Z",
+      "parentId": "f972bdf8-80b9-47fb-9a5a-3f5813ac0011"
+    },
+    {
+      "type": "assistant.message",
+      "data": {
+        "messageId": "2fca370d-8d66-46ab-8c44-23622f0e3987",
+        "originatingMessageId": "4b2b45e9-953c-4410-b573-2a16722eae32",
+        "model": "mai-code-1.1-flash",
+        "providerId": "copilot",
+        "content": "",
+        "toolRequests": [
+          {
+            "toolCallId": "call_6izqqnEdmjmiS8Hzhr8X05b4",
+            "name": "view",
+            "arguments": {
+              "path": "<workdir>/services-registry.txt",
+              "view_range": [
+                1,
+                -1
+              ],
+              "forceReadLargeFiles": true
+            },
+            "type": "function",
+            "intentionSummary": "view the file at <workdir>/services-registry.txt.",
+            "toolTitle": "Viewing file"
+          }
+        ],
+        "interactionId": "f6a346a5-4d5e-4200-92c4-7022d1d49564",
+        "turnId": "0",
+        "rte": true,
+        "apiCallId": "RF6pOEE57O33SNrFsuIllPkGzviUr/8SqJmKDg2Ma1ncecy4RkT6lXub2XTPv3vQMhKeUAsIS8IhUsdlJO7OrVvGVt4vEZYLu8ivBAsVZQG2jRtWZd0XCWKps6F+mqP2nikdrxIRUUOXBMgoH+9r7qPrka/a5Y//0o36lUAtcZeQv3xfqDeiZGojPDUz4giw8/QaKq3y+hWItSb4KLzgJSz7gyJ4W3tqGqvRjEl7SYBNyOE82Z/ciyf/NugZQIv/9pe0oYB1MjiQivpYxupLybwPBnXJ2JLpsQotoA5wCv90Fn7m5AWteCctZ8V680pOU0aMWigPMlukWQaHA/UvmEVIIZnFfM6jGlUVPRIXc09o3D/u6YzL0z6EnQwpz+eLMgNZvy9HmRf9aDEwwDmkhU19dSwSdG17JhfRvg5d9jpBS3tFmcmRCM9EFc4mjz1JZJ38ABvvK1KEeBbLVvWO1nj3CEQGx85UFIJEkfFUTb10gt9sZlWCfjBpJoZqN7dcGAMvrlYH",
+        "serverTools": {
+          "provider": "openai-responses"
+        }
+      },
+      "id": "815af2c5-31c5-4200-a287-e3325e1f7d0e",
+      "timestamp": "2026-11-14T22:32:46.174Z",
+      "parentId": "f972bdf8-80b9-47fb-9a5a-3f5813ac0011"
+    },
+    {
+      "type": "tool.execution_start",
+      "data": {
+        "toolCallId": "call_6izqqnEdmjmiS8Hzhr8X05b4",
+        "toolName": "view",
+        "arguments": {
+          "path": "<workdir>/services-registry.txt",
+          "view_range": [
+            1,
+            -1
+          ],
+          "forceReadLargeFiles": true
+        },
+        "turnId": "0",
+        "model": "mai-code-1.1-flash",
+        "toolTitle": "Viewing file"
+      },
+      "id": "d06cf713-e7d1-4333-ac6c-b494fc0639e4",
+      "timestamp": "2026-11-14T22:32:46.175Z",
+      "parentId": "815af2c5-31c5-4200-a287-e3325e1f7d0e"
+    },
+    {
+      "type": "tool.execution_complete",
+      "data": {
+        "toolCallId": "call_6izqqnEdmjmiS8Hzhr8X05b4",
+        "model": "mai-code-1.1-flash",
+        "interactionId": "f6a346a5-4d5e-4200-92c4-7022d1d49564",
+        "turnId": "0",
+        "rte": true,
+        "success": false,
+        "error": {
+          "message": "Denied by preToolUse hook: services-registry.txt is 224278 bytes (limit 32768). The main agent may not read it directly. Delegate the question to the bulk-reader agent with the task tool; it reads the file and returns only the answer.",
+          "code": "denied"
+        },
+        "toolTelemetry": {}
+      },
+      "id": "0817258d-4c05-4aa6-a2ea-54fdb16c3822",
+      "timestamp": "2026-11-14T22:32:46.178Z",
+      "parentId": "83513271-2e5c-488d-b31f-92a90b1d861c"
+    },
+    {
+      "type": "assistant.turn_end",
+      "data": {
+        "turnId": "0"
+      },
+      "id": "196b47fa-1643-4f1f-acfa-eb0cc3b2dbef",
+      "timestamp": "2026-11-14T22:32:46.182Z",
+      "parentId": "0817258d-4c05-4aa6-a2ea-54fdb16c3822"
+    },
+    {
+      "type": "assistant.turn_start",
+      "data": {
+        "turnId": "1",
+        "interactionId": "f6a346a5-4d5e-4200-92c4-7022d1d49564"
+      },
+      "id": "10b98a90-a139-4d3c-a78c-629726508410",
+      "timestamp": "2026-11-14T22:32:46.182Z",
+      "parentId": "196b47fa-1643-4f1f-acfa-eb0cc3b2dbef"
+    },
+    {
+      "type": "assistant.usage",
+      "data": {
+        "model": "mai-code-1.1-flash",
+        "provider": {
+          "id": "copilot",
+          "kind": "copilot",
+          "label": "GitHub Copilot"
+        },
+        "modelDisplayName": "MAI-Code-1.1-Flash",
+        "inputTokens": 11509,
+        "outputTokens": 73,
+        "cacheReadTokens": 11392,
+        "cacheWriteTokens": 0,
+        "reasoningTokens": 0,
+        "cost": 1,
+        "duration": 1317,
+        "timeToFirstTokenMs": 1027.451291,
+        "outputTtftMs": 1027.451333,
+        "cacheExpiresAt": "2026-11-14T23:02:46.188Z",
+        "interTokenLatencyMs": 7.27955859375,
+        "initiator": "agent",
+        "interactionType": "conversation-agent",
+        "isByok": false,
+        "isAuto": true,
+        "maxPromptTokens": 128000,
+        "transport": "websocket",
+        "requestBodyBytes": 59782,
+        "requestBodyWireBytes": 59782,
+        "requestBodyEncoding": "identity",
+        "apiCallId": "y7+bnGsbmdqTa2pKiCcHjGmweMHQMc+nNvYb9ZMCXO98B7+jeh8a7mAjLTQHQ+/G9mj4r5uFhn5osl1PqE0BsuEL8GWDk816Jd6VqSOXDs1ENpvNnjBTv6NVtgjeonlSHfjYDK8GWGEa1r3DPLD0W9uZYcjL1btrFJua7x1CGhBOVTDetb/u4Zas+2qtrD3eTYuiHB1A8h4Y9KJ4EFybV7bZXl+zyBC96EmNTw48yV7MST3v6Tcn9dO9QJOz+Xv/qWhr3k2wXgY5L7fdD28fog9KBWS8OaPnYCNi5jA7G0sDRD0g9O3AVom47z0Ki/xYTqF8he6JnH1TRnztd/rPfk0RWGgLM3o3nnGsZoXeJ40/dYueLKHloGzHOu+qeiS/N34x5buF+4bXpozWII0NSoIgTUs8wDVoWavXea1fp/IVuOtoJfkXEFtm3EtGGrds4E5GByxIg2r4RRo4Q8LYJ1HlUSNmq1dO5a4oh92L/KDR72v4ArRYb2p02CDxitMAJ4NKrNwq",
+        "providerCallId": "00000-a6eb9155-adf8-474b-8e1f-7ddff6698dc7",
+        "serviceRequestId": "17ce7370-bb4b-4a62-95d4-9ae84e29bddf",
+        "rte": true,
+        "apiEndpoint": "ws:/responses",
+        "quotaSnapshots": {
+          "chat": {
+            "isUnlimitedEntitlement": false,
+            "entitlementRequests": 200,
+            "usedRequests": 1,
+            "usageAllowedWithExhaustedQuota": false,
+            "overage": 0,
+            "overageAllowedWithExhaustedQuota": false,
+            "remainingPercentage": 99.6,
+            "resetDate": "2026-12-01T00:00:00Z"
+          },
+          "completions": {
+            "isUnlimitedEntitlement": false,
+            "entitlementRequests": 2000,
+            "usedRequests": 10,
+            "usageAllowedWithExhaustedQuota": false,
+            "overage": 0,
+            "overageAllowedWithExhaustedQuota": false,
+            "remainingPercentage": 99.5,
+            "resetDate": "2026-12-01T00:00:00Z"
+          },
+          "premium_interactions": {
+            "isUnlimitedEntitlement": false,
+            "entitlementRequests": 0,
+            "usedRequests": 0,
+            "usageAllowedWithExhaustedQuota": false,
+            "overage": 0,
+            "overageAllowedWithExhaustedQuota": false,
+            "remainingPercentage": 0,
+            "resetDate": "2026-12-01T00:00:00Z"
+          }
+        },
+        "copilotUsage": {
+          "tokenDetails": [
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 20000000000,
+              "tokenCount": 117,
+              "tokenType": "input",
+              "model": "mai-code-1.1-flash"
+            },
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 2000000000,
+              "tokenCount": 11392,
+              "tokenType": "cache_read",
+              "model": "mai-code-1.1-flash"
+            },
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 25000000000,
+              "tokenCount": 0,
+              "tokenType": "cache_write",
+              "model": "mai-code-1.1-flash"
+            },
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 120000000000,
+              "tokenCount": 73,
+              "tokenType": "output",
+              "model": "mai-code-1.1-flash"
+            }
+          ],
+          "totalNanoAiu": 33884000
+        },
+        "aiCreditsStatus": "complete",
+        "reasoningEffort": "medium",
+        "reasoningSummary": "detailed",
+        "availableToolCount": 25,
+        "toolTokenCount": 7832,
+        "customToolCallCount": 0,
+        "unmatchedToolResultCount": 0,
+        "orphanToolCallCount": 0,
+        "frontierSource": "reported_writes",
+        "cacheTtlSeconds": 1800,
+        "cacheDetailsReported": true,
+        "numToolCalls": 1,
+        "toolCounts": {
+          "task": 1
+        },
+        "finishReason": "tool_calls",
+        "contentFilterTriggered": false,
+        "accounting": {
+          "sourceSessionId": "d85bd44e-1e11-4994-8af9-c1dff2f635f3",
+          "sequence": 2,
+          "usageId": "y7+bnGsbmdqTa2pKiCcHjGmweMHQMc+nNvYb9ZMCXO98B7+jeh8a7mAjLTQHQ+/G9mj4r5uFhn5osl1PqE0BsuEL8GWDk816Jd6VqSOXDs1ENpvNnjBTv6NVtgjeonlSHfjYDK8GWGEa1r3DPLD0W9uZYcjL1btrFJua7x1CGhBOVTDetb/u4Zas+2qtrD3eTYuiHB1A8h4Y9KJ4EFybV7bZXl+zyBC96EmNTw48yV7MST3v6Tcn9dO9QJOz+Xv/qWhr3k2wXgY5L7fdD28fog9KBWS8OaPnYCNi5jA7G0sDRD0g9O3AVom47z0Ki/xYTqF8he6JnH1TRnztd/rPfk0RWGgLM3o3nnGsZoXeJ40/dYueLKHloGzHOu+qeiS/N34x5buF+4bXpozWII0NSoIgTUs8wDVoWavXea1fp/IVuOtoJfkXEFtm3EtGGrds4E5GByxIg2r4RRo4Q8LYJ1HlUSNmq1dO5a4oh92L/KDR72v4ArRYb2p02CDxitMAJ4NKrNwq"
+        }
+      },
+      "ephemeral": true,
+      "id": "b33e2031-bd6e-4159-9564-504047b3b962",
+      "timestamp": "2026-11-14T22:32:47.505Z",
+      "parentId": "f0357574-317c-432a-b4fc-e9eacb4f9ec7"
+    },
+    {
+      "type": "assistant.message",
+      "data": {
+        "messageId": "b1cf1a65-dd6f-49f5-98a9-5286abb3abd2",
+        "originatingMessageId": "4b2b45e9-953c-4410-b573-2a16722eae32",
+        "model": "mai-code-1.1-flash",
+        "providerId": "copilot",
+        "content": "",
+        "toolRequests": [
+          {
+            "toolCallId": "call_QCG2nRfNoHJLpKRsSgya3X6v",
+            "name": "task",
+            "arguments": {
+              "description": "Find retention_days for the specified service in registry file",
+              "prompt": "Read services-registry.txt and find the entry for kestrel-ledger-prod-77, then report its retention_days value only as a number.",
+              "agent_type": "bulk-reader",
+              "name": "lookup-retention",
+              "mode": "sync"
+            },
+            "type": "function",
+            "intentionSummary": "Find retention_days for the specified service in registry file"
+          }
+        ],
+        "interactionId": "f6a346a5-4d5e-4200-92c4-7022d1d49564",
+        "turnId": "1",
+        "rte": true,
+        "apiCallId": "y7+bnGsbmdqTa2pKiCcHjGmweMHQMc+nNvYb9ZMCXO98B7+jeh8a7mAjLTQHQ+/G9mj4r5uFhn5osl1PqE0BsuEL8GWDk816Jd6VqSOXDs1ENpvNnjBTv6NVtgjeonlSHfjYDK8GWGEa1r3DPLD0W9uZYcjL1btrFJua7x1CGhBOVTDetb/u4Zas+2qtrD3eTYuiHB1A8h4Y9KJ4EFybV7bZXl+zyBC96EmNTw48yV7MST3v6Tcn9dO9QJOz+Xv/qWhr3k2wXgY5L7fdD28fog9KBWS8OaPnYCNi5jA7G0sDRD0g9O3AVom47z0Ki/xYTqF8he6JnH1TRnztd/rPfk0RWGgLM3o3nnGsZoXeJ40/dYueLKHloGzHOu+qeiS/N34x5buF+4bXpozWII0NSoIgTUs8wDVoWavXea1fp/IVuOtoJfkXEFtm3EtGGrds4E5GByxIg2r4RRo4Q8LYJ1HlUSNmq1dO5a4oh92L/KDR72v4ArRYb2p02CDxitMAJ4NKrNwq",
+        "serverTools": {
+          "provider": "openai-responses"
+        }
+      },
+      "id": "63c96540-c60e-43bd-8ee7-1e9a0e9525ea",
+      "timestamp": "2026-11-14T22:32:47.507Z",
+      "parentId": "f0357574-317c-432a-b4fc-e9eacb4f9ec7"
+    },
+    {
+      "type": "tool.execution_start",
+      "data": {
+        "toolCallId": "call_QCG2nRfNoHJLpKRsSgya3X6v",
+        "toolName": "task",
+        "arguments": {
+          "description": "Find retention_days for the specified service in registry file",
+          "prompt": "Read services-registry.txt and find the entry for kestrel-ledger-prod-77, then report its retention_days value only as a number.",
+          "agent_type": "bulk-reader",
+          "name": "lookup-retention",
+          "mode": "sync"
+        },
+        "turnId": "1",
+        "model": "mai-code-1.1-flash"
+      },
+      "id": "54e303ce-666a-4110-b461-93bcda4ef63d",
+      "timestamp": "2026-11-14T22:32:47.508Z",
+      "parentId": "63c96540-c60e-43bd-8ee7-1e9a0e9525ea"
+    },
+    {
+      "type": "subagent.started",
+      "data": {
+        "toolCallId": "call_QCG2nRfNoHJLpKRsSgya3X6v",
+        "agentName": "bulk-reader",
+        "agentDisplayName": "Bulk reader",
+        "agentDescription": "Reads large files on behalf of the main agent and answers a narrow question about them. Use it for any file over 32 KB.",
+        "model": "claude-haiku-4.5",
+        "taskModelSource": "custom_agent_definition",
+        "modelSelectionSource": "agent_definition_default",
+        "resumable": false,
+        "agentType": "bulk-reader",
+        "executionMode": "sync"
+      },
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "id": "2ee0e90d-500b-4b46-bfa4-2a0db21185f2",
+      "timestamp": "2026-11-14T22:32:47.512Z",
+      "parentId": "a077cc7f-36b6-49a3-bfcd-3ec8065d3112"
+    },
+    {
+      "type": "subagent.selected",
+      "data": {
+        "agentName": "bulk-reader",
+        "agentDisplayName": "Bulk reader",
+        "tools": [
+          "view",
+          "grep",
+          "glob"
+        ]
+      },
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "id": "ba5eb0c7-579d-4433-b77f-bab8b79ec96d",
+      "timestamp": "2026-11-14T22:32:47.532Z",
+      "parentId": "7c9305b0-f8d0-49bf-8813-5e04d2b455e7"
+    },
+    {
+      "type": "subagent.configured",
+      "data": {
+        "model": "claude-haiku-4.5",
+        "multiTurn": true
+      },
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "id": "7c9305b0-f8d0-49bf-8813-5e04d2b455e7",
+      "timestamp": "2026-11-14T22:32:47.532Z",
+      "parentId": "2ee0e90d-500b-4b46-bfa4-2a0db21185f2"
+    },
+    {
+      "type": "session.model_change",
+      "data": {
+        "source": "agent",
+        "contextTier": null,
+        "newModel": "claude-haiku-4.5",
+        "reasoningEffort": null
+      },
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "id": "4d1217e6-0ea7-415d-be13-76bb93f8a131",
+      "timestamp": "2026-11-14T22:32:47.532Z",
+      "parentId": "ba5eb0c7-579d-4433-b77f-bab8b79ec96d"
+    },
+    {
+      "type": "session.auto_mode_resolved",
+      "data": {
+        "chosenModel": "mai-code-1.1-flash",
+        "selectionReason": "Auto selected MAI-Code-1.1-Flash because it was the best choice out of the models available in your plan.",
+        "categoryScores": {
+          "tool_use": 0.0228,
+          "reasoning": 0.0714,
+          "code_gen": 0.0505,
+          "debugging": 0.0012
+        },
+        "candidateModels": [
+          "mai-code-1.1-flash"
+        ],
+        "routingMethod": "auto_v2",
+        "fallback": false,
+        "availableModels": [
+          "mai-code-1.1-flash"
+        ],
+        "endToEndLatencyMs": 127.81441599999998,
+        "hasImage": false
+      },
+      "id": "6cff3f31-34d2-4152-8e92-11a25299dd29",
+      "timestamp": "2026-11-14T22:32:47.664Z",
+      "parentId": "b686dd60-c393-4a8f-bd65-1931c309c229"
+    },
+    {
+      "type": "session.tools_updated",
+      "data": {
+        "model": "mai-code-1.1-flash"
+      },
+      "ephemeral": true,
+      "id": "ffe29e7c-116b-404b-b448-4fac1b1fdd3e",
+      "timestamp": "2026-11-14T22:32:47.673Z",
+      "parentId": "6cff3f31-34d2-4152-8e92-11a25299dd29"
+    },
+    {
+      "type": "user.message",
+      "data": {
+        "content": "Read services-registry.txt and find the entry for kestrel-ledger-prod-77, then report its retention_days value only as a number.",
+        "transformedContent": "<current_datetime>2026-11-14T17:32:47.674-05:00</current_datetime>\n\nRead services-registry.txt and find the entry for kestrel-ledger-prod-77, then report its retention_days value only as a number.",
+        "source": "agent-d85bd44e-1e11-4994-8af9-c1dff2f635f3",
+        "messageId": "bf6ec988-153d-4b31-9836-7c6c5b519736",
+        "supportedNativeDocumentMimeTypes": [],
+        "delivery": "idle",
+        "interactionId": "fd267cf9-e51b-4c06-86e6-31c2a57f8735",
+        "turnId": "0",
+        "parentAgentTaskId": "e813d383-1af6-414f-ad5f-f4400cf6d16b"
+      },
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "id": "04cd4e18-b616-4aec-8050-97c0ef2ee22d",
+      "timestamp": "2026-11-14T22:32:47.675Z",
+      "parentId": "fa3a3633-8ace-4a10-ad83-ec83f97a4365"
+    },
+    {
+      "type": "system.message",
+      "data": {
+        "role": "system",
+        "content": "You are bulk-reader. You read large files so the main agent does not have to. Answer the question you are given in at most three sentences. Quote at most one line of the file, and only if the question needs it. Never paste file contents.\n\n<tools>\n<view>\nPut independent file or range reads in multiple `view` calls in one response; they run in parallel.\nFor likely-large files, use `view_range` immediately to avoid a truncated first read.\n</view>\n<grep>\nRipgrep notes:\n* Escape literal braces: interface\\{\\} matches interface{}\n* Matches are single-line unless `multiline: true`\n* Choose `output_mod…(3311 chars)",
+        "contentBlocks": [
+          {
+            "content": "You are bulk-reader. You read large files so the main agent does not have to. Answer the question you are given in at most three sentences. Quote at most one line of the file, and only if the question needs it. Never paste file contents.\n\n<tools>\n<view>\nPut independent file or range reads in multiple `view` calls in one response; they run in parallel.\nFor likely-large files, use `view_range` immediately to avoid a truncated first read.\n</view>\n<grep>\nRipgrep notes:\n* Escape literal braces: interface\\{\\} matches interface{}\n* Matches are single-line unless `multiline: true`\n* Choose `output_mod…(2876 chars)",
+            "isStatic": true
+          },
+          {
+            "content": "<environment_context>\nYou are working in the following environment. You do not need to make additional tool calls to verify this.\n* Current working directory: <workdir>\n* Git repository root: Not a git repository\n* Operating System: Darwin\n* Directory contents (snapshot at turn start; may be stale): services-registry.txt\n* Available tools: git, curl, gh\n</environment_context>"
+          }
+        ],
+        "interactionId": "fd267cf9-e51b-4c06-86e6-31c2a57f8735",
+        "metadata": {
+          "variables": {
+            "gitCommitTrailer": {
+              "sessionId": null,
+              "clientName": "sdk",
+              "coauthorEnabled": true
+            }
+          }
+        }
+      },
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "id": "c4d7bcee-84db-4b23-b4ea-af51e09e93b1",
+      "timestamp": "2026-11-14T22:32:47.675Z",
+      "parentId": "04cd4e18-b616-4aec-8050-97c0ef2ee22d"
+    },
+    {
+      "type": "assistant.turn_start",
+      "data": {
+        "turnId": "0",
+        "interactionId": "fd267cf9-e51b-4c06-86e6-31c2a57f8735",
+        "parentToolCallId": "call_QCG2nRfNoHJLpKRsSgya3X6v"
+      },
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "id": "ac4dfb06-a823-4329-81a2-cebd41613941",
+      "timestamp": "2026-11-14T22:32:47.675Z",
+      "parentId": "c4d7bcee-84db-4b23-b4ea-af51e09e93b1"
+    },
+    {
+      "type": "assistant.usage",
+      "data": {
+        "model": "mai-code-1.1-flash",
+        "provider": {
+          "id": "copilot",
+          "kind": "copilot",
+          "label": "GitHub Copilot"
+        },
+        "modelDisplayName": "MAI-Code-1.1-Flash",
+        "inputTokens": 1286,
+        "outputTokens": 66,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "reasoningTokens": 0,
+        "cost": 1,
+        "duration": 762,
+        "timeToFirstTokenMs": 599.433125,
+        "outputTtftMs": 599.433208,
+        "interTokenLatencyMs": 4.033530533333333,
+        "initiator": "sub-agent",
+        "interactionType": "conversation-subagent",
+        "isByok": false,
+        "isAuto": true,
+        "maxPromptTokens": 128000,
+        "transport": "websocket",
+        "requestBodyBytes": 7256,
+        "requestBodyWireBytes": 7256,
+        "requestBodyEncoding": "identity",
+        "apiCallId": "mxycxNd7Ac2gCqIKtrGOQZcRQJ25+w7exlxqazYGNAT0qtWQG61JnJV31+QiLuu33QGLj8GfPWpEdt88zrvA/oS8XCbrYtgQ5kNxlhUm+douW2wU3I+B36dG28AC4FjarFtk69uMqnpHGHHFz+vHg9lEPdg8tqTiFILVlGD+O92UQoWMqvZnT2H9LCEYUjH5GJTxxnxaGeyYVUApwRSsi/ip7FhoGh9Y+GxTsmVRt+0KIndpDxL6N7qU0DGZHN/RqkpxbSFHFvN7urUl2xF2WSC9urGA9kVCuh1rxaCcx0VCVyGOhHW/aR4r//go2Bts+QHdYYDqmsZ6G7AiS6cwc3JHhcP1MdYXJS0aBhB88dRvj93J+yhrgVgL0jrmdc1iSEkU+/s3sYP/xEEE4H9bH2DNCykD9CQFkOlsCEUmYfhiVConUqCOf8v83upyuoKysaaQ/uxptqb56Cawen1tgwa2TdHdP3w76xr7uwFZteKjVgcs+yA+nNvdZXge5J/5tExb+4jY",
+        "providerCallId": "00000-0bce5c99-42fc-406c-b900-3427c0457521",
+        "serviceRequestId": "21d60fe6-fe99-4a68-b9c0-456779efbcf3",
+        "rte": true,
+        "apiEndpoint": "ws:/responses",
+        "quotaSnapshots": {
+          "chat": {
+            "isUnlimitedEntitlement": false,
+            "entitlementRequests": 200,
+            "usedRequests": 1,
+            "usageAllowedWithExhaustedQuota": false,
+            "overage": 0,
+            "overageAllowedWithExhaustedQuota": false,
+            "remainingPercentage": 99.5,
+            "resetDate": "2026-12-01T00:00:00Z"
+          },
+          "completions": {
+            "isUnlimitedEntitlement": false,
+            "entitlementRequests": 2000,
+            "usedRequests": 10,
+            "usageAllowedWithExhaustedQuota": false,
+            "overage": 0,
+            "overageAllowedWithExhaustedQuota": false,
+            "remainingPercentage": 99.5,
+            "resetDate": "2026-12-01T00:00:00Z"
+          },
+          "premium_interactions": {
+            "isUnlimitedEntitlement": false,
+            "entitlementRequests": 0,
+            "usedRequests": 0,
+            "usageAllowedWithExhaustedQuota": false,
+            "overage": 0,
+            "overageAllowedWithExhaustedQuota": false,
+            "remainingPercentage": 0,
+            "resetDate": "2026-12-01T00:00:00Z"
+          }
+        },
+        "copilotUsage": {
+          "tokenDetails": [
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 20000000000,
+              "tokenCount": 1286,
+              "tokenType": "input",
+              "model": "mai-code-1.1-flash"
+            },
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 2000000000,
+              "tokenCount": 0,
+              "tokenType": "cache_read",
+              "model": "mai-code-1.1-flash"
+            },
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 25000000000,
+              "tokenCount": 0,
+              "tokenType": "cache_write",
+              "model": "mai-code-1.1-flash"
+            },
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 120000000000,
+              "tokenCount": 66,
+              "tokenType": "output",
+              "model": "mai-code-1.1-flash"
+            }
+          ],
+          "totalNanoAiu": 33640000
+        },
+        "aiCreditsStatus": "complete",
+        "reasoningEffort": "medium",
+        "reasoningSummary": "detailed",
+        "availableToolCount": 3,
+        "toolTokenCount": 680,
+        "customToolCallCount": 0,
+        "unmatchedToolResultCount": 0,
+        "orphanToolCallCount": 0,
+        "frontierSource": "reported_writes",
+        "cacheDetailsReported": true,
+        "numToolCalls": 1,
+        "toolCounts": {
+          "view": 1
+        },
+        "finishReason": "tool_calls",
+        "contentFilterTriggered": false,
+        "accounting": {
+          "sourceSessionId": "72774201-e82e-4208-bc8d-11ab4d24657c",
+          "sequence": 1,
+          "usageId": "mxycxNd7Ac2gCqIKtrGOQZcRQJ25+w7exlxqazYGNAT0qtWQG61JnJV31+QiLuu33QGLj8GfPWpEdt88zrvA/oS8XCbrYtgQ5kNxlhUm+douW2wU3I+B36dG28AC4FjarFtk69uMqnpHGHHFz+vHg9lEPdg8tqTiFILVlGD+O92UQoWMqvZnT2H9LCEYUjH5GJTxxnxaGeyYVUApwRSsi/ip7FhoGh9Y+GxTsmVRt+0KIndpDxL6N7qU0DGZHN/RqkpxbSFHFvN7urUl2xF2WSC9urGA9kVCuh1rxaCcx0VCVyGOhHW/aR4r//go2Bts+QHdYYDqmsZ6G7AiS6cwc3JHhcP1MdYXJS0aBhB88dRvj93J+yhrgVgL0jrmdc1iSEkU+/s3sYP/xEEE4H9bH2DNCykD9CQFkOlsCEUmYfhiVConUqCOf8v83upyuoKysaaQ/uxptqb56Cawen1tgwa2TdHdP3w76xr7uwFZteKjVgcs+yA+nNvdZXge5J/5tExb+4jY"
+        },
+        "parentToolCallId": "call_QCG2nRfNoHJLpKRsSgya3X6v"
+      },
+      "ephemeral": true,
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "id": "4889a59b-adf5-436b-8666-7a48dc35e9ac",
+      "timestamp": "2026-11-14T22:32:48.654Z",
+      "parentId": "f5f14f57-3bd7-4059-90d1-648e90e2d515"
+    },
+    {
+      "type": "assistant.message",
+      "data": {
+        "messageId": "d51a9d6a-e575-4bf9-8932-bceaabcfa280",
+        "originatingMessageId": "bf6ec988-153d-4b31-9836-7c6c5b519736",
+        "model": "mai-code-1.1-flash",
+        "providerId": "copilot",
+        "content": "",
+        "toolRequests": [
+          {
+            "toolCallId": "call_eH8QaEaLrE6WUlnJoNolWSOS",
+            "name": "view",
+            "arguments": {
+              "path": "<workdir>/services-registry.txt",
+              "view_range": [
+                1,
+                250
+              ]
+            },
+            "type": "function",
+            "intentionSummary": "view the file at <workdir>/services-registry.txt.",
+            "toolTitle": "Viewing file"
+          }
+        ],
+        "interactionId": "fd267cf9-e51b-4c06-86e6-31c2a57f8735",
+        "turnId": "0",
+        "rte": true,
+        "apiCallId": "mxycxNd7Ac2gCqIKtrGOQZcRQJ25+w7exlxqazYGNAT0qtWQG61JnJV31+QiLuu33QGLj8GfPWpEdt88zrvA/oS8XCbrYtgQ5kNxlhUm+douW2wU3I+B36dG28AC4FjarFtk69uMqnpHGHHFz+vHg9lEPdg8tqTiFILVlGD+O92UQoWMqvZnT2H9LCEYUjH5GJTxxnxaGeyYVUApwRSsi/ip7FhoGh9Y+GxTsmVRt+0KIndpDxL6N7qU0DGZHN/RqkpxbSFHFvN7urUl2xF2WSC9urGA9kVCuh1rxaCcx0VCVyGOhHW/aR4r//go2Bts+QHdYYDqmsZ6G7AiS6cwc3JHhcP1MdYXJS0aBhB88dRvj93J+yhrgVgL0jrmdc1iSEkU+/s3sYP/xEEE4H9bH2DNCykD9CQFkOlsCEUmYfhiVConUqCOf8v83upyuoKysaaQ/uxptqb56Cawen1tgwa2TdHdP3w76xr7uwFZteKjVgcs+yA+nNvdZXge5J/5tExb+4jY",
+        "serverTools": {
+          "provider": "openai-responses"
+        },
+        "parentToolCallId": "call_QCG2nRfNoHJLpKRsSgya3X6v"
+      },
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "id": "bf012a1d-8bbb-4706-9ca6-ab01ae285b75",
+      "timestamp": "2026-11-14T22:32:48.656Z",
+      "parentId": "f5f14f57-3bd7-4059-90d1-648e90e2d515"
+    },
+    {
+      "type": "tool.execution_start",
+      "data": {
+        "toolCallId": "call_eH8QaEaLrE6WUlnJoNolWSOS",
+        "toolName": "view",
+        "arguments": {
+          "path": "<workdir>/services-registry.txt",
+          "view_range": [
+            1,
+            250
+          ]
+        },
+        "turnId": "0",
+        "model": "mai-code-1.1-flash",
+        "toolTitle": "Viewing file",
+        "parentToolCallId": "call_QCG2nRfNoHJLpKRsSgya3X6v"
+      },
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "id": "053edde3-8c57-4c48-9b18-11cb47159709",
+      "timestamp": "2026-11-14T22:32:48.656Z",
+      "parentId": "bf012a1d-8bbb-4706-9ca6-ab01ae285b75"
+    },
+    {
+      "type": "tool.execution_complete",
+      "data": {
+        "toolCallId": "call_eH8QaEaLrE6WUlnJoNolWSOS",
+        "model": "mai-code-1.1-flash",
+        "interactionId": "fd267cf9-e51b-4c06-86e6-31c2a57f8735",
+        "turnId": "0",
+        "rte": true,
+        "success": true,
+        "result": {
+          "content": "# Service registry export. One record per line: name | owner | region | retention_days | tier | notes\nkestrel-ledger-prod-0 | team-ledger | us-east-1 | 30 | gold | record 0 checksum 0\nosprey-billing-stage-1 | team-relay | eu-west-2 | 43 | silver | record 1 checksum 2654435761\nheron-vault-dev-2 | team-scheduler | ap-south-1 | 56 | bronze | record 2 checksum 1013904226\nplover-gateway-prod-3 | team-search | us-east-1 | 69 | gold | record 3 checksum 3668339987\nlinnet-audit-stage-4 | team-indexer | eu-west-2 | 82 | silver | record 4 checksum 2027808452\nwren-mailer-dev-5 | team-mailer | ap-south-1 |…(20643 chars)",
+          "detailedContent": "\ndiff --git a<workdir>/services-registry.txt b<workdir>/services-registry.txt\nindex 0000000..0000000 100644\n--- a<workdir>/services-registry.txt\n+++ b<workdir>/services-registry.txt\n@@ -1,250 +1,250 @@\n # Service registry export. One record per line: name | owner | region | retention_days | tier | notes\n kestrel-ledger-prod-0 | team-ledger | us-east-1 | 30 | gold | record 0 che…(21118 chars)"
+        },
+        "toolTelemetry": {
+          "properties": {
+            "command": "view",
+            "options": "{\"truncateBasedOn\":\"tokenCount\",\"truncateStyle\":\"middle\"}",
+            "inputs": "[\"path\",\"view_range\",\"command\"]",
+            "resolvedPathAgainstCwd": "false",
+            "fileExtension": "[\".txt\"]",
+            "viewType": "file"
+          },
+          "restrictedProperties": {},
+          "metrics": {
+            "resultLength": 20643,
+            "resultForLlmLength": 20643,
+            "context_token_limit": 128000,
+            "context_current_tokens": 1458,
+            "result_token_count_estimate": 6940
+          }
+        },
+        "parentToolCallId": "call_QCG2nRfNoHJLpKRsSgya3X6v"
+      },
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "id": "3654008b-54b3-4e29-8002-f7b7396f9283",
+      "timestamp": "2026-11-14T22:32:48.669Z",
+      "parentId": "62d5c11f-79ac-482a-917d-0fe65390eacc"
+    },
+    {
+      "type": "assistant.turn_end",
+      "data": {
+        "turnId": "0",
+        "parentToolCallId": "call_QCG2nRfNoHJLpKRsSgya3X6v"
+      },
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "id": "50863006-edad-4293-a2a4-d1cecd19da3d",
+      "timestamp": "2026-11-14T22:32:48.670Z",
+      "parentId": "3654008b-54b3-4e29-8002-f7b7396f9283"
+    },
+    {
+      "type": "assistant.turn_start",
+      "data": {
+        "turnId": "1",
+        "interactionId": "fd267cf9-e51b-4c06-86e6-31c2a57f8735",
+        "parentToolCallId": "call_QCG2nRfNoHJLpKRsSgya3X6v"
+      },
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "id": "4ed3aa50-ef9a-4697-b976-f5c45dff01f5",
+      "timestamp": "2026-11-14T22:32:48.670Z",
+      "parentId": "50863006-edad-4293-a2a4-d1cecd19da3d"
+    },
+    {
+      "type": "assistant.usage",
+      "data": {
+        "model": "mai-code-1.1-flash",
+        "provider": {
+          "id": "copilot",
+          "kind": "copilot",
+          "label": "GitHub Copilot"
+        },
+        "modelDisplayName": "MAI-Code-1.1-Flash",
+        "inputTokens": 8304,
+        "outputTokens": 208,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "reasoningTokens": 64,
+        "cost": 1,
+        "duration": 2050,
+        "timeToFirstTokenMs": 1907.9437500000001,
+        "outputTtftMs": 1907.944084,
+        "interTokenLatencyMs": 2.9706617647058824,
+        "initiator": "sub-agent",
+        "interactionType": "conversation-subagent",
+        "isByok": false,
+        "isAuto": true,
+        "maxPromptTokens": 128000,
+        "transport": "websocket",
+        "requestBodyBytes": 28472,
+        "requestBodyWireBytes": 28472,
+        "requestBodyEncoding": "identity",
+        "apiCallId": "xyRCXST1IAkcU7f/BrGsJKgIELWuuKVSNExLh5ro4h4PqnubLLV5N0Tg6GI2hfKKL9LWYvl/J1QPMfPe8zNOah7n0vIV+0eDLhTblF2ZfXVk8s93d8UO2pLk8rXNEaV78/JKxbzk8iPd6klHvKRFJwrYePUUWoMYq2vBOwEbmaVyY22rb1NwfsKGtFtOAmuUjv4/zQcIx1igz9I9DhPPDOvOAQ09/tiPnNmLZcRpO2rAlE0DGbzxkQI4caGEC1ShX28eDpPf7XQ0aDYl6aBZ2UdIOxw9wDZlKhlTSqZTYqfzX9nwpgK9O/sYPw8BtNoCBHq0UEyE+0fyV9fqV6oZ8Mr7FDkA0B/H7IF6TDkQ2azsMNN3dqSTw6MfLlJIxl62jHY6EEGlXMBIptymRcDjwwVL/Y1VrI0ImxbjdyMAU0fZtzt4mkW5Uwu6FE1QWCaCVq3RHXJCYHLSAyVrPkqlMlCINVYygFGwkd4ZyKT80UMqVl+SE2gqRADKDHnWa0BwgiHAsQjC",
+        "providerCallId": "00000-0bce5c99-42fc-406c-b900-3427c0457521",
+        "serviceRequestId": "fb5bf520-7941-4061-9ebe-a1cc79816c94",
+        "rte": true,
+        "apiEndpoint": "ws:/responses",
+        "quotaSnapshots": {
+          "chat": {
+            "isUnlimitedEntitlement": false,
+            "entitlementRequests": 200,
+            "usedRequests": 1,
+            "usageAllowedWithExhaustedQuota": false,
+            "overage": 0,
+            "overageAllowedWithExhaustedQuota": false,
+            "remainingPercentage": 99.5,
+            "resetDate": "2026-12-01T00:00:00Z"
+          },
+          "completions": {
+            "isUnlimitedEntitlement": false,
+            "entitlementRequests": 2000,
+            "usedRequests": 10,
+            "usageAllowedWithExhaustedQuota": false,
+            "overage": 0,
+            "overageAllowedWithExhaustedQuota": false,
+            "remainingPercentage": 99.5,
+            "resetDate": "2026-12-01T00:00:00Z"
+          },
+          "premium_interactions": {
+            "isUnlimitedEntitlement": false,
+            "entitlementRequests": 0,
+            "usedRequests": 0,
+            "usageAllowedWithExhaustedQuota": false,
+            "overage": 0,
+            "overageAllowedWithExhaustedQuota": false,
+            "remainingPercentage": 0,
+            "resetDate": "2026-12-01T00:00:00Z"
+          }
+        },
+        "copilotUsage": {
+          "tokenDetails": [
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 20000000000,
+              "tokenCount": 8304,
+              "tokenType": "input",
+              "model": "mai-code-1.1-flash"
+            },
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 2000000000,
+              "tokenCount": 0,
+              "tokenType": "cache_read",
+              "model": "mai-code-1.1-flash"
+            },
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 25000000000,
+              "tokenCount": 0,
+              "tokenType": "cache_write",
+              "model": "mai-code-1.1-flash"
+            },
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 120000000000,
+              "tokenCount": 208,
+              "tokenType": "output",
+              "model": "mai-code-1.1-flash"
+            }
+          ],
+          "totalNanoAiu": 191040000
+        },
+        "aiCreditsStatus": "complete",
+        "reasoningEffort": "medium",
+        "reasoningSummary": "detailed",
+        "availableToolCount": 3,
+        "toolTokenCount": 680,
+        "customToolCallCount": 0,
+        "unmatchedToolResultCount": 0,
+        "orphanToolCallCount": 0,
+        "frontierSource": "reported_writes",
+        "cacheDetailsReported": true,
+        "numToolCalls": 1,
+        "toolCounts": {
+          "grep": 1
+        },
+        "finishReason": "tool_calls",
+        "contentFilterTriggered": false,
+        "accounting": {
+          "sourceSessionId": "72774201-e82e-4208-bc8d-11ab4d24657c",
+          "sequence": 2,
+          "usageId": "xyRCXST1IAkcU7f/BrGsJKgIELWuuKVSNExLh5ro4h4PqnubLLV5N0Tg6GI2hfKKL9LWYvl/J1QPMfPe8zNOah7n0vIV+0eDLhTblF2ZfXVk8s93d8UO2pLk8rXNEaV78/JKxbzk8iPd6klHvKRFJwrYePUUWoMYq2vBOwEbmaVyY22rb1NwfsKGtFtOAmuUjv4/zQcIx1igz9I9DhPPDOvOAQ09/tiPnNmLZcRpO2rAlE0DGbzxkQI4caGEC1ShX28eDpPf7XQ0aDYl6aBZ2UdIOxw9wDZlKhlTSqZTYqfzX9nwpgK9O/sYPw8BtNoCBHq0UEyE+0fyV9fqV6oZ8Mr7FDkA0B/H7IF6TDkQ2azsMNN3dqSTw6MfLlJIxl62jHY6EEGlXMBIptymRcDjwwVL/Y1VrI0ImxbjdyMAU0fZtzt4mkW5Uwu6FE1QWCaCVq3RHXJCYHLSAyVrPkqlMlCINVYygFGwkd4ZyKT80UMqVl+SE2gqRADKDHnWa0BwgiHAsQjC"
+        },
+        "parentToolCallId": "call_QCG2nRfNoHJLpKRsSgya3X6v"
+      },
+      "ephemeral": true,
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "id": "d4440bb3-6127-4f0e-a301-ea2d7a972921",
+      "timestamp": "2026-11-14T22:32:50.727Z",
+      "parentId": "f7f3b52f-8628-42fd-8823-690bad94f7ed"
+    },
+    {
+      "type": "assistant.message",
+      "data": {
+        "messageId": "790c8611-d245-4b6b-9763-2d34a8560839",
+        "originatingMessageId": "bf6ec988-153d-4b31-9836-7c6c5b519736",
+        "model": "mai-code-1.1-flash",
+        "providerId": "copilot",
+        "content": "",
+        "toolRequests": [
+          {
+            "toolCallId": "call_dgN3AUY32cWABjuFjzTzMmk5",
+            "name": "grep",
+            "arguments": {
+              "pattern": "kestrel-ledger-prod-77",
+              "path": "<workdir>/services-registry.txt",
+              "output_mode": "content",
+              "-n": true,
+              "head_limit": 20
+            },
+            "type": "function",
+            "intentionSummary": "<workdir>/services-registry.txt",
+            "toolTitle": "Searching files"
+          }
+        ],
+        "interactionId": "fd267cf9-e51b-4c06-86e6-31c2a57f8735",
+        "turnId": "1",
+        "reasoningOpaque": "i+E7aBDnUU9mXyoxzyYGZVMzQi2i9o1OWzz8cU+l5OU2ctNNEd9dX6RLjV8ceRSuOQ/UwurdZKLOC++fg2/0dKVKVMA0BH6D241i9Ct7w3I3Xy32MIe5mRwIp/uH4f6WziynM2iHMqAJCQLXB6PcLurR4yXwwR28sTzZK4VU2hRgtNLtA2etBhHGkkyeHCcKSkajCEcaoON8MFmSMiuQAMaqiYI/FTv6CVWCrxlggM/Gv2ZzBa+aqXoEnqU2FAe/nYnlzKC6zszz6S/x/9sc9o0btbMMTtLJmg6IBHvi0fbxT+02Z/+4ixghkqNq1UtphGSrG1ZQxYERKpcEr9ow7jph7EqYxqPYgyh80vnOg4k9KhoKeW9wvLV9V6BVrsLg897UnpQsxzY97rAkalbSr+wHHhhJaelKh07OtsDSl/mmkT2F1SI0B5uKVaWPSVxEOjei0xb0qrb8+1IsiP7PzE+H3abkFVQhGC1/yvMaOvKKJWdgzRYL/zjBRGbXd00P7QMCbA==",
+        "encryptedContent": "oCzW6ahTGQm+KnDjjMl39bgbhU3YaB2ZE5zNdafPcA/bAOD8COfWhFx+u0v876PHn6Yp7ZMsBV3xg62ECaa0mqt0RFubfjG76y3Kie8naeCZZwNFKHkdLQnKz+ht/fQNWpcics0M1+hAIF5nIhwnawks+54D8AAFZhMNqzxWK9e5iOl1xtVjMzRT04d9KPxFSw2KbUghv121l995ZcaxDvHN8LBYAvsd1NPtmmSo7N8rzaFc2uDOeucWW/8WWNOHjYnoC/yzWOccGnqdV25WzhjOMK4qa+534nODTISHmd8a+f+1QJaK8y6FE7EgLPx4VXaK3JiSrp+iplDVo2BVSJ+StwRVBMrBT73yBBCfTv+k86jwdJet7l47UQjtn1pwSYhZh9vBqHImwMW6otLrMabLKZrke+RyovekdMJWOueJTZO/wm72IoyMUXRx8GJ1eYYRe9D1z3KWTYQ0IfTcdp/2+DaclRsyV5jpvwWKJQhfjCDcU3ppLCQpp+aepmkbj6qqNOZKRWjXiGa9fYAyjw/HGCzxtcI5TGWByDjCFshtlUISEJTm+jAdGV0hUxfOljzDvP0zUrL4j0eU8dKF+nOr…(10312 chars)",
+        "rte": true,
+        "apiCallId": "xyRCXST1IAkcU7f/BrGsJKgIELWuuKVSNExLh5ro4h4PqnubLLV5N0Tg6GI2hfKKL9LWYvl/J1QPMfPe8zNOah7n0vIV+0eDLhTblF2ZfXVk8s93d8UO2pLk8rXNEaV78/JKxbzk8iPd6klHvKRFJwrYePUUWoMYq2vBOwEbmaVyY22rb1NwfsKGtFtOAmuUjv4/zQcIx1igz9I9DhPPDOvOAQ09/tiPnNmLZcRpO2rAlE0DGbzxkQI4caGEC1ShX28eDpPf7XQ0aDYl6aBZ2UdIOxw9wDZlKhlTSqZTYqfzX9nwpgK9O/sYPw8BtNoCBHq0UEyE+0fyV9fqV6oZ8Mr7FDkA0B/H7IF6TDkQ2azsMNN3dqSTw6MfLlJIxl62jHY6EEGlXMBIptymRcDjwwVL/Y1VrI0ImxbjdyMAU0fZtzt4mkW5Uwu6FE1QWCaCVq3RHXJCYHLSAyVrPkqlMlCINVYygFGwkd4ZyKT80UMqVl+SE2gqRADKDHnWa0BwgiHAsQjC",
+        "reasoningBlocks": {
+          "provider": "openai-responses",
+          "blocks": [
+            {
+              "content": [],
+              "encrypted_content": "oCzW6ahTGQm+KnDjjMl39bgbhU3YaB2ZE5zNdafPcA/bAOD8COfWhFx+u0v876PHn6Yp7ZMsBV3xg62ECaa0mqt0RFubfjG76y3Kie8naeCZZwNFKHkdLQnKz+ht/fQNWpcics0M1+hAIF5nIhwnawks+54D8AAFZhMNqzxWK9e5iOl1xtVjMzRT04d9KPxFSw2KbUghv121l995ZcaxDvHN8LBYAvsd1NPtmmSo7N8rzaFc2uDOeucWW/8WWNOHjYnoC/yzWOccGnqdV25WzhjOMK4qa+534nODTISHmd8a+f+1QJaK8y6FE7EgLPx4VXaK3JiSrp+iplDVo2BVSJ+StwRVBMrBT73yBBCfTv+k86jwdJet7l47UQjtn1pwSYhZh9vBqHImwMW6otLrMabLKZrke+RyovekdMJWOueJTZO/wm72IoyMUXRx8GJ1eYYRe9D1z3KWTYQ0IfTcdp/2+DaclRsyV5jpvwWKJQhfjCDcU3ppLCQpp+aepmkbj6qqNOZKRWjXiGa9fYAyjw/HGCzxtcI5TGWByDjCFshtlUISEJTm+jAdGV0hUxfOljzDvP0zUrL4j0eU8dKF+nOr…(10312 chars)",
+              "id": "i+E7aBDnUU9mXyoxzyYGZVMzQi2i9o1OWzz8cU+l5OU2ctNNEd9dX6RLjV8ceRSuOQ/UwurdZKLOC++fg2/0dKVKVMA0BH6D241i9Ct7w3I3Xy32MIe5mRwIp/uH4f6WziynM2iHMqAJCQLXB6PcLurR4yXwwR28sTzZK4VU2hRgtNLtA2etBhHGkkyeHCcKSkajCEcaoON8MFmSMiuQAMaqiYI/FTv6CVWCrxlggM/Gv2ZzBa+aqXoEnqU2FAe/nYnlzKC6zszz6S/x/9sc9o0btbMMTtLJmg6IBHvi0fbxT+02Z/+4ixghkqNq1UtphGSrG1ZQxYERKpcEr9ow7jph7EqYxqPYgyh80vnOg4k9KhoKeW9wvLV9V6BVrsLg897UnpQsxzY97rAkalbSr+wHHhhJaelKh07OtsDSl/mmkT2F1SI0B5uKVaWPSVxEOjei0xb0qrb8+1IsiP7PzE+H3abkFVQhGC1/yvMaOvKKJWdgzRYL/zjBRGbXd00P7QMCbA==",
+              "summary": [],
+              "type": "reasoning"
+            }
+          ]
+        },
+        "parentToolCallId": "call_QCG2nRfNoHJLpKRsSgya3X6v"
+      },
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "id": "8fc27f19-2b12-4e1e-a864-8bef2484a2bc",
+      "timestamp": "2026-11-14T22:32:50.729Z",
+      "parentId": "f7f3b52f-8628-42fd-8823-690bad94f7ed"
+    },
+    {
+      "type": "tool.execution_start",
+      "data": {
+        "toolCallId": "call_dgN3AUY32cWABjuFjzTzMmk5",
+        "toolName": "grep",
+        "arguments": {
+          "pattern": "kestrel-ledger-prod-77",
+          "path": "<workdir>/services-registry.txt",
+          "output_mode": "content",
+          "-n": true,
+          "head_limit": 20
+        },
+        "turnId": "1",
+        "model": "mai-code-1.1-flash",
+        "toolTitle": "Searching files",
+        "parentToolCallId": "call_QCG2nRfNoHJLpKRsSgya3X6v"
+      },
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "id": "4554b984-d868-40df-961f-6081ecf97412",
+      "timestamp": "2026-11-14T22:32:50.730Z",
+      "parentId": "8fc27f19-2b12-4e1e-a864-8bef2484a2bc"
+    },
+    {
+      "type": "tool.execution_complete",
+      "data": {
+        "toolCallId": "call_dgN3AUY32cWABjuFjzTzMmk5",
+        "model": "mai-code-1.1-flash",
+        "interactionId": "fd267cf9-e51b-4c06-86e6-31c2a57f8735",
+        "turnId": "1",
+        "rte": true,
+        "success": true,
+        "result": {
+          "content": "<workdir>/services-registry.txt:981:kestrel-ledger-prod-77 | team-ledger | eu-west-2 | 776 | gold | canonical ledger record, do not purge early",
+          "detailedContent": "<workdir>/services-registry.txt:981:kestrel-ledger-prod-77 | team-ledger | eu-west-2 | 776 | gold | canonical ledger record, do not purge early"
+        },
+        "toolTelemetry": {
+          "properties": {
+            "matches_found": "true",
+            "output_mode": "content",
+            "sandboxApplied": "false",
+            "search_engine": "ripgrep"
+          },
+          "metrics": {
+            "result_length": 198,
+            "context_token_limit": 128000,
+            "context_current_tokens": 8488,
+            "large_output_threshold_bytes": 20480,
+            "result_token_count": 76
+          }
+        },
+        "parentToolCallId": "call_QCG2nRfNoHJLpKRsSgya3X6v"
+      },
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "id": "0a97326b-bf03-4734-ae99-972893a54ad9",
+      "timestamp": "2026-11-14T22:32:50.754Z",
+      "parentId": "70612281-0de8-4577-887f-ee2ee37fb783"
+    },
+    {
+      "type": "assistant.turn_end",
+      "data": {
+        "turnId": "1",
+        "parentToolCallId": "call_QCG2nRfNoHJLpKRsSgya3X6v"
+      },
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "id": "8dba9846-681e-47f0-8f11-db6460baac51",
+      "timestamp": "2026-11-14T22:32:50.755Z",
+      "parentId": "0a97326b-bf03-4734-ae99-972893a54ad9"
+    },
+    {
+      "type": "assistant.turn_start",
+      "data": {
+        "turnId": "2",
+        "interactionId": "fd267cf9-e51b-4c06-86e6-31c2a57f8735",
+        "parentToolCallId": "call_QCG2nRfNoHJLpKRsSgya3X6v"
+      },
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "id": "8a6348db-3850-4f37-9839-7413f0662471",
+      "timestamp": "2026-11-14T22:32:50.755Z",
+      "parentId": "8dba9846-681e-47f0-8f11-db6460baac51"
+    },
+    {
+      "type": "assistant.usage",
+      "data": {
+        "model": "mai-code-1.1-flash",
+        "provider": {
+          "id": "copilot",
+          "kind": "copilot",
+          "label": "GitHub Copilot"
+        },
+        "modelDisplayName": "MAI-Code-1.1-Flash",
+        "inputTokens": 8599,
+        "outputTokens": 37,
+        "cacheReadTokens": 8448,
+        "cacheWriteTokens": 0,
+        "reasoningTokens": 0,
+        "cost": 1,
+        "duration": 1866,
+        "timeToFirstTokenMs": 1231.919083,
+        "outputTtftMs": 1231.919167,
+        "interTokenLatencyMs": 7.15780843902439,
+        "initiator": "sub-agent",
+        "interactionType": "conversation-subagent",
+        "isByok": false,
+        "isAuto": true,
+        "maxPromptTokens": 128000,
+        "transport": "websocket",
+        "requestBodyBytes": 7811,
+        "requestBodyWireBytes": 7811,
+        "requestBodyEncoding": "identity",
+        "apiCallId": "yCweKv43vH9GkyCMXfjiocBfcXQ8d38cxt6Y5s83iEzMYhDZL7ujG751nfRkn+D5hyoUOY1RUXwNq/lolqUocn1LkcjyAC7JVF3OWXcomrOWLBjRKwl7s8DwZB94pNhta58CewrtrxD6rn4WUv6ojFBefzItRYeuXKmtcd9cH9tg7wgAbutx1jWfjBfsSNETV24WKXFA11kzvcCtksxZcnGTFzeHXSP5PMmYeIoNyj1UN+Y7ezsAFXbrNH2zCln/6qoDP7krzJoXGXcq5j+cbHdJ52GDS8W2merT6nJtmmMagATPBIF4JpmurhGS2nNZV1uGXQtHNXT9tXF2sw2h180MQLeUJydaFiPbl3wIGuMf4MyEFnZ2n0JvWE2T0m4JTAW6sq0Y9Y1sQRluHOMIsnRAmpigaeW7LOEoSO13Qm5j3ejlegOg0sgBcf1QFOOJHmT+nbGmsf1O64Wxec6A5IAjS+mrA+rg41oPR3xXuAELQzgwxWvjvDfJPqo4ZcAfQLpoZ1wN",
+        "providerCallId": "00000-0bce5c99-42fc-406c-b900-3427c0457521",
+        "serviceRequestId": "fcaaee88-f68d-4095-993c-acfc8b001b72",
+        "rte": true,
+        "apiEndpoint": "ws:/responses",
+        "quotaSnapshots": {
+          "chat": {
+            "isUnlimitedEntitlement": false,
+            "entitlementRequests": 200,
+            "usedRequests": 1,
+            "usageAllowedWithExhaustedQuota": false,
+            "overage": 0,
+            "overageAllowedWithExhaustedQuota": false,
+            "remainingPercentage": 99.5,
+            "resetDate": "2026-12-01T00:00:00Z"
+          },
+          "completions": {
+            "isUnlimitedEntitlement": false,
+            "entitlementRequests": 2000,
+            "usedRequests": 10,
+            "usageAllowedWithExhaustedQuota": false,
+            "overage": 0,
+            "overageAllowedWithExhaustedQuota": false,
+            "remainingPercentage": 99.5,
+            "resetDate": "2026-12-01T00:00:00Z"
+          },
+          "premium_interactions": {
+            "isUnlimitedEntitlement": false,
+            "entitlementRequests": 0,
+            "usedRequests": 0,
+            "usageAllowedWithExhaustedQuota": false,
+            "overage": 0,
+            "overageAllowedWithExhaustedQuota": false,
+            "remainingPercentage": 0,
+            "resetDate": "2026-12-01T00:00:00Z"
+          }
+        },
+        "copilotUsage": {
+          "tokenDetails": [
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 20000000000,
+              "tokenCount": 151,
+              "tokenType": "input",
+              "model": "mai-code-1.1-flash"
+            },
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 2000000000,
+              "tokenCount": 8448,
+              "tokenType": "cache_read",
+              "model": "mai-code-1.1-flash"
+            },
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 25000000000,
+              "tokenCount": 0,
+              "tokenType": "cache_write",
+              "model": "mai-code-1.1-flash"
+            },
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 120000000000,
+              "tokenCount": 37,
+              "tokenType": "output",
+              "model": "mai-code-1.1-flash"
+            }
+          ],
+          "totalNanoAiu": 24356000
+        },
+        "aiCreditsStatus": "complete",
+        "reasoningEffort": "medium",
+        "reasoningSummary": "detailed",
+        "availableToolCount": 3,
+        "toolTokenCount": 680,
+        "customToolCallCount": 0,
+        "unmatchedToolResultCount": 0,
+        "orphanToolCallCount": 0,
+        "frontierSource": "reported_writes",
+        "cacheTtlSeconds": 1800,
+        "cacheDetailsReported": true,
+        "numToolCalls": 0,
+        "toolCounts": {},
+        "finishReason": "stop",
+        "contentFilterTriggered": false,
+        "accounting": {
+          "sourceSessionId": "72774201-e82e-4208-bc8d-11ab4d24657c",
+          "sequence": 3,
+          "usageId": "yCweKv43vH9GkyCMXfjiocBfcXQ8d38cxt6Y5s83iEzMYhDZL7ujG751nfRkn+D5hyoUOY1RUXwNq/lolqUocn1LkcjyAC7JVF3OWXcomrOWLBjRKwl7s8DwZB94pNhta58CewrtrxD6rn4WUv6ojFBefzItRYeuXKmtcd9cH9tg7wgAbutx1jWfjBfsSNETV24WKXFA11kzvcCtksxZcnGTFzeHXSP5PMmYeIoNyj1UN+Y7ezsAFXbrNH2zCln/6qoDP7krzJoXGXcq5j+cbHdJ52GDS8W2merT6nJtmmMagATPBIF4JpmurhGS2nNZV1uGXQtHNXT9tXF2sw2h180MQLeUJydaFiPbl3wIGuMf4MyEFnZ2n0JvWE2T0m4JTAW6sq0Y9Y1sQRluHOMIsnRAmpigaeW7LOEoSO13Qm5j3ejlegOg0sgBcf1QFOOJHmT+nbGmsf1O64Wxec6A5IAjS+mrA+rg41oPR3xXuAELQzgwxWvjvDfJPqo4ZcAfQLpoZ1wN"
+        },
+        "parentToolCallId": "call_QCG2nRfNoHJLpKRsSgya3X6v"
+      },
+      "ephemeral": true,
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "id": "7f97dd46-e4e9-4321-a8b6-650b8deaae95",
+      "timestamp": "2026-11-14T22:32:52.624Z",
+      "parentId": "1953b9e1-5d47-42df-ae82-117f1c6bcd6e"
+    },
+    {
+      "type": "assistant.message",
+      "data": {
+        "messageId": "0b6b66e0-c6cf-4283-b444-2fd652a1022f",
+        "originatingMessageId": "bf6ec988-153d-4b31-9836-7c6c5b519736",
+        "model": "mai-code-1.1-flash",
+        "providerId": "copilot",
+        "content": "776",
+        "toolRequests": [],
+        "interactionId": "fd267cf9-e51b-4c06-86e6-31c2a57f8735",
+        "turnId": "2",
+        "reasoningOpaque": "O4VzgOnloAg1ffmYJpkxTn0XQl2RTnIoaxkZAW7VrV1ARSmAxPvHePA70GTS+qt5c7Pn7l+LXAt3Zy51KOPSHdAmagJsdp60i5IEk0RkcIC0LXfiBcKFBTpjAfP8k1UIOokC5cATZ7K2P0WBX0i1KkWANYYFOXOrOkVov992dfxQNXi/ioQRqYvqp0Rcl6HFk+M5HVTtD1sXX3aM4eSGADdrdF2z8u/FzTMWQEcWhZzuE4hUaLf+oGNRSoCBFPDG//Fz3tSqVkXdcf7uddGO4ejWssNXMI4LW1uOZZ5ipbuSKFLNX2Q6aQmoyxP3kVYzdSk2fctsn8TWPvA2VBRkd7CQI990ZBmzKM/LY14OvDtFEOO073MjrE/iUj4PRH/S3hszu7xnOT4lkJlq9drT8kRtDf2yhw0Fw4hkW6CjRy+fBdZRjDM0jjs/hnsFUDgyO0VxCWvvcaSCBqqO3p8TKP3JUVSvlY/kZw2fSdqR2NpbPVvwxgd4ZM+2NGwKJlWcS2pWxQ==",
+        "reasoningText": "**Extracting retention days**\n\nI need to report the value of retention_days as just a number. It looks like the value is 776. I should also ensure that there’s no markdown or extra formatting involved in the response. So, the final result should simply be “776.” Keeping it straightforward helps avoid any confusion, and I want to make sure the user gets exactly what they're looking for. Simple and direct is the way to go!",
+        "encryptedContent": "RWrVESMkfc+fSRv0Sud489Zq67t1lkIiPVQ+5rtyvpwZqBULru7NS+FGbZDjdkfOLOECilZpZILfzTrompdsphHPpOKims1cxxpPVi2wAEVbuQ1q9GXBYvDUKitd8M3tNC10aJVWd3nHO76dAp24JZGGtEULmz6TFTbqE489RrUVVf/OLZvvyla6nIQ/02dCozv590RrsAy0ZY3R635PBWIQY/j9RENUU0arhkQ4x/lENwZdlKnBE0ERqPM7ZBYxrRgOT3JN5qwEhlkfgBncsy4nOc4cLeTqNaEhKGGAHP4SL6LaDa9rsJE1Z5CLDqIs29O9YLk87Gw+ten5vcIm4k0eYmy5EAlk2uu6P+gWrncw+Ay4QEMuE+w5Pe1b7iEGDcjoAQTQuYhy8+wbDfdzbBk90RqQpXqxKtOq+qhYEb1GexjDydvahgBBmCP/hTFEKeEeBSDSreqRayTxbWJSck9iBxYebJGew/iN3RIFX3/cuAcFPyyxpdaQdTtjY5AJ6Uj5u++kbUo5AWr85Hd90m36gnzphRoI2QvMRtewUGpGkcrbRe1VhOoJBqUAJ/WmpdwLTGFOnm3dc37Akj9oqqyd…(8384 chars)",
+        "phase": "final_answer",
+        "rte": true,
+        "apiCallId": "yCweKv43vH9GkyCMXfjiocBfcXQ8d38cxt6Y5s83iEzMYhDZL7ujG751nfRkn+D5hyoUOY1RUXwNq/lolqUocn1LkcjyAC7JVF3OWXcomrOWLBjRKwl7s8DwZB94pNhta58CewrtrxD6rn4WUv6ojFBefzItRYeuXKmtcd9cH9tg7wgAbutx1jWfjBfsSNETV24WKXFA11kzvcCtksxZcnGTFzeHXSP5PMmYeIoNyj1UN+Y7ezsAFXbrNH2zCln/6qoDP7krzJoXGXcq5j+cbHdJ52GDS8W2merT6nJtmmMagATPBIF4JpmurhGS2nNZV1uGXQtHNXT9tXF2sw2h180MQLeUJydaFiPbl3wIGuMf4MyEFnZ2n0JvWE2T0m4JTAW6sq0Y9Y1sQRluHOMIsnRAmpigaeW7LOEoSO13Qm5j3ejlegOg0sgBcf1QFOOJHmT+nbGmsf1O64Wxec6A5IAjS+mrA+rg41oPR3xXuAELQzgwxWvjvDfJPqo4ZcAfQLpoZ1wN",
+        "serverTools": {
+          "provider": "openai-responses"
+        },
+        "reasoningBlocks": {
+          "provider": "openai-responses",
+          "blocks": [
+            {
+              "content": [],
+              "encrypted_content": "RWrVESMkfc+fSRv0Sud489Zq67t1lkIiPVQ+5rtyvpwZqBULru7NS+FGbZDjdkfOLOECilZpZILfzTrompdsphHPpOKims1cxxpPVi2wAEVbuQ1q9GXBYvDUKitd8M3tNC10aJVWd3nHO76dAp24JZGGtEULmz6TFTbqE489RrUVVf/OLZvvyla6nIQ/02dCozv590RrsAy0ZY3R635PBWIQY/j9RENUU0arhkQ4x/lENwZdlKnBE0ERqPM7ZBYxrRgOT3JN5qwEhlkfgBncsy4nOc4cLeTqNaEhKGGAHP4SL6LaDa9rsJE1Z5CLDqIs29O9YLk87Gw+ten5vcIm4k0eYmy5EAlk2uu6P+gWrncw+Ay4QEMuE+w5Pe1b7iEGDcjoAQTQuYhy8+wbDfdzbBk90RqQpXqxKtOq+qhYEb1GexjDydvahgBBmCP/hTFEKeEeBSDSreqRayTxbWJSck9iBxYebJGew/iN3RIFX3/cuAcFPyyxpdaQdTtjY5AJ6Uj5u++kbUo5AWr85Hd90m36gnzphRoI2QvMRtewUGpGkcrbRe1VhOoJBqUAJ/WmpdwLTGFOnm3dc37Akj9oqqyd…(8384 chars)",
+              "id": "O4VzgOnloAg1ffmYJpkxTn0XQl2RTnIoaxkZAW7VrV1ARSmAxPvHePA70GTS+qt5c7Pn7l+LXAt3Zy51KOPSHdAmagJsdp60i5IEk0RkcIC0LXfiBcKFBTpjAfP8k1UIOokC5cATZ7K2P0WBX0i1KkWANYYFOXOrOkVov992dfxQNXi/ioQRqYvqp0Rcl6HFk+M5HVTtD1sXX3aM4eSGADdrdF2z8u/FzTMWQEcWhZzuE4hUaLf+oGNRSoCBFPDG//Fz3tSqVkXdcf7uddGO4ejWssNXMI4LW1uOZZ5ipbuSKFLNX2Q6aQmoyxP3kVYzdSk2fctsn8TWPvA2VBRkd7CQI990ZBmzKM/LY14OvDtFEOO073MjrE/iUj4PRH/S3hszu7xnOT4lkJlq9drT8kRtDf2yhw0Fw4hkW6CjRy+fBdZRjDM0jjs/hnsFUDgyO0VxCWvvcaSCBqqO3p8TKP3JUVSvlY/kZw2fSdqR2NpbPVvwxgd4ZM+2NGwKJlWcS2pWxQ==",
+              "summary": [
+                {
+                  "text": "**Extracting retention days**\n\nI need to report the value of retention_days as just a number. It looks like the value is 776. I should also ensure that there’s no markdown or extra formatting involved in the response. So, the final result should simply be “776.” Keeping it straightforward helps avoid any confusion, and I want to make sure the user gets exactly what they're looking for. Simple and direct is the way to go!",
+                  "type": "summary_text"
+                }
+              ],
+              "type": "reasoning"
+            }
+          ]
+        },
+        "parentToolCallId": "call_QCG2nRfNoHJLpKRsSgya3X6v"
+      },
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "id": "778ae9b7-f9d9-4ac2-a615-39b07276c521",
+      "timestamp": "2026-11-14T22:32:52.625Z",
+      "parentId": "1953b9e1-5d47-42df-ae82-117f1c6bcd6e"
+    },
+    {
+      "type": "assistant.reasoning",
+      "data": {
+        "reasoningId": "12523ec3-89d1-48d1-bbb6-46c97ab2476d",
+        "content": "**Extracting retention days**\n\nI need to report the value of retention_days as just a number. It looks like the value is 776. I should also ensure that there’s no markdown or extra formatting involved in the response. So, the final result should simply be “776.” Keeping it straightforward helps avoid any confusion, and I want to make sure the user gets exactly what they're looking for. Simple and direct is the way to go!",
+        "rte": true
+      },
+      "ephemeral": true,
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "id": "4593d576-4d37-4da2-823e-d4e43b9a4331",
+      "timestamp": "2026-11-14T22:32:52.626Z",
+      "parentId": "778ae9b7-f9d9-4ac2-a615-39b07276c521"
+    },
+    {
+      "type": "assistant.turn_end",
+      "data": {
+        "turnId": "2",
+        "parentToolCallId": "call_QCG2nRfNoHJLpKRsSgya3X6v"
+      },
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "id": "b6e7fdc8-3bcf-4e56-bae0-e0071c4a3c89",
+      "timestamp": "2026-11-14T22:32:52.626Z",
+      "parentId": "778ae9b7-f9d9-4ac2-a615-39b07276c521"
+    },
+    {
+      "type": "subagent.completed",
+      "data": {
+        "toolCallId": "call_QCG2nRfNoHJLpKRsSgya3X6v",
+        "agentName": "bulk-reader",
+        "agentDisplayName": "Bulk reader",
+        "model": "claude-haiku-4.5",
+        "firstDispatchedModel": "mai-code-1.1-flash",
+        "modelSelectionSource": "agent_definition_default",
+        "totalToolCalls": 2,
+        "totalTokens": 18500,
+        "durationMs": 5118
+      },
+      "agentId": "828ba44a-9171-403e-8737-130ce94bba84",
+      "id": "5ed408ca-3b39-41bd-b60a-0057438b2f4d",
+      "timestamp": "2026-11-14T22:32:52.629Z",
+      "parentId": "3f1f8cdd-fd67-4be4-9bf6-18f9d54cf87c"
+    },
+    {
+      "type": "session.background_tasks_changed",
+      "data": {},
+      "ephemeral": true,
+      "id": "ddae4084-fdbd-4131-bcdb-1a5594808034",
+      "timestamp": "2026-11-14T22:32:52.629Z",
+      "parentId": "5ed408ca-3b39-41bd-b60a-0057438b2f4d"
+    },
+    {
+      "type": "tool.execution_complete",
+      "data": {
+        "toolCallId": "call_QCG2nRfNoHJLpKRsSgya3X6v",
+        "model": "mai-code-1.1-flash",
+        "interactionId": "f6a346a5-4d5e-4200-92c4-7022d1d49564",
+        "turnId": "1",
+        "rte": true,
+        "success": true,
+        "result": {
+          "content": "776",
+          "detailedContent": "776"
+        },
+        "toolTelemetry": {
+          "properties": {
+            "prompt_length": "128",
+            "response_length": "3",
+            "agent_name_hash": "75088d516272c2e1b2f88c817ef87f1129e696718ceaf14c33c8a5e957067a4a",
+            "agent_type": "custom-agent",
+            "execution_mode": "sync",
+            "resolved_model": "claude-haiku-4.5"
+          },
+          "restrictedProperties": {
+            "agent_name": "bulk-reader",
+            "agent_id": "828ba44a-9171-403e-8737-130ce94bba84"
+          },
+          "metrics": {
+            "numberOfToolCallsMadeByAgent": 2,
+            "response_length": 3,
+            "context_token_limit": 128000,
+            "context_current_tokens": 12870,
+            "large_output_threshold_bytes": 20480,
+            "result_token_count": 1
+          }
+        }
+      },
+      "id": "68590f31-213a-4586-91e2-5405c9447f78",
+      "timestamp": "2026-11-14T22:32:52.630Z",
+      "parentId": "2b54703e-8aef-4638-b949-a967d8d1fd71"
+    },
+    {
+      "type": "assistant.turn_end",
+      "data": {
+        "turnId": "1"
+      },
+      "id": "a383fe9c-1e37-4373-b1d9-f00431525fc4",
+      "timestamp": "2026-11-14T22:32:52.633Z",
+      "parentId": "68590f31-213a-4586-91e2-5405c9447f78"
+    },
+    {
+      "type": "assistant.turn_start",
+      "data": {
+        "turnId": "2",
+        "interactionId": "f6a346a5-4d5e-4200-92c4-7022d1d49564"
+      },
+      "id": "8fff52f6-0050-437b-b0a6-1418c80dd480",
+      "timestamp": "2026-11-14T22:32:52.633Z",
+      "parentId": "a383fe9c-1e37-4373-b1d9-f00431525fc4"
+    },
+    {
+      "type": "assistant.usage",
+      "data": {
+        "model": "mai-code-1.1-flash",
+        "provider": {
+          "id": "copilot",
+          "kind": "copilot",
+          "label": "GitHub Copilot"
+        },
+        "modelDisplayName": "MAI-Code-1.1-Flash",
+        "inputTokens": 11593,
+        "outputTokens": 5,
+        "cacheReadTokens": 11520,
+        "cacheWriteTokens": 0,
+        "reasoningTokens": 0,
+        "cost": 1,
+        "duration": 587,
+        "timeToFirstTokenMs": 522.78275,
+        "outputTtftMs": 522.782875,
+        "cacheExpiresAt": "2026-11-14T23:02:52.637Z",
+        "initiator": "agent",
+        "interactionType": "conversation-agent",
+        "isByok": false,
+        "isAuto": true,
+        "maxPromptTokens": 128000,
+        "transport": "websocket",
+        "requestBodyBytes": 59551,
+        "requestBodyWireBytes": 59551,
+        "requestBodyEncoding": "identity",
+        "apiCallId": "0I90hMyuuyWUSk58TaqJlpomSD4AjPWcyTwdytYNB8bIRa2FOdmJTf+ir2CY73hVb07efcl/8VhEQnFsVFjouJemOu0DZOphRagCyHZVuuYkr6HvaDEKIb1HbhNd/uCp/CXgD1N5T/qfGyNxBkhkw0FZ53e1HL/XdWut1sMd3aynpTggSuQBwOaaDE8iw/E8/nyOOBgJwh/X0+gDX6kfueNTr+lkeA1B3o9dsPOc8BNfUHZLNsKiZnNfBfShrCDi6Fdoqko4BjFz3HNNOL5GLE3/AXhzacowGXwErAz/3RCL9rl92jRrPqAHgwYZrKXAfBm00HaemS3r53KtETfcrE1ACNNCy24k99d36jVd7Xgyj1o2PX35Ppy/3rsY/rbE3J/wourSBeLG7gEIFXlj0oMA3KnlG71IIw7Hg+UGuC7waHrU67T3K/fMdoYbvND6l73E9tB5mH7Qb6kVQm/msCrv1r4HiVSeW90S4OjcmaOUV78R1aY2NwUSUNSFb/fs9Mx+xuCs",
+        "providerCallId": "00000-a6eb9155-adf8-474b-8e1f-7ddff6698dc7",
+        "serviceRequestId": "229a0918-0dd6-4049-809b-92db6aaa8251",
+        "rte": true,
+        "apiEndpoint": "ws:/responses",
+        "quotaSnapshots": {
+          "chat": {
+            "isUnlimitedEntitlement": false,
+            "entitlementRequests": 200,
+            "usedRequests": 1,
+            "usageAllowedWithExhaustedQuota": false,
+            "overage": 0,
+            "overageAllowedWithExhaustedQuota": false,
+            "remainingPercentage": 99.4,
+            "resetDate": "2026-12-01T00:00:00Z"
+          },
+          "completions": {
+            "isUnlimitedEntitlement": false,
+            "entitlementRequests": 2000,
+            "usedRequests": 10,
+            "usageAllowedWithExhaustedQuota": false,
+            "overage": 0,
+            "overageAllowedWithExhaustedQuota": false,
+            "remainingPercentage": 99.5,
+            "resetDate": "2026-12-01T00:00:00Z"
+          },
+          "premium_interactions": {
+            "isUnlimitedEntitlement": false,
+            "entitlementRequests": 0,
+            "usedRequests": 0,
+            "usageAllowedWithExhaustedQuota": false,
+            "overage": 0,
+            "overageAllowedWithExhaustedQuota": false,
+            "remainingPercentage": 0,
+            "resetDate": "2026-12-01T00:00:00Z"
+          }
+        },
+        "copilotUsage": {
+          "tokenDetails": [
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 20000000000,
+              "tokenCount": 73,
+              "tokenType": "input",
+              "model": "mai-code-1.1-flash"
+            },
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 2000000000,
+              "tokenCount": 11520,
+              "tokenType": "cache_read",
+              "model": "mai-code-1.1-flash"
+            },
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 25000000000,
+              "tokenCount": 0,
+              "tokenType": "cache_write",
+              "model": "mai-code-1.1-flash"
+            },
+            {
+              "batchSize": 1000000,
+              "costPerBatch": 120000000000,
+              "tokenCount": 5,
+              "tokenType": "output",
+              "model": "mai-code-1.1-flash"
+            }
+          ],
+          "totalNanoAiu": 25100000
+        },
+        "aiCreditsStatus": "complete",
+        "reasoningEffort": "medium",
+        "reasoningSummary": "detailed",
+        "availableToolCount": 25,
+        "toolTokenCount": 7832,
+        "customToolCallCount": 0,
+        "unmatchedToolResultCount": 0,
+        "orphanToolCallCount": 0,
+        "frontierSource": "reported_writes",
+        "cacheTtlSeconds": 1800,
+        "cacheDetailsReported": true,
+        "numToolCalls": 0,
+        "toolCounts": {},
+        "finishReason": "stop",
+        "contentFilterTriggered": false,
+        "accounting": {
+          "sourceSessionId": "d85bd44e-1e11-4994-8af9-c1dff2f635f3",
+          "sequence": 3,
+          "usageId": "0I90hMyuuyWUSk58TaqJlpomSD4AjPWcyTwdytYNB8bIRa2FOdmJTf+ir2CY73hVb07efcl/8VhEQnFsVFjouJemOu0DZOphRagCyHZVuuYkr6HvaDEKIb1HbhNd/uCp/CXgD1N5T/qfGyNxBkhkw0FZ53e1HL/XdWut1sMd3aynpTggSuQBwOaaDE8iw/E8/nyOOBgJwh/X0+gDX6kfueNTr+lkeA1B3o9dsPOc8BNfUHZLNsKiZnNfBfShrCDi6Fdoqko4BjFz3HNNOL5GLE3/AXhzacowGXwErAz/3RCL9rl92jRrPqAHgwYZrKXAfBm00HaemS3r53KtETfcrE1ACNNCy24k99d36jVd7Xgyj1o2PX35Ppy/3rsY/rbE3J/wourSBeLG7gEIFXlj0oMA3KnlG71IIw7Hg+UGuC7waHrU67T3K/fMdoYbvND6l73E9tB5mH7Qb6kVQm/msCrv1r4HiVSeW90S4OjcmaOUV78R1aY2NwUSUNSFb/fs9Mx+xuCs"
+        }
+      },
+      "ephemeral": true,
+      "id": "028d7f50-0dbc-4110-b5c4-654176a507f2",
+      "timestamp": "2026-11-14T22:32:53.225Z",
+      "parentId": "acc53fec-e9ea-4adc-afd2-67070682284c"
+    },
+    {
+      "type": "assistant.message",
+      "data": {
+        "messageId": "d2f6d118-eb3e-4f60-98cd-e81177d47757",
+        "originatingMessageId": "4b2b45e9-953c-4410-b573-2a16722eae32",
+        "model": "mai-code-1.1-flash",
+        "providerId": "copilot",
+        "content": "776",
+        "toolRequests": [],
+        "interactionId": "f6a346a5-4d5e-4200-92c4-7022d1d49564",
+        "turnId": "2",
+        "phase": "final_answer",
+        "rte": true,
+        "apiCallId": "0I90hMyuuyWUSk58TaqJlpomSD4AjPWcyTwdytYNB8bIRa2FOdmJTf+ir2CY73hVb07efcl/8VhEQnFsVFjouJemOu0DZOphRagCyHZVuuYkr6HvaDEKIb1HbhNd/uCp/CXgD1N5T/qfGyNxBkhkw0FZ53e1HL/XdWut1sMd3aynpTggSuQBwOaaDE8iw/E8/nyOOBgJwh/X0+gDX6kfueNTr+lkeA1B3o9dsPOc8BNfUHZLNsKiZnNfBfShrCDi6Fdoqko4BjFz3HNNOL5GLE3/AXhzacowGXwErAz/3RCL9rl92jRrPqAHgwYZrKXAfBm00HaemS3r53KtETfcrE1ACNNCy24k99d36jVd7Xgyj1o2PX35Ppy/3rsY/rbE3J/wourSBeLG7gEIFXlj0oMA3KnlG71IIw7Hg+UGuC7waHrU67T3K/fMdoYbvND6l73E9tB5mH7Qb6kVQm/msCrv1r4HiVSeW90S4OjcmaOUV78R1aY2NwUSUNSFb/fs9Mx+xuCs",
+        "serverTools": {
+          "provider": "openai-responses"
+        }
+      },
+      "id": "34184576-4570-4dec-9c80-90ec5e749c6f",
+      "timestamp": "2026-11-14T22:32:53.229Z",
+      "parentId": "acc53fec-e9ea-4adc-afd2-67070682284c"
+    },
+    {
+      "type": "assistant.turn_end",
+      "data": {
+        "turnId": "2"
+      },
+      "id": "05613d7f-f0c8-4f6d-91ce-34a1f52cae14",
+      "timestamp": "2026-11-14T22:32:53.230Z",
+      "parentId": "34184576-4570-4dec-9c80-90ec5e749c6f"
+    },
+    {
+      "type": "session.usage_checkpoint",
+      "data": {
+        "totalNanoAiu": 408284000,
+        "totalPremiumRequests": 1,
+        "modelCacheState": [
+          {
+            "modelId": "mai-code-1.1-flash",
+            "cacheExpiresAt": "2026-11-14T23:02:52.637Z",
+            "cacheTtlSeconds": 1800
+          }
+        ],
+        "promptCacheBreakState": [
+          {
+            "conversation": "main",
+            "models": {
+              "mai-code-1.1-flash": {
+                "model": "mai-code-1.1-flash",
+                "vendor": "openai",
+                "model_call_id": "0I90hMyuuyWUSk58TaqJlpomSD4AjPWcyTwdytYNB8bIRa2FOdmJTf+ir2CY73hVb07efcl/8VhEQnFsVFjouJemOu0DZOphRagCyHZVuuYkr6HvaDEKIb1HbhNd/uCp/CXgD1N5T/qfGyNxBkhkw0FZ53e1HL/XdWut1sMd3aynpTggSuQBwOaaDE8iw/E8/nyOOBgJwh/X0+gDX6kfueNTr+lkeA1B3o9dsPOc8BNfUHZLNsKiZnNfBfShrCDi6Fdoqko4BjFz3HNNOL5GLE3/AXhzacowGXwErAz/3RCL9rl92jRrPqAHgwYZrKXAfBm00HaemS3r53KtETfcrE1ACNNCy24k99d36jVd7Xgyj1o2PX35Ppy/3rsY/rbE3J/wourSBeLG7gEIFXlj0oMA3KnlG71IIw7Hg+UGuC7waHrU67T3K/fMdoYbvND6l73E9tB5mH7Qb6kVQm/msCrv1r4HiVSeW90S4OjcmaOUV78R1aY2NwUSUNSFb/fs9Mx+xuCs",
+                "request_id": "00000-a6eb9155-adf8-474b-8e1f-7ddff6698dc7",
+                "github_request_id": "229a0918-0dd6-4049-809b-92db6aaa8251",
+                "api_endpoint": "ws:/responses",
+                "transport": "websocket",
+                "session_mode": "interactive",
+                "reasoning_effort": "medium",
+                "initiator": "agent",
+                "tool_count": 25,
+                "tool_tokens": 7832,
+                "tools": [
+                  {
+                    "name": "bash",
+                    "schema_hash": "5aff88e14e77",
+                    "safe": true
+                  },
+                  {
+                    "name": "read_bash",
+                    "schema_hash": "78bdc74b3707",
+                    "safe": true
+                  },
+                  {
+                    "name": "stop_bash",
+                    "schema_hash": "dd8c0c97e7c9",
+                    "safe": true
+                  },
+                  {
+                    "name": "list_bash",
+                    "schema_hash": "3209638ac5d6",
+                    "safe": true
+                  },
+                  {
+                    "name": "view",
+                    "schema_hash": "3e73851b027b",
+                    "safe": true
+                  },
+                  {
+                    "name": "create",
+                    "schema_hash": "d7e30321149d",
+                    "safe": true
+                  },
+                  {
+                    "name": "edit",
+                    "schema_hash": "0be632c6eeaa",
+                    "safe": true
+                  },
+                  {
+                    "name": "web_fetch",
+                    "schema_hash": "a0829f05c5fd",
+                    "safe": true
+                  },
+                  {
+                    "name": "search_code_subagent",
+                    "schema_hash": "3c5f0f30dd6a",
+                    "safe": true
+                  },
+                  {
+                    "name": "semantic_code_search",
+                    "schema_hash": "a9a3d6d96921",
+                    "safe": false
+                  },
+                  {
+                    "name": "skill",
+                    "schema_hash": "a7ac9beec0b8",
+                    "safe": true
+                  },
+                  {
+                    "name": "run_dynamic_workflow",
+                    "schema_hash": "d4f938d51048",
+                    "safe": true
+                  },
+                  {
+                    "name": "dynamic_workflows_manage",
+                    "schema_hash": "5d3e79db7ecb",
+                    "safe": false
+                  },
+                  {
+                    "name": "sql",
+                    "schema_hash": "5756c3fc79ed",
+                    "safe": true
+                  },
+                  {
+                    "name": "read_agent",
+                    "schema_hash": "fb2b527fdba4",
+                    "safe": true
+                  },
+                  {
+                    "name": "list_agents",
+                    "schema_hash": "bb480bb53a47",
+                    "safe": true
+                  },
+                  {
+                    "name": "write_agent",
+                    "schema_hash": "d4ba47acdccd",
+                    "safe": true
+                  },
+                  {
+                    "name": "grep",
+                    "schema_hash": "d0b58b80eaaf",
+                    "safe": true
+                  },
+                  {
+                    "name": "glob",
+                    "schema_hash": "40089e3a3ba4",
+                    "safe": true
+                  },
+                  {
+                    "name": "task",
+                    "schema_hash": "77577754d8f5",
+                    "safe": true
+                  },
+                  {
+                    "name": "github-mcp-server-get_copilot_space",
+                    "schema_hash": "c8adccdafb84",
+                    "safe": true
+                  },
+                  {
+                    "name": "github-mcp-server-get_file_contents",
+                    "schema_hash": "6cf17f9abfd4",
+                    "safe": true
+                  },
+                  {
+                    "name": "github-mcp-server-list_copilot_spaces",
+                    "schema_hash": "32e5d3fd470f",
+                    "safe": true
+                  },
+                  {
+                    "name": "github-mcp-server-search_code",
+                    "schema_hash": "679d4765fec5",
+                    "safe": true
+                  },
+                  {
+                    "name": "github-mcp-server-search_users",
+                    "schema_hash": "da0cf089bedb",
+                    "safe": true
+                  }
+                ],
+                "tools_truncated": 0,
+                "system_segments": [
+                  {
+                    "segment": "identity_preamble",
+                    "hash": "bb194c21624a",
+                    "tokens": 16
+                  },
+                  {
+                    "segment": "interaction_mode",
+                    "hash": "e5959028ccdd",
+                    "tokens": 13
+                  },
+                  {
+                    "segment": "tone_and_style",
+                    "hash": "cd4c10cfdb57",
+                    "tokens": 45
+                  },
+                  {
+                    "segment": "search_and_delegation",
+                    "hash": "745ad2d45bb4",
+                    "tokens": 138
+                  },
+                  {
+                    "segment": "tool_efficiency",
+                    "hash": "cb7de732a200",
+                    "tokens": 200
+                  },
+                  {
+                    "segment": "version_information",
+                    "hash": "9082bee48598",
+                    "tokens": 17
+                  },
+                  {
+                    "segment": "model_information",
+                    "hash": "5e67dc60f292",
+                    "tokens": 54
+                  },
+                  {
+                    "segment": "environment_context",
+                    "hash": "51d8640827d1",
+                    "tokens": 101
+                  },
+                  {
+                    "segment": "identity_task_instructions",
+                    "hash": "adb5ce208724",
+                    "tokens": 11
+                  },
+                  {
+                    "segment": "code_change_instructions",
+                    "hash": "ae7d2a78e12d",
+                    "tokens": 228
+                  },
+                  {
+                    "segment": "dynamic_guidelines",
+                    "hash": "b41ed4d2e2eb",
+                    "tokens": 82
+                  },
+                  {
+                    "segment": "environment_limitations",
+                    "hash": "8cf9cbce1516",
+                    "tokens": 244
+                  },
+                  {
+                    "segment": "tool_intro",
+                    "hash": "2c07d9f78963",
+                    "tokens": 20
+                  },
+                  {
+                    "segment": "tool_instructions",
+                    "hash": "41f19b5793c7",
+                    "tokens": 3199
+                  },
+                  {
+                    "segment": "system_notifications",
+                    "hash": "06e72cdc5231",
+                    "tokens": 86
+                  },
+                  {
+                    "segment": "workspace_context",
+                    "hash": "c7b21aa34197",
+                    "tokens": 83
+                  },
+                  {
+                    "segment": "git_commit_trailer",
+                    "hash": "1d737bc1da62",
+                    "tokens": 67
+                  },
+                  {
+                    "segment": "final_instructions",
+                    "hash": "42885e06aebe",
+                    "tokens": 223
+                  }
+                ],
+                "conversation": {
+                  "message_count": 5,
+                  "points": [
+                    {
+                      "index": 0,
+                      "hash": "a75ec285cd8d"
+                    },
+                    {
+                      "index": 1,
+                      "hash": "679b4edf3342"
+                    },
+                    {
+                      "index": 2,
+                      "hash": "5154ce68c226"
+                    },
+                    {
+                      "index": 3,
+                      "hash": "2dae9317efd1"
+                    },
+                    {
+                      "index": 4,
+                      "hash": "c6e036152c20"
+                    }
+                  ]
+                },
+                "cache_config": {
+                  "arm": "control",
+                  "marks_system_prompt": false,
+                  "marks_conversation": false,
+                  "advisor_tool": false,
+                  "incremental_input": true,
+                  "system_prompt_layout": "legacy"
+                },
+                "prompt_tokens": 11593,
+                "cache_read": 11520,
+                "cache_write": 0,
+                "cache_details_reported": true,
+                "frontier_tokens": 11520,
+                "frontier_source": "reported_writes",
+                "ttl_seconds": 1800,
+                "cache_expires_at": "2026-11-14T23:02:52.637Z",
+                "completed_at": "2026-11-14T22:32:53.224Z"
+              }
+            },
+            "lastActiveModel": "mai-code-1.1-flash",
+            "pendingRewriteSources": []
+          }
+        ],
+        "accountingSnapshot": {
+          "totalPremiumRequestCost": 1,
+          "totalUserRequests": 1,
+          "totalNanoAiu": 408284000,
+          "aiCreditsStatus": "complete",
+          "tokenDetails": {
+            "input": {
+              "tokenCount": 13751
+            },
+            "cache_read": {
+              "tokenCount": 38912
+            },
+            "cache_write": {
+              "tokenCount": 0
+            },
+            "output": {
+              "tokenCount": 462
+            }
+          },
+          "totalApiDurationMs": 7632,
+          "sessionStartTime": "2026-11-14T22:32:43.898Z",
+          "codeChanges": {
+            "linesAdded": 0,
+            "linesRemoved": 0,
+            "filesModifiedCount": 0,
+            "filesModified": []
+          },
+          "modelMetrics": {
+            "mai-code-1.1-flash": {
+              "requests": {
+                "count": 6,
+                "cost": 1
+              },
+              "usage": {
+                "inputTokens": 52663,
+                "outputTokens": 462,
+                "cacheReadTokens": 38912,
+                "cacheWriteTokens": 0,
+                "reasoningTokens": 64
+              },
+              "cacheExpiresAt": "2026-11-14T23:02:52.637Z",
+              "totalNanoAiu": 408284000,
+              "aiCreditsStatus": "complete",
+              "tokenDetails": {
+                "input": {
+                  "tokenCount": 13751
+                },
+                "cache_read": {
+                  "tokenCount": 38912
+                },
+                "cache_write": {
+                  "tokenCount": 0
+                },
+                "output": {
+                  "tokenCount": 462
+                }
+              }
+            }
+          },
+          "agentMetrics": {
+            "main": {
+              "totalApiDurationMs": 2954,
+              "totalNanoAiu": 159248000,
+              "modelMetrics": {
+                "mai-code-1.1-flash": {
+                  "requests": {
+                    "count": 3,
+                    "cost": 1
+                  },
+                  "usage": {
+                    "inputTokens": 34474,
+                    "outputTokens": 151,
+                    "cacheReadTokens": 30464,
+                    "cacheWriteTokens": 0,
+                    "reasoningTokens": 0
+                  },
+                  "totalNanoAiu": 159248000,
+                  "tokenDetails": {
+                    "input": {
+                      "tokenCount": 4010
+                    },
+                    "cache_read": {
+                      "tokenCount": 30464
+                    },
+                    "cache_write": {
+                      "tokenCount": 0
+                    },
+                    "output": {
+                      "tokenCount": 151
+                    }
+                  }
+                }
+              }
+            },
+            "828ba44a-9171-403e-8737-130ce94bba84": {
+              "agentName": "bulk-reader",
+              "agentDisplayName": "Bulk reader",
+              "totalApiDurationMs": 4678,
+              "totalNanoAiu": 249036000,
+              "modelMetrics": {
+                "mai-code-1.1-flash": {
+                  "requests": {
+                    "count": 3,
+                    "cost": 0
+                  },
+                  "usage": {
+                    "inputTokens": 18189,
+                    "outputTokens": 311,
+                    "cacheReadTokens": 8448,
+                    "cacheWriteTokens": 0,
+                    "reasoningTokens": 64
+                  },
+                  "totalNanoAiu": 249036000,
+                  "tokenDetails": {
+                    "input": {
+                      "tokenCount": 9741
+                    },
+                    "cache_read": {
+                      "tokenCount": 8448
+                    },
+                    "cache_write": {
+                      "tokenCount": 0
+                    },
+                    "output": {
+                      "tokenCount": 311
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "providerModelMetrics": [
+            {
+              "provider": {
+                "id": "copilot",
+                "label": "GitHub Copilot",
+                "kind": "copilot"
+              },
+              "modelId": "mai-code-1.1-flash",
+              "metrics": {
+                "requests": {
+                  "count": 6,
+                  "cost": 1
+                },
+                "usage": {
+                  "inputTokens": 52663,
+                  "outputTokens": 462,
+                  "cacheReadTokens": 38912,
+                  "cacheWriteTokens": 0,
+                  "reasoningTokens": 64
+                },
+                "totalNanoAiu": 408284000,
+                "aiCreditsStatus": "complete",
+                "tokenDetails": {
+                  "input": {
+                    "tokenCount": 13751
+                  },
+                  "cache_read": {
+                    "tokenCount": 38912
+                  },
+                  "cache_write": {
+                    "tokenCount": 0
+                  },
+                  "output": {
+                    "tokenCount": 462
+                  }
+                }
+              },
+              "modelDisplayName": "MAI-Code-1.1-Flash"
+            }
+          ],
+          "currentModel": "mai-code-1.1-flash",
+          "lastCallInputTokens": 11593,
+          "lastCallOutputTokens": 5
+        },
+        "providerModelMetrics": [
+          {
+            "provider": {
+              "id": "copilot",
+              "label": "GitHub Copilot",
+              "kind": "copilot"
+            },
+            "modelId": "mai-code-1.1-flash",
+            "metrics": {
+              "requests": {
+                "count": 6,
+                "cost": 1
+              },
+              "usage": {
+                "inputTokens": 52663,
+                "outputTokens": 462,
+                "cacheReadTokens": 38912,
+                "cacheWriteTokens": 0,
+                "reasoningTokens": 64
+              },
+              "totalNanoAiu": 408284000,
+              "aiCreditsStatus": "complete",
+              "tokenDetails": {
+                "input": {
+                  "tokenCount": 13751
+                },
+                "cache_read": {
+                  "tokenCount": 38912
+                },
+                "cache_write": {
+                  "tokenCount": 0
+                },
+                "output": {
+                  "tokenCount": 462
+                }
+              }
+            },
+            "modelDisplayName": "MAI-Code-1.1-Flash"
+          }
+        ],
+        "usageAccountingWatermarks": {
+          "d85bd44e-1e11-4994-8af9-c1dff2f635f3": 3,
+          "72774201-e82e-4208-bc8d-11ab4d24657c": 3
+        }
+      },
+      "id": "450e368f-3826-43a7-88ca-3d9de87f7810",
+      "timestamp": "2026-11-14T22:32:53.234Z",
+      "parentId": "07f0df86-cc19-41ac-a6ed-026000763e10"
+    },
+    {
+      "type": "assistant.idle",
+      "data": {},
+      "ephemeral": true,
+      "id": "c324631b-33de-476d-9f5a-05e6f747b2f8",
+      "timestamp": "2026-11-14T22:32:53.235Z",
+      "parentId": "450e368f-3826-43a7-88ca-3d9de87f7810"
+    },
+    {
+      "type": "session.idle",
+      "data": {
+        "mode": "interactive"
+      },
+      "ephemeral": true,
+      "id": "cfb25db8-bf7f-48a0-8841-8a414196a7f0",
+      "timestamp": "2026-11-14T22:32:53.236Z",
+      "parentId": "450e368f-3826-43a7-88ca-3d9de87f7810"
+    },
+    {
+      "type": "session.shutdown",
+      "data": {
+        "accountingSnapshot": {
+          "totalPremiumRequestCost": 1,
+          "totalUserRequests": 1,
+          "totalNanoAiu": 408284000,
+          "aiCreditsStatus": "complete",
+          "tokenDetails": {
+            "input": {
+              "tokenCount": 13751
+            },
+            "cache_read": {
+              "tokenCount": 38912
+            },
+            "cache_write": {
+              "tokenCount": 0
+            },
+            "output": {
+              "tokenCount": 462
+            }
+          },
+          "totalApiDurationMs": 7632,
+          "sessionStartTime": "2026-11-14T22:32:43.898Z",
+          "codeChanges": {
+            "linesAdded": 0,
+            "linesRemoved": 0,
+            "filesModifiedCount": 0,
+            "filesModified": []
+          },
+          "modelMetrics": {
+            "mai-code-1.1-flash": {
+              "requests": {
+                "count": 6,
+                "cost": 1
+              },
+              "usage": {
+                "inputTokens": 52663,
+                "outputTokens": 462,
+                "cacheReadTokens": 38912,
+                "cacheWriteTokens": 0,
+                "reasoningTokens": 64
+              },
+              "cacheExpiresAt": "2026-11-14T23:02:52.637Z",
+              "totalNanoAiu": 408284000,
+              "aiCreditsStatus": "complete",
+              "tokenDetails": {
+                "input": {
+                  "tokenCount": 13751
+                },
+                "cache_read": {
+                  "tokenCount": 38912
+                },
+                "cache_write": {
+                  "tokenCount": 0
+                },
+                "output": {
+                  "tokenCount": 462
+                }
+              }
+            }
+          },
+          "agentMetrics": {
+            "main": {
+              "totalApiDurationMs": 2954,
+              "totalNanoAiu": 159248000,
+              "modelMetrics": {
+                "mai-code-1.1-flash": {
+                  "requests": {
+                    "count": 3,
+                    "cost": 1
+                  },
+                  "usage": {
+                    "inputTokens": 34474,
+                    "outputTokens": 151,
+                    "cacheReadTokens": 30464,
+                    "cacheWriteTokens": 0,
+                    "reasoningTokens": 0
+                  },
+                  "totalNanoAiu": 159248000,
+                  "tokenDetails": {
+                    "input": {
+                      "tokenCount": 4010
+                    },
+                    "cache_read": {
+                      "tokenCount": 30464
+                    },
+                    "cache_write": {
+                      "tokenCount": 0
+                    },
+                    "output": {
+                      "tokenCount": 151
+                    }
+                  }
+                }
+              }
+            },
+            "828ba44a-9171-403e-8737-130ce94bba84": {
+              "agentName": "bulk-reader",
+              "agentDisplayName": "Bulk reader",
+              "totalApiDurationMs": 4678,
+              "totalNanoAiu": 249036000,
+              "modelMetrics": {
+                "mai-code-1.1-flash": {
+                  "requests": {
+                    "count": 3,
+                    "cost": 0
+                  },
+                  "usage": {
+                    "inputTokens": 18189,
+                    "outputTokens": 311,
+                    "cacheReadTokens": 8448,
+                    "cacheWriteTokens": 0,
+                    "reasoningTokens": 64
+                  },
+                  "totalNanoAiu": 249036000,
+                  "tokenDetails": {
+                    "input": {
+                      "tokenCount": 9741
+                    },
+                    "cache_read": {
+                      "tokenCount": 8448
+                    },
+                    "cache_write": {
+                      "tokenCount": 0
+                    },
+                    "output": {
+                      "tokenCount": 311
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "providerModelMetrics": [
+            {
+              "provider": {
+                "id": "copilot",
+                "label": "GitHub Copilot",
+                "kind": "copilot"
+              },
+              "modelId": "mai-code-1.1-flash",
+              "metrics": {
+                "requests": {
+                  "count": 6,
+                  "cost": 1
+                },
+                "usage": {
+                  "inputTokens": 52663,
+                  "outputTokens": 462,
+                  "cacheReadTokens": 38912,
+                  "cacheWriteTokens": 0,
+                  "reasoningTokens": 64
+                },
+                "totalNanoAiu": 408284000,
+                "aiCreditsStatus": "complete",
+                "tokenDetails": {
+                  "input": {
+                    "tokenCount": 13751
+                  },
+                  "cache_read": {
+                    "tokenCount": 38912
+                  },
+                  "cache_write": {
+                    "tokenCount": 0
+                  },
+                  "output": {
+                    "tokenCount": 462
+                  }
+                }
+              },
+              "modelDisplayName": "MAI-Code-1.1-Flash"
+            }
+          ],
+          "currentModel": "mai-code-1.1-flash",
+          "lastCallInputTokens": 11593,
+          "lastCallOutputTokens": 5
+        },
+        "providerModelMetrics": [
+          {
+            "provider": {
+              "id": "copilot",
+              "label": "GitHub Copilot",
+              "kind": "copilot"
+            },
+            "modelId": "mai-code-1.1-flash",
+            "metrics": {
+              "requests": {
+                "count": 6,
+                "cost": 1
+              },
+              "usage": {
+                "inputTokens": 52663,
+                "outputTokens": 462,
+                "cacheReadTokens": 38912,
+                "cacheWriteTokens": 0,
+                "reasoningTokens": 64
+              },
+              "totalNanoAiu": 408284000,
+              "aiCreditsStatus": "complete",
+              "tokenDetails": {
+                "input": {
+                  "tokenCount": 13751
+                },
+                "cache_read": {
+                  "tokenCount": 38912
+                },
+                "cache_write": {
+                  "tokenCount": 0
+                },
+                "output": {
+                  "tokenCount": 462
+                }
+              }
+            },
+            "modelDisplayName": "MAI-Code-1.1-Flash"
+          }
+        ],
+        "usageAccountingWatermarks": {
+          "d85bd44e-1e11-4994-8af9-c1dff2f635f3": 3,
+          "72774201-e82e-4208-bc8d-11ab4d24657c": 3
+        },
+        "shutdownType": "routine",
+        "totalPremiumRequests": 1,
+        "totalNanoAiu": 408284000,
+        "tokenDetails": {
+          "input": {
+            "tokenCount": 13751
+          },
+          "cache_read": {
+            "tokenCount": 38912
+          },
+          "cache_write": {
+            "tokenCount": 0
+          },
+          "output": {
+            "tokenCount": 462
+          }
+        },
+        "totalApiDurationMs": 7632,
+        "sessionStartTime": 1794695563898,
+        "eventsFileSizeBytes": 180456,
+        "codeChanges": {
+          "linesAdded": 0,
+          "linesRemoved": 0,
+          "filesModified": []
+        },
+        "modelMetrics": {
+          "mai-code-1.1-flash": {
+            "requests": {
+              "count": 6,
+              "cost": 1
+            },
+            "usage": {
+              "inputTokens": 52663,
+              "outputTokens": 462,
+              "cacheReadTokens": 38912,
+              "cacheWriteTokens": 0,
+              "reasoningTokens": 64
+            },
+            "totalNanoAiu": 408284000,
+            "tokenDetails": {
+              "input": {
+                "tokenCount": 13751
+              },
+              "cache_read": {
+                "tokenCount": 38912
+              },
+              "cache_write": {
+                "tokenCount": 0
+              },
+              "output": {
+                "tokenCount": 462
+              }
+            }
+          }
+        },
+        "agentMetrics": {
+          "main": {
+            "totalApiDurationMs": 2954,
+            "totalNanoAiu": 159248000,
+            "modelMetrics": {
+              "mai-code-1.1-flash": {
+                "requests": {
+                  "count": 3,
+                  "cost": 1
+                },
+                "usage": {
+                  "inputTokens": 34474,
+                  "outputTokens": 151,
+                  "cacheReadTokens": 30464,
+                  "cacheWriteTokens": 0,
+                  "reasoningTokens": 0
+                },
+                "totalNanoAiu": 159248000,
+                "tokenDetails": {
+                  "input": {
+                    "tokenCount": 4010
+                  },
+                  "cache_read": {
+                    "tokenCount": 30464
+                  },
+                  "cache_write": {
+                    "tokenCount": 0
+                  },
+                  "output": {
+                    "tokenCount": 151
+                  }
+                }
+              }
+            }
+          },
+          "828ba44a-9171-403e-8737-130ce94bba84": {
+            "agentName": "bulk-reader",
+            "agentDisplayName": "Bulk reader",
+            "totalApiDurationMs": 4678,
+            "totalNanoAiu": 249036000,
+            "modelMetrics": {
+              "mai-code-1.1-flash": {
+                "requests": {
+                  "count": 3,
+                  "cost": 0
+                },
+                "usage": {
+                  "inputTokens": 18189,
+                  "outputTokens": 311,
+                  "cacheReadTokens": 8448,
+                  "cacheWriteTokens": 0,
+                  "reasoningTokens": 64
+                },
+                "totalNanoAiu": 249036000,
+                "tokenDetails": {
+                  "input": {
+                    "tokenCount": 9741
+                  },
+                  "cache_read": {
+                    "tokenCount": 8448
+                  },
+                  "cache_write": {
+                    "tokenCount": 0
+                  },
+                  "output": {
+                    "tokenCount": 311
+                  }
+                }
+              }
+            }
+          }
+        },
+        "currentModel": "mai-code-1.1-flash",
+        "currentTokens": 12308,
+        "systemTokens": 4827,
+        "conversationTokens": 314,
+        "toolDefinitionsTokens": 7164
+      },
+      "id": "7a85ad0e-95bf-4499-a44f-59a9f27fc17e",
+      "timestamp": "2026-11-14T22:32:53.249Z",
+      "parentId": "e9663da3-cad9-439b-b579-1f3fae3d7315"
+    }
+  ],
+  "metrics": {
+    "totalPremiumRequestCost": 1,
+    "totalUserRequests": 1,
+    "totalNanoAiu": 408284000,
+    "aiCreditsStatus": "complete",
+    "tokenDetails": {
+      "input": {
+        "tokenCount": 13751
+      },
+      "cache_read": {
+        "tokenCount": 38912
+      },
+      "cache_write": {
+        "tokenCount": 0
+      },
+      "output": {
+        "tokenCount": 462
+      }
+    },
+    "totalApiDurationMs": 7632,
+    "sessionStartTime": "2026-11-14T22:32:43.898Z",
+    "codeChanges": {
+      "linesAdded": 0,
+      "linesRemoved": 0,
+      "filesModifiedCount": 0,
+      "filesModified": []
+    },
+    "modelMetrics": {
+      "mai-code-1.1-flash": {
+        "requests": {
+          "count": 6,
+          "cost": 1
+        },
+        "usage": {
+          "inputTokens": 52663,
+          "outputTokens": 462,
+          "cacheReadTokens": 38912,
+          "cacheWriteTokens": 0,
+          "reasoningTokens": 64
+        },
+        "cacheExpiresAt": "2026-11-14T23:02:52.637Z",
+        "totalNanoAiu": 408284000,
+        "aiCreditsStatus": "complete",
+        "tokenDetails": {
+          "input": {
+            "tokenCount": 13751
+          },
+          "cache_read": {
+            "tokenCount": 38912
+          },
+          "cache_write": {
+            "tokenCount": 0
+          },
+          "output": {
+            "tokenCount": 462
+          }
+        }
+      }
+    },
+    "agentMetrics": {
+      "main": {
+        "totalApiDurationMs": 2954,
+        "totalNanoAiu": 159248000,
+        "modelMetrics": {
+          "mai-code-1.1-flash": {
+            "requests": {
+              "count": 3,
+              "cost": 1
+            },
+            "usage": {
+              "inputTokens": 34474,
+              "outputTokens": 151,
+              "cacheReadTokens": 30464,
+              "cacheWriteTokens": 0,
+              "reasoningTokens": 0
+            },
+            "totalNanoAiu": 159248000,
+            "tokenDetails": {
+              "input": {
+                "tokenCount": 4010
+              },
+              "cache_read": {
+                "tokenCount": 30464
+              },
+              "cache_write": {
+                "tokenCount": 0
+              },
+              "output": {
+                "tokenCount": 151
+              }
+            }
+          }
+        }
+      },
+      "828ba44a-9171-403e-8737-130ce94bba84": {
+        "agentName": "bulk-reader",
+        "agentDisplayName": "Bulk reader",
+        "totalApiDurationMs": 4678,
+        "totalNanoAiu": 249036000,
+        "modelMetrics": {
+          "mai-code-1.1-flash": {
+            "requests": {
+              "count": 3,
+              "cost": 0
+            },
+            "usage": {
+              "inputTokens": 18189,
+              "outputTokens": 311,
+              "cacheReadTokens": 8448,
+              "cacheWriteTokens": 0,
+              "reasoningTokens": 64
+            },
+            "totalNanoAiu": 249036000,
+            "tokenDetails": {
+              "input": {
+                "tokenCount": 9741
+              },
+              "cache_read": {
+                "tokenCount": 8448
+              },
+              "cache_write": {
+                "tokenCount": 0
+              },
+              "output": {
+                "tokenCount": 311
+              }
+            }
+          }
+        }
+      }
+    },
+    "providerModelMetrics": [
+      {
+        "provider": {
+          "id": "copilot",
+          "label": "GitHub Copilot",
+          "kind": "copilot"
+        },
+        "modelId": "mai-code-1.1-flash",
+        "metrics": {
+          "requests": {
+            "count": 6,
+            "cost": 1
+          },
+          "usage": {
+            "inputTokens": 52663,
+            "outputTokens": 462,
+            "cacheReadTokens": 38912,
+            "cacheWriteTokens": 0,
+            "reasoningTokens": 64
+          },
+          "totalNanoAiu": 408284000,
+          "aiCreditsStatus": "complete",
+          "tokenDetails": {
+            "input": {
+              "tokenCount": 13751
+            },
+            "cache_read": {
+              "tokenCount": 38912
+            },
+            "cache_write": {
+              "tokenCount": 0
+            },
+            "output": {
+              "tokenCount": 462
+            }
+          }
+        },
+        "modelDisplayName": "MAI-Code-1.1-Flash"
+      }
+    ],
+    "currentModel": "mai-code-1.1-flash",
+    "lastCallInputTokens": 11593,
+    "lastCallOutputTokens": 5
+  }
+}
