@@ -202,6 +202,34 @@ public enum Methods {
         public static let direction = MethodDirection.client
     }
 
+    public enum FanoutStart: PicaMethod {
+        public typealias Params = FanoutStartParams
+        public typealias Result = FanoutStartResult
+        public static let name = "fanout.start"
+        public static let direction = MethodDirection.client
+    }
+
+    public enum FanoutGet: PicaMethod {
+        public typealias Params = FanoutGetParams
+        public typealias Result = FanoutGetResult
+        public static let name = "fanout.get"
+        public static let direction = MethodDirection.client
+    }
+
+    public enum FanoutList: PicaMethod {
+        public typealias Params = FanoutListParams
+        public typealias Result = FanoutListResult
+        public static let name = "fanout.list"
+        public static let direction = MethodDirection.client
+    }
+
+    public enum FanoutCancel: PicaMethod {
+        public typealias Params = FanoutCancelParams
+        public typealias Result = FanoutCancelResult
+        public static let name = "fanout.cancel"
+        public static let direction = MethodDirection.client
+    }
+
     public enum EventsSubscribe: PicaMethod {
         public typealias Params = EventsSubscribeParams
         public typealias Result = EventsSubscribeResult
@@ -448,6 +476,11 @@ public enum Notifications {
     public enum WorkspaceChanged: PicaNotification {
         public typealias Params = WorkspaceChangedNotification
         public static let name = "workspace.changed"
+    }
+
+    public enum FanoutChanged: PicaNotification {
+        public typealias Params = FanoutChangedNotification
+        public static let name = "fanout.changed"
     }
 
     public enum McpStatusChanged: PicaNotification {

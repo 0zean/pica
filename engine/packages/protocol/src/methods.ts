@@ -3,6 +3,7 @@ import { AbsolutePath, Count, Credits, Empty, Id, ProtocolVersion, Timestamp } f
 import { SessionEvent } from "./events.ts";
 import { AgentDef } from "./dto/agents.ts";
 import { ConfigLayer, ConfigValue } from "./dto/config.ts";
+import { FanOut } from "./dto/fanout.ts";
 import { FileEntry, QuickOpenHit } from "./dto/files.ts";
 import { Branch, Commit, FileDiff, GitStatus } from "./dto/git.ts";
 import { GitHubAuthStatus, GitHubRepo, GitHubTeam } from "./dto/github.ts";
@@ -111,6 +112,22 @@ export const methods = {
   "session.abort": clientMethod(BySession, Ok),
   "session.resume": clientMethod(BySession, z.object({ session: Session })),
   "session.end": clientMethod(BySession, Ok),
+
+  "fanout.start": clientMethod(
+    z.object({
+      workspaceId: Id,
+      repoIds: z.array(Id).min(1),
+      prompt: z.string().min(1),
+      concurrency: z.int().min(1).max(16).optional(),
+      referenceRepoIds: z.array(Id).optional(),
+      routingProfile: RoutingProfile.optional(),
+      budgetCredits: Credits.optional(),
+    }),
+    z.object({ fanOut: FanOut }),
+  ),
+  "fanout.get": clientMethod(z.object({ fanOutId: Id }), z.object({ fanOut: FanOut })),
+  "fanout.list": clientMethod(z.object({ workspaceId: Id.optional() }), z.object({ fanOuts: z.array(FanOut) })),
+  "fanout.cancel": clientMethod(z.object({ fanOutId: Id }), z.object({ fanOut: FanOut })),
 
   "events.subscribe": clientMethod(
     z.object({ sessionId: Id, afterSeq: z.int().nonnegative() }),
@@ -236,6 +253,7 @@ export const NAMESPACES = [
   "repo",
   "github",
   "session",
+  "fanout",
   "events",
   "approval",
   "git",
@@ -252,6 +270,7 @@ export const notifications = {
   "events.event": z.object({ subscriptionId: Id, event: SessionEvent }),
   "session.changed": z.object({ session: Session }),
   "workspace.changed": z.object({ workspace: Workspace }),
+  "fanout.changed": z.object({ fanOut: FanOut }),
   "mcp.statusChanged": z.object({ status: McpServerStatus }),
   "engine.warning": z.object({ code: z.string().min(1), message: z.string(), at: Timestamp }),
 } as const;

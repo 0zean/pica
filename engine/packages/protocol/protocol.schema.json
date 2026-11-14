@@ -259,6 +259,42 @@
         "$ref": "#/$defs/Ok"
       }
     },
+    "fanout.start": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/FanoutStartParams"
+      },
+      "result": {
+        "$ref": "#/$defs/FanoutStartResult"
+      }
+    },
+    "fanout.get": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/FanoutGetParams"
+      },
+      "result": {
+        "$ref": "#/$defs/FanoutGetResult"
+      }
+    },
+    "fanout.list": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/FanoutListParams"
+      },
+      "result": {
+        "$ref": "#/$defs/FanoutListResult"
+      }
+    },
+    "fanout.cancel": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/FanoutCancelParams"
+      },
+      "result": {
+        "$ref": "#/$defs/FanoutCancelResult"
+      }
+    },
     "events.subscribe": {
       "direction": "client",
       "params": {
@@ -571,6 +607,11 @@
     "workspace.changed": {
       "params": {
         "$ref": "#/$defs/WorkspaceChangedNotification"
+      }
+    },
+    "fanout.changed": {
+      "params": {
+        "$ref": "#/$defs/FanoutChangedNotification"
       }
     },
     "mcp.statusChanged": {
@@ -1586,6 +1627,279 @@
       },
       "required": [
         "subscriptionId"
+      ]
+    },
+    "FanOut": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "concurrency": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "state": {
+          "$ref": "#/$defs/FanOutState"
+        },
+        "runs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FanOutRun"
+          }
+        },
+        "counts": {
+          "type": "object",
+          "properties": {
+            "queued": {
+              "$ref": "#/$defs/Count"
+            },
+            "active": {
+              "$ref": "#/$defs/Count"
+            },
+            "succeeded": {
+              "$ref": "#/$defs/Count"
+            },
+            "failed": {
+              "$ref": "#/$defs/Count"
+            },
+            "cancelled": {
+              "$ref": "#/$defs/Count"
+            }
+          },
+          "required": [
+            "queued",
+            "active",
+            "succeeded",
+            "failed",
+            "cancelled"
+          ]
+        },
+        "createdAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "updatedAt": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "workspaceId",
+        "prompt",
+        "concurrency",
+        "state",
+        "runs",
+        "counts",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "FanOutRun": {
+      "type": "object",
+      "properties": {
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        },
+        "sessionId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "$ref": "#/$defs/FanOutRunStatus"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "message": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "code",
+                "message"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "repoId",
+        "sessionId",
+        "status",
+        "error"
+      ]
+    },
+    "FanOutRunStatus": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "starting",
+        "running",
+        "awaiting_approval",
+        "succeeded",
+        "failed",
+        "cancelled"
+      ]
+    },
+    "FanOutState": {
+      "type": "string",
+      "enum": [
+        "running",
+        "cancelling",
+        "completed",
+        "cancelled"
+      ]
+    },
+    "FanoutCancelParams": {
+      "type": "object",
+      "properties": {
+        "fanOutId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "fanOutId"
+      ]
+    },
+    "FanoutCancelResult": {
+      "type": "object",
+      "properties": {
+        "fanOut": {
+          "$ref": "#/$defs/FanOut"
+        }
+      },
+      "required": [
+        "fanOut"
+      ]
+    },
+    "FanoutChangedNotification": {
+      "type": "object",
+      "properties": {
+        "fanOut": {
+          "$ref": "#/$defs/FanOut"
+        }
+      },
+      "required": [
+        "fanOut"
+      ]
+    },
+    "FanoutGetParams": {
+      "type": "object",
+      "properties": {
+        "fanOutId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "fanOutId"
+      ]
+    },
+    "FanoutGetResult": {
+      "type": "object",
+      "properties": {
+        "fanOut": {
+          "$ref": "#/$defs/FanOut"
+        }
+      },
+      "required": [
+        "fanOut"
+      ]
+    },
+    "FanoutListParams": {
+      "type": "object",
+      "properties": {
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        }
+      }
+    },
+    "FanoutListResult": {
+      "type": "object",
+      "properties": {
+        "fanOuts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FanOut"
+          }
+        }
+      },
+      "required": [
+        "fanOuts"
+      ]
+    },
+    "FanoutStartParams": {
+      "type": "object",
+      "properties": {
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        },
+        "repoIds": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          }
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "concurrency": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16
+        },
+        "referenceRepoIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          }
+        },
+        "routingProfile": {
+          "$ref": "#/$defs/RoutingProfile"
+        },
+        "budgetCredits": {
+          "$ref": "#/$defs/Credits"
+        }
+      },
+      "required": [
+        "workspaceId",
+        "repoIds",
+        "prompt"
+      ]
+    },
+    "FanoutStartResult": {
+      "type": "object",
+      "properties": {
+        "fanOut": {
+          "$ref": "#/$defs/FanOut"
+        }
+      },
+      "required": [
+        "fanOut"
       ]
     },
     "FileChangeKind": {
