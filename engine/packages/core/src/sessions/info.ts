@@ -29,7 +29,7 @@ export interface SessionInfo {
 export interface PendingApproval {
   readonly id: string;
   readonly sessionId: string;
-  readonly kind: "tool_call";
+  readonly kind: "tool_call" | "budget";
   readonly toolCallId: string | null;
   readonly summary: string;
 }

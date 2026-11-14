@@ -19,6 +19,7 @@ export function sqliteSessionRepository(db: DatabaseSync): SessionRepository {
     `SELECT ${columns} FROM sessions WHERE workspace_id = ? ORDER BY created_at, id`,
   );
   const setState = db.prepare("UPDATE sessions SET state = ?, updated_at = ? WHERE id = ?");
+  const setBudget = db.prepare("UPDATE sessions SET budget_max_credits = ?, updated_at = ? WHERE id = ?");
 
   return {
     create: (session) =>
@@ -35,6 +36,12 @@ export function sqliteSessionRepository(db: DatabaseSync): SessionRepository {
     updateState: (id, state, updatedAt) =>
       attempt(() =>
         setState.run(state, updatedAt, id).changes === 0
+          ? fail("store.not_found", `session ${id} not found`)
+          : ok(undefined),
+      ),
+    updateBudget: (id, budgetMaxCredits, updatedAt) =>
+      attempt(() =>
+        setBudget.run(budgetMaxCredits, updatedAt, id).changes === 0
           ? fail("store.not_found", `session ${id} not found`)
           : ok(undefined),
       ),

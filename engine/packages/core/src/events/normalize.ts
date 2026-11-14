@@ -147,6 +147,30 @@ const handlers: Handlers = {
         timestamp: event.timestamp,
       }),
     ),
+  "session_limits_exhausted.requested": (state, event, context) =>
+    emit(
+      state,
+      draft(event, "approval.requested", {
+        id: event.data.requestId,
+        sessionId: context.sessionId,
+        kind: "budget",
+        toolCallId: null,
+        summary: `Session budget of ${String(event.data.maxAiCredits)} credits is used up`,
+      }),
+      draft(event, "budget.exhausted", {
+        spentCredits: event.data.usedAiCredits,
+        limitCredits: event.data.maxAiCredits,
+        approvalId: event.data.requestId,
+      }),
+    ),
+  "session_limits_exhausted.completed": (state, event) =>
+    emit(
+      state,
+      draft(event, "approval.resolved", {
+        approvalId: event.data.requestId,
+        choice: event.data.maxAiCredits === null ? "deny" : "allow_once",
+      }),
+    ),
   "session.usage_info": (state, event) =>
     emit(
       state,

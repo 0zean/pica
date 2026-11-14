@@ -23,3 +23,4 @@ export {
   type SecretsGetCall,
   type SecretsGetReply,
 } from "./pat-provider.ts";
+export { createGitHubRestClient, type GitHubRestClientOptions } from "./rest-client.ts";

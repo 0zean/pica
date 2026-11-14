@@ -2297,6 +2297,7 @@ public struct McpServerStatus: Codable, Hashable, Sendable {
     public var latencyMs: Double?
     public var toolDefinitionTokens: Count?
     public var checkedAt: Timestamp?
+    public var restarts: Count
 
     public init(
         serverId: Id,
@@ -2305,7 +2306,8 @@ public struct McpServerStatus: Codable, Hashable, Sendable {
         tools: [String],
         latencyMs: Double?,
         toolDefinitionTokens: Count?,
-        checkedAt: Timestamp?
+        checkedAt: Timestamp?,
+        restarts: Count
     ) {
         self.serverId = serverId
         self.state = state
@@ -2314,6 +2316,7 @@ public struct McpServerStatus: Codable, Hashable, Sendable {
         self.latencyMs = latencyMs
         self.toolDefinitionTokens = toolDefinitionTokens
         self.checkedAt = checkedAt
+        self.restarts = restarts
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -2324,6 +2327,7 @@ public struct McpServerStatus: Codable, Hashable, Sendable {
         case latencyMs
         case toolDefinitionTokens
         case checkedAt
+        case restarts
     }
 
     public init(from decoder: any Decoder) throws {
@@ -2335,6 +2339,7 @@ public struct McpServerStatus: Codable, Hashable, Sendable {
         latencyMs = try container.decode(Double?.self, forKey: .latencyMs)
         toolDefinitionTokens = try container.decode(Count?.self, forKey: .toolDefinitionTokens)
         checkedAt = try container.decode(Timestamp?.self, forKey: .checkedAt)
+        restarts = try container.decode(Count.self, forKey: .restarts)
     }
 
     public func encode(to encoder: any Encoder) throws {
@@ -2346,6 +2351,7 @@ public struct McpServerStatus: Codable, Hashable, Sendable {
         try container.encode(latencyMs, forKey: .latencyMs)
         try container.encode(toolDefinitionTokens, forKey: .toolDefinitionTokens)
         try container.encode(checkedAt, forKey: .checkedAt)
+        try container.encode(restarts, forKey: .restarts)
     }
 
     public enum State: String, CaseIterable, Codable, Hashable, Sendable {
@@ -2379,6 +2385,30 @@ public struct McpStatusChangedNotification: Codable, Hashable, Sendable {
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(status, forKey: .status)
+    }
+}
+
+public struct McpStatusListResult: Codable, Hashable, Sendable {
+    public var statuses: [McpServerStatus]
+
+    public init(
+        statuses: [McpServerStatus]
+    ) {
+        self.statuses = statuses
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case statuses
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        statuses = try container.decode([McpServerStatus].self, forKey: .statuses)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(statuses, forKey: .statuses)
     }
 }
 

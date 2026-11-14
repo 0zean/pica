@@ -17,6 +17,7 @@ const serviceCodes: Readonly<Record<SessionServiceError["code"], ErrorCodeName>>
   "session.invalid_state": "invalid_state",
   "session.invalid_request": "invalid_params",
   "session.approval_not_found": "not_found",
+  "session.budget_exhausted": "budget_exhausted",
   "session.runtime_failed": "runtime_failed",
   "session.store_failed": "internal_error",
 };
@@ -26,6 +27,7 @@ export function sessionRpcFailure(error: SessionServiceError): RpcFailure {
   return new RpcFailure(code, error.message, {
     reason: error.code,
     ...(error.runtimeCode === undefined ? {} : { runtimeCode: error.runtimeCode }),
+    ...(error.resetAt === undefined ? {} : { resetAt: error.resetAt }),
   });
 }
 
@@ -58,8 +60,8 @@ export function registerSessionHandlers(router: MethodRouter, deps: SessionHandl
     return done;
   });
   router.register("approval.list", ({ sessionId }) => ({ approvals: [...unwrap(sessions.listApprovals(sessionId))] }));
-  router.register("approval.resolve", async ({ approvalId, choice }) => {
-    unwrap(await sessions.resolveApproval(approvalId, choice));
+  router.register("approval.resolve", async ({ approvalId, choice, budgetCredits }) => {
+    unwrap(await sessions.resolveApproval(approvalId, choice, budgetCredits));
     return done;
   });
   registerEventHandlers(router, deps);

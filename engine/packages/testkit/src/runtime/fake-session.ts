@@ -1,4 +1,5 @@
 import {
+  computeCredits,
   err,
   ok,
   type ModelUsage,
@@ -25,6 +26,11 @@ export interface FakeSessionContext {
   readonly clock: Clock;
   readonly ids: IdSource;
   readonly record: (event: RuntimeEvent) => void;
+}
+
+export interface FakeSessionOptions {
+  readonly hooks: RuntimeHooks;
+  readonly maxAiCredits?: number | undefined;
 }
 
 type StepOutcome = "continue" | "stop";
@@ -69,19 +75,24 @@ export class FakeSession implements RuntimeSession {
   readonly #listeners = new Set<RuntimeEventListener>();
   readonly #permissions = new Map<string, (approved: boolean) => void>();
   readonly #usage = new Map<string, ModelUsage>();
+  readonly #limitRequests = new Map<string, (maxAiCredits: number | null) => void>();
   #hooks: RuntimeHooks;
+  #maxAiCredits: number | undefined;
+  #usedAiCredits = 0;
   #nextTurn = 0;
   #interrupt: Interrupt | undefined;
   #closed = false;
 
-  constructor(context: FakeSessionContext, hooks: RuntimeHooks) {
+  constructor(context: FakeSessionContext, options: FakeSessionOptions) {
     this.id = context.id;
     this.#context = context;
-    this.#hooks = hooks;
+    this.#hooks = options.hooks;
+    this.#maxAiCredits = options.maxAiCredits;
   }
 
-  reopen(hooks: RuntimeHooks): void {
-    this.#hooks = hooks;
+  reopen(options: FakeSessionOptions): void {
+    this.#hooks = options.hooks;
+    this.#maxAiCredits = options.maxAiCredits;
     this.#closed = false;
     this.emit("session.resume", { sessionId: this.id });
   }
@@ -122,6 +133,21 @@ export class FakeSession implements RuntimeSession {
     }
     this.#permissions.delete(requestId);
     resolve(approved);
+    return Promise.resolve(ok(undefined));
+  }
+
+  resolveSessionLimit(requestId: string, maxAiCredits: number | null): RuntimeResult<undefined> {
+    const resolve = this.#limitRequests.get(requestId);
+    if (resolve === undefined) {
+      return Promise.resolve(failure("runtime.limit_request_not_found", `no pending session limit request ${requestId}`));
+    }
+    if (maxAiCredits !== null && !(maxAiCredits > this.#usedAiCredits)) {
+      return Promise.resolve(
+        failure("runtime.invalid_argument", `the new limit must exceed the ${String(this.#usedAiCredits)} credits used`),
+      );
+    }
+    this.#limitRequests.delete(requestId);
+    resolve(maxAiCredits);
     return Promise.resolve(ok(undefined));
   }
 
@@ -196,7 +222,7 @@ export class FakeSession implements RuntimeSession {
         return "continue";
       case "usage":
         this.#recordUsage(step, agentId);
-        return "continue";
+        return this.#checkSessionLimit(interrupt);
       case "contextUsage":
         this.emit("session.usage_info", { currentTokens: step.currentTokens, tokenLimit: step.tokenLimit });
         return "continue";
@@ -230,6 +256,7 @@ export class FakeSession implements RuntimeSession {
       outputTokens: (previous?.outputTokens ?? 0) + step.outputTokens,
       calls: (previous?.calls ?? 0) + 1,
     });
+    this.#usedAiCredits += this.#creditsFor(step);
     this.emit("assistant.usage", {
       model: step.model,
       inputTokens: step.inputTokens,
@@ -237,6 +264,42 @@ export class FakeSession implements RuntimeSession {
       outputTokens: step.outputTokens,
       ...agentField(agentId),
     });
+  }
+
+  #creditsFor(step: { model: string; inputTokens: number; cachedInputTokens: number; outputTokens: number }): number {
+    const prices = this.#context.scenario.models.find((entry) => entry.id === step.model)?.tokenPrices;
+    if (prices === undefined) {
+      return 0;
+    }
+    const credits = computeCredits(step, prices);
+    return credits.ok ? credits.value.total : 0;
+  }
+
+  // The soft cap of PLAN.md §2.1: checked after each model call, it holds the next call until the
+  // host raises the limit or cancels, which ends the turn.
+  async #checkSessionLimit(interrupt: Interrupt): Promise<StepOutcome> {
+    while (this.#maxAiCredits !== undefined && this.#usedAiCredits >= this.#maxAiCredits) {
+      const requestId = this.#context.ids("limit");
+      const answer = new Promise<number | null>((resolve) => {
+        this.#limitRequests.set(requestId, resolve);
+      });
+      this.emit("session_limits_exhausted.requested", {
+        requestId,
+        usedAiCredits: this.#usedAiCredits,
+        maxAiCredits: this.#maxAiCredits,
+      });
+      const maxAiCredits = await Promise.race([answer, interrupt.promise]);
+      if (maxAiCredits === interrupted) {
+        this.#limitRequests.delete(requestId);
+        return "stop";
+      }
+      this.emit("session_limits_exhausted.completed", { requestId, maxAiCredits });
+      if (maxAiCredits === null) {
+        return "stop";
+      }
+      this.#maxAiCredits = maxAiCredits;
+    }
+    return "continue";
   }
 
   async #playToolCall(step: ToolCallStep, agentId: string | undefined, interrupt: Interrupt): Promise<StepOutcome> {
