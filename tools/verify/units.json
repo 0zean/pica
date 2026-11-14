@@ -75,7 +75,7 @@
       "run": "spikes/s-05-packaging/run.sh signatures"
     },
     {
-      "check": "On a second macOS user account with no developer tools, the zip downloaded with the quarantine attribute set opens after \"Open Anyway\", and the engine answers a ping. The exact steps are recorded for the install guide.",
+      "check": "On a second macOS user account with no developer tools, the app installed by the install script, and separately a quarantined zip whose app had `xattr -dr com.apple.quarantine` run before its first launch, both open with no Gatekeeper dialog, and the engine answers a ping. The exact steps are recorded for the install guide.",
       "manual": true
     },
     {

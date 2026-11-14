@@ -4,7 +4,8 @@
 #   signatures  build, then: codesign --verify --deep --strict passes on the app, every nested
 #               Mach-O is ad-hoc signed with the hardened runtime, and the app answers a ping.
 #   quarantine  build, then unzip a copy as a browser download would leave it (com.apple.quarantine
-#               on the zip and every extracted file), record Gatekeeper's verdict, and launch it.
+#               on the zip and every extracted file) and check Gatekeeper rejects it; then check both
+#               install paths start the engine: xattr -dr before the first launch, and install.sh.
 #   report      build, then print bundle sizes and the designated requirement (no assertions).
 # Exits 0 only when the chosen assertions hold.
 set -eu
@@ -166,8 +167,8 @@ ok "the downloaded copy's signature still verifies after zip and unzip"
 
 verdict=$(spctl --assess --type execute -vv "$downloaded" 2>&1 || true)
 echo "$verdict" | sed 's/^/  gatekeeper: /'
-echo "$verdict" | grep -q 'rejected' || fail "expected Gatekeeper to reject an unnotarized ad-hoc app before Open Anyway"
-ok "Gatekeeper rejects the downloaded copy, which is the state Open Anyway resolves"
+echo "$verdict" | grep -q 'rejected' || fail "expected Gatekeeper to reject a quarantined, unnotarized ad-hoc app"
+ok "Gatekeeper rejects the downloaded copy as is"
 
 if [ "${S05_PROBE_BLOCK:-}" = 1 ]; then
   # Shows Gatekeeper's "Not Opened" dialog on this account; dismiss it with Done.
@@ -182,19 +183,31 @@ if [ "${S05_PROBE_BLOCK:-}" = 1 ]; then
   fi
 fi
 
-# Approximations of the state after Open Anyway; the real approval lives in syspolicyd and is the
-# owner's manual check. Each must start the engine and get the ping answered.
-nested=$(extract nested-quarantined)
-for item in "$nested" "$nested/Contents" "$nested/Contents/MacOS" "$nested/Contents/MacOS/PicaS05" \
-  "$nested/Contents/Info.plist" "$nested/Contents/_CodeSignature" "$nested/Contents/_CodeSignature/CodeResources"; do
-  xattr -d com.apple.quarantine "$item"
-done
-xattr -p com.apple.quarantine "$nested/Contents/Helpers/node" >/dev/null || fail "node lost its quarantine"
-ping_app "$nested" || fail "with only the bundle cleared, the quarantined nested helpers did not run"
-ok "bundle and main executable cleared, node and copilot-runtime still quarantined: the engine answers the ping"
+# Install path (a): clear the quarantine before the first launch, as the install guide says.
+cleared=$(extract cleared-before-first-launch)
+xattr -dr com.apple.quarantine "$cleared"
+ping_app "$cleared" || fail "with the quarantine cleared before the first launch, the engine did not answer"
+ok "path (a): xattr -dr com.apple.quarantine before the first launch, then the engine answers the ping"
 
-approved=$(extract approved-flag)
-approved_qtn="00c3$(xattr -p com.apple.quarantine "$approved/Contents/Helpers/node" | cut -c5-)"
-find "$approved" -print0 | xargs -0 xattr -w com.apple.quarantine "$approved_qtn"
-ping_app "$approved" || fail "with the user-approved quarantine flag on every item, the engine did not answer"
-ok "every item quarantined with the user-approved flag ($approved_qtn): the engine answers the ping"
+# Install path (b): install.sh over HTTP (curl sets no quarantine) into a scratch Applications folder.
+port=$((20000 + $$ % 20000))
+python3 -m http.server "$port" --bind 127.0.0.1 --directory "$out" >/dev/null 2>&1 &
+http_pid=$!
+trap 'kill "$http_pid" 2>/dev/null || true' EXIT
+for _ in 1 2 3 4 5 6 7 8 9 10; do
+  curl -fsS -o /dev/null "http://127.0.0.1:$port/" 2>/dev/null && break
+  sleep 0.3
+done
+mkdir -p "$sim/curl-installed"
+sha=$(shasum -a 256 "$zip" | cut -d' ' -f1)
+export S05_ALLOW_INSECURE=1
+if "$spike_dir/install.sh" "http://127.0.0.1:$port/Pica-S05.zip" 0000 "$sim/curl-installed" >/dev/null 2>&1; then
+  fail "install.sh accepted a wrong checksum"
+fi
+ok "install.sh refuses a zip whose checksum does not match"
+"$spike_dir/install.sh" "http://127.0.0.1:$port/Pica-S05.zip" "$sha" "$sim/curl-installed" | sed 's/^/  /'
+installed="$sim/curl-installed/Pica S-05.app"
+left=$(find "$installed" -print0 | xargs -0 xattr -p com.apple.quarantine 2>/dev/null | wc -l | tr -d ' ')
+[ "$left" -eq 0 ] || fail "$left installed items carry com.apple.quarantine"
+ping_app "$installed" || fail "the curl-installed copy's engine did not answer"
+ok "path (b): install.sh downloads with curl, checks the sha256 and signature, installs with no quarantine; the engine answers the ping"
