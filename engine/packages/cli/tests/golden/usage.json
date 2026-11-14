@@ -1,0 +1,1 @@
+{"groupBy":"model","rows":[{"key":"model-a","calls":1,"inputTokens":1200,"cachedInputTokens":800,"outputTokens":90,"credits":0.519},{"key":"model-b","calls":1,"inputTokens":300,"cachedInputTokens":0,"outputTokens":40,"credits":0.0125}],"savings":{"estimated":true,"credits":0.1375}}

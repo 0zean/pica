@@ -1,14 +1,11 @@
-import { homedir } from "node:os";
-import { join } from "node:path";
 import { parseArgs } from "node:util";
 import { startEngine } from "./engine.ts";
 import { stderrLogger } from "./logger.ts";
-
-const DEFAULT_SOCKET = join(homedir(), "Library", "Application Support", "Pica", "run", "picad.sock");
+import { DEFAULT_SOCKET_PATH } from "./paths.ts";
 
 function socketPathFromArgs(): string {
   const { values } = parseArgs({ options: { socket: { type: "string" } } });
-  return values.socket ?? process.env["PICA_SOCKET"] ?? DEFAULT_SOCKET;
+  return values.socket ?? process.env["PICA_SOCKET"] ?? DEFAULT_SOCKET_PATH;
 }
 
 async function main(): Promise<void> {

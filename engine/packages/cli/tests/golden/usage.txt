@@ -1,0 +1,4 @@
+MODEL    CALLS  INPUT  CACHED  OUTPUT  CREDITS
+model-a  2      1700   1200    110     0.711
+model-b  1      300    0       40      0.0125
+Savings vs. all-reasoning-tier (estimate): 0.1375 credits

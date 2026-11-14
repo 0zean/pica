@@ -1,0 +1,18 @@
+· new → starting
+· starting → idle
+· idle → running
+> summarize the README
+→ view {"path":"README.md"}
+✓ view (28 bytes)
+$ model-a in 1200 cached 800 out 90
+[main] The README describes the Acme payments API.
+↳ bulk-reader started on model-b
+$ model-b in 300 cached 0 out 40
+↳ bulk-reader done: 340 tokens
+· running → idle
+· idle → running
+> now deploy it
+[main] Deploying.
+$ model-a in 500 cached 400 out 20
+! runtime.quota_exhausted: Monthly premium requests are used up.
+· running → idle
