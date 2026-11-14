@@ -1,0 +1,387 @@
+{
+  "redact": [
+    {
+      "format": "github ghp_",
+      "text": "export GITHUB_TOKEN=ghp_FAKE0000fake1111FAKE2222fake3333FAKE",
+      "secrets": [
+        "ghp_FAKE0000fake1111FAKE2222fake3333FAKE"
+      ]
+    },
+    {
+      "format": "github ghp_ in prose",
+      "text": "use ghp_FAKE0000fake1111FAKE2222fake3333FAKE to push",
+      "secrets": [
+        "ghp_FAKE0000fake1111FAKE2222fake3333FAKE"
+      ]
+    },
+    {
+      "format": "github gho_",
+      "text": "export GITHUB_TOKEN=gho_FAKE0000fake1111FAKE2222fake3333FAKE",
+      "secrets": [
+        "gho_FAKE0000fake1111FAKE2222fake3333FAKE"
+      ]
+    },
+    {
+      "format": "github gho_ in prose",
+      "text": "use gho_FAKE0000fake1111FAKE2222fake3333FAKE to push",
+      "secrets": [
+        "gho_FAKE0000fake1111FAKE2222fake3333FAKE"
+      ]
+    },
+    {
+      "format": "github ghu_",
+      "text": "export GITHUB_TOKEN=ghu_FAKE0000fake1111FAKE2222fake3333FAKE",
+      "secrets": [
+        "ghu_FAKE0000fake1111FAKE2222fake3333FAKE"
+      ]
+    },
+    {
+      "format": "github ghu_ in prose",
+      "text": "use ghu_FAKE0000fake1111FAKE2222fake3333FAKE to push",
+      "secrets": [
+        "ghu_FAKE0000fake1111FAKE2222fake3333FAKE"
+      ]
+    },
+    {
+      "format": "github ghs_",
+      "text": "export GITHUB_TOKEN=ghs_FAKE0000fake1111FAKE2222fake3333FAKE",
+      "secrets": [
+        "ghs_FAKE0000fake1111FAKE2222fake3333FAKE"
+      ]
+    },
+    {
+      "format": "github ghs_ in prose",
+      "text": "use ghs_FAKE0000fake1111FAKE2222fake3333FAKE to push",
+      "secrets": [
+        "ghs_FAKE0000fake1111FAKE2222fake3333FAKE"
+      ]
+    },
+    {
+      "format": "github ghr_",
+      "text": "export GITHUB_TOKEN=ghr_FAKE0000fake1111FAKE2222fake3333FAKE",
+      "secrets": [
+        "ghr_FAKE0000fake1111FAKE2222fake3333FAKE"
+      ]
+    },
+    {
+      "format": "github ghr_ in prose",
+      "text": "use ghr_FAKE0000fake1111FAKE2222fake3333FAKE to push",
+      "secrets": [
+        "ghr_FAKE0000fake1111FAKE2222fake3333FAKE"
+      ]
+    },
+    {
+      "format": "github ghs_ in clone url",
+      "text": "git clone https://x-access-token:ghs_FAKE0000fake1111FAKE2222fake3333FAKE@github.com/acme/app.git",
+      "secrets": [
+        "ghs_FAKE0000fake1111FAKE2222fake3333FAKE"
+      ]
+    },
+    {
+      "format": "github fine-grained pat",
+      "text": "{\"GITHUB_PERSONAL_ACCESS_TOKEN\": \"github_pat_11FAKE0000_fake1111FAKE2222fake3333FAKE4444fake5555FAKE6666fake7777FAKE88\"}",
+      "secrets": [
+        "github_pat_11FAKE0000_fake1111FAKE2222fake3333FAKE4444fake5555FAKE6666fake7777FAKE88"
+      ]
+    },
+    {
+      "format": "github fine-grained pat in prose",
+      "text": "token is github_pat_11FAKE0000_fake1111FAKE2222fake3333FAKE4444fake5555FAKE6666fake7777FAKE88.",
+      "secrets": [
+        "github_pat_11FAKE0000_fake1111FAKE2222fake3333FAKE4444fake5555FAKE6666fake7777FAKE88"
+      ]
+    },
+    {
+      "format": "copilot token header",
+      "text": "Authorization: Bearer tid=fake0123456789;exp=1767225600;sku=free_fake;st=dotcom;chat=1;8kp=1:0000fakefakefakefake0000fakefakefake0000fakefake",
+      "secrets": [
+        "tid=fake0123456789;exp=1767225600;sku=free_fake;st=dotcom;chat=1;8kp=1:0000fakefakefakefake0000fakefakefake0000fakefake"
+      ]
+    },
+    {
+      "format": "copilot token json",
+      "text": "{\"token\":\"tid=fake0123456789;exp=1767225600;sku=free_fake;st=dotcom;chat=1;8kp=1:0000fakefakefakefake0000fakefakefake0000fakefake\",\"expires_at\":1767225600}",
+      "secrets": [
+        "tid=fake0123456789;exp=1767225600;sku=free_fake;st=dotcom;chat=1;8kp=1:0000fakefakefakefake0000fakefakefake0000fakefake"
+      ]
+    },
+    {
+      "format": "copilot token prose",
+      "text": "copilot token tid=fake0123456789;exp=1767225600;sku=free_fake;st=dotcom;chat=1;8kp=1:0000fakefakefakefake0000fakefakefake0000fakefake refreshed",
+      "secrets": [
+        "tid=fake0123456789;exp=1767225600;sku=free_fake;st=dotcom;chat=1;8kp=1:0000fakefakefakefake0000fakefakefake0000fakefake"
+      ]
+    },
+    {
+      "format": "datadog api key env",
+      "text": "DD_API_KEY=0000fake0000fake0000fake0000fake",
+      "secrets": [
+        "0000fake0000fake0000fake0000fake"
+      ]
+    },
+    {
+      "format": "datadog app key env",
+      "text": "DD_APP_KEY=1111fake1111fake1111fake1111fake1111fake",
+      "secrets": [
+        "1111fake1111fake1111fake1111fake1111fake"
+      ]
+    },
+    {
+      "format": "datadog api key header",
+      "text": "DD-API-KEY: 0000fake0000fake0000fake0000fake",
+      "secrets": [
+        "0000fake0000fake0000fake0000fake"
+      ]
+    },
+    {
+      "format": "datadog application key header",
+      "text": "DD-APPLICATION-KEY: 1111fake1111fake1111fake1111fake1111fake",
+      "secrets": [
+        "1111fake1111fake1111fake1111fake1111fake"
+      ]
+    },
+    {
+      "format": "datadog keys json",
+      "text": "{\"env\": {\"DD_API_KEY\": \"0000fake0000fake0000fake0000fake\", \"DD_APPLICATION_KEY\": \"1111fake1111fake1111fake1111fake1111fake\"}}",
+      "secrets": [
+        "0000fake0000fake0000fake0000fake",
+        "1111fake1111fake1111fake1111fake1111fake"
+      ]
+    },
+    {
+      "format": "datadog key flag",
+      "text": "datadog-mcp --api-key 0000fake0000fake0000fake0000fake --app-key=1111fake1111fake1111fake1111fake1111fake",
+      "secrets": [
+        "0000fake0000fake0000fake0000fake",
+        "1111fake1111fake1111fake1111fake1111fake"
+      ]
+    },
+    {
+      "format": "snowflake pat env",
+      "text": "SNOWFLAKE_PAT=FAKEsnowflakePAT.0000.fake_programmatic_access_token_value",
+      "secrets": [
+        "FAKEsnowflakePAT.0000.fake_programmatic_access_token_value"
+      ]
+    },
+    {
+      "format": "snowflake password env",
+      "text": "SNOWFLAKE_PASSWORD='FAKEsnowflakePAT.0000.fake_programmatic_access_token_value'",
+      "secrets": [
+        "FAKEsnowflakePAT.0000.fake_programmatic_access_token_value"
+      ]
+    },
+    {
+      "format": "snowflake programmatic access token yaml",
+      "text": "programmatic_access_token: FAKEsnowflakePAT.0000.fake_programmatic_access_token_value",
+      "secrets": [
+        "FAKEsnowflakePAT.0000.fake_programmatic_access_token_value"
+      ]
+    },
+    {
+      "format": "snowflake connection url",
+      "text": "snowflake://svc_user:FAKEsnowflakePAT.0000.fake_programmatic_access_token_value@acme-xy12345/analytics",
+      "secrets": [
+        "FAKEsnowflakePAT.0000.fake_programmatic_access_token_value"
+      ]
+    },
+    {
+      "format": "clickup token header",
+      "text": "Authorization: pk_12345678_FAKE0FAKE1FAKE2FAKE3FAKE4FAKE5FA",
+      "secrets": [
+        "pk_12345678_FAKE0FAKE1FAKE2FAKE3FAKE4FAKE5FA"
+      ]
+    },
+    {
+      "format": "clickup token prose",
+      "text": "my clickup token is pk_12345678_FAKE0FAKE1FAKE2FAKE3FAKE4FAKE5FA",
+      "secrets": [
+        "pk_12345678_FAKE0FAKE1FAKE2FAKE3FAKE4FAKE5FA"
+      ]
+    },
+    {
+      "format": "clickup token env",
+      "text": "CLICKUP_API_TOKEN=pk_12345678_FAKE0FAKE1FAKE2FAKE3FAKE4FAKE5FA",
+      "secrets": [
+        "pk_12345678_FAKE0FAKE1FAKE2FAKE3FAKE4FAKE5FA"
+      ]
+    },
+    {
+      "format": "jwt prose",
+      "text": "id_token eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmYWtlLXVzZXIifQ.ZmFrZS1zaWduYXR1cmUtbm90LXJlYWw received",
+      "secrets": [
+        "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmYWtlLXVzZXIifQ.ZmFrZS1zaWduYXR1cmUtbm90LXJlYWw"
+      ]
+    },
+    {
+      "format": "jwt json escaped",
+      "text": "\"{\\\"id_token\\\": \\\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmYWtlLXVzZXIifQ.ZmFrZS1zaWduYXR1cmUtbm90LXJlYWw\\\"}\"",
+      "secrets": [
+        "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmYWtlLXVzZXIifQ.ZmFrZS1zaWduYXR1cmUtbm90LXJlYWw"
+      ]
+    },
+    {
+      "format": "bearer header",
+      "text": "Authorization: Bearer fake0bearer1token2value3FAKE4",
+      "secrets": [
+        "fake0bearer1token2value3FAKE4"
+      ]
+    },
+    {
+      "format": "bearer header lowercase",
+      "text": "authorization: bearer fake0bearer1token2value3FAKE4",
+      "secrets": [
+        "fake0bearer1token2value3FAKE4"
+      ]
+    },
+    {
+      "format": "bearer curl",
+      "text": "curl -H \"Authorization: Bearer fake0bearer1token2value3FAKE4\" https://api.example.test",
+      "secrets": [
+        "fake0bearer1token2value3FAKE4"
+      ]
+    },
+    {
+      "format": "bearer in prose",
+      "text": "sent Bearer fake0bearer1token2value3FAKE4 upstream",
+      "secrets": [
+        "fake0bearer1token2value3FAKE4"
+      ]
+    },
+    {
+      "format": "basic auth header",
+      "text": "Authorization: Basic ZmFrZS11c2VyOmZha2UtcGFzc3dvcmQ=",
+      "secrets": [
+        "ZmFrZS11c2VyOmZha2UtcGFzc3dvcmQ="
+      ]
+    },
+    {
+      "format": "github token header",
+      "text": "Authorization: token gho_FAKE0000fake1111FAKE2222fake3333FAKE",
+      "secrets": [
+        "gho_FAKE0000fake1111FAKE2222fake3333FAKE"
+      ]
+    },
+    {
+      "format": "aws access key id",
+      "text": "aws_access_key_id = AKIAIOSFODNN7EXAMPLE",
+      "secrets": [
+        "AKIAIOSFODNN7EXAMPLE"
+      ]
+    },
+    {
+      "format": "aws access key id prose",
+      "text": "key AKIAIOSFODNN7EXAMPLE was rotated",
+      "secrets": [
+        "AKIAIOSFODNN7EXAMPLE"
+      ]
+    },
+    {
+      "format": "aws secret access key",
+      "text": "aws_secret_access_key = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+      "secrets": [
+        "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+      ]
+    },
+    {
+      "format": "aws secret env",
+      "text": "AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+      "secrets": [
+        "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+      ]
+    },
+    {
+      "format": "generic key=",
+      "text": "key=fake-key-0123456789",
+      "secrets": [
+        "fake-key-0123456789"
+      ]
+    },
+    {
+      "format": "generic token=",
+      "text": "callback?token=fakeToken0123&next=/home",
+      "secrets": [
+        "fakeToken0123"
+      ]
+    },
+    {
+      "format": "generic password=",
+      "text": "password=Fake-Passw0rd!",
+      "secrets": [
+        "Fake-Passw0rd!"
+      ]
+    },
+    {
+      "format": "generic password json",
+      "text": "{\"user\":\"svc\",\"password\":\"fake pass with spaces 01\"}",
+      "secrets": [
+        "fake pass with spaces 01"
+      ]
+    },
+    {
+      "format": "generic secret yaml",
+      "text": "client_secret: fakeClientSecret0123",
+      "secrets": [
+        "fakeClientSecret0123"
+      ]
+    },
+    {
+      "format": "generic api key quoted",
+      "text": "api_key = \"fake_api_key_0123456789\"",
+      "secrets": [
+        "fake_api_key_0123456789"
+      ]
+    },
+    {
+      "format": "generic access_token query",
+      "text": "https://api.example.test/v1?access_token=fakeAccess0123&page=2",
+      "secrets": [
+        "fakeAccess0123"
+      ]
+    },
+    {
+      "format": "generic apikey camel",
+      "text": "const config = { apiKey: \"fakeApiKey0123\" };",
+      "secrets": [
+        "fakeApiKey0123"
+      ]
+    },
+    {
+      "format": "pem rsa private key",
+      "text": "-----BEGIN RSA PRIVATE KEY-----\nFAKEFAKEFAKEnotarealkey0123456789FAKEFAKEFAKE\nFAKEsecondline0123456789\n-----END RSA PRIVATE KEY-----",
+      "secrets": [
+        "FAKEFAKEFAKEnotarealkey0123456789FAKEFAKEFAKE",
+        "FAKEsecondline0123456789"
+      ]
+    },
+    {
+      "format": "pem openssh private key json",
+      "text": "{\"key\": \"-----BEGIN OPENSSH PRIVATE KEY-----\\nFAKEFAKEFAKEnotarealkey0123456789FAKEFAKEFAKE\\n-----END OPENSSH PRIVATE KEY-----\"}",
+      "secrets": [
+        "FAKEFAKEFAKEnotarealkey0123456789FAKEFAKEFAKE"
+      ]
+    },
+    {
+      "format": "pem truncated preview",
+      "text": "-----BEGIN PRIVATE KEY-----\nFAKEFAKEFAKEnotarealkey0123456789FAKEFAKEFAKE\nFAKEcut",
+      "secrets": [
+        "FAKEFAKEFAKEnotarealkey0123456789FAKEFAKEFAKE",
+        "FAKEcut"
+      ]
+    }
+  ],
+  "preserve": [
+    "commit 4b825dc642cb6eb9a060e54bf8d69288fbe4904f merged",
+    "max_tokens=4096",
+    "{\"tokenLimit\": 128000, \"currentTokens\": 512}",
+    "token = getToken()",
+    "the token expired; sign in again",
+    "API_KEY: \"${secret:keychain:datadog/api-key}\"",
+    "password=$DB_PASSWORD",
+    "{\"token\": null, \"secret\": true}",
+    "monkey=banana123",
+    "https://github.com/acme/app.git",
+    "Bearer tokens are sent in the header",
+    "ghp_short",
+    "[redacted]"
+  ]
+}

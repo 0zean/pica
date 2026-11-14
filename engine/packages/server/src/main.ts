@@ -1,4 +1,5 @@
 import { parseArgs } from "node:util";
+import { scrubSecrets } from "@pica/core";
 import { startEngine } from "./engine.ts";
 import { stderrLogger } from "./logger.ts";
 import { DEFAULT_SOCKET_PATH } from "./paths.ts";
@@ -20,6 +21,6 @@ async function main(): Promise<void> {
 }
 
 main().catch((error: unknown) => {
-  stderrLogger.error(error instanceof Error ? error.message : String(error));
+  stderrLogger.error(scrubSecrets(error instanceof Error ? error.message : String(error)));
   process.exit(1);
 });

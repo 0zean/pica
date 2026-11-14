@@ -4,6 +4,9 @@ import {
   agentTier,
   createEventLog,
   createOutputGuard,
+  createRedactingEventLog,
+  createRedactingLogger,
+  createSecretScrubber,
   createSessionService,
   createUsageReport,
   withOutputGuard,
@@ -13,12 +16,14 @@ import type {
   AgentRuntime,
   BudgetSettings,
   McpHealthMonitor,
+  McpSecretRedactor,
   OutputGuardDeps,
   RuntimeHooks,
   SessionService,
   Store,
   TokenPrices,
   UsagePricing,
+  WorkspaceService,
 } from "@pica/core";
 import { registerEngineHandlers } from "./engine-handlers.ts";
 import { registerMcpHealthHandlers } from "./mcp-handlers.ts";
@@ -28,6 +33,7 @@ import type { Logger } from "./logger.ts";
 import { MethodRouter } from "./router.ts";
 import { registerSessionHandlers, toSessionDto } from "./session-handlers.ts";
 import { registerUsageHandlers } from "./usage-handlers.ts";
+import { registerWorkspaceHandlers } from "./workspace-handlers.ts";
 
 export interface EngineUsageOptions extends Partial<UsagePricing> {
   readonly reasoningPrices?: () => TokenPrices | null;
@@ -55,18 +61,23 @@ export interface EngineOptions {
   readonly sessions?: EngineSessionOptions;
   // M-06: answers `mcp.status*` and `mcp.restart`, and broadcasts `mcp.statusChanged`.
   readonly mcpHealth?: McpHealthMonitor;
+  // R-06: answers `workspace.*`, `repo.list` and `repo.get`, and broadcasts `workspace.changed`.
+  readonly workspaces?: WorkspaceService;
 }
 
 // Composition root: later units construct their adapters and register their handlers here.
 export async function startEngine(options: EngineOptions): Promise<SocketListener> {
   const startedAt = performance.now();
+  // H-03: token formats are scrubbed from every log line and stored event.
+  const scrubber = createSecretScrubber();
+  const log = createRedactingLogger(options.log, scrubber);
   const router = new MethodRouter();
   // Session changes can only be broadcast once the listener exists; recovery runs before it does.
   const started: { listener?: SocketListener } = {};
   const sessions =
     options.sessions === undefined
       ? undefined
-      : startSessions(router, options.sessions, options.log, (session) => {
+      : startSessions(router, options.sessions, log, scrubber, (session) => {
           started.listener?.broadcast("session.changed", { session: toSessionDto(session) });
         });
   registerEngineHandlers(router, {
@@ -76,10 +87,18 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
   if (options.mcpHealth !== undefined) {
     registerMcpHealthHandlers(router, options.mcpHealth);
   }
+  if (options.workspaces !== undefined) {
+    registerWorkspaceHandlers(router, {
+      workspaces: options.workspaces,
+      onChanged: (workspace) => {
+        started.listener?.broadcast("workspace.changed", { workspace });
+      },
+    });
+  }
   const listener = await SocketListener.start({
     socketPath: options.socketPath,
     router,
-    log: options.log,
+    log,
     ...(options.limits === undefined ? {} : { limits: options.limits }),
   });
   started.listener = listener;
@@ -95,10 +114,11 @@ function startSessions(
   router: MethodRouter,
   options: EngineSessionOptions,
   log: Logger,
+  scrubber: McpSecretRedactor,
   onChanged: NonNullable<Parameters<typeof createSessionService>[0]["onChanged"]>,
 ): SessionService {
   const usage = options.usage ?? {};
-  const eventLog = withUsageLedger(createEventLog(options.store.events), {
+  const eventLog = withUsageLedger(createRedactingEventLog(createEventLog(options.store.events), scrubber), {
     usage: options.store.usage,
     pricing: {
       pricesFor: usage.pricesFor ?? (() => null),

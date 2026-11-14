@@ -649,9 +649,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **R-06 · Workspace model** — R-03, R-05
 - Build: workspace CRUD, sources, pinned repos, lazy clone state, settings overrides.
 - Verify:
-  - [ ] A team source adds repos as `available`, not cloned.
-  - [ ] Removing a source keeps pinned repos.
-  - [ ] Workspace overrides resolve through E-04 precedence.
+  - [x] A team source adds repos as `available`, not cloned.
+  - [x] Removing a source keeps pinned repos.
+  - [x] Workspace overrides resolve through E-04 precedence.
 
 **R-07 · Session scope and sandbox** — C-03, R-02
 - Build: write roots and reference roots on the session; path resolution guard; safety rules.
@@ -677,9 +677,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **R-10 · Multi-repo change sets** — R-02, R-07
 - Build: one session with worktrees in several repos on one branch name; per-repo diffs; linked pull requests.
 - Verify:
-  - [ ] A two-repo change set creates two worktrees and two branches with the same name.
-  - [ ] Against a stub API, both pull requests are created and each body links the other.
-  - [ ] A failure creating the second pull request reports partial state without rolling back the first.
+  - [x] A two-repo change set creates two worktrees and two branches with the same name.
+  - [x] Against a stub API, both pull requests are created and each body links the other.
+  - [x] A failure creating the second pull request reports partial state without rolling back the first.
 
 **R-11 · Fan-out runs** — R-06, E-08
 - Build: one task as parallel sessions over selected repos with a concurrency cap and an aggregate view.
@@ -878,8 +878,8 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 **H-03 · Redaction** — M-03
 - Build: scrubber for logs, events, and diagnostics.
 - Verify:
-  - [ ] A corpus of token formats is fully redacted.
-  - [ ] The diagnostics bundle for a fixture session contains no file contents and no secrets.
+  - [x] A corpus of token formats is fully redacted.
+  - [x] The diagnostics bundle for a fixture session contains no file contents and no secrets.
 
 **H-04 · Observability** — E-05
 - Build: structured engine logs, diagnostics bundle, optional OpenTelemetry export of usage metrics.
@@ -985,11 +985,11 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | R-03 | Repo registry | E-03, R-01 | done |
 | R-04 | GitHub auth | E-05 | done |
 | R-05 | Team discovery | R-04 | done |
-| R-06 | Workspace model | R-03, R-05 | todo |
+| R-06 | Workspace model | R-03, R-05 | done |
 | R-07 | Session scope and sandbox | C-03, R-02 | done |
 | R-08 | Cross-repo tools | R-06, R-07 | todo |
 | R-09 | Repo cards | R-03 | done |
-| R-10 | Multi-repo change sets | R-02, R-07 | todo |
+| R-10 | Multi-repo change sets | R-02, R-07 | done |
 | R-11 | Fan-out runs | R-06, E-08 | todo |
 | M-01 | MCP registry and configuration | E-04 | done |
 | M-02 | MCP presets | M-01, S-06 | todo |
@@ -1018,7 +1018,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | X-03 | User hooks | C-03 | todo |
 | H-01 | Managed policy | E-04, C-03, M-05 | done |
 | H-02 | Audit log | C-03, E-07 | todo |
-| H-03 | Redaction | M-03 | todo |
+| H-03 | Redaction | M-03 | done |
 | H-04 | Observability | E-05 | todo |
 | H-05 | Reliability | E-08, A-01 | todo |
 | H-06 | Distribution | S-05, A-01 | todo |

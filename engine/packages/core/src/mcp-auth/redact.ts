@@ -1,5 +1,5 @@
 // Replaces secret values the engine has handled with a marker before text reaches a log, event,
-// status, or database row. H-03 adds pattern-based scrubbing for values the engine never saw.
+// status, or database row. `createSecretScrubber` (redaction/) adds patterns for values it never saw.
 export interface McpSecretRedactor {
   remember(value: string): void;
   redact(text: string): string;

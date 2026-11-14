@@ -30,7 +30,7 @@ A definition that appears to contain a secret written out in full is rejected wi
 2. **Known token shapes** anywhere in `command`, `cwd`, `args`, `env`, `headers`, or `url`: GitHub (`ghp_`, `gho_`, `ghu_`, `ghs_`, `ghr_`, `github_pat_`), GitLab (`glpat-`), `sk-` API keys, Slack (`xox?-`), AWS access key ids (`AKIA…`), ClickUp (`pk_<n>_…`), and PEM private keys.
 3. **Credentials in a URL:** a password in the user-info part (`https://user:pw@host`).
 
-These rules catch the common cases; they are not a guarantee. Redaction of anything that slips through is H-03.
+These rules catch the common cases; they are not a guarantee. Anything that slips through is scrubbed by pattern ([redaction.md](redaction.md)).
 
 ## Imported files
 
