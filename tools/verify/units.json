@@ -514,13 +514,16 @@
   ],
   "R-06": [
     {
-      "check": "A team source adds repos as `available`, not cloned."
+      "check": "A team source adds repos as `available`, not cloned.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/workspaces/team-source.test.ts packages/server/tests/workspaces/rpc.test.ts"
     },
     {
-      "check": "Removing a source keeps pinned repos."
+      "check": "Removing a source keeps pinned repos.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/workspaces/remove-source.test.ts"
     },
     {
-      "check": "Workspace overrides resolve through E-04 precedence."
+      "check": "Workspace overrides resolve through E-04 precedence.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/workspaces/overrides.test.ts"
     }
   ],
   "R-07": [

@@ -12,6 +12,13 @@ import { attempt, fail } from "./errors.ts";
 import { json, text } from "./rows.ts";
 import type { Row } from "./rows.ts";
 
+type StoredSource = Omit<RepoSource, "id" | "snapshot" | "repoIds"> & Partial<RepoSource>;
+
+// Sources saved before R-06 have no id or sync state; their position is a stable id within the workspace.
+function withSyncFields(source: StoredSource, index: number): RepoSource {
+  return { ...source, id: source.id ?? `source-${String(index)}`, snapshot: source.snapshot ?? null, repoIds: source.repoIds ?? [] };
+}
+
 export function sqliteWorkspaceRepository(db: DatabaseSync): WorkspaceRepository {
   const upsert = db.prepare(`
     INSERT INTO workspaces (id, name, sources, settings_overrides)
@@ -37,7 +44,7 @@ export function sqliteWorkspaceRepository(db: DatabaseSync): WorkspaceRepository
     return {
       id,
       name: text(row, "name"),
-      sources: json(row, "sources") as unknown as readonly RepoSource[],
+      sources: (json(row, "sources") as unknown as readonly StoredSource[]).map(withSyncFields),
       pinnedRepoIds: pins.all(id).map((pinRow) => text(pinRow, "repo_id")),
       settingsOverrides: json(row, "settings_overrides") as JsonObject,
     };

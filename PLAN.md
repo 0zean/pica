@@ -649,9 +649,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **R-06 · Workspace model** — R-03, R-05
 - Build: workspace CRUD, sources, pinned repos, lazy clone state, settings overrides.
 - Verify:
-  - [ ] A team source adds repos as `available`, not cloned.
-  - [ ] Removing a source keeps pinned repos.
-  - [ ] Workspace overrides resolve through E-04 precedence.
+  - [x] A team source adds repos as `available`, not cloned.
+  - [x] Removing a source keeps pinned repos.
+  - [x] Workspace overrides resolve through E-04 precedence.
 
 **R-07 · Session scope and sandbox** — C-03, R-02
 - Build: write roots and reference roots on the session; path resolution guard; safety rules.
@@ -985,7 +985,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | R-03 | Repo registry | E-03, R-01 | done |
 | R-04 | GitHub auth | E-05 | done |
 | R-05 | Team discovery | R-04 | done |
-| R-06 | Workspace model | R-03, R-05 | todo |
+| R-06 | Workspace model | R-03, R-05 | done |
 | R-07 | Session scope and sandbox | C-03, R-02 | done |
 | R-08 | Cross-repo tools | R-06, R-07 | todo |
 | R-09 | Repo cards | R-03 | done |
