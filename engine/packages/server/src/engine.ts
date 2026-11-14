@@ -11,6 +11,7 @@ import {
 } from "@pica/core";
 import type {
   AgentRuntime,
+  McpHealthMonitor,
   OutputGuardDeps,
   RuntimeHooks,
   SessionService,
@@ -19,6 +20,7 @@ import type {
   UsagePricing,
 } from "@pica/core";
 import { registerEngineHandlers } from "./engine-handlers.ts";
+import { registerMcpHealthHandlers } from "./mcp-handlers.ts";
 import { SocketListener } from "./listener.ts";
 import type { ConnectionLimits } from "./connection.ts";
 import type { Logger } from "./logger.ts";
@@ -48,6 +50,8 @@ export interface EngineOptions {
   readonly limits?: ConnectionLimits;
   // Without it the engine answers `session.*`, `events.*` and `approval.*` as not implemented.
   readonly sessions?: EngineSessionOptions;
+  // M-06: answers `mcp.status*` and `mcp.restart`, and broadcasts `mcp.statusChanged`.
+  readonly mcpHealth?: McpHealthMonitor;
 }
 
 // Composition root: later units construct their adapters and register their handlers here.
@@ -66,6 +70,9 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
     uptimeMs: () => performance.now() - startedAt,
     sessionsRunning: () => sessions?.runningCount() ?? 0,
   });
+  if (options.mcpHealth !== undefined) {
+    registerMcpHealthHandlers(router, options.mcpHealth);
+  }
   const listener = await SocketListener.start({
     socketPath: options.socketPath,
     router,
@@ -73,6 +80,11 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
     ...(options.limits === undefined ? {} : { limits: options.limits }),
   });
   started.listener = listener;
+  if (options.mcpHealth !== undefined) {
+    options.mcpHealth.subscribe((status) => {
+      listener.broadcast("mcp.statusChanged", { status });
+    });
+  }
   return listener;
 }
 

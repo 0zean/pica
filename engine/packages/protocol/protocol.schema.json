@@ -466,6 +466,24 @@
         "$ref": "#/$defs/McpStatusResult"
       }
     },
+    "mcp.statusList": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/Empty"
+      },
+      "result": {
+        "$ref": "#/$defs/McpStatusListResult"
+      }
+    },
+    "mcp.restart": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/ById"
+      },
+      "result": {
+        "$ref": "#/$defs/Ok"
+      }
+    },
     "mcp.login": {
       "direction": "client",
       "params": {
@@ -2399,6 +2417,9 @@
               "type": "null"
             }
           ]
+        },
+        "restarts": {
+          "$ref": "#/$defs/Count"
         }
       },
       "required": [
@@ -2408,7 +2429,8 @@
         "tools",
         "latencyMs",
         "toolDefinitionTokens",
-        "checkedAt"
+        "checkedAt",
+        "restarts"
       ]
     },
     "McpStatusChangedNotification": {
@@ -2420,6 +2442,20 @@
       },
       "required": [
         "status"
+      ]
+    },
+    "McpStatusListResult": {
+      "type": "object",
+      "properties": {
+        "statuses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/McpServerStatus"
+          }
+        }
+      },
+      "required": [
+        "statuses"
       ]
     },
     "McpStatusResult": {

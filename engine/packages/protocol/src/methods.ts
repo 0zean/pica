@@ -178,6 +178,8 @@ export const methods = {
   ),
   "mcp.detach": clientMethod(z.object({ serverId: Id, sessionId: Id }), Ok),
   "mcp.status": clientMethod(ById, z.object({ status: McpServerStatus })),
+  "mcp.statusList": clientMethod(Empty, z.object({ statuses: z.array(McpServerStatus) })),
+  "mcp.restart": clientMethod(ById, Ok),
   "mcp.login": clientMethod(ById, Ok),
 
   "agents.list": clientMethod(

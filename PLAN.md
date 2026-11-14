@@ -728,8 +728,8 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **M-06 · Health and diagnostics** — M-04
 - Build: connection status, last error, tool list, latency.
 - Verify:
-  - [ ] Stub servers that are healthy, slow, crashing, and failing auth each produce the expected status.
-  - [ ] A crashing stdio server is restarted with backoff and gives up after the configured attempts.
+  - [x] Stub servers that are healthy, slow, crashing, and failing auth each produce the expected status.
+  - [x] A crashing stdio server is restarted with backoff and gives up after the configured attempts.
 
 ### Phase 5 — macOS app
 
@@ -996,7 +996,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | M-03 | Secrets and OAuth | M-01, E-05 | done |
 | M-04 | Scoping and tool budgets | M-01, C-02 | done |
 | M-05 | MCP permissions | C-03, M-04 | done |
-| M-06 | Health and diagnostics | M-04 | todo |
+| M-06 | Health and diagnostics | M-04 | done |
 | A-01 | App shell and engine supervision | E-05, S-05 | todo |
 | A-02 | EngineClient | E-02 | done |
 | A-03 | Design system | F-01 | done |

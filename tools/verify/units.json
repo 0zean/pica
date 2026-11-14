@@ -640,10 +640,12 @@
   ],
   "M-06": [
     {
-      "check": "Stub servers that are healthy, slow, crashing, and failing auth each produce the expected status."
+      "check": "Stub servers that are healthy, slow, crashing, and failing auth each produce the expected status.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/mcp-health/stub-status.test.ts packages/adapters/tests/mcp-client/stub-servers.test.ts packages/server/tests/mcp/health-rpc.test.ts"
     },
     {
-      "check": "A crashing stdio server is restarted with backoff and gives up after the configured attempts."
+      "check": "A crashing stdio server is restarted with backoff and gives up after the configured attempts.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/mcp-health/restart-backoff.test.ts packages/adapters/tests/mcp-client/restart.test.ts"
     }
   ],
   "A-01": [
