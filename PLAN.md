@@ -677,9 +677,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **R-10 · Multi-repo change sets** — R-02, R-07
 - Build: one session with worktrees in several repos on one branch name; per-repo diffs; linked pull requests.
 - Verify:
-  - [ ] A two-repo change set creates two worktrees and two branches with the same name.
-  - [ ] Against a stub API, both pull requests are created and each body links the other.
-  - [ ] A failure creating the second pull request reports partial state without rolling back the first.
+  - [x] A two-repo change set creates two worktrees and two branches with the same name.
+  - [x] Against a stub API, both pull requests are created and each body links the other.
+  - [x] A failure creating the second pull request reports partial state without rolling back the first.
 
 **R-11 · Fan-out runs** — R-06, E-08
 - Build: one task as parallel sessions over selected repos with a concurrency cap and an aggregate view.
@@ -989,7 +989,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | R-07 | Session scope and sandbox | C-03, R-02 | done |
 | R-08 | Cross-repo tools | R-06, R-07 | todo |
 | R-09 | Repo cards | R-03 | done |
-| R-10 | Multi-repo change sets | R-02, R-07 | todo |
+| R-10 | Multi-repo change sets | R-02, R-07 | done |
 | R-11 | Fan-out runs | R-06, E-08 | todo |
 | M-01 | MCP registry and configuration | E-04 | done |
 | M-02 | MCP presets | M-01, S-06 | todo |

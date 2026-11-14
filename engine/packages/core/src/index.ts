@@ -23,3 +23,4 @@ export * from "./sandbox/index.ts";
 export * from "./mcp-health/index.ts";
 export * from "./repo-cards/index.ts";
 export * from "./workspaces/index.ts";
+export * from "./changesets/index.ts";
