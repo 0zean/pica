@@ -59,18 +59,22 @@
   "S-04": [
     {
       "check": "A session rooted in repo A reads a file in repo B after host approval; the mechanism is recorded.",
-      "live": true
+      "live": true,
+      "run": "node --experimental-strip-types --disable-warning=ExperimentalWarning spikes/s-04-multi-root/s04.mjs read"
     },
     {
       "check": "A write to repo B is blocked by the hook, including via a shell command.",
-      "live": true
+      "live": true,
+      "run": "node --experimental-strip-types --disable-warning=ExperimentalWarning spikes/s-04-multi-root/s04.mjs write"
     },
     {
       "check": "Two sessions with different working directories run concurrently on one client without cross-talk.",
-      "live": true
+      "live": true,
+      "run": "node --experimental-strip-types --disable-warning=ExperimentalWarning spikes/s-04-multi-root/s04.mjs concurrent"
     },
     {
-      "check": "A6 is resolved."
+      "check": "A6 is resolved.",
+      "run": "test -s docs/spikes/S-04.md && grep -q \"^| A6 .*Confirmed\" PLAN.md && node --experimental-strip-types --disable-warning=ExperimentalWarning spikes/s-04-multi-root/s04.mjs guard"
     }
   ],
   "S-05": [

@@ -84,7 +84,7 @@ REST endpoints: `GET /user/teams`, `GET /orgs/{org}/teams/{team_slug}/repos` (pa
 | A3 | A deny with a reason reliably makes the main agent delegate. **Confirmed** by S-02 on Copilot Free (`auto`): 20 of 20 trials on a 219 KB file ended with `bulk-reader` reading it and no file content reaching the main agent, each after a single deny ([findings](docs/spikes/S-02.md)) | S-02 | Expose an engine `delegate` tool and remove the direct large-read path from the main agent |
 | A4 | A sub-agent's `model` override is honored and billed at that model's rate. S-02 found that on Free it is not: `subagent.started.model` reports the override but `assistant.usage.model` is the `auto` pick, with no error ([findings](docs/spikes/S-02.md)) | S-03 | Engine-managed child sessions with an explicit model |
 | A5 | Usage can be attributed per agent | S-03 | Attribute by `toolCallId` window, or by child session |
-| A6 | A session can read outside its `workingDirectory` once the host approves | S-04 | Session root directory of symlinks, or cross-repo access only through engine tools |
+| A6 | A session can read outside its `workingDirectory` once the host approves. **Confirmed** by S-04: the runtime raises a `read` permission request for the path and reads it on `approve-once`; `additionalDirectories` halves the requests but does not remove them. A `preToolUse` deny blocks file-tool and shell writes to a reference root, but R-07's shell parser misses argument writes such as `touch` and `cp` ([findings](docs/spikes/S-04.md)) | S-04 | Session root directory of symlinks, or cross-repo access only through engine tools |
 | A7 | Node, the engine bundle, and the Copilot CLI can be ad-hoc signed inside the app and run on a Mac without developer tools after a GitHub Releases download; Developer ID signing and notarization come later (D-17) | S-05 | Install the engine separately (pkg or Homebrew) |
 | A8 | All four MCP servers connect through the SDK, including OAuth | S-06 | Host-managed tokens supplied by Pica |
 | A9 | Event streaming over a Unix socket meets the throughput budget. **Confirmed** by S-07: 50,000 events at 25,000/s in order, p99 write-to-decoded ≈ 0.1 ms ([findings](docs/spikes/S-07.md)) | S-07 | Coalesce events per display frame in the engine |
@@ -409,10 +409,10 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 
 **S-04 · Multi-root access** — S-01
 - Verify:
-  - [ ] **(live)** A session rooted in repo A reads a file in repo B after host approval; the mechanism is recorded.
-  - [ ] **(live)** A write to repo B is blocked by the hook, including via a shell command.
-  - [ ] **(live)** Two sessions with different working directories run concurrently on one client without cross-talk.
-  - [ ] A6 is resolved.
+  - [x] **(live)** A session rooted in repo A reads a file in repo B after host approval; the mechanism is recorded.
+  - [x] **(live)** A write to repo B is blocked by the hook, including via a shell command.
+  - [x] **(live)** Two sessions with different working directories run concurrently on one client without cross-talk.
+  - [x] A6 is resolved.
 
 **S-05 · Packaging** — none
 - Build: minimal ad-hoc signed, hardened-runtime `.app` containing a Node binary, a bundled "hello" engine, and the Copilot CLI, zipped as a GitHub Releases asset would be (D-17).
@@ -955,7 +955,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | S-01 | Runtime access and auth | — | done |
 | S-02 | Hook enforcement and delegation | S-01 | done |
 | S-03 | Per-agent model and attribution | S-02 | todo |
-| S-04 | Multi-root access | S-01 | todo |
+| S-04 | Multi-root access | S-01 | done |
 | S-05 | Packaging | — | todo |
 | S-06 | MCP connectivity | S-01 | todo |
 | S-07 | IPC throughput | — | done |
