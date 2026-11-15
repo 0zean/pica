@@ -14,3 +14,4 @@ export * from "./mcp-handlers.ts";
 export * from "./mcp-import-handlers.ts";
 export * from "./metrics-export.ts";
 export * from "./composition.ts";
+export * from "./composition-workspaces.ts";

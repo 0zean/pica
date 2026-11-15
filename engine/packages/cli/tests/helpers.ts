@@ -20,7 +20,8 @@ export interface CliRun {
 export interface CliHarness {
   readonly dir: string;
   readonly socketPath: string;
-  run(args: readonly string[], env?: Readonly<Record<string, string>>): Promise<CliRun>;
+  // `cwd` is the directory `pica` runs in; relative paths in its arguments resolve against it.
+  run(args: readonly string[], env?: Readonly<Record<string, string>>, cwd?: string): Promise<CliRun>;
   // The pid of every engine the CLI started, in order.
   engineStarts(): Promise<string[]>;
   stop(): Promise<void>;
@@ -43,8 +44,8 @@ export async function cliHarness(scenarioPath = README_SCENARIO): Promise<CliHar
     dir,
     socketPath,
     // A test that timed out keeps running; refusing here stops it starting engines after teardown.
-    run: (args, env = {}) =>
-      stopped ? Promise.reject(new Error("the harness is stopped")) : runCli(args, { ...baseEnv, ...env }),
+    run: (args, env = {}, cwd = process.cwd()) =>
+      stopped ? Promise.reject(new Error("the harness is stopped")) : runCli(args, { ...baseEnv, ...env }, cwd),
     engineStarts: async () => (await readFile(startsPath, "utf8")).split("\n").filter((line) => line !== ""),
     stop: async () => {
       stopped = true;
@@ -54,12 +55,12 @@ export async function cliHarness(scenarioPath = README_SCENARIO): Promise<CliHar
   };
 }
 
-function runCli(args: readonly string[], env: Readonly<Record<string, string>>): Promise<CliRun> {
+function runCli(args: readonly string[], env: Readonly<Record<string, string>>, cwd: string): Promise<CliRun> {
   return new Promise((resolve) => {
     execFile(
       process.execPath,
       ["--experimental-strip-types", "--disable-warning=ExperimentalWarning", CLI_MAIN, ...args],
-      { env: { ...process.env, ...env } },
+      { env: { ...process.env, ...env }, cwd },
       (error, stdout, stderr) => {
         resolve({ code: error === null ? 0 : (error.code as number), stdout, stderr });
       },

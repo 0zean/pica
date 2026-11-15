@@ -5,6 +5,7 @@ import {
   createEventLog,
   createFanOutService,
   createOutputGuard,
+  createReadGate,
   createRedactingEventLog,
   createRedactingLogger,
   createSecretScrubber,
@@ -29,6 +30,8 @@ import type {
   McpImportService,
   McpSecretRedactor,
   OutputGuardDeps,
+  ReadGateDeps,
+  RepoRegistry,
   RuntimeHooks,
   SessionService,
   Store,
@@ -48,6 +51,7 @@ import type { ConnectionLimits } from "./connection.ts";
 import type { Logger } from "./logger.ts";
 import type { UsageMetricsExporter } from "./metrics-export.ts";
 import { MethodRouter } from "./router.ts";
+import { registerRepoHandlers } from "./repo-handlers.ts";
 import { registerSessionHandlers, toSessionDto } from "./session-handlers.ts";
 import { registerUsageHandlers } from "./usage-handlers.ts";
 import { registerWorkspaceHandlers } from "./workspace-handlers.ts";
@@ -62,6 +66,9 @@ export interface EngineSessionOptions {
   readonly clock?: () => string;
   readonly newSessionId?: () => string;
   readonly hooks?: (sessionId: string) => RuntimeHooks;
+  // C-04: gates main-agent reads in `onPreToolUse`, in place of `hooks`. Its decisions are emitted
+  // as events on the session log (and so audited) unless `onDecision` is given.
+  readonly readGate?: ReadGateDeps;
   // Without prices, usage is recorded at zero credits and the savings estimate is zero.
   readonly usage?: EngineUsageOptions;
   // C-06: truncates oversized tool results and spills them to session artifacts.
@@ -91,6 +98,8 @@ export interface EngineOptions {
   readonly githubHost?: GitHubHost;
   // R-06: answers `workspace.*`, `repo.list` and `repo.get`, and broadcasts `workspace.changed`.
   readonly workspaces?: WorkspaceService;
+  // R-03: answers `repo.addPath`, `repo.addUrl` and `repo.remove`.
+  readonly repos?: RepoRegistry;
   // M-07: answers `mcp.importCandidates` and `mcp.import`. Repo ids resolve through `workspaces`
   // unless `repoRoot` is given.
   readonly mcpImport?: EngineMcpImportOptions;
@@ -151,6 +160,9 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
         started.listener?.broadcast("workspace.changed", { workspace });
       },
     });
+  }
+  if (options.repos !== undefined) {
+    registerRepoHandlers(router, options.repos);
   }
   const listener = await SocketListener.start({
     socketPath: options.socketPath,
@@ -250,11 +262,14 @@ function sessionHooks(
   eventLog: EventLog,
   clock: () => string,
 ): { readonly hooks?: (sessionId: string) => RuntimeHooks } {
+  const emit = emitPolicyDecisions(eventLog, clock);
+  const hooks =
+    options.readGate === undefined ? options.hooks : createReadGate({ ...options.readGate, onDecision: options.readGate.onDecision ?? emit });
   if (options.outputGuard !== undefined) {
-    const onDecision = options.outputGuard.onDecision ?? emitPolicyDecisions(eventLog, clock);
-    return { hooks: withOutputGuard(options.hooks, createOutputGuard({ ...options.outputGuard, onDecision })) };
+    const onDecision = options.outputGuard.onDecision ?? emit;
+    return { hooks: withOutputGuard(hooks, createOutputGuard({ ...options.outputGuard, onDecision })) };
   }
-  return options.hooks === undefined ? {} : { hooks: options.hooks };
+  return hooks === undefined ? {} : { hooks };
 }
 
 function lifecycleHooks(

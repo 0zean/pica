@@ -538,7 +538,17 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
   - [x] `pica` starts an engine when none is running and reuses one that is.
   - [x] Non-zero exit codes are distinct for usage error, engine error, and session failure.
 
-**Milestone M1 — headless slice:** **(live)** `pica session new --repo . "summarize the README"` completes against Copilot, and `pica usage` shows the tokens.
+**E-11 · `picad` production composition** — E-10, C-01, C-04, C-06, C-07, C-08, C-09, R-03, R-06, H-01, H-02, M-07
+- Build: `composeEngine` in `engine/packages/server/src/composition.ts`, which `main.ts` runs before it listens. Under `~/Library/Application Support/Pica/` it opens `pica.db`, the audit log and session artifacts, and composes the `CopilotRuntime`, the user config layer with the managed policy (H-01), the model catalog and its prices (C-01), the read gate (C-04) and output guard (C-06) with their decisions on the session log, the runtime-native delegator over the built-in and user agents (C-07), the usage ledger (C-08), budgets from config (C-09), the audit log (H-02), workspaces with GitHub discovery through the `gh` CLI (R-06), the repo registry with `repo.addPath`, `repo.addUrl` and `repo.remove` (R-03), and the MCP import (M-07). The CLI gains `workspace create|list` and `repo add|list`, so M1 runs from the CLI alone. A store, config, agent or audit failure exits `picad` before its ready line. (Added 2026-11-15.)
+- Not composed yet, each a follow-up: workspace and repo config layers per session (the read gate and budgets use the user layer and managed policy); the MCP registry, attachment and health monitor (M-01, M-04, M-06); user hooks (X-03); OTLP export (H-04); the R-08 repo tools; worktrees per session (R-02: sessions run in the registered checkout); PAT and device-flow GitHub auth, and hosts other than github.com (R-04, D-20). Budgets are read once at start.
+- Verify:
+  - [x] Over the socket, the production composition with a FakeRuntime registers a workspace and a repo by path and runs a session whose large read is denied naming `bulk-reader`, whose usage is in the ledger, and whose policy decision is in the audit log.
+  - [x] `picad` started the way the CLI starts it answers `session.list` from its own store under the user's data directory, not as not implemented.
+  - [x] A user config that does not validate makes `picad` exit non-zero before its ready line, naming the file and key path.
+  - [x] `pica workspace create`, `pica repo add <path> [--workspace <id>]` and their `list` commands register and show a workspace and a repo; a bad path is an engine error and a missing one a usage error.
+  - [x] **(live)** Milestone M1: `pica session new --repo <this checkout> "summarize the README"` completes against Copilot, and `pica usage` shows the main agent's tokens. *Passed on Copilot Free, 2026-11-15: two main-agent calls routed to `mai-code-1.1-flash`, 10,541 input, 12,800 cached and 139 output tokens, 0.2531 credits; the README `view` ran without a prompt.*
+
+**Milestone M1 — headless slice:** **(live)** `pica session new --repo . "summarize the README"` completes against Copilot, and `pica usage` shows the tokens. **Met 2026-11-15** through E-11 on Copilot Free: `pica repo add .` registers the checkout, then `session new` and `usage` (see E-11's live check).
 
 ### Phase 2 — Cost router
 
@@ -991,6 +1001,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | E-08 | Session service | E-05, E-07 | done |
 | E-09 | Copilot adapter | E-06 | done |
 | E-10 | CLI | E-08 | done |
+| E-11 | `picad` production composition | E-10, C-01, C-04, C-06, C-07, C-08, C-09, R-03, R-06, H-01, H-02, M-07 | doing |
 | C-01 | Model catalog and tiers | E-09 | done |
 | C-02 | Agent definitions | E-04 | done |
 | C-03 | Policy engine | E-04 | done |

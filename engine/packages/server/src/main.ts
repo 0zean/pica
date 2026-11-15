@@ -1,7 +1,7 @@
-import { homedir } from "node:os";
+import { homedir, userInfo } from "node:os";
 import { parseArgs } from "node:util";
 import { createSecretScrubber, createStructuredLog } from "@pica/core";
-import { mcpImportOptions } from "./composition.ts";
+import { composeEngine } from "./composition.ts";
 import { startEngine } from "./engine.ts";
 import { DEFAULT_SOCKET_PATH } from "./paths.ts";
 
@@ -20,9 +20,13 @@ const log = createStructuredLog({
 }).logger("picad");
 
 async function main(): Promise<void> {
-  const listener = await startEngine({ socketPath: socketPathFromArgs(), log, mcpImport: mcpImportOptions(homedir()) });
+  const composed = composeEngine({ homeDir: homedir(), userName: userInfo().username, env: process.env, log });
+  const listener = await startEngine({ socketPath: socketPathFromArgs(), log, ...composed.options });
   const stop = (): void => {
-    void listener.close().then(() => process.exit(0));
+    void listener
+      .close()
+      .then(() => composed.close())
+      .then(() => process.exit(0));
   };
   process.once("SIGTERM", stop);
   process.once("SIGINT", stop);

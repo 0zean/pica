@@ -313,6 +313,29 @@
       "run": "make engine-install && cd engine && pnpm exec vitest run packages/cli/tests/exit-codes.test.ts"
     }
   ],
+  "E-11": [
+    {
+      "check": "Over the socket, the production composition with a FakeRuntime registers a workspace and a repo by path and runs a session whose large read is denied naming `bulk-reader`, whose usage is in the ledger, and whose policy decision is in the audit log.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/composition/production.test.ts -t \"production composition\""
+    },
+    {
+      "check": "`picad` started the way the CLI starts it answers `session.list` from its own store under the user's data directory, not as not implemented.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/cli/tests/engine-lifecycle.test.ts -t \"real picad\" && pnpm exec vitest run packages/server/tests/main-startup.test.ts"
+    },
+    {
+      "check": "A user config that does not validate makes `picad` exit non-zero before its ready line, naming the file and key path.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/composition/production.test.ts -t \"startup\""
+    },
+    {
+      "check": "`pica workspace create`, `pica repo add <path> [--workspace <id>]` and their `list` commands register and show a workspace and a repo; a bad path is an engine error and a missing one a usage error.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/cli/tests/workspace-repo.test.ts"
+    },
+    {
+      "check": "Milestone M1: `pica session new --repo <this checkout> \"summarize the README\"` completes against Copilot, and `pica usage` shows the main agent's tokens.",
+      "live": true,
+      "run": "make engine-install && cd engine && PICA_LIVE=1 pnpm exec vitest run packages/cli/tests/live-m1.test.ts"
+    }
+  ],
   "C-01": [
     {
       "check": "Tier resolution table tests, including a preferred model missing and a model blocked by managed policy.",
