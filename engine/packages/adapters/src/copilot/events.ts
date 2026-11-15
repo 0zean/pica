@@ -86,8 +86,7 @@ export function toRuntimeEvent(event: SessionEvent, context: EventContext): Runt
     case "assistant.usage":
       return wrap(event, "assistant.usage", {
         model: event.data.model,
-        inputTokens: event.data.inputTokens ?? 0,
-        cachedInputTokens: event.data.cacheReadTokens ?? 0,
+        ...inputSplit(event.data.inputTokens ?? 0, event.data.cacheReadTokens ?? 0),
         outputTokens: event.data.outputTokens ?? 0,
         ...(event.data.copilotUsage === undefined ? {} : { billedCredits: event.data.copilotUsage.totalNanoAiu / nanoAiuPerCredit }),
         ...(event.data.initiator === undefined ? {} : { initiator: event.data.initiator }),
@@ -144,6 +143,13 @@ function toolCompleted(
     },
     ...scope,
   });
+}
+
+// Copilot's `inputTokens` includes cache reads (S-01), which the port counts separately and prices
+// at the cached rate. Cache writes stay in `inputTokens`: the port has no rate of their own.
+function inputSplit(input: number, cacheRead: number): { readonly inputTokens: number; readonly cachedInputTokens: number } {
+  const cachedInputTokens = Math.min(cacheRead, input);
+  return { inputTokens: input - cachedInputTokens, cachedInputTokens };
 }
 
 // `model` on `subagent.completed` is the one requested; `firstDispatchedModel` is the one used (S-03).
