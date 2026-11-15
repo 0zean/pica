@@ -9,7 +9,7 @@
 {"type":"subagent.started","payload":{"toolCallId":"tool-3","agent":"reader","model":"worker-1"},"timestamp":"2026-01-01T00:00:00.010Z"}
 {"type":"tool.started","payload":{"toolCallId":"tool-4","toolName":"view","agent":"reader","parentToolCallId":"tool-3","arguments":{"path":"docs/long.md"}},"timestamp":"2026-01-01T00:00:00.011Z"}
 {"type":"tool.completed","payload":{"toolCallId":"tool-4","toolName":"view","agent":"reader","parentToolCallId":"tool-3","resultPreview":"long t","resultBytes":6,"spilledArtifactPath":null},"timestamp":"2026-01-01T00:00:00.012Z"}
-{"type":"usage.recorded","payload":{"sessionId":"pica-session-1","agent":"reader","model":"worker-1","inputTokens":40000,"cachedInputTokens":0,"outputTokens":200,"credits":0,"timestamp":"2026-01-01T00:00:00.013Z"},"timestamp":"2026-01-01T00:00:00.013Z"}
+{"type":"usage.recorded","payload":{"sessionId":"pica-session-1","agent":"reader","model":"worker-1","inputTokens":40000,"cachedInputTokens":0,"outputTokens":200,"credits":0,"timestamp":"2026-01-01T00:00:00.013Z","agentInstanceId":"agent-1"},"timestamp":"2026-01-01T00:00:00.013Z"}
 {"type":"assistant.message","payload":{"messageId":"message-3","agent":"reader","text":"Docs cover setup."},"timestamp":"2026-01-01T00:00:00.014Z"}
 {"type":"subagent.completed","payload":{"toolCallId":"tool-3","agent":"reader","model":"worker-1","totalTokens":40200,"durationMs":5},"timestamp":"2026-01-01T00:00:00.015Z"}
 {"type":"usage.recorded","payload":{"sessionId":"pica-session-1","agent":"main","model":"frontier-1","inputTokens":3000,"cachedInputTokens":1000,"outputTokens":120,"credits":0,"timestamp":"2026-01-01T00:00:00.016Z"},"timestamp":"2026-01-01T00:00:00.016Z"}
@@ -43,7 +43,7 @@
 {"type":"subagent.started","payload":{"toolCallId":"tool-11","agent":"reader","model":"worker-1"},"timestamp":"2026-01-01T00:00:00.057Z"}
 {"type":"tool.started","payload":{"toolCallId":"tool-12","toolName":"view","agent":"reader","parentToolCallId":"tool-11","arguments":{"path":"docs/long.md"}},"timestamp":"2026-01-01T00:00:00.058Z"}
 {"type":"tool.completed","payload":{"toolCallId":"tool-12","toolName":"view","agent":"reader","parentToolCallId":"tool-11","resultPreview":"long t","resultBytes":6,"spilledArtifactPath":null},"timestamp":"2026-01-01T00:00:00.059Z"}
-{"type":"usage.recorded","payload":{"sessionId":"pica-session-1","agent":"reader","model":"worker-1","inputTokens":40000,"cachedInputTokens":0,"outputTokens":200,"credits":0,"timestamp":"2026-01-01T00:00:00.060Z"},"timestamp":"2026-01-01T00:00:00.060Z"}
+{"type":"usage.recorded","payload":{"sessionId":"pica-session-1","agent":"reader","model":"worker-1","inputTokens":40000,"cachedInputTokens":0,"outputTokens":200,"credits":0,"timestamp":"2026-01-01T00:00:00.060Z","agentInstanceId":"agent-3"},"timestamp":"2026-01-01T00:00:00.060Z"}
 {"type":"assistant.message","payload":{"messageId":"message-10","agent":"reader","text":"Docs cover setup."},"timestamp":"2026-01-01T00:00:00.061Z"}
 {"type":"subagent.completed","payload":{"toolCallId":"tool-11","agent":"reader","model":"worker-1","totalTokens":40200,"durationMs":5},"timestamp":"2026-01-01T00:00:00.062Z"}
 {"type":"usage.recorded","payload":{"sessionId":"pica-session-1","agent":"main","model":"frontier-1","inputTokens":3000,"cachedInputTokens":1000,"outputTokens":120,"credits":0,"timestamp":"2026-01-01T00:00:00.063Z"},"timestamp":"2026-01-01T00:00:00.063Z"}

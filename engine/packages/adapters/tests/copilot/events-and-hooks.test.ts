@@ -21,6 +21,21 @@ describe("Copilot event mapping (S-02)", () => {
     expect(event?.data).toMatchObject({ toolCallId: "call-1", agentId: "9f0c" });
   });
 
+  it("reports the model a sub-agent ran on and keeps the requested one (S-03)", () => {
+    const data = { toolCallId: "call-1", agentName: "bulk-reader", model: "claude-haiku-4.5", firstDispatchedModel: "gpt-6-luna", totalTokens: 9 };
+    expect(toRuntimeEvent(sdkEvent("subagent.completed", data, "9f0c"), context())?.data).toMatchObject({
+      model: "gpt-6-luna",
+      requestedModel: "claude-haiku-4.5",
+    });
+    const same = { ...data, firstDispatchedModel: "claude-haiku-4.5" };
+    expect(toRuntimeEvent(sdkEvent("subagent.completed", same, "9f0c"), context())?.data).not.toHaveProperty("requestedModel");
+  });
+
+  it("carries the initiator and premium requests of a model call", () => {
+    const usage = { model: "auto", inputTokens: 1, outputTokens: 1, initiator: "sub-agent", cost: 0 };
+    expect(toRuntimeEvent(sdkEvent("assistant.usage", usage, "9f0c"), context())?.data).toMatchObject({ initiator: "sub-agent", premiumRequests: 0 });
+  });
+
   it("falls back to the task call id when the envelope has no agent id", () => {
     const event = toRuntimeEvent(sdkEvent("subagent.started", { toolCallId: "call-1", agentName: "bulk-reader" }), context());
     expect(event?.data).toMatchObject({ agentId: "call-1" });

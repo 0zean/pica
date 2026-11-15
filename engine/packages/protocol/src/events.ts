@@ -28,11 +28,14 @@ export const eventPayloads = {
     spilledArtifactPath: z.string().nullable(),
   }),
   "tool.failed": ToolCall.extend({ error: z.string() }),
+  // `model` on `subagent.started` is the one requested; the runtime may run another (S-03).
   "subagent.started": z.object({ toolCallId: Id, agent: z.string().min(1), model: Id }),
+  // `model` is the one the sub-agent ran on; `requestedModel` is set when that differs (S-03).
   "subagent.completed": z.object({
     toolCallId: Id,
     agent: z.string().min(1),
     model: Id,
+    requestedModel: Id.optional(),
     totalTokens: Count,
     durationMs: Count,
   }),

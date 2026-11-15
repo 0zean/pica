@@ -180,6 +180,7 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
       case "session_limits_exhausted.completed":
         return;
       case "abort":
+        session.recorder.interrupt(event.timestamp);
         append(sessionId, { type: "session.aborted", payload: { reason: session.abortReason }, timestamp: event.timestamp });
         session.abortReason = "user";
         return;

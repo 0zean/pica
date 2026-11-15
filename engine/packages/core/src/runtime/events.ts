@@ -41,11 +41,14 @@ export interface RuntimeEventDataMap {
     readonly agentName: string;
     readonly model: string;
   };
+  // `model` is the model the sub-agent ran on; `requestedModel` is set when the runtime ran
+  // another than the one requested (S-03).
   "subagent.completed": {
     readonly toolCallId: string;
     readonly agentId: string;
     readonly agentName: string;
     readonly model: string;
+    readonly requestedModel?: string;
     readonly totalTokens: number;
   };
   "subagent.failed": {
@@ -62,6 +65,10 @@ export interface RuntimeEventDataMap {
     readonly cachedInputTokens: number;
     readonly outputTokens: number;
     readonly billedCredits?: number;
+    // Who the runtime bills the call to (`user`, `agent`, `sub-agent`) and the premium requests it
+    // counted (Copilot's `initiator` and `cost`).
+    readonly initiator?: string;
+    readonly premiumRequests?: number;
     readonly agentId?: string;
   };
   // The session's credit spend reached `maxAiCredits` after a model call; the next call waits for
