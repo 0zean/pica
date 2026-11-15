@@ -2,6 +2,7 @@ import {
   computeCredits,
   err,
   ok,
+  type CustomAgentDefinition,
   type ModelUsage,
   type PostToolUseOutcome,
   type PreToolUseDecision,
@@ -31,6 +32,9 @@ export interface FakeSessionContext {
 export interface FakeSessionOptions {
   readonly hooks: RuntimeHooks;
   readonly maxAiCredits?: number | undefined;
+  // When given, a sub-agent must be one of these and can call only its listed tools, as with the
+  // runtime's `customAgents`. Absent, any sub-agent and any tool are played as written.
+  readonly customAgents?: readonly CustomAgentDefinition[] | undefined;
 }
 
 type StepOutcome = "continue" | "stop";
@@ -78,6 +82,8 @@ export class FakeSession implements RuntimeSession {
   readonly #limitRequests = new Map<string, (maxAiCredits: number | null) => void>();
   #hooks: RuntimeHooks;
   #maxAiCredits: number | undefined;
+  #customAgents: readonly CustomAgentDefinition[] | undefined;
+  readonly #agentNames = new Map<string, string>();
   #usedAiCredits = 0;
   #nextTurn = 0;
   #interrupt: Interrupt | undefined;
@@ -88,11 +94,13 @@ export class FakeSession implements RuntimeSession {
     this.#context = context;
     this.#hooks = options.hooks;
     this.#maxAiCredits = options.maxAiCredits;
+    this.#customAgents = options.customAgents;
   }
 
   reopen(options: FakeSessionOptions): void {
     this.#hooks = options.hooks;
     this.#maxAiCredits = options.maxAiCredits;
+    this.#customAgents = options.customAgents;
     this.#closed = false;
     this.emit("session.resume", { sessionId: this.id });
   }
@@ -323,6 +331,11 @@ export class FakeSession implements RuntimeSession {
       arguments: input.arguments,
       ...agentField(agentId),
     });
+    const unavailable = this.#unavailableTool(step.name, agentId);
+    if (unavailable !== undefined) {
+      complete(false, { content: unavailable });
+      return "continue";
+    }
     const decision = await this.#decide(input, interrupt);
     if (decision !== interrupted && decision.decision === "deny") {
       complete(false, { content: `Denied: ${decision.reason}` });
@@ -375,10 +388,54 @@ export class FakeSession implements RuntimeSession {
   }
 
   async #playSubagent(step: SubagentStep, interrupt: Interrupt): Promise<StepOutcome> {
-    const toolCallId = this.#context.ids("tool");
+    if (!step.viaTask) {
+      return this.#runSubagent(step, this.#context.ids("tool"), interrupt);
+    }
+    const input: ToolUseInput = {
+      sessionId: this.id,
+      toolCallId: this.#context.ids("tool"),
+      toolName: "task",
+      arguments: { agent_type: step.agentName, mode: "sync" },
+    };
+    const complete = (success: boolean, result: ToolResult): void => {
+      this.emit("tool.execution_complete", { toolCallId: input.toolCallId, success, result });
+    };
+    this.emit("tool.execution_start", { toolCallId: input.toolCallId, toolName: input.toolName, arguments: input.arguments });
+    const decision = await this.#decide(input, interrupt);
+    if (decision === interrupted) {
+      complete(false, { content: "Aborted" });
+      return "stop";
+    }
+    if (decision.decision === "deny") {
+      complete(false, { content: `Denied: ${decision.reason}` });
+      return "continue";
+    }
+    const outcome = await this.#runSubagent(step, input.toolCallId, interrupt);
+    if (outcome === "stop") {
+      complete(false, { content: "Aborted" });
+      return "stop";
+    }
+    const failed = step.failure !== undefined || this.#unknownAgent(step.agentName) !== undefined;
+    const result = { content: failed ? `Sub-agent ${step.agentName} failed` : lastText(step) };
+    const post = await Promise.race([this.#postToolUse({ ...input, success: !failed, result }), interrupt.promise]);
+    if (post === interrupted) {
+      complete(false, { content: "Aborted" });
+      return "stop";
+    }
+    complete(!failed, post.kind === "modify" ? post.result : result);
+    return "continue";
+  }
+
+  async #runSubagent(step: SubagentStep, toolCallId: string, interrupt: Interrupt): Promise<StepOutcome> {
     const agentId = this.#context.ids("agent");
+    this.#agentNames.set(agentId, step.agentName);
     const identity = { toolCallId, agentId, agentName: step.agentName };
     this.emit("subagent.started", { ...identity, model: step.model });
+    const unknown = this.#unknownAgent(step.agentName);
+    if (unknown !== undefined) {
+      this.emit("subagent.failed", { ...identity, error: unknown });
+      return "continue";
+    }
     const outcome = await this.#playSteps(step.steps, agentId, interrupt);
     if (outcome === "stop") {
       this.emit("subagent.failed", { ...identity, error: "Aborted" });
@@ -395,6 +452,23 @@ export class FakeSession implements RuntimeSession {
     );
     this.emit("subagent.completed", { ...identity, model: step.model, totalTokens });
     return "continue";
+  }
+
+  #unknownAgent(agentName: string): string | undefined {
+    if (this.#customAgents === undefined || this.#customAgents.some((agent) => agent.name === agentName)) {
+      return undefined;
+    }
+    return `No custom agent named ${agentName}`;
+  }
+
+  // A sub-agent's tool list is all it can call; a tool outside it fails as an unknown tool would.
+  #unavailableTool(toolName: string, agentId: string | undefined): string | undefined {
+    if (agentId === undefined || this.#customAgents === undefined) {
+      return undefined;
+    }
+    const agentName = this.#agentNames.get(agentId);
+    const tools = this.#customAgents.find((agent) => agent.name === agentName)?.tools;
+    return tools === undefined || tools.includes(toolName) ? undefined : `Tool ${toolName} is not available to ${String(agentName)}`;
   }
 
   async #preToolUse(input: ToolUseInput): Promise<PreToolUseDecision> {
@@ -420,4 +494,14 @@ export class FakeSession implements RuntimeSession {
       return { kind: "keep" };
     }
   }
+}
+
+function lastText(step: SubagentStep): string {
+  for (let index = step.steps.length - 1; index >= 0; index -= 1) {
+    const inner = step.steps[index];
+    if (inner?.type === "text") {
+      return inner.content;
+    }
+  }
+  return "";
 }

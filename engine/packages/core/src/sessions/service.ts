@@ -1,14 +1,15 @@
+import type { DelegationError, Delegator, DelegationSetup } from "../delegation/index.ts";
 import type { EventDraft, EventLog } from "../events/index.ts";
 import { createRuntimeEventRecorder } from "../events/index.ts";
 import type { RuntimeEventRecorder } from "../events/index.ts";
 import type { AgentRuntime, EngineTool, RuntimeEvent, RuntimeHooks, RuntimeSession } from "../runtime/index.ts";
-import { ok } from "../result.ts";
+import { err, ok } from "../result.ts";
 import type { Session, SessionState, Store, StoreError, UsageRepository } from "../store/index.ts";
 import { checkWorkspaceDailyCap, createSessionBudget, sessionSpend, withinSessionCeiling } from "./budget.ts";
 import type { BudgetSettings, SessionBudget } from "./budget.ts";
 import { runtimeFailure, sessionFailure } from "./errors.ts";
 import type { SessionResult } from "./errors.ts";
-import { toSessionInfo } from "./info.ts";
+import { isRoutingProfile, toSessionInfo } from "./info.ts";
 import type {
   PendingApproval,
   SessionApprovalChoice,
@@ -33,6 +34,8 @@ export interface SessionServiceDeps {
   readonly hooks?: (sessionId: string) => RuntimeHooks;
   // Engine-implemented tools for one session, such as the R-08 repo tools over its workspace.
   readonly tools?: (session: Session) => readonly EngineTool[];
+  // C-07: the session's sub-agents. Without it the runtime gets no `customAgents`.
+  readonly delegator?: Delegator;
   readonly onChanged?: (session: SessionInfo) => void;
   // C-09: without `usage` the workspace daily cap is not checked and spend starts at zero on resume.
   readonly budget?: BudgetSettings;
@@ -521,6 +524,23 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     return deps.tools === undefined ? {} : { tools: deps.tools(session) };
   }
 
+  // A session whose agent definitions do not load fails to start rather than run without sub-agents.
+  async function delegationOptions(session: Session): Promise<SessionResult<DelegationSetup["sessionOptions"]>> {
+    if (deps.delegator === undefined) {
+      return ok({});
+    }
+    const profile = session.routingProfile;
+    const setup = isRoutingProfile(profile)
+      ? await deps.delegator.setup({ sessionId: session.id, routingProfile: profile })
+      : err<DelegationError>({ code: "delegation.invalid_profile", message: `unknown routing profile ${JSON.stringify(profile)}` });
+    if (setup.ok) {
+      return ok(setup.value.sessionOptions);
+    }
+    append(session.id, { type: "session.error", payload: { code: setup.error.code, message: setup.error.message }, timestamp: clock() });
+    move(session.id, "fail");
+    return sessionFailure("session.invalid_request", setup.error.message);
+  }
+
   async function resume(sessionId: string): Promise<SessionResult<SessionInfo>> {
     const stored = read(sessionId);
     if (!stored.ok) {
@@ -535,12 +555,17 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     }
     const directory = workingDirectory(stored.value) ?? "/";
     const limit = withinSessionCeiling(stored.value.budgetMaxCredits ?? undefined, deps.budget) ?? null;
+    const delegation = await delegationOptions(stored.value);
+    if (!delegation.ok) {
+      return delegation;
+    }
     const resumed = await deps.runtime.resumeSession({
       sessionId,
       workingDirectory: directory,
       ...withRuntimeLimit(runtimeLimit(limit)),
       ...runtimeHooks(sessionId),
       ...engineTools(stored.value),
+      ...delegation.value,
     });
     if (!resumed.ok) {
       append(sessionId, { type: "session.error", payload: { code: resumed.error.code, message: resumed.error.message }, timestamp: clock() });
@@ -619,12 +644,17 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     prompt: string | undefined,
   ): Promise<SessionResult<SessionInfo>> {
     const limit = session.budgetMaxCredits;
+    const delegation = await delegationOptions(session);
+    if (!delegation.ok) {
+      return delegation;
+    }
     const opened = await deps.runtime.createSession({
       sessionId: session.id,
       workingDirectory: directory,
       ...withRuntimeLimit(runtimeLimit(limit)),
       ...runtimeHooks(session.id),
       ...engineTools(session),
+      ...delegation.value,
     });
     if (!opened.ok) {
       append(session.id, { type: "session.error", payload: { code: opened.error.code, message: opened.error.message }, timestamp: clock() });

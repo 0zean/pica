@@ -21,6 +21,7 @@ import type {
   AgentRuntime,
   AuditLog,
   BudgetSettings,
+  Delegator,
   EventLog,
   FanOutInfo,
   McpHealthMonitor,
@@ -71,6 +72,8 @@ export interface EngineSessionOptions {
   // H-04: exports usage metrics over OTLP. Off unless given; the caller stops it.
   readonly metricsExport?: UsageMetricsExporter;
   readonly newFanOutId?: () => string;
+  // C-07: builds each session's sub-agents (`customAgents`); without it sessions get none.
+  readonly delegator?: Delegator;
 }
 
 export interface EngineOptions {
@@ -169,6 +172,7 @@ function startSessions(
     onChanged,
     usage: options.store.usage,
     ...(options.budget === undefined ? {} : { budget: options.budget }),
+    ...(options.delegator === undefined ? {} : { delegator: options.delegator }),
     ...sessionHooks(options, eventLog, clock),
     ...lifecycleHooks(options.userHooks, log),
   });

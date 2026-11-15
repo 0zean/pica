@@ -31,3 +31,4 @@ export * from "./hooks/index.ts";
 export * from "./observability/index.ts";
 export * from "./repo-tools/index.ts";
 export * from "./fanout/index.ts";
+export * from "./delegation/index.ts";
