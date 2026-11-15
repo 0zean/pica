@@ -31,6 +31,10 @@ describe("Copilot event mapping (S-02)", () => {
     expect(toRuntimeEvent(sdkEvent("subagent.completed", same, "9f0c"), context())?.data).not.toHaveProperty("requestedModel");
   });
 
+  it("maps the session's model change, since session.start carries none (S-01)", () => {
+    expect(toRuntimeEvent(sdkEvent("session.model_change", { newModel: "auto", previousModel: "" }), context())?.data).toEqual({ model: "auto" });
+  });
+
   it("does not count cache reads twice: Copilot's inputTokens includes them (S-01)", () => {
     const usage = { model: "m", inputTokens: 11_297, cacheReadTokens: 1_280, outputTokens: 5 };
     expect(toRuntimeEvent(sdkEvent("assistant.usage", usage), context())?.data).toMatchObject({ inputTokens: 10_017, cachedInputTokens: 1_280 });

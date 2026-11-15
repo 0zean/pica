@@ -109,7 +109,7 @@ export function runtimeContractSuite(harness: RuntimeContractHarness): void {
       it("reports quota", async () => {
         const quota = await (await harness.createRuntime("text-reply")).quota();
         expect(quota.ok).toBe(true);
-        if (quota.ok) expect(quota.value.usedCredits).toBeGreaterThanOrEqual(0);
+        if (quota.ok && quota.value !== null) expect(quota.value.usedCredits).toBeGreaterThanOrEqual(0);
       });
 
       it("refuses a session on an unknown model", async () => {

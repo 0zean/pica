@@ -69,6 +69,8 @@ const lifecycle = (state: NormalizerState): Normalized => ({ state, drafts: [] }
 const handlers: Handlers = {
   "session.start": lifecycle,
   "session.resume": lifecycle,
+  // No Pica event shows the session's model yet; the timeline takes it from `usage.recorded`.
+  "session.model_change": lifecycle,
   "assistant.turn_start": lifecycle,
   "assistant.turn_end": lifecycle,
   "session.idle": lifecycle,

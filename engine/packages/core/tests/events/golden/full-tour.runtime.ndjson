@@ -1,4 +1,5 @@
 {"id":"event-1","timestamp":"2026-01-01T00:00:00.000Z","type":"session.start","data":{"sessionId":"session-1","model":"frontier-1","workingDirectory":"/repo/a"}}
+{"id":"event-1b","timestamp":"2026-01-01T00:00:00.000Z","type":"session.model_change","data":{"model":"frontier-1"}}
 {"id":"event-2","timestamp":"2026-01-01T00:00:00.001Z","type":"user.message","data":{"messageId":"message-1","content":"summarize the repo"}}
 {"id":"event-3","timestamp":"2026-01-01T00:00:00.002Z","type":"assistant.turn_start","data":{"turnId":"turn-1"}}
 {"id":"event-4","timestamp":"2026-01-01T00:00:00.003Z","type":"assistant.message_delta","data":{"messageId":"message-2","deltaContent":"Looking "}}

@@ -48,7 +48,7 @@ export class CopilotRuntime implements AgentRuntime {
     return models.ok ? ok(models.value.map(toRuntimeModel)) : models;
   }
 
-  quota(): RuntimeResult<QuotaInfo> {
+  quota(): RuntimeResult<QuotaInfo | null> {
     return this.call(async () => toQuotaInfo((await this.client.rpc.account.getQuota({})).quotaSnapshots));
   }
 

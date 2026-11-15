@@ -28,6 +28,8 @@ export function toRuntimeEvent(event: SessionEvent, context: EventContext): Runt
       });
     case "session.resume":
       return wrap(event, "session.resume", { sessionId: context.sessionId });
+    case "session.model_change":
+      return wrap(event, "session.model_change", { model: event.data.newModel });
     case "user.message":
       return wrap(event, "user.message", { messageId: event.data.messageId ?? event.id, content: event.data.content });
     case "assistant.turn_start":
