@@ -71,6 +71,10 @@ const handlers: Handlers = {
   "session.resume": lifecycle,
   // No Pica event shows the session's model yet; the timeline takes it from `usage.recorded`.
   "session.model_change": lifecycle,
+  // Recorded in the runtime log only, for now: the ledger sums `assistant.usage` instead (S-01).
+  "session.auto_mode_resolved": lifecycle,
+  "session.usage_checkpoint": lifecycle,
+  "session.shutdown": lifecycle,
   "assistant.turn_start": lifecycle,
   "assistant.turn_end": lifecycle,
   "session.idle": lifecycle,

@@ -17,6 +17,37 @@ describe("Copilot models and quota", () => {
     expect(worker?.contextWindow).toBe(128000);
   });
 
+  it("converts nano-AIU prices to credits, using the unit models.listTokenPriceUnits reports (S-01)", async () => {
+    const { runtime } = await replays.start("nano-aiu-prices");
+    const models = await runtime.listModels();
+    if (!models.ok) throw new Error(models.error.code);
+    const byId = new Map(models.value.map((model) => [model.id, model.tokenPrices]));
+    // S-01 run 2: 2e10 nano-AIU per million input tokens is 20 credits.
+    expect(byId.get("nano-1")).toEqual({ input: 20, cachedInput: 2, output: 120 });
+    expect(byId.get("credits-1")?.input).toBeCloseTo(15);
+  });
+
+  it("drops prices whose unit the runtime does not report, instead of guessing (D-16)", async () => {
+    const { runtime } = await replays.start("nano-aiu-prices");
+    const models = await runtime.listModels();
+    if (!models.ok) throw new Error(models.error.code);
+    const unknown = models.value.find((model) => model.id === "unknown-unit-1");
+    expect(unknown).toBeDefined();
+    expect(unknown).not.toHaveProperty("tokenPrices");
+  });
+
+  it("drops every price when the price-unit call fails", async () => {
+    const { runtime } = await replays.start("price-units-unavailable");
+    const models = await runtime.listModels();
+    expect(models.ok ? models.value : models.error).toEqual([{ id: "worker-1", name: "Worker 1", contextWindow: 128000 }]);
+  });
+
+  it("lists Free's virtual auto model with no prices and no context window (S-01)", async () => {
+    const { runtime } = await replays.start("default-model-only");
+    const models = await runtime.listModels();
+    expect(models.ok ? models.value : models.error).toEqual([{ id: "auto", name: "Auto" }]);
+  });
+
   it("reports no credit quota when the account has only request-count snapshots (S-01)", async () => {
     const { runtime } = await replays.start("text-reply");
     const quota = await runtime.quota();

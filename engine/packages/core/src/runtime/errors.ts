@@ -2,6 +2,8 @@ import type { ErrorCode } from "@pica/protocol";
 
 export const runtimeErrorCodes = [
   "runtime.auth_missing",
+  // Signed in, but the account is offered no models (S-01: Copilot Free through the `gh` token).
+  "runtime.no_models",
   "runtime.quota_exhausted",
   "runtime.model_unavailable",
   "runtime.session_not_found",
@@ -29,6 +31,7 @@ export type ProtocolErrorCode = (typeof ErrorCode.options)[number];
 // The client-facing code (PLAN.md §4.5) that a runtime failure is reported under.
 const protocolCodes: Readonly<Record<RuntimeErrorCode, ProtocolErrorCode>> = {
   "runtime.auth_missing": "auth_required",
+  "runtime.no_models": "auth_required",
   "runtime.quota_exhausted": "quota_exhausted",
   "runtime.model_unavailable": "model_unavailable",
   "runtime.session_not_found": "not_found",

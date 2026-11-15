@@ -5,6 +5,7 @@ import {
   type AgentRuntime,
   type QuotaInfo,
   type ResumeOptions,
+  type RuntimeAccount,
   type RuntimeModel,
   type RuntimeResult,
   type RuntimeSession,
@@ -14,6 +15,7 @@ import {
   CopilotClient,
   type CopilotClientOptions,
   type CopilotSession,
+  type GetAuthStatusResponse,
   type ModelInfo,
   type SessionConfig,
 } from "@github/copilot-sdk";
@@ -21,7 +23,7 @@ import { CopilotRuntimeSession } from "./copilot-session.ts";
 import { toRuntimeError } from "./errors.ts";
 import { toSdkTools } from "./engine-tools.ts";
 import { bridgeHooks } from "./hooks.ts";
-import { isModelUsable, toQuotaInfo, toRuntimeModel } from "./models.ts";
+import { isModelUsable, toQuotaInfo, toRuntimeModel, type PriceUnit } from "./models.ts";
 
 export interface CopilotRuntimeOptions {
   // Passed to the SDK client. The default spawns the bundled Copilot runtime over stdio.
@@ -37,6 +39,7 @@ export class CopilotRuntime implements AgentRuntime {
   private readonly client: CopilotClient;
   private readonly sessionIds: () => string;
   private connected = false;
+  private signedIn: RuntimeAccount | null = null;
 
   constructor(options: CopilotRuntimeOptions = {}) {
     this.client = new CopilotClient(options.client ?? {});
@@ -45,7 +48,17 @@ export class CopilotRuntime implements AgentRuntime {
 
   async listModels(): RuntimeResult<readonly RuntimeModel[]> {
     const models = await this.sdkModels();
-    return models.ok ? ok(models.value.map(toRuntimeModel)) : models;
+    if (!models.ok) return models;
+    const units = await this.priceUnits();
+    return ok(models.value.map((model) => toRuntimeModel(model, units.get(model.id))));
+  }
+
+  // Who is signed in, and through which credential source (S-01: a `gh-cli` fallback login can
+  // be authenticated yet offer no models).
+  async account(): RuntimeResult<RuntimeAccount> {
+    const ready = await this.connect();
+    if (!ready.ok) return ready;
+    return this.signedIn === null ? err({ code: "runtime.auth_missing", message: "not signed in to GitHub Copilot" }) : ok(this.signedIn);
   }
 
   quota(): RuntimeResult<QuotaInfo | null> {
@@ -97,6 +110,13 @@ export class CopilotRuntime implements AgentRuntime {
     return this.call(() => this.client.listModels());
   }
 
+  // Each priced model's unit. The call is experimental; when it fails, no unit is known and the
+  // prices are dropped rather than guessed.
+  private async priceUnits(): Promise<ReadonlyMap<string, PriceUnit>> {
+    const listed = await this.call(() => this.client.rpc.models.listTokenPriceUnits({}));
+    return new Map(listed.ok ? listed.value.units.map((entry) => [entry.modelId, entry.unit]) : []);
+  }
+
   private async call<T>(action: () => Promise<T>): RuntimeResult<T> {
     const ready = await this.connect();
     if (!ready.ok) return ready;
@@ -107,7 +127,9 @@ export class CopilotRuntime implements AgentRuntime {
     }
   }
 
-  // Connects once, then checks sign-in. A failed check is not remembered, so signing in later works.
+  // Connects once, then checks sign-in and that the account is offered at least one model. A failed
+  // check is not remembered, so signing in later works. The model check skips the SDK's model
+  // cache, which would otherwise keep an empty list until the client stops.
   private async connect(): RuntimeResult<undefined> {
     if (this.connected) return ok(undefined);
     try {
@@ -116,12 +138,33 @@ export class CopilotRuntime implements AgentRuntime {
       if (!auth.isAuthenticated) {
         return err({ code: "runtime.auth_missing", message: auth.statusMessage ?? "not signed in to GitHub Copilot" });
       }
+      const account = toAccount(auth);
+      const { models } = await this.client.rpc.models.list({});
+      if (models.length === 0) {
+        return err({ code: "runtime.no_models", message: noModelsMessage(account) });
+      }
+      this.signedIn = account;
       this.connected = true;
       return ok(undefined);
     } catch (error) {
       return err(toRuntimeError(error));
     }
   }
+}
+
+function toAccount(auth: GetAuthStatusResponse): RuntimeAccount {
+  return {
+    login: auth.login ?? null,
+    authType: auth.authType ?? null,
+    host: auth.host ?? null,
+  };
+}
+
+// S-01: signed in through the `gh` CLI token, Copilot Free lists no models; a Copilot CLI login does.
+function noModelsMessage(account: RuntimeAccount): string {
+  const who = account.login === null ? "this account" : `"${account.login}"`;
+  const via = account.authType === null ? "" : ` (signed in via ${account.authType})`;
+  return `GitHub Copilot offers no models to ${who}${via}. Run \`copilot login\` to sign in with a Copilot login.`;
 }
 
 function sessionConfig(sessionId: string, options: SessionOptions, session: CopilotRuntimeSession): SessionConfig {

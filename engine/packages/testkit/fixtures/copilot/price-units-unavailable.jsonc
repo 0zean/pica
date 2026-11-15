@@ -1,0 +1,18 @@
+// Pricing fixture: a priced model, on a runtime that refuses the experimental `models.listTokenPriceUnits`.
+// Provenance: inferred from @github/copilot-sdk 1.0.28 types. See docs/copilot-replay.md.
+{
+  "version": 1,
+  "provenance": "inferred",
+  "auth": { "isAuthenticated": true, "authType": "user", "host": "https://github.com", "login": "replay-user" },
+  "models": [
+    {
+      "id": "worker-1", "name": "Worker 1",
+      "capabilities": { "supports": { "vision": false, "reasoningEffort": false }, "limits": { "max_context_window_tokens": 128000 } },
+      "billing": { "multiplier": 0, "tokenPrices": { "inputPrice": 0.015, "cacheReadPrice": 0.0015, "outputPrice": 0.06, "batchSize": 1000 } }
+    }
+  ],
+  "rpcErrors": {
+    "models.listTokenPriceUnits": { "code": -32601, "message": "Unhandled method models.listTokenPriceUnits" }
+  },
+  "turns": []
+}

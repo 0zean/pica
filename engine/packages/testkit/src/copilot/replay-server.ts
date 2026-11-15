@@ -128,6 +128,8 @@ class ReplayConnection {
         return transcript.auth;
       case "models.list":
         return { models: transcript.models };
+      case "models.listTokenPriceUnits":
+        return { units: transcript.tokenPriceUnits ?? creditUnits(transcript.models) };
       case "account.getQuota":
         return transcript.quota;
       case "session.create":
@@ -307,4 +309,11 @@ function requireString(params: Readonly<Record<string, unknown>>, key: string): 
 
 function asRecord(value: unknown): Readonly<Record<string, unknown>> {
   return typeof value === "object" && value !== null ? (value as Record<string, unknown>) : {};
+}
+
+function creditUnits(models: Transcript["models"]): { modelId: string; unit: "ai_credits" }[] {
+  return models.flatMap((model) => {
+    const billing = asRecord(model.billing);
+    return typeof model.id === "string" && billing.tokenPrices !== undefined ? [{ modelId: model.id, unit: "ai_credits" as const }] : [];
+  });
 }

@@ -29,6 +29,22 @@ describe("Copilot error transcripts map to stable codes", () => {
     expect(models.ok ? "" : models.error.message).toContain("copilot login");
   });
 
+  it("no-models: a signed-in account offered no models is runtime.no_models with a sign-in hint (S-01)", async () => {
+    const { runtime } = await replays.start("no-models");
+    const models = await runtime.listModels();
+    expect(codeOf(models)).toBe("runtime.no_models");
+    expect(models.ok ? "" : models.error.message).toMatch(/"replay-user" \(signed in via gh-cli\).*copilot login/);
+    expect(codeOf(await runtime.createSession({ workingDirectory }))).toBe("runtime.no_models");
+    expect(codeOf(await runtime.account())).toBe("runtime.no_models");
+    expect(protocolErrorCode("runtime.no_models")).toBe("auth_required");
+  });
+
+  it("reports the signed-in account and its credential source", async () => {
+    const { runtime } = await replays.start("default-model-only");
+    const account = await runtime.account();
+    expect(account.ok ? account.value : account.error).toEqual({ login: "replay-user", authType: "user", host: "https://github.com" });
+  });
+
   it("quota-exhausted: the turn's session.error is runtime.quota_exhausted and the turn ends", async () => {
     const { runtime } = await replays.start("quota-exhausted");
     const created = await runtime.createSession({ workingDirectory });

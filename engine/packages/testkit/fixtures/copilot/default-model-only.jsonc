@@ -1,0 +1,11 @@
+// Copilot Free: `models.list` holds only the virtual `auto` model, with no capabilities, billing or
+// policy, and no model publishes a price unit.
+// Provenance: shapes recorded by S-01 (docs/spikes/S-01-models.json); the login is made up.
+{
+  "version": 1,
+  "provenance": "recorded",
+  "auth": { "isAuthenticated": true, "authType": "user", "host": "https://github.com", "login": "replay-user" },
+  "models": [{ "id": "auto", "name": "Auto", "capabilities": {} }],
+  "tokenPriceUnits": [],
+  "turns": []
+}
