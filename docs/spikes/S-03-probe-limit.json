@@ -1,0 +1,26 @@
+{
+  "offered": [
+    "auto"
+  ],
+  "tried": [
+    {
+      "maxAiCredits": 0.01,
+      "accepted": false,
+      "error": "Request session.create failed with message: session construction failed: GenericFailure, Minimum session limit is 30 AI credits."
+    },
+    {
+      "maxAiCredits": 1,
+      "accepted": false,
+      "error": "Request session.create failed with message: session construction failed: GenericFailure, Minimum session limit is 30 AI credits."
+    },
+    {
+      "maxAiCredits": 29.99,
+      "accepted": false,
+      "error": "Request session.create failed with message: session construction failed: GenericFailure, Minimum session limit is 30 AI credits."
+    },
+    {
+      "maxAiCredits": 30,
+      "accepted": true
+    }
+  ]
+}
