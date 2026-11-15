@@ -10,6 +10,10 @@ const snowflake = {
   patSecretRef: "keychain:mcp/snowflake/pat",
 };
 
+function without(parameters: Record<string, string>, name: string): Record<string, string> {
+  return Object.fromEntries(Object.entries(parameters).filter(([key]) => key !== name));
+}
+
 function issues(
   presetId: string,
   parameters: Record<string, unknown>,
@@ -33,19 +37,16 @@ function named(presetId: string, parameters: Record<string, unknown>, context?: 
 
 describe("missing parameters are named", () => {
   it.each(["accountUrl", "database", "schema", "server", "patSecretRef"])("snowflake %s", (parameter) => {
-    const parameters: Record<string, string> = { ...snowflake };
-    delete parameters[parameter];
+    const parameters = without(snowflake, parameter);
     expect(named("snowflake", parameters)).toEqual([parameter]);
     expect(named("snowflake", { ...snowflake, [parameter]: "  " })).toEqual([parameter]);
   });
 
   it.each(["apiKeySecretRef", "applicationKeySecretRef"])("datadog %s with key auth", (parameter) => {
-    const parameters: Record<string, string> = {
-      auth: "apiKey",
-      apiKeySecretRef: "keychain:dd/api",
-      applicationKeySecretRef: "keychain:dd/app",
-    };
-    delete parameters[parameter];
+    const parameters = without(
+      { auth: "apiKey", apiKeySecretRef: "keychain:dd/api", applicationKeySecretRef: "keychain:dd/app" },
+      parameter,
+    );
     expect(named("datadog", parameters)).toEqual([parameter]);
   });
 
