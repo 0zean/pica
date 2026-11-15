@@ -9,6 +9,8 @@ export interface ShellPath {
   readonly role: "working directory" | "write target" | "path argument" | "read argument";
   readonly raw: string;
   readonly path: string | undefined;
+  // Set on the file arguments of `cat`, `less` and `more`, which print a whole file.
+  readonly printsWhole?: true;
 }
 
 type Token =
@@ -21,6 +23,7 @@ const changeDirectory = new Set(["cd", "pushd"]);
 const redirectSuffixes = new Set([">", "|", "&"]);
 const deviceTargets = new Set(["/dev/null", "/dev/stdout", "/dev/stderr"]);
 const printOnly = new Set(["echo", "printf"]);
+const printsWholeFiles = new Set(["cat", "less", "more"]);
 const readOnly = new Set(["cat", "head", "tail", "less", "more", "wc", "ls", "tree", "du", "stat", "file", "diff", "grep", "egrep", "fgrep", "rg", "find"]);
 const findWrites = new Set(["-delete", "-exec", "-execdir", "-ok", "-okdir", "-fprint", "-fprint0", "-fprintf", "-fls"]);
 // Programs whose `-C <dir>` makes them run in `<dir>`.
@@ -57,6 +60,11 @@ export function shellPaths(command: string, cwd: string): readonly ShellPath[] {
 function argumentPaths(program: string, args: readonly Word[], cwd: string | undefined): ShellPath[] {
   if (printOnly.has(program)) {
     return [];
+  }
+  if (printsWholeFiles.has(program)) {
+    return args
+      .filter((arg) => !arg.value.startsWith("-") && !(arg.dynamic && !arg.value.includes("/")))
+      .map((arg) => ({ role: "read argument", raw: arg.value, path: located(arg, cwd), printsWhole: true }));
   }
   const role = isReadOnly(program, args) ? "read argument" : "path argument";
   const found: ShellPath[] = [];

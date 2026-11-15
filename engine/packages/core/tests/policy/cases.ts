@@ -129,6 +129,7 @@ export const largeReadCases: Case[] = [
   { name: "a main-agent read at minBytes is denied", call: toolCall({ kind: "read", path: `${writeRoot}/big`, sizeBytes: minBytes }), outcome: "deny", ruleId: "cost.large-read" },
   { name: "a main-agent read one byte under minBytes is allowed", call: toolCall({ kind: "read", path: `${writeRoot}/big`, sizeBytes: minBytes - 1 }), outcome: "allow", ruleId: "permission.read-only" },
   { name: "a ranged read of exactly rangeExemptLines is allowed", call: toolCall(ranged(1, rangeExemptLines)), outcome: "allow", ruleId: "permission.read-only" },
+  { name: "a forced read is not range-exempt (S-02)", call: toolCall({ kind: "read", path: `${writeRoot}/schema.sql`, sizeBytes: 212_000, range: { startLine: 1, endLine: 10 }, force: true }), outcome: "deny", ruleId: "cost.large-read" },
   { name: "a ranged read of rangeExemptLines + 1 is denied", call: toolCall(ranged(1, rangeExemptLines + 1)), outcome: "deny", ruleId: "cost.large-read" },
   { name: "a single-line range is allowed", call: toolCall(ranged(500, 500)), outcome: "allow", ruleId: "permission.read-only" },
   { name: "an inverted range does not exempt the read", call: toolCall(ranged(300, 10)), outcome: "deny", ruleId: "cost.large-read" },

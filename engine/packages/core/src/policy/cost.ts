@@ -10,7 +10,7 @@ export const largeReadRule: Rule = (call, context) => {
   const { minBytes, rangeExemptLines } = delegation.read;
   if (
     target.sizeBytes < minBytes ||
-    isExemptRange(target.range, rangeExemptLines) ||
+    (target.force !== true && isExemptRange(target.range, rangeExemptLines)) ||
     isExcludedRead(target.path, context)
   ) {
     return undefined;

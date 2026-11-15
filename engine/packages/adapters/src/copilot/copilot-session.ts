@@ -38,6 +38,7 @@ export class CopilotRuntimeSession implements RuntimeSession {
       sessionId: this.id,
       workingDirectory: this.workingDirectory,
       modifiedResult: (toolCallId) => this.ledger.modifiedResult(toolCallId),
+      deniedReason: (toolCallId) => this.ledger.deniedReason(toolCallId),
     });
     if (event === undefined) return;
     this.track(event);

@@ -9,7 +9,11 @@ export interface ToolUseInput {
   readonly toolCallId: string;
   readonly toolName: string;
   readonly arguments: JsonValue;
+  // Set on sub-agent calls: `agentId` is the sub-agent's id, `agentType` its name, and
+  // `parentAgentId` the agent that started it (S-02).
   readonly agentId?: string;
+  readonly agentType?: string;
+  readonly parentAgentId?: string;
 }
 
 // "ask" makes the runtime emit `permission.requested` and wait for `resolvePermission`.

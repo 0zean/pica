@@ -84,6 +84,8 @@ export const shellArgumentCases: Case[] = [
   { name: "a sed expression is not a path", call: toolCall(shell("sed -i 's/old/new/g' src/a.ts")), context: auto, outcome: "allow", ruleId: "permission.auto" },
   { name: "a URL is not a path", call: toolCall(shell("curl -o out.json https://example.com/a/b")), context: auto, outcome: "allow", ruleId: "permission.auto" },
   { name: "the program's own path is not an argument", call: toolCall(shell("/usr/bin/env node scripts/x.js")), context: auto, outcome: "allow", ruleId: "permission.auto" },
+  { name: "cat may read a reference root", call: toolCall(shell(`cat README.md ${referenceRoot}/a.ts`)), context: auto, outcome: "allow", ruleId: "permission.auto" },
+  { name: "cat of a bare variable is not checked", call: toolCall(shell("cat $F")), context: auto, outcome: "allow", ruleId: "permission.auto" },
   { name: "echo only prints its arguments", call: toolCall(shell("echo see /etc/motd")), context: auto, outcome: "allow", ruleId: "permission.auto" },
   { name: "an argument through a symlink out of the roots is denied in auto mode", call: toolCall(shell("touch out/a")), context: { ...auto, ...links({ [`${writeRoot}/out/a`]: "/tmp/a" }) }, outcome: "deny", ruleId: "safety.shell-outside-write-roots" },
 ];
