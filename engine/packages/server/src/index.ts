@@ -13,3 +13,4 @@ export * from "./usage-handlers.ts";
 export * from "./mcp-handlers.ts";
 export * from "./mcp-import-handlers.ts";
 export * from "./metrics-export.ts";
+export * from "./composition.ts";

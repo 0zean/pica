@@ -18,10 +18,13 @@ export class CopilotRuntimeSession implements RuntimeSession {
   private sdk: CopilotSession | undefined;
   private state: State = "idle";
 
-  constructor(
-    readonly id: string,
-    private readonly workingDirectory: string,
-  ) {}
+  readonly id: string;
+  private readonly workingDirectory: string;
+
+  constructor(id: string, workingDirectory: string) {
+    this.id = id;
+    this.workingDirectory = workingDirectory;
+  }
 
   attach(sdk: CopilotSession): void {
     this.sdk = sdk;

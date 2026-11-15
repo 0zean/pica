@@ -74,8 +74,11 @@ interface ServerState {
 }
 
 class RpcFailure extends Error {
-  constructor(readonly body: RpcErrorBody) {
+  readonly body: RpcErrorBody;
+
+  constructor(body: RpcErrorBody) {
     super(body.message);
+    this.body = body;
   }
 }
 
@@ -84,10 +87,13 @@ class ReplayConnection {
   private readonly pendingReplies = new Map<number, (result: unknown) => void>();
   private lastEventId: string | null = null;
 
-  constructor(
-    private readonly socket: Socket,
-    private readonly state: ServerState,
-  ) {}
+  private readonly socket: Socket;
+  private readonly state: ServerState;
+
+  constructor(socket: Socket, state: ServerState) {
+    this.socket = socket;
+    this.state = state;
+  }
 
   listen(): void {
     readMessages(this.socket, (message) => {

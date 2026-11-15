@@ -39,10 +39,13 @@ class HttpServer implements McpRpcSession {
   private sessionId: string | undefined;
   private initialized = false;
 
-  constructor(
-    private readonly launch: HttpLaunch,
-    private readonly doFetch: McpHttpFetch,
-  ) {}
+  private readonly launch: HttpLaunch;
+  private readonly doFetch: McpHttpFetch;
+
+  constructor(launch: HttpLaunch, doFetch: McpHttpFetch) {
+    this.launch = launch;
+    this.doFetch = doFetch;
+  }
 
   async request(method: string, params: object): Promise<Result<unknown, McpProbeFailure>> {
     const id = this.nextId++;
