@@ -8,7 +8,7 @@
 //               shell-path parser denies both; asserts B is untouched.
 //   concurrent  two sessions on one client, rooted in A and B, each read `marker.txt` at the same
 //               time; asserts each reply, hook call and event carries only its own session's data.
-//   guard       offline: what R-07's `shellPaths` sees in shell writes that do not use a redirect.
+//   guard       offline: R-07's `shellPaths` flags shell writes into B, with or without a redirect.
 // Live modes need a Copilot login and send one or two minimal prompts each on the default model.
 // Never run in CI. Saved output (docs/spikes/S-04-<mode>.json) has the login and paths redacted.
 import { execFileSync } from "node:child_process";
@@ -309,10 +309,10 @@ function guard() {
     { command: "echo x > /work/repo-b/f", caught: true },
     { command: "echo x | tee /work/repo-b/f", caught: true },
     { command: "cd /work/repo-b && touch f", caught: true },
-    { command: "touch /work/repo-b/f", caught: false },
-    { command: "cp README.md /work/repo-b/f", caught: false },
-    { command: "python3 -c \"open('/work/repo-b/f','w')\"", caught: false },
-    { command: "git -C /work/repo-b commit -am x", caught: false },
+    { command: "touch /work/repo-b/f", caught: true },
+    { command: "cp README.md /work/repo-b/f", caught: true },
+    { command: "python3 -c \"open('/work/repo-b/f','w')\"", caught: true },
+    { command: "git -C /work/repo-b commit -am x", caught: true },
   ];
   for (const { command, caught } of cases) {
     const flagged = shellPaths(command, cwd).some((entry) => entry.path === undefined || !inside(resolve(entry.path), cwd));
