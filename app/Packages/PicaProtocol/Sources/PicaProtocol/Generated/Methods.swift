@@ -419,6 +419,13 @@ public enum Methods {
         public static let direction = MethodDirection.client
     }
 
+    public enum EngineAccount: PicaMethod {
+        public typealias Params = Empty
+        public typealias Result = EngineAccountResult
+        public static let name = "engine.account"
+        public static let direction = MethodDirection.client
+    }
+
     public enum ModelsList: PicaMethod {
         public typealias Params = Empty
         public typealias Result = ModelsListResult

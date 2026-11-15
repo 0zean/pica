@@ -1,7 +1,7 @@
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { BudgetSettings, Store, TokenPrices } from "@pica/core";
+import type { AgentRuntime, BudgetSettings, Store, TokenPrices } from "@pica/core";
 import { FakeRuntime, scenarioSchema, sequentialIds, steppingClock } from "@pica/testkit";
 import type { Scenario } from "@pica/testkit";
 import { silentLogger, startEngine } from "../../src/index.ts";
@@ -35,11 +35,14 @@ export async function startBudgetEngine(
   scenario: Scenario,
   budget: BudgetSettings,
   minSessionCredits?: number,
+  account?: AgentRuntime["account"],
 ): Promise<BudgetEngine> {
   const dir = await mkdtemp(join(tmpdir(), "picad-budgets-"));
   const socketPath = join(dir, "run", "picad.sock");
   const store = openSeededStore(join(dir, "pica.db"));
   const runtime = new FakeRuntime({ scenario, clock: steppingClock(engineStart), minSessionCredits });
+  // FakeRuntime has no signed-in account; a test may give it one (`engine.account`, S-01).
+  if (account !== undefined) Object.assign(runtime, { account });
   const ids = sequentialIds();
   const engine: SocketListener = await startEngine({
     socketPath,

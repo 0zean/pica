@@ -694,6 +694,85 @@ public struct Empty: Codable, Hashable, Sendable {
     }
 }
 
+public struct EngineAccountResult: Codable, Hashable, Sendable {
+    public var account: Account
+
+    public init(
+        account: Account
+    ) {
+        self.account = account
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case account
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        account = try container.decode(Account.self, forKey: .account)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(account, forKey: .account)
+    }
+
+    public struct Account: Codable, Hashable, Sendable {
+        public var status: Status
+        public var login: String?
+        public var authType: String?
+        public var host: String?
+        public var message: String?
+
+        public init(
+            status: Status,
+            login: String?,
+            authType: String?,
+            host: String?,
+            message: String?
+        ) {
+            self.status = status
+            self.login = login
+            self.authType = authType
+            self.host = host
+            self.message = message
+        }
+
+        private enum CodingKeys: String, CodingKey {
+            case status
+            case login
+            case authType
+            case host
+            case message
+        }
+
+        public init(from decoder: any Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            status = try container.decode(Status.self, forKey: .status)
+            login = try container.decode(String?.self, forKey: .login)
+            authType = try container.decode(String?.self, forKey: .authType)
+            host = try container.decode(String?.self, forKey: .host)
+            message = try container.decode(String?.self, forKey: .message)
+        }
+
+        public func encode(to encoder: any Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(status, forKey: .status)
+            try container.encode(login, forKey: .login)
+            try container.encode(authType, forKey: .authType)
+            try container.encode(host, forKey: .host)
+            try container.encode(message, forKey: .message)
+        }
+
+        public enum Status: String, CaseIterable, Codable, Hashable, Sendable {
+            case signedIn = "signed_in"
+            case signedOut = "signed_out"
+            case noModels = "no_models"
+            case unknown
+        }
+    }
+}
+
 public struct EngineHealthResult: Codable, Hashable, Sendable {
     public var status: Status
     public var uptimeMs: Count

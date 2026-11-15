@@ -538,6 +538,15 @@
         "$ref": "#/$defs/AgentsListResult"
       }
     },
+    "engine.account": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/Empty"
+      },
+      "result": {
+        "$ref": "#/$defs/EngineAccountResult"
+      }
+    },
     "models.list": {
       "direction": "client",
       "params": {
@@ -1430,6 +1439,59 @@
     "Empty": {
       "type": "object",
       "properties": {}
+    },
+    "EngineAccountResult": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "signed_in",
+                "signed_out",
+                "no_models",
+                "unknown"
+              ]
+            },
+            "login": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "authType": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "host": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "message": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "status",
+            "login",
+            "authType",
+            "host",
+            "message"
+          ]
+        }
+      },
+      "required": [
+        "account"
+      ]
     },
     "EngineHealthResult": {
       "type": "object",

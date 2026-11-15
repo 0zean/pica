@@ -7,6 +7,7 @@ export * from "./json-schema.ts";
 export * from "./config-file.ts";
 export * from "./managed-policy-file.ts";
 export * from "./mcp-file.ts";
+export * from "./dto/account.ts";
 export * from "./dto/agents.ts";
 export * from "./dto/config.ts";
 export * from "./dto/fanout.ts";
