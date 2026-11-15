@@ -30,6 +30,20 @@ export function toRuntimeEvent(event: SessionEvent, context: EventContext): Runt
       return wrap(event, "session.resume", { sessionId: context.sessionId });
     case "session.model_change":
       return wrap(event, "session.model_change", { model: event.data.newModel });
+    case "session.auto_mode_resolved":
+      return wrap(event, "session.auto_mode_resolved", {
+        model: event.data.chosenModel,
+        fallback: event.data.fallback === true,
+        ...(event.data.selectionReason === undefined ? {} : { reason: event.data.selectionReason }),
+      });
+    case "session.usage_checkpoint":
+      return wrap(event, "session.usage_checkpoint", { billedCredits: event.data.totalNanoAiu / nanoAiuPerCredit });
+    case "session.shutdown":
+      return wrap(event, "session.shutdown", {
+        reason: event.data.shutdownType,
+        ...(event.data.totalNanoAiu === undefined ? {} : { billedCredits: event.data.totalNanoAiu / nanoAiuPerCredit }),
+        ...(event.data.errorReason === undefined ? {} : { error: event.data.errorReason }),
+      });
     case "user.message":
       return wrap(event, "user.message", { messageId: event.data.messageId ?? event.id, content: event.data.content });
     case "assistant.turn_start":

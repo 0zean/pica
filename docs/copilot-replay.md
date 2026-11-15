@@ -12,7 +12,7 @@ These are what the SDK code itself sends, reads, or requires, so a real runtime 
 
 - Framing: JSON-RPC 2.0 with `Content-Length` headers (`vscode-jsonrpc` stream reader and writer).
 - Handshake: the `connect` request, whose result must carry `protocolVersion` in 3..3.
-- Request names and params: `auth.getStatus`, `models.list` (result `{ models }`), `account.getQuota`, `session.create` (client-chosen `sessionId`, `hooks: true` when hooks are registered, `requestPermission: true`), `session.resume`, `session.send` (result `{ messageId }`), `session.abort`, `session.detach` (result `{ success }`), `session.permissions.handlePendingPermissionRequest` (`{ requestId, result: { kind: "approve-once" | "reject" } }`).
+- Request names and params: `auth.getStatus`, `models.list` (result `{ models }`), `models.listTokenPriceUnits` (result `{ units }`; from the transcript's optional `tokenPriceUnits`, or `ai_credits` for every model with `billing.tokenPrices` when it is absent), `account.getQuota`, `session.create` (client-chosen `sessionId`, `hooks: true` when hooks are registered, `requestPermission: true`), `session.resume`, `session.send` (result `{ messageId }`), `session.abort`, `session.detach` (result `{ success }`), `session.permissions.handlePendingPermissionRequest` (`{ requestId, result: { kind: "approve-once" | "reject" } }`).
 - Server-to-client traffic: `session.event` notifications `{ sessionId, event }`, and `hooks.invoke` requests `{ sessionId, hookType, input }` answered with `{ output }`. Hook inputs use epoch-ms `timestamp` and `cwd`.
 - Event envelope `{ id, timestamp, parentId, type, data, agentId?, ephemeral? }`, and the `data` fields of each event type.
 

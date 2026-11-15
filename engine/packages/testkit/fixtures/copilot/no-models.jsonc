@@ -1,0 +1,9 @@
+// Error fixture: signed in through the GitHub CLI token, which on Copilot Free lists no models.
+// Provenance: shapes recorded by S-01 (docs/spikes/S-01.md, "Credential sources"); the login is made up.
+{
+  "version": 1,
+  "provenance": "inferred",
+  "auth": { "isAuthenticated": true, "authType": "gh-cli", "host": "https://github.com", "login": "replay-user" },
+  "models": [],
+  "turns": []
+}

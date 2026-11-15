@@ -14,6 +14,14 @@ export interface RuntimeEventDataMap {
   "session.resume": { readonly sessionId: string };
   // The session's model changed; Copilot reports the model first here, not on `session.start` (S-01).
   "session.model_change": { readonly model: string };
+  // On a routing model (Copilot's `auto`), the concrete model the runtime picked for the session's
+  // first prompt. `fallback` is true when the router fell back to its standard pick; `reason` is
+  // display text from the runtime, never a key (S-01).
+  "session.auto_mode_resolved": { readonly model: string; readonly fallback: boolean; readonly reason?: string };
+  // The runtime's running total of credits billed in the session (Copilot's `totalNanoAiu`).
+  "session.usage_checkpoint": { readonly billedCredits: number };
+  // The runtime ended the session. `billedCredits` is its final total, when reported.
+  "session.shutdown": { readonly reason: "routine" | "error"; readonly billedCredits?: number; readonly error?: string };
   "user.message": { readonly messageId: string; readonly content: string };
   "assistant.turn_start": { readonly turnId: string };
   "assistant.message_delta": { readonly messageId: string; readonly deltaContent: string; readonly agentId?: string };

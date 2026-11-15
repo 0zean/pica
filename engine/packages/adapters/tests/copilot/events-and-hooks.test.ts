@@ -35,6 +35,17 @@ describe("Copilot event mapping (S-02)", () => {
     expect(toRuntimeEvent(sdkEvent("session.model_change", { newModel: "auto", previousModel: "" }), context())?.data).toEqual({ model: "auto" });
   });
 
+  it("maps the routed model, the running credit total and shutdown (S-01)", () => {
+    const resolved = { chosenModel: "gpt-6-luna", availableModels: ["gpt-6-luna"], routingMethod: "auto_v2" };
+    expect(toRuntimeEvent(sdkEvent("session.auto_mode_resolved", resolved), context())?.data).toEqual({ model: "gpt-6-luna", fallback: false });
+    const fellBack = { chosenModel: "m", fallback: true, selectionReason: "Picked for speed" };
+    expect(toRuntimeEvent(sdkEvent("session.auto_mode_resolved", fellBack), context())?.data).toEqual({ model: "m", fallback: true, reason: "Picked for speed" });
+    expect(toRuntimeEvent(sdkEvent("session.usage_checkpoint", { totalNanoAiu: 203_500_000 }), context())?.data).toEqual({ billedCredits: 0.2035 });
+    const shutdown = { shutdownType: "routine", totalNanoAiu: 203_500_000, modelMetrics: {}, codeChanges: {}, sessionStartTime: 0, totalApiDurationMs: 1 };
+    expect(toRuntimeEvent(sdkEvent("session.shutdown", shutdown), context())?.data).toEqual({ reason: "routine", billedCredits: 0.2035 });
+    expect(toRuntimeEvent(sdkEvent("session.shutdown", { shutdownType: "error", errorReason: "boom" }), context())?.data).toEqual({ reason: "error", error: "boom" });
+  });
+
   it("does not count cache reads twice: Copilot's inputTokens includes them (S-01)", () => {
     const usage = { model: "m", inputTokens: 11_297, cacheReadTokens: 1_280, outputTokens: 5 };
     expect(toRuntimeEvent(sdkEvent("assistant.usage", usage), context())?.data).toMatchObject({ inputTokens: 10_017, cachedInputTokens: 1_280 });

@@ -1,0 +1,30 @@
+// Pricing fixture: one model quotes its token prices in nano-AIU, one in AI Credits, and one
+// publishes prices with no unit reported.
+// Provenance: inferred from @github/copilot-sdk 1.0.28 types (`models.listTokenPriceUnits`). See docs/copilot-replay.md.
+{
+  "version": 1,
+  "provenance": "inferred",
+  "auth": { "isAuthenticated": true, "authType": "user", "host": "https://github.com", "login": "replay-user" },
+  "models": [
+    {
+      "id": "nano-1", "name": "Nano 1",
+      "capabilities": { "supports": { "vision": false, "reasoningEffort": false }, "limits": { "max_context_window_tokens": 128000 } },
+      "billing": { "multiplier": 1, "tokenPrices": { "inputPrice": 20000000000, "cacheReadPrice": 2000000000, "outputPrice": 120000000000, "batchSize": 1000000 } }
+    },
+    {
+      "id": "credits-1", "name": "Credits 1",
+      "capabilities": { "supports": { "vision": false, "reasoningEffort": false }, "limits": { "max_context_window_tokens": 128000 } },
+      "billing": { "multiplier": 1, "tokenPrices": { "inputPrice": 0.015, "cacheReadPrice": 0.0015, "outputPrice": 0.06, "batchSize": 1000 } }
+    },
+    {
+      "id": "unknown-unit-1", "name": "Unknown unit 1",
+      "capabilities": { "supports": { "vision": false, "reasoningEffort": false }, "limits": { "max_context_window_tokens": 128000 } },
+      "billing": { "multiplier": 1, "tokenPrices": { "inputPrice": 125, "outputPrice": 1000, "batchSize": 1000000 } }
+    }
+  ],
+  "tokenPriceUnits": [
+    { "modelId": "nano-1", "unit": "nano_aiu" },
+    { "modelId": "credits-1", "unit": "ai_credits" }
+  ],
+  "turns": []
+}

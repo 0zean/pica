@@ -49,6 +49,9 @@ export const transcriptSchema = z.strictObject({
   protocolVersion: z.int().positive().default(3),
   auth: jsonObject,
   models: z.array(jsonObject),
+  // `models.listTokenPriceUnits` entries. Absent means every model with `billing.tokenPrices`
+  // quotes them in AI Credits.
+  tokenPriceUnits: z.array(z.strictObject({ modelId: z.string().min(1), unit: z.enum(["ai_credits", "nano_aiu"]) })).optional(),
   quota: jsonObject.default({ quotaSnapshots: {} }),
   // Requests answered with a JSON-RPC error instead of their normal result, keyed by method.
   rpcErrors: z.record(z.string(), rpcError).default({}),

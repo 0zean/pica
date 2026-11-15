@@ -126,6 +126,22 @@ describe("resolveTier", () => {
   });
 });
 
+// Copilot Free lists only the virtual, unpriced `auto` model (S-01). Every tier must leave the
+// model unset, so the runtime's own routing applies, and no setting may pick `auto` as a model id.
+describe("default-model-only plans (S-01)", () => {
+  const freeCatalog = [model("auto", null)];
+  it.each([
+    { reasoning: "auto", worker: "auto" },
+    { reasoning: "frontier-1", worker: "worker-1" },
+  ])("resolves every tier to the runtime's default for %o", (settings) => {
+    const resolutions = resolveTiers(settings, freeCatalog, {});
+    expect(resolutions.map((resolution) => [resolution.resolvedModelId, resolution.reason])).toEqual([
+      [null, "unresolved"],
+      [null, "unresolved"],
+    ]);
+  });
+});
+
 describe("resolveTiers", () => {
   it("resolves both tiers in a fixed order", () => {
     expect(resolveTiers({ reasoning: "frontier-1", worker: "auto" }, catalog, { deny: ["worker-1"] })).toEqual([

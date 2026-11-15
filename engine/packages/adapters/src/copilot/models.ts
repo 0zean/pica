@@ -2,15 +2,22 @@ import type { QuotaInfo, RuntimeModel } from "@pica/core";
 import type { ModelInfo } from "@github/copilot-sdk";
 
 const perMillion = 1_000_000;
+const nanoAiuPerCredit = 1_000_000_000;
 
-// `billing.tokenPrices` prices a batch of `batchSize` tokens; the port wants credits per million
-// tokens. The prices are taken to be in AI Credits, which `models.listTokenPriceUnits` reports
-// and S-01 confirms. A missing `batchSize` is read as one million.
-export function toRuntimeModel(model: ModelInfo): RuntimeModel {
-  const prices = model.billing?.tokenPrices;
+// The unit `models.listTokenPriceUnits` reports for a model's `billing.tokenPrices`.
+export type PriceUnit = "ai_credits" | "nano_aiu";
+
+// `billing.tokenPrices` prices a batch of `batchSize` tokens in `unit`; the port wants credits per
+// million tokens. A missing `batchSize` is read as one million. Prices whose unit the runtime did
+// not report are dropped, so the model shows "not available on this plan" instead of a price off
+// by a factor of 10^9 (S-01, D-16).
+export function toRuntimeModel(model: ModelInfo, unit: PriceUnit | undefined): RuntimeModel {
+  const prices = unit === undefined ? undefined : model.billing?.tokenPrices;
   const contextWindow = model.capabilities.limits.max_context_window_tokens;
   const batchSize = prices?.batchSize;
   const scale = batchSize !== undefined && batchSize > 0 ? perMillion / batchSize : 1;
+  // Divide rather than multiply by 10^-9, which is not exact in binary.
+  const divisor = unit === "nano_aiu" ? nanoAiuPerCredit : 1;
   return {
     id: model.id,
     name: model.name,
@@ -18,9 +25,9 @@ export function toRuntimeModel(model: ModelInfo): RuntimeModel {
       ? {}
       : {
           tokenPrices: {
-            input: (prices.inputPrice ?? 0) * scale,
-            cachedInput: (prices.cacheReadPrice ?? 0) * scale,
-            output: (prices.outputPrice ?? 0) * scale,
+            input: ((prices.inputPrice ?? 0) * scale) / divisor,
+            cachedInput: ((prices.cacheReadPrice ?? 0) * scale) / divisor,
+            output: ((prices.outputPrice ?? 0) * scale) / divisor,
           },
         }),
     ...(contextWindow > 0 ? { contextWindow } : {}),

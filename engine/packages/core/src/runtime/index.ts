@@ -23,6 +23,7 @@ export type {
   ModelUsage,
   QuotaInfo,
   ResumeOptions,
+  RuntimeAccount,
   RuntimeModel,
   RuntimeResult,
   RuntimeSession,

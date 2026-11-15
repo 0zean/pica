@@ -27,6 +27,14 @@ export interface QuotaInfo {
   readonly resetDate: string | null;
 }
 
+// The signed-in account. `authType` names the credential source (for Copilot: `user` for a Copilot
+// CLI login, `gh-cli` for the GitHub CLI token, `env`, `token`, ...); null fields were not reported.
+export interface RuntimeAccount {
+  readonly login: string | null;
+  readonly authType: string | null;
+  readonly host: string | null;
+}
+
 export interface ModelUsage {
   readonly model: string;
   readonly inputTokens: number;
@@ -101,6 +109,9 @@ export interface AgentRuntime {
   // instead (S-03: Copilot refuses limits under 30). Absent means any limit is accepted.
   readonly minSessionCredits?: number | undefined;
   listModels(): RuntimeResult<readonly RuntimeModel[]>;
+  // Absent for runtimes with no signed-in account. Fails with `runtime.no_models` when the account
+  // is signed in but offered no models, so the host can show a sign-in hint (S-01).
+  account?(): RuntimeResult<RuntimeAccount>;
   // null when the plan reports no AI-credit quota: Copilot Free counts requests, not credits (S-01).
   quota(): RuntimeResult<QuotaInfo | null>;
   createSession(options: SessionOptions): RuntimeResult<RuntimeSession>;
