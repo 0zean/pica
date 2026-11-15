@@ -2,7 +2,14 @@ import type { PicaConfig } from "@pica/protocol";
 
 // The engine maps each runtime tool to one of these targets before asking the policy (C-04, C-06).
 export type ToolTarget =
-  | { readonly kind: "read"; readonly path: string; readonly sizeBytes: number; readonly range?: LineRange }
+  // `force`: the read asked for the whole file past the runtime's own size limit (`forceReadLargeFiles`).
+  | {
+      readonly kind: "read";
+      readonly path: string;
+      readonly sizeBytes: number;
+      readonly range?: LineRange;
+      readonly force?: true;
+    }
   | { readonly kind: "write"; readonly path: string }
   | { readonly kind: "search"; readonly paths: readonly string[] }
   | { readonly kind: "shell"; readonly command: string; readonly cwd: string }

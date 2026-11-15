@@ -16,7 +16,7 @@ export function bridgeHooks(hooks: RuntimeHooks, ledger: ToolCallLedger, session
       if (hooks.onPreToolUse === undefined) return undefined;
       const decision = await preDecision(hooks.onPreToolUse, toolUseInput(input, toolCallId, sessionId()));
       if (decision.decision === "deny") {
-        ledger.denied(toolCallId);
+        ledger.denied(toolCallId, decision.reason);
       }
       return toPreOutput(decision);
     },
@@ -45,6 +45,8 @@ function toolUseInput(input: PreToolUseHookInput, toolCallId: string, sessionId:
     toolName: input.toolName,
     arguments: (input.toolArgs ?? null) as JsonValue,
     ...(input.agentId === undefined ? {} : { agentId: input.agentId }),
+    ...(input.agentType === undefined ? {} : { agentType: input.agentType }),
+    ...(input.parentAgentId === undefined ? {} : { parentAgentId: input.parentAgentId }),
   };
 }
 

@@ -6,14 +6,14 @@ export interface EventContext {
   readonly sessionId: string;
   readonly workingDirectory: string;
   modifiedResult(toolCallId: string): ToolResult | undefined;
+  deniedReason(toolCallId: string): string | undefined;
 }
 
 // Maps one SDK session event to the runtime event the port promises, or `undefined` for the many
 // SDK events the port does not model.
 //
-// Sub-agents: `subagent.*` events name the sub-agent only by the `task` tool call that started
-// it, so that call id is used as the agent id; events from inside the sub-agent are expected to
-// carry the same id in their envelope `agentId`. S-02/S-03 confirm this.
+// Sub-agents: every event from inside a sub-agent carries its id in the envelope `agentId`, and so
+// do its `subagent.*` events (S-02). The `task` call id is used only when the envelope has none.
 export function toRuntimeEvent(event: SessionEvent, context: EventContext): RuntimeEvent | undefined {
   const scope = event.agentId === undefined || event.agentId === "" ? {} : { agentId: event.agentId };
   switch (event.type) {
@@ -50,16 +50,7 @@ export function toRuntimeEvent(event: SessionEvent, context: EventContext): Runt
         ...scope,
       });
     case "tool.execution_complete":
-      return wrap(event, "tool.execution_complete", {
-        toolCallId: event.data.toolCallId,
-        success: event.data.success,
-        result: context.modifiedResult(event.data.toolCallId) ?? {
-          content: event.data.success
-            ? (event.data.result?.content ?? "")
-            : (event.data.error?.message ?? event.data.result?.content ?? ""),
-        },
-        ...scope,
-      });
+      return toolCompleted(event, context, scope);
     case "permission.requested":
       return permissionRequested(event);
     case "permission.completed":
@@ -70,14 +61,14 @@ export function toRuntimeEvent(event: SessionEvent, context: EventContext): Runt
     case "subagent.started":
       return wrap(event, "subagent.started", {
         toolCallId: event.data.toolCallId,
-        agentId: event.data.toolCallId,
+        agentId: subagentId(event, event.data.toolCallId),
         agentName: event.data.agentName,
         model: event.data.model ?? "",
       });
     case "subagent.completed":
       return wrap(event, "subagent.completed", {
         toolCallId: event.data.toolCallId,
-        agentId: event.data.toolCallId,
+        agentId: subagentId(event, event.data.toolCallId),
         agentName: event.data.agentName,
         model: event.data.model ?? "",
         totalTokens: event.data.totalTokens ?? 0,
@@ -85,7 +76,7 @@ export function toRuntimeEvent(event: SessionEvent, context: EventContext): Runt
     case "subagent.failed":
       return wrap(event, "subagent.failed", {
         toolCallId: event.data.toolCallId,
-        agentId: event.data.toolCallId,
+        agentId: subagentId(event, event.data.toolCallId),
         agentName: event.data.agentName,
         error: event.data.error,
       });
@@ -122,6 +113,35 @@ export function toRuntimeEvent(event: SessionEvent, context: EventContext): Runt
     default:
       return undefined;
   }
+}
+
+function toolCompleted(
+  event: Extract<SessionEvent, { type: "tool.execution_complete" }>,
+  context: EventContext,
+  scope: { readonly agentId?: string },
+): RuntimeEvent {
+  const { toolCallId, success, result, error } = event.data;
+  const denied = context.deniedReason(toolCallId);
+  if (denied !== undefined) {
+    return wrap(event, "tool.execution_complete", {
+      toolCallId,
+      success: false,
+      result: { content: error?.message ?? `Denied by Pica policy: ${denied}` },
+      ...scope,
+    });
+  }
+  return wrap(event, "tool.execution_complete", {
+    toolCallId,
+    success,
+    result: context.modifiedResult(toolCallId) ?? {
+      content: success ? (result?.content ?? "") : (error?.message ?? result?.content ?? ""),
+    },
+    ...scope,
+  });
+}
+
+function subagentId(event: SessionEvent, toolCallId: string): string {
+  return event.agentId === undefined || event.agentId === "" ? toolCallId : event.agentId;
 }
 
 function permissionRequested(event: Extract<SessionEvent, { type: "permission.requested" }>): RuntimeEvent {

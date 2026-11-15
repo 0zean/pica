@@ -1,9 +1,7 @@
 import { toolKind } from "../agents/index.ts";
-import type { JsonObject, JsonValue } from "../json.ts";
 import { decide, defaultCommandDenyList, mainAgent } from "../policy/index.ts";
 import type {
   CommandRule,
-  LineRange,
   ManagedRule,
   PolicyConfig,
   PolicyContext,
@@ -15,6 +13,9 @@ import type { PreToolUseDecision, RuntimeHooks, ToolUseInput } from "../runtime/
 import { withRealPaths, type RealPathResolver } from "../sandbox/index.ts";
 import type { Session, Store } from "../store/index.ts";
 import { isRoutingProfile } from "./info.ts";
+import { readRequests, type ReadRequest } from "./read-requests.ts";
+
+const readingKinds = new Set(["read", "search", "shell"]);
 
 export interface ReadGateDeps {
   readonly sessions: Pick<Store["sessions"], "get">;
@@ -30,19 +31,14 @@ export interface ReadGateDeps {
   readonly onDecision?: (sessionId: string, decision: PolicyDecision) => void;
 }
 
-interface ReadArguments {
-  readonly path: string;
-  readonly range?: LineRange;
-}
-
-// PLAN.md §5.3 large-read gate. Only read tools are decided here; every other call is allowed.
+// PLAN.md §5.3 large-read gate. Only the reads a call makes are decided here: `view`, content
+// searches, and whole-file prints in shell commands. Every other call is allowed.
 export function createReadGate(deps: ReadGateDeps): (sessionId: string) => RuntimeHooks {
   return (sessionId) => ({ onPreToolUse: (input) => gateRead(deps, sessionId, input) });
 }
 
 async function gateRead(deps: ReadGateDeps, sessionId: string, input: ToolUseInput): Promise<PreToolUseDecision> {
-  const read = toolKind(input.toolName) === "read" ? readArguments(input.arguments) : undefined;
-  if (read === undefined) {
+  if (!readingKinds.has(toolKind(input.toolName) ?? "other")) {
     return { decision: "allow" };
   }
   const session = deps.sessions.get(sessionId);
@@ -50,23 +46,37 @@ async function gateRead(deps: ReadGateDeps, sessionId: string, input: ToolUseInp
     return { decision: "deny", reason: `session ${sessionId} is unknown to the engine` };
   }
   const context = policyContext(deps, session.value);
-  const sizeBytes = (await deps.fileSize(resolvePath(context.cwd, read.path))) ?? 0;
+  for (const read of readRequests(input.toolName, input.arguments, context.cwd)) {
+    const decision = await decideRead(deps, context, input, read);
+    deps.onDecision?.(sessionId, decision);
+    if (decision.outcome === "deny" || decision.outcome === "ask") {
+      return { decision: decision.outcome, reason: decision.reason };
+    }
+  }
+  return { decision: "allow" };
+}
+
+async function decideRead(
+  deps: ReadGateDeps,
+  context: PolicyContext,
+  input: ToolUseInput,
+  read: ReadRequest,
+): Promise<PolicyDecision> {
+  const sizeBytes = read.sized ? ((await deps.fileSize(resolvePath(context.cwd, read.path))) ?? 0) : 0;
+  const { path, range, force } = read;
   const call: ToolCall = {
     id: input.toolCallId,
     tool: input.toolName,
-    agent: input.agentId ?? mainAgent,
-    target: { kind: "read", path: read.path, sizeBytes, ...(read.range === undefined ? {} : { range: read.range }) },
+    agent: callingAgent(input),
+    target: { kind: "read", path, sizeBytes, ...(range === undefined ? {} : { range }), ...(force === undefined ? {} : { force }) },
   };
-  const decision = decide(call, deps.realPath === undefined ? context : await withRealPaths(call, context, deps.realPath));
-  deps.onDecision?.(sessionId, decision);
-  switch (decision.outcome) {
-    case "deny":
-      return { decision: "deny", reason: decision.reason };
-    case "ask":
-      return { decision: "ask", reason: decision.reason };
-    default:
-      return { decision: "allow" };
-  }
+  return decide(call, deps.realPath === undefined ? context : await withRealPaths(call, context, deps.realPath));
+}
+
+// A sub-agent's calls carry `agentId` (a UUID) and `agentType`, its name (S-02). Policy rules name
+// agents, so the name is used; a call without `agentId` is the main agent's whatever else it carries.
+function callingAgent(input: ToolUseInput): string {
+  return input.agentId === undefined ? mainAgent : (input.agentType ?? input.agentId);
 }
 
 // The session's own routing profile, chosen at creation, takes the place of the configured one.
@@ -81,40 +91,4 @@ function policyContext(deps: ReadGateDeps, session: Session): PolicyContext {
     managed: deps.managed ?? [],
     commandDenyList: deps.commandDenyList ?? defaultCommandDenyList,
   };
-}
-
-// `view` takes `path` and `view_range: [start, end]`, with -1 meaning end of file (confirmed by S-02).
-function readArguments(args: JsonValue): ReadArguments | undefined {
-  if (!isJsonObject(args)) {
-    return undefined;
-  }
-  const { path, view_range: viewRange } = args;
-  if (typeof path !== "string" || path === "") {
-    return undefined;
-  }
-  const range = lineRange(viewRange);
-  return range === undefined ? { path } : { path, range };
-}
-
-function lineRange(value: JsonValue | undefined): LineRange | undefined {
-  if (!isJsonArray(value) || value.length !== 2) {
-    return undefined;
-  }
-  const [startLine, endLine] = value;
-  if (!isLineNumber(startLine) || !isLineNumber(endLine) || endLine === -1) {
-    return undefined;
-  }
-  return { startLine, endLine };
-}
-
-function isLineNumber(value: JsonValue | undefined): value is number {
-  return typeof value === "number" && Number.isInteger(value);
-}
-
-function isJsonObject(value: JsonValue): value is JsonObject {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function isJsonArray(value: JsonValue | undefined): value is readonly JsonValue[] {
-  return Array.isArray(value);
 }
