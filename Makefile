@@ -1,6 +1,6 @@
 SWIFT_PACKAGES := $(wildcard app/Packages/*)
 
-.PHONY: verify verify-engine verify-app lint lint-arch typecheck test build engine-install codegen codegen-drift app-packages app-build app-ui-test
+.PHONY: verify verify-engine verify-app lint lint-arch lint-swift-boundary typecheck test build engine-install codegen codegen-drift app-packages app-build app-ui-test
 
 # `make verify UNIT=<ID>` runs only that unit's checks from tools/verify/units.json (PLAN.md §8.1).
 ifdef UNIT
@@ -11,7 +11,7 @@ verify: verify-engine verify-app app-ui-test
 endif
 
 # The CI subsets (PLAN.md §8.1): verify-engine runs on Linux, verify-app on macOS when app or protocol files change.
-verify-engine: lint lint-arch typecheck codegen-drift test
+verify-engine: lint lint-arch lint-swift-boundary typecheck codegen-drift test
 
 verify-app: build
 
@@ -30,6 +30,10 @@ lint: engine-install
 
 lint-arch: engine-install
 	cd engine && pnpm lint-arch
+
+# PLAN.md §4.3: Swift never runs git or calls GitHub. A grep over app/, so it runs on Linux too.
+lint-swift-boundary:
+	@tools/lint/swift-boundary.sh
 
 typecheck: engine-install
 	cd engine && pnpm typecheck

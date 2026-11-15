@@ -20,5 +20,5 @@ export {
   type GitHubFix,
   type GitHubProviderKind,
 } from "./errors.ts";
-export { githubDotCom, resolveGitHubHost, type GitHubHost, type GitHubHostSettings } from "./hosts.ts";
+export { dataResidencySuffix, githubDotCom, resolveGitHubHost, type GitHubHost, type GitHubHostSettings } from "./hosts.ts";
 export { hasScope as gitHubHasScope, missingScopes as gitHubMissingScopes, parseScopeHeader as parseGitHubScopeHeader } from "./scopes.ts";

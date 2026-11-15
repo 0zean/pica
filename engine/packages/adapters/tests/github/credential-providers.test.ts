@@ -42,6 +42,10 @@ describe("host configuration", () => {
     expect(resolveGitHubHost({ host: "ghe.corp.example" }).apiBaseUrl).toBe("https://ghe.corp.example/api/v3");
   });
 
+  it("uses the api. subdomain for GitHub Enterprise Cloud with data residency (Q-02)", () => {
+    expect(resolveGitHubHost({ host: "Octo.GHE.com" })).toMatchObject({ webBaseUrl: "https://octo.ghe.com", apiBaseUrl: "https://api.octo.ghe.com" });
+  });
+
   it("honours a custom API base URL and trims its trailing slash", () => {
     const host = resolveGitHubHost({ host: "ghe.corp.example", apiBaseUrl: "https://api.ghe.corp.example/", oauthClientId: "Iv1.abc" });
     expect(host.apiBaseUrl).toBe("https://api.ghe.corp.example");

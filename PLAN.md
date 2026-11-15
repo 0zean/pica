@@ -12,7 +12,7 @@ Source of truth for building Pica. Every unit of work below has an ID, explicit 
 
 ### 1.1 What Pica is
 
-Pica is a native macOS app for running coding agents on enterprise codebases through GitHub Copilot. It has three jobs:
+Pica is a native macOS app for running coding agents on your codebases through GitHub Copilot. It is for anyone with a Copilot plan: an individual, a team, or a company of any size (D-19). It has three jobs:
 
 1. **Spend the expensive model only on reasoning.** Bulk reading, boilerplate, and oversized tool output are routed to cheap models by rules the agent cannot ignore.
 2. **Treat a team's repositories as one workspace.** A developer adds the repos their team owns (by hand or from a GitHub team) and can work in several at once or reference one while editing another.
@@ -37,7 +37,7 @@ Pica is a native macOS app for running coding agents on enterprise codebases thr
 ### 1.4 Non-goals for v1
 
 - Replacing an IDE or editor. Pica has a read-only file viewer and "Open in editor".
-- Hosting or proxying models. Inference goes through the organization's Copilot entitlement.
+- Hosting or proxying models. Inference goes through the signed-in user's Copilot entitlement.
 - Windows or Linux UI. The engine stays portable; only the app is macOS-only.
 - Driving other agent CLIs. The runtime sits behind a port so this stays possible later.
 - A cloud backend or accounts. Everything is local to the developer's Mac.
@@ -62,7 +62,9 @@ Facts the design depends on, with sources in [§13](#13-sources). Items marked *
 
 The billing change is why this project pays off: token-heavy, low-reasoning work on a frontier model now costs the organization real money per token, and cached-input pricing rewards a stable prompt prefix.
 
-### 2.2 MCP servers we must support
+### 2.2 MCP servers: optional, with presets
+
+Pica works with no MCP server attached. Servers are optional extensions a user enables when they have them or want them (D-18). The four below get presets (M-02) because S-06 or the owner's org has used them; they are examples, not requirements. Any other server is added by hand, by pasting a standard `mcpServers` entry, or by importing the servers a user already runs in another agent platform (M-01, M-07).
 
 | Server | Transport | Endpoint | Auth | Notes |
 |---|---|---|---|---|
@@ -85,8 +87,8 @@ REST endpoints: `GET /user/teams`, `GET /orgs/{org}/teams/{team_slug}/repos` (pa
 | A4 | A sub-agent's `model` override is honored and billed at that model's rate. **Not confirmed** on Copilot Free, a default-model-only plan, by S-03: with `model: "claude-haiku-4.5"`, `subagent.started.model` reports the override, but every sub-agent `assistant.usage.model` is the `auto` pick, with no error, and `modelPolicy: "required"` is ignored the same way. The fallback is the decision for default-model-only plans: Pica does not rely on the `customAgents` `model`; there the only model is `auto`, so the worker gets no model, and Pica shows the model `assistant.usage` reports. Plans that list models are untested; re-run S-03 on one, and use engine-managed child sessions there if the override is still ignored ([findings](docs/spikes/S-03.md)) | S-03 | Engine-managed child sessions with an explicit model |
 | A5 | Usage can be attributed per agent. **Confirmed** on Copilot Free by S-03: every `assistant.usage` from a sub-agent carries that sub-agent's envelope `agentId` (the `subagent.started` envelope id), and the main agent's carry none. The per-agent sums equal `getMetrics.agentMetrics`, which is keyed the same way, and Pica's adapter and normalizer name the right agent for every call. With no token prices, credits come from `copilotUsage.totalNanoAiu` and match `getMetrics` exactly ([findings](docs/spikes/S-03.md)) | S-03 | Attribute by `toolCallId` window, or by child session |
 | A6 | A session can read outside its `workingDirectory` once the host approves. **Confirmed** by S-04: the runtime raises a `read` permission request for the path and reads it on `approve-once`; `additionalDirectories` halves the requests but does not remove them. A `preToolUse` deny blocks file-tool and shell writes to a reference root, and R-07's shell parser, which first missed argument writes such as `touch` and `cp`, now checks path arguments too ([findings](docs/spikes/S-04.md)) | S-04 | Session root directory of symlinks, or cross-repo access only through engine tools |
-| A7 | Node, the engine bundle, and the Copilot CLI can be ad-hoc signed inside the app and run on a Mac without developer tools after a GitHub Releases download; Developer ID signing and notarization come later (D-17). **Confirmed** by S-05, with a different install path: the ad-hoc, hardened-runtime bundle passes `--deep --strict`, survives zip/unzip, and runs once installed without quarantine. On macOS 27 a quarantined ad-hoc app offers no "Open Anyway", so the quarantine is cleared before the first launch: an install script (curl, sha256, signature check) or a documented `xattr -dr com.apple.quarantine` step. `copilot-runtime` needs `disable-library-validation` when re-signed ad-hoc. The second-account check of that path is pending with the owner ([findings](docs/spikes/S-05.md)) | S-05 | Install the engine separately (pkg or Homebrew) |
-| A8 | All four MCP servers connect through the SDK, including OAuth. **Partly confirmed** by S-06: GitHub connects with no prompt; the runtime runs OAuth for Datadog and ClickUp up to consent and also accepts host-supplied tokens; Snowflake is untried; it uses a PAT (Q-06). All three wait on a machine with the owner's access ([findings](docs/spikes/S-06.md)) | S-06 | Host-managed tokens supplied by Pica |
+| A7 | Node, the engine bundle, and the Copilot CLI can be ad-hoc signed inside the app and run on a Mac without developer tools after a GitHub Releases download; Developer ID signing and notarization come later (D-17). **Confirmed** by S-05, with a different install path: the ad-hoc, hardened-runtime bundle passes `--deep --strict`, survives zip/unzip, and runs once installed without quarantine. On macOS 27 a quarantined ad-hoc app offers no "Open Anyway", so the quarantine is cleared before the first launch: an install script (curl, sha256, signature check) or a documented `xattr -dr com.apple.quarantine` step. `copilot-runtime` needs `disable-library-validation` when re-signed ad-hoc. The owner ran the second-device check on 2026-11-15 and it passed ([findings](docs/spikes/S-05.md)) | S-05 | Install the engine separately (pkg or Homebrew) |
+| A8 | MCP servers connect through the SDK, including OAuth. **Confirmed** by S-06 for what Pica needs: GitHub connects with no prompt, and the runtime runs OAuth for Datadog and ClickUp up to consent and also accepts host-supplied tokens. The owner reports Datadog and ClickUp (browser OAuth) and Snowflake (PAT) working on the org's Macs through another client that uses them the same way; Pica has not connected them itself. Since every server is optional (D-18), none of the three gates Pica ([findings](docs/spikes/S-06.md)) | S-06 | Host-managed tokens supplied by Pica |
 | A9 | Event streaming over a Unix socket meets the throughput budget. **Confirmed** by S-07: 50,000 events at 25,000/s in order, p99 write-to-decoded ≈ 0.1 ms ([findings](docs/spikes/S-07.md)) | S-07 | Coalesce events per display frame in the engine |
 
 ---
@@ -112,6 +114,9 @@ REST endpoints: `GET /user/teams`, `GET /orgs/{org}/teams/{team_slug}/repos` (pa
 | D-15 | CI is split by cost (§8.1): `make verify-engine` on Linux for every PR; `make verify-app` on macOS only when app, protocol, codegen or `Makefile` change; no UI tests and no runs on pushes to `main`. Full local `make verify` remains the merge gate | Running full `make verify` on macOS for every PR update and push to `main` used the month's Actions minutes in one day (82 runs, ~200 macOS minutes on 2026-11-13), mostly for engine-only changes. Owner moved to GitHub Pro for more minutes; landed in #27 | 2026-11-14 |
 | D-16 | Pica is plan-agnostic: it must work without friction on every Copilot plan (Free, Pro, Pro+, Business, Enterprise). Nothing depends on a specific plan, model or org policy; tiers resolve against whatever `models.list` returns (D-09), and features that need data some plans lack (token prices, org budgets, pooled credits) degrade to a stated "not available on this plan" state instead of failing. The owner's own environment, Copilot Business with most standard models (Claude except Fable, Gemini 4, GPT-6 and 6.1, Grok 4.7), is the development reference, not a requirement. S-01 found that Copilot Free is a default-model-only plan: `models.list` holds just the virtual `auto` model (routed per call, e.g. to GPT-6 Luna or MAI Code 1.1 Flash) with no token prices, so Pica must offer no model picker there, only the effort or routing tiers the runtime advertises, and show no per-token cost when prices are absent; credits come from the usage events' nano-AIU totals instead | Owner answered Q-01 and asked for a product usable on all plans | 2026-11-14 |
 | D-17 | v1 ships as an ad-hoc signed (`codesign -s -`), hardened-runtime app attached to GitHub Releases, not notarized and not distributed through MDM. On macOS 27 a quarantined ad-hoc app cannot be approved with "Open Anyway" (S-05), so it is installed without quarantine: the primary route is an install script (`curl` download, which sets no quarantine; SHA-256 checked against the release's `SHA256SUMS`; `codesign --verify`), and the fallback is a documented `xattr -dr com.apple.quarantine /Applications/Pica.app` before the first launch. Developer ID signing and notarization are added to the release workflow later, behind credentials, without design changes. Sparkle updates use their own EdDSA signatures, independent of Apple signing | Owner answered Q-04: no Developer ID yet, open to one later; GitHub Releases is acceptable for now | 2026-11-14 |
+| D-18 | MCP servers are optional extensions. No Pica feature depends on any server; a session with none works fully. GitHub, Datadog, ClickUp and Snowflake are presets (M-02), not requirements. Pica does not try to anticipate which other servers users want; instead any server can be added by hand, by pasting a standard `mcpServers` entry, or by importing the servers a user already runs in other agent platforms (M-01, M-07) | Owner, 2026-11-15: the three org servers work elsewhere and should extend Pica, not gate it; users should bring the MCP servers they already use | 2026-11-15 |
+| D-19 | Pica assumes no organization. It is for any individual, team, company or org; nothing needs an org admin, a registered GitHub App or OAuth App, or a managed policy file. Org features (H-01 managed policy, H-04 export, pooled-credit budgets) are optional layers that apply when present (Q-05, Q-07) | Owner answered Q-05 and Q-07: no registered app may be assumed, and the audience is not one team | 2026-11-15 |
+| D-20 | GitHub access supports all three deployments: github.com, GitHub Enterprise Cloud with data residency (`<subdomain>.ghe.com`, API at `api.<subdomain>.ghe.com`), and GitHub Enterprise Server (API under `/api/v3`). Auth uses `gh` credentials and PATs; device flow runs only when the user configures their own OAuth client ID (Q-02, Q-05) | Owner answered Q-02: cover all three | 2026-11-15 |
 
 ---
 
@@ -132,7 +137,7 @@ REST endpoints: `GET /user/teams`, `GET /orgs/{org}/teams/{team_slug}/repos` (pa
 └──────────┬───────────────────────┬──────────────────────┬────────────────────────────────────┘
            │ Copilot SDK           │ git CLI, ripgrep     │ HTTPS
    Copilot CLI runtime ── models   local repos/worktrees  GitHub REST
-           └── MCP servers (GitHub, Datadog, ClickUp, Snowflake, custom)
+           └── MCP servers (optional: any the user adds; presets for GitHub, Datadog, ClickUp, Snowflake)
 ```
 
 `pica` (CLI) is a second client of the same socket. It starts `picad` if none is running.
@@ -161,7 +166,8 @@ pica/
       PicaProtocol/             generated Codable types
       EngineClient/
       DesignSystem/
-      Features/                 one target per feature
+    Gallery/                    component gallery app for UI tests
+    GalleryUITests/
   spikes/                       throwaway Phase 0 scripts
   tools/                        codegen, verify runner, release scripts
   .github/workflows/
@@ -172,8 +178,8 @@ pica/
 - `core` imports only `protocol`. No `node:*` I/O modules, no SDKs.
 - `adapters` implement ports declared in `core`. Adapters do not import each other.
 - `server` and `cli` are the only places that construct adapters.
-- Swift feature targets depend on `EngineClient`, `PicaProtocol`, `DesignSystem`; never on each other. Cross-feature navigation goes through the app target.
-- Swift never shells out to `git`, reads repo files, or calls GitHub. It asks the engine.
+- Swift feature code depends on `EngineClient`, `PicaProtocol`, `DesignSystem`; features never depend on each other. Cross-feature navigation goes through the app target. Features start in the app target and move into their own package once one is large enough to need it.
+- Swift never shells out to `git`, reads repo files, or calls GitHub. It asks the engine. `make lint-swift-boundary` (part of `verify-engine`) fails on a Swift source that names the git executable or a GitHub host.
 
 ### 4.4 Domain model
 
@@ -419,14 +425,14 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 - Build: minimal ad-hoc signed, hardened-runtime `.app` containing a Node binary, a bundled "hello" engine, and the Copilot CLI, zipped as a GitHub Releases asset would be (D-17).
 - Verify:
   - [x] `codesign --verify --deep --strict` passes on the ad-hoc signed app, and every nested Mach-O binary is signed with the hardened runtime.
-  - [ ] **(manual)** On a second macOS user account with no developer tools, the app installed by the install script, and separately a quarantined zip whose app had `xattr -dr com.apple.quarantine` run before its first launch, both open with no Gatekeeper dialog, and the engine answers a ping. The exact steps are recorded for the install guide. *Waiting on the owner; checklist in [docs/spikes/S-05.md](docs/spikes/S-05.md#manual-check-owner-second-account-without-developer-tools).*
+  - [x] **(manual)** On a second macOS user account with no developer tools, the app installed by the install script, and separately a quarantined zip whose app had `xattr -dr com.apple.quarantine` run before its first launch, both open with no Gatekeeper dialog, and the engine answers a ping. The exact steps are recorded for the install guide. *Passed on the owner's second macOS device, 2026-11-15; checklist in [docs/spikes/S-05.md](docs/spikes/S-05.md#manual-check-owner-second-account-without-developer-tools).*
   - [x] A7 is resolved.
 
 **S-06 · MCP connectivity** — S-01
 - Verify:
-  - [ ] **(live)** GitHub, Datadog, ClickUp, and Snowflake each connect and list tools; the exact endpoint and auth method used are recorded, replacing the entries in §2.2.
-  - [ ] **(live)** Tool-definition token cost per server is recorded from `contextInfo`.
-  - [ ] A8 is resolved.
+  - [x] **(live)** GitHub connects and lists tools, and the endpoint and auth method used are recorded in §2.2. Datadog, ClickUp and Snowflake are optional (D-18): `s06.mjs connect <server>` checks each on a machine that has it, and the owner reports all three working on the org's Macs.
+  - [x] **(live)** Tool-definition token cost per server is recorded from `contextInfo` (GitHub: 13,835 tokens).
+  - [x] A8 is resolved.
 
 **S-07 · IPC throughput** — none
 - Build: Node socket server emitting synthetic events; Swift command-line client decoding them.
@@ -435,7 +441,7 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
   - [x] p99 time from write to decoded value is under 5 ms.
   - [x] A9 is resolved.
 
-**Gate G0:** every row in §2.4 is resolved and §3 reflects the outcomes. Phase 2 does not start before G0.
+**Gate G0:** every row in §2.4 is resolved and §3 reflects the outcomes. Phase 2 does not start before G0. **Met 2026-11-15:** A1 to A9 are resolved (A4 by its recorded fallback, D-08), and D-16 to D-20 record the outcomes.
 
 ### Phase 1 — Foundation and engine core
 
@@ -635,7 +641,7 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
   - [x] Removing a managed clone with uncommitted or unpushed work is refused without `force`.
 
 **R-04 · GitHub auth** — E-05
-- Build: provider chain (`gh` credentials, device flow, PAT from the secret broker), host configuration for github.com and GitHub Enterprise.
+- Build: provider chain (`gh` credentials, device flow, PAT from the secret broker), host configuration for github.com, GHE.com (data residency) and GitHub Enterprise Server (D-20). Device flow needs a user-configured OAuth client ID; Pica ships none (D-19).
 - Verify:
   - [x] Stub-server tests for each provider and for fall-through order.
   - [x] A SAML SSO 403 maps to an error whose `fix` is the authorization URL.
@@ -703,9 +709,10 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
   - [x] A definition with an inline secret is rejected with a message pointing to secret references.
 
 **M-02 · Presets** — M-01, S-06
-- Build: parameterized presets for GitHub, Datadog, ClickUp, Snowflake.
+- Build: parameterized, optional presets for GitHub, Datadog, ClickUp, Snowflake (D-18). None is enabled by default. The GitHub preset follows the configured GitHub host (D-20).
 - Verify:
-  - [ ] Each preset renders the expected definition for sample parameters, using the endpoints recorded by S-06.
+  - [ ] Each preset renders the expected definition for sample parameters, using the endpoints in §2.2.
+  - [ ] With no preset enabled, a session's config carries no MCP servers.
   - [ ] Missing or malformed parameters fail validation with the parameter named.
 
 **M-03 · Secrets and OAuth** — M-01, E-05
@@ -733,6 +740,15 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 - Verify:
   - [x] Stub servers that are healthy, slow, crashing, and failing auth each produce the expected status.
   - [x] A crashing stdio server is restarted with backoff and gives up after the configured attempts.
+
+**M-07 · Import from other agent platforms** — M-01
+- Build: bring in MCP servers the user already runs elsewhere, without Pica naming specific servers (D-18). Discover the config files other agent platforms keep (for example Claude Desktop, Claude Code, Cursor, Windsurf, VS Code user settings, Gemini CLI, Codex, and the Copilot CLI and `.mcp.json` sources M-01 reads) and list their servers as import candidates. Accept a pasted `mcpServers` / `servers` JSON snippet or a single entry. Importing copies the chosen entries into Pica's `mcp.jsonc` at a scope the user picks, moves inline secrets into secret references, and records where each came from. Nothing is imported or attached without the user choosing it. RPC: `mcp.importCandidates`, `mcp.import`.
+- Verify:
+  - [ ] Golden tests: one fixture per platform format converts to the expected Pica entries, with notes for fields Pica drops.
+  - [ ] A pasted snippet in each common shape (`mcpServers`, `servers`, a bare name map, one entry) imports; a malformed one fails with the key path named.
+  - [ ] An imported entry with an inline secret is stored with a secret reference, and the secret value is in the broker, not the file.
+  - [ ] A platform file that is missing or unreadable yields no candidates and no error.
+  - [ ] Candidates are never attached to a session until the user attaches them.
 
 ### Phase 5 — macOS app
 
@@ -819,8 +835,8 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
   - [ ] UI test against the stub GitHub server imports a team and shows its repos as available.
   - [ ] Auth errors display their `fix` action.
 
-**A-13 · MCP management** — A-04, M-06
-- Build: catalog of presets, add and edit, authenticate, attach per workspace and session, token-cost column, health.
+**A-13 · MCP management** — A-04, M-06, M-07
+- Build: catalog of optional presets, add and edit, paste a server snippet, import from other agent platforms (M-07), authenticate, attach per workspace and session, token-cost column, health.
 - Verify:
   - [ ] UI test adds a preset and sees it healthy against a stub server.
   - [ ] A saved secret is never rendered back into a field.
@@ -938,12 +954,12 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 | ID | Question | Needed by |
 |---|---|---|
 | Q-01 | ~~Copilot Business or Enterprise, and which models does org policy allow?~~ Answered 2026-11-14: Business with most standard models; Pica must be plan-agnostic (D-16) | S-01 |
-| Q-02 | GitHub.com, GitHub Enterprise Cloud with data residency, or GitHub Enterprise Server? | R-04 |
+| Q-02 | ~~GitHub.com, GitHub Enterprise Cloud with data residency, or GitHub Enterprise Server?~~ Answered 2026-11-15: all three (D-20) | R-04 |
 | Q-03 | ~~Can the minimum be raised above macOS 15 across the fleet?~~ Answered 2026-11-13: yes, to macOS 26 (D-13) | A-03 |
 | Q-04 | ~~Is an Apple Developer ID available for signing, and will distribution go through MDM?~~ Answered 2026-11-14: no Developer ID yet (maybe later); GitHub Releases, no MDM (D-17) | S-05, H-06 |
-| Q-05 | Can the org register a GitHub App or OAuth App for team discovery, or must Pica rely on `gh` and PATs? | R-04 |
+| Q-05 | ~~Can the org register a GitHub App or OAuth App for team discovery, or must Pica rely on `gh` and PATs?~~ Answered 2026-11-15: no, and it cannot be assumed for other users either; Pica relies on `gh` and PATs (D-19, D-20) | R-04 |
 | Q-06 | ~~Is the Snowflake MCP server already created by an admin, and with which auth?~~ Answered 2026-11-14: the org's Snowflake MCP server uses a PAT. ClickUp and Datadog use browser OAuth. None of the three is available on the development Mac, so they are tested later on a machine that has them | S-06 |
-| Q-07 | Is this for one team or the whole engineering org? This sets the priority of H-01 and H-04. | Phase 6 |
+| Q-07 | ~~Is this for one team or the whole engineering org?~~ Answered 2026-11-15: neither is assumed; Pica is for any individual, team, company or org, so H-01 and H-04 are optional layers (D-19) | Phase 6 |
 
 ---
 
@@ -957,8 +973,8 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | S-02 | Hook enforcement and delegation | S-01 | done |
 | S-03 | Per-agent model and attribution | S-02 | done |
 | S-04 | Multi-root access | S-01 | done |
-| S-05 | Packaging | — | doing (awaiting owner's manual check) |
-| S-06 | MCP connectivity | S-01 | todo (GitHub done. Datadog and ClickUp (browser OAuth) and Snowflake (PAT) wait on a machine with the owner's access) |
+| S-05 | Packaging | — | done |
+| S-06 | MCP connectivity | S-01 | done (GitHub connected by Pica; Datadog, ClickUp and Snowflake optional, D-18) |
 | S-07 | IPC throughput | — | done |
 | F-01 | Repository scaffold | — | done |
 | F-02 | Architecture guardrails | F-01 | done |
@@ -1000,6 +1016,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | M-04 | Scoping and tool budgets | M-01, C-02 | done |
 | M-05 | MCP permissions | C-03, M-04 | done |
 | M-06 | Health and diagnostics | M-04 | done |
+| M-07 | Import from other agent platforms | M-01 | todo |
 | A-01 | App shell and engine supervision | E-05, S-05 | todo |
 | A-02 | EngineClient | E-02 | done |
 | A-03 | Design system | F-01 | done |
@@ -1012,7 +1029,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | A-10 | Terminal | A-04, R-02 | todo |
 | A-11 | Usage and cost | A-05, C-08, C-09 | todo |
 | A-12 | Workspace and repo management | A-04, R-06 | todo |
-| A-13 | MCP management | A-04, M-06 | todo |
+| A-13 | MCP management | A-04, M-06, M-07 | todo |
 | A-14 | Settings and command palette | A-04, E-04 | todo |
 | A-15 | Onboarding | A-12, A-13 | todo |
 | A-16 | Session overview | A-05, R-11 | todo |

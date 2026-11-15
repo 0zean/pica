@@ -655,7 +655,7 @@
         "needsAuthServers": {},
         "mcp3pEnabled": true
       },
-      "connectMs": 657,
+      "connectMs": 598,
       "tools": [
         {
           "name": "add_comment_to_pending_review",
@@ -929,7 +929,7 @@
             },
             {
               "name": "date",
-              "value": "Sat, 14 Nov 2026 22:38:18 GMT"
+              "value": "Sun, 15 Nov 2026 06:06:11 GMT"
             },
             {
               "name": "strict-transport-security",
@@ -941,7 +941,7 @@
             },
             {
               "name": "x-copilot-service-request-id",
-              "value": "2fc855e7-3d64-4c55-88ed-5579960b4831"
+              "value": "6f325585-dcf6-4c83-a5f7-88e763daeae7"
             },
             {
               "name": "x-github-backend",
@@ -953,7 +953,7 @@
             },
             {
               "name": "x-github-request-id",
-              "value": "D110:19CE3D:156F40:17DCF7:6AF8E2DA"
+              "value": "EA0B:F7AC1:73897:924E7:6AF94BD2"
             },
             {
               "name": "x-github-edge-region",
@@ -964,12 +964,12 @@
       },
       "contextInfo": {
         "modelName": "claude-sonnet-5",
-        "systemTokens": 5311,
+        "systemTokens": 5307,
         "customInstructionsTokens": null,
         "conversationTokens": 0,
         "toolDefinitionsTokens": 20804,
         "mcpToolsTokens": 13835,
-        "totalTokens": 26115,
+        "totalTokens": 26111,
         "promptTokenLimit": 128000,
         "compactionThreshold": 102400,
         "limit": 128000,
@@ -979,12 +979,12 @@
         "modelId": "claude-sonnet-5",
         "modelSource": "default",
         "categories": {
-          "systemPrompt": 5311,
+          "systemPrompt": 5307,
           "customInstructions": 0,
           "systemTools": 6969,
           "mcpTools": 13835,
           "messages": 0,
-          "freeSpace": 95485,
+          "freeSpace": 95489,
           "buffer": 6400
         },
         "entryKinds": [
@@ -1024,7 +1024,7 @@
             "serverName": "github",
             "toolCount": 46
           },
-          "ms": 74
+          "ms": 49
         },
         {
           "type": "session.mcp_server_status_changed",
@@ -1032,7 +1032,7 @@
             "serverName": "github",
             "status": "pending"
           },
-          "ms": 74
+          "ms": 49
         },
         {
           "type": "session.mcp_server_status_changed",
@@ -1041,11 +1041,11 @@
             "status": "connected",
             "configSource": "user"
           },
-          "ms": 307
+          "ms": 274
         }
       ],
       "outcome": "connected",
-      "recordedAt": "2026-11-14"
+      "recordedAt": "2026-11-15"
     },
     {
       "id": "github-signin",
