@@ -34,6 +34,13 @@ describe("Copilot event mapping (S-02)", () => {
     expect(event?.data).toEqual({ toolCallId: "t1", success: false, result: { content: "Denied by Pica policy: big.sql is 200000 bytes" } });
   });
 
+  it("carries the billed cost of a model call in credits (S-03)", () => {
+    const usage = { model: "gpt-6-luna", inputTokens: 100, outputTokens: 5, copilotUsage: { totalNanoAiu: 412_500_000 } };
+    expect(toRuntimeEvent(sdkEvent("assistant.usage", usage), context())?.data).toMatchObject({ billedCredits: 0.4125 });
+    const unbilled = toRuntimeEvent(sdkEvent("assistant.usage", { model: "m", inputTokens: 1, outputTokens: 1 }), context());
+    expect(unbilled?.data).not.toHaveProperty("billedCredits");
+  });
+
   it("leaves calls that were not denied as the runtime reported them", () => {
     const event = toRuntimeEvent(sdkEvent("tool.execution_complete", { toolCallId: "t2", success: true, result: { content: "ok" } }), context({ t1: "r" }));
     expect(event?.data).toEqual({ toolCallId: "t2", success: true, result: { content: "ok" } });

@@ -26,7 +26,7 @@ export interface UsageLedgerOptions {
 
 type UsageDraft = EventDraftOf<"usage.recorded">;
 
-// Prices every `usage.recorded` event on its way into the log and writes its `UsageRecord`
+// Prices every unbilled `usage.recorded` event on its way into the log and writes its `UsageRecord`
 // (PLAN.md §5.6), so the ledger and the timeline always show the same credits.
 export function withUsageLedger(log: EventLog, options: UsageLedgerOptions): EventLog {
   const report = options.onError ?? (() => undefined);
@@ -60,7 +60,12 @@ export function withUsageLedger(log: EventLog, options: UsageLedgerOptions): Eve
   };
 }
 
+// A call that arrives with credits was billed that amount by the runtime, which is the true cost on
+// every plan and the only one on plans without token prices (S-03). Otherwise it is priced here.
 function price(draft: UsageDraft, pricing: UsagePricing, report: (error: UsageLedgerError) => void): UsageDraft {
+  if (draft.payload.credits > 0) {
+    return draft;
+  }
   const prices = pricing.pricesFor(draft.payload.model);
   if (prices === null) {
     report({ code: "usage.price_unknown", message: `no token prices are known for model "${draft.payload.model}"` });

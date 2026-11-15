@@ -245,7 +245,7 @@ export class FakeSession implements RuntimeSession {
   }
 
   #recordUsage(
-    step: { model: string; inputTokens: number; cachedInputTokens: number; outputTokens: number },
+    step: { model: string; inputTokens: number; cachedInputTokens: number; outputTokens: number; billedCredits?: number | undefined },
     agentId: string | undefined,
   ): void {
     const previous = this.#usage.get(step.model);
@@ -256,12 +256,13 @@ export class FakeSession implements RuntimeSession {
       outputTokens: (previous?.outputTokens ?? 0) + step.outputTokens,
       calls: (previous?.calls ?? 0) + 1,
     });
-    this.#usedAiCredits += this.#creditsFor(step);
+    this.#usedAiCredits += step.billedCredits ?? this.#creditsFor(step);
     this.emit("assistant.usage", {
       model: step.model,
       inputTokens: step.inputTokens,
       cachedInputTokens: step.cachedInputTokens,
       outputTokens: step.outputTokens,
+      ...(step.billedCredits === undefined ? {} : { billedCredits: step.billedCredits }),
       ...agentField(agentId),
     });
   }

@@ -30,6 +30,8 @@ const usageStep = z.strictObject({
   inputTokens: tokenCount,
   cachedInputTokens: tokenCount.default(0),
   outputTokens: tokenCount,
+  // What the runtime billed, as Copilot reports it on plans without token prices (S-03).
+  billedCredits: z.number().nonnegative().optional(),
 });
 
 const subagentStep = z.strictObject({

@@ -142,8 +142,9 @@ const handlers: Handlers = {
         inputTokens: event.data.inputTokens,
         cachedInputTokens: event.data.cachedInputTokens,
         outputTokens: event.data.outputTokens,
-        // Priced by the usage ledger as the event is logged (core/src/usage).
-        credits: 0,
+        // The billed cost when the runtime reports one; otherwise the usage ledger prices the call
+        // from token prices as the event is logged (core/src/usage).
+        credits: event.data.billedCredits ?? 0,
         timestamp: event.timestamp,
       }),
     ),

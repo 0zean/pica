@@ -96,6 +96,9 @@ export interface RuntimeSession {
 }
 
 export interface AgentRuntime {
+  // The lowest `maxAiCredits` the runtime accepts; a lower session limit is enforced by the engine
+  // instead (S-03: Copilot refuses limits under 30). Absent means any limit is accepted.
+  readonly minSessionCredits?: number | undefined;
   listModels(): RuntimeResult<readonly RuntimeModel[]>;
   quota(): RuntimeResult<QuotaInfo>;
   createSession(options: SessionOptions): RuntimeResult<RuntimeSession>;

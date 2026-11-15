@@ -4,6 +4,7 @@ import {
   type AgentRuntime,
   type QuotaInfo,
   type ResumeOptions,
+  type RuntimeError,
   type RuntimeEvent,
   type RuntimeModel,
   type RuntimeResult,
@@ -21,6 +22,8 @@ export interface FakeRuntimeOptions {
   // Sessions an earlier runtime process created. `resumeSession` adopts them, playing this
   // scenario's turns from the first, as a runtime restarted against a persisted session would.
   readonly resumableSessionIds?: readonly string[];
+  // Refuse a lower `maxAiCredits`, as Copilot does below 30 (S-03).
+  readonly minSessionCredits?: number | undefined;
 }
 
 // An `AgentRuntime` that plays a scenario. Every session plays the scenario's turns from the
@@ -32,12 +35,14 @@ export class FakeRuntime implements AgentRuntime {
   readonly #sessions = new Map<string, FakeSession>();
   readonly #log: RuntimeEvent[] = [];
   readonly #resumable: ReadonlySet<string>;
+  readonly minSessionCredits: number | undefined;
 
   constructor(options: FakeRuntimeOptions) {
     this.#scenario = options.scenario;
     this.#clock = options.clock ?? steppingClock();
     this.#ids = options.ids ?? sequentialIds();
     this.#resumable = new Set(options.resumableSessionIds ?? []);
+    this.minSessionCredits = options.minSessionCredits;
   }
 
   eventLog(): readonly RuntimeEvent[] {
@@ -57,6 +62,10 @@ export class FakeRuntime implements AgentRuntime {
     if (!this.#scenario.models.some((entry) => entry.id === model)) {
       return Promise.resolve(err({ code: "runtime.model_unavailable", message: `model "${model}" is not available` }));
     }
+    const belowFloor = this.#belowFloor(options);
+    if (belowFloor !== undefined) {
+      return Promise.resolve(err(belowFloor));
+    }
     const id = options.sessionId ?? this.#ids("session");
     if (this.#sessions.has(id) || this.#resumable.has(id)) {
       return Promise.resolve(err({ code: "runtime.invalid_argument", message: `session ${id} already exists` }));
@@ -67,6 +76,10 @@ export class FakeRuntime implements AgentRuntime {
   }
 
   resumeSession(options: ResumeOptions): RuntimeResult<RuntimeSession> {
+    const belowFloor = this.#belowFloor(options);
+    if (belowFloor !== undefined) {
+      return Promise.resolve(err(belowFloor));
+    }
     const session = this.#sessions.get(options.sessionId) ?? this.#adopt(options);
     if (session === undefined) {
       return Promise.resolve(
@@ -88,6 +101,15 @@ export class FakeRuntime implements AgentRuntime {
     );
     this.#sessions.set(id, session);
     return session;
+  }
+
+  #belowFloor(options: SessionOptions): RuntimeError | undefined {
+    const { maxAiCredits } = options;
+    const floor = this.minSessionCredits;
+    if (maxAiCredits === undefined || floor === undefined || maxAiCredits >= floor) {
+      return undefined;
+    }
+    return { code: "runtime.invalid_argument", message: `Minimum session limit is ${String(floor)} AI credits.` };
   }
 }
 
