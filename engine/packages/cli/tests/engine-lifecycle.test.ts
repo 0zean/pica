@@ -1,4 +1,5 @@
 import { lstat } from "node:fs/promises";
+import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { ENGINE_ENTRY } from "@pica/server";
 import { PROCESS_TEST_TIMEOUT_MS, cliHarness } from "./helpers.ts";
@@ -34,10 +35,11 @@ describe("engine lifecycle", { timeout: PROCESS_TEST_TIMEOUT_MS }, () => {
   });
 
   it("starts the real picad by default", async () => {
-    const run = await cli.run(["session", "list"], { PICA_ENGINE_ENTRY: ENGINE_ENTRY });
+    // HOME keeps the engine's store and config inside the test directory.
+    const run = await cli.run(["session", "list"], { PICA_ENGINE_ENTRY: ENGINE_ENTRY, HOME: cli.dir });
     expect((await lstat(cli.socketPath)).isSocket()).toBe(true);
-    // picad does not construct a runtime yet, so it answers session methods as not implemented.
-    expect(run.stderr).toContain("not implemented");
-    expect(run.code).toBe(3);
+    // E-11: the composed engine answers session methods from its own store.
+    expect(run).toEqual({ code: 0, stdout: "No sessions.\n", stderr: "" });
+    expect((await lstat(join(cli.dir, "Library", "Application Support", "Pica", "pica.db"))).isFile()).toBe(true);
   });
 });

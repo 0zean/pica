@@ -2,6 +2,8 @@ import type { SessionEvent } from "@pica/protocol";
 import type { Result } from "./client.ts";
 
 type SessionDto = Result<"session.get">["session"];
+type WorkspaceDto = Result<"workspace.get">["workspace"];
+type RepoDto = Result<"repo.get">["repo"];
 type UsageRollup = Result<"usage.rollup">;
 
 // One line per event, or none for events that only matter to a live UI (deltas, context size).
@@ -63,6 +65,26 @@ export function renderSessions(sessions: readonly SessionDto[]): string {
       String(session.lastSeq),
       session.updatedAt,
     ]),
+  );
+}
+
+export function renderWorkspaces(workspaces: readonly WorkspaceDto[]): string {
+  if (workspaces.length === 0) {
+    return "No workspaces.";
+  }
+  return table(
+    ["ID", "NAME", "PINNED"],
+    workspaces.map((workspace) => [workspace.id, workspace.name, String(workspace.pinnedRepoIds.length)]),
+  );
+}
+
+export function renderRepos(repos: readonly RepoDto[]): string {
+  if (repos.length === 0) {
+    return "No repos.";
+  }
+  return table(
+    ["ID", "REMOTE", "STATE", "PATH"],
+    repos.map((repo) => [repo.id, repo.remoteUrl ?? "-", repo.cloneState, repo.localPath ?? "-"]),
   );
 }
 

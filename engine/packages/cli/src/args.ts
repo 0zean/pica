@@ -20,6 +20,10 @@ export type Command =
   | { readonly kind: "session.send"; readonly sessionId: string; readonly text: string; readonly mode: z.output<typeof SendMode> }
   | { readonly kind: "session.attach"; readonly sessionId: string; readonly afterSeq: number; readonly follow: boolean }
   | { readonly kind: "session.list"; readonly workspaceId: string | undefined }
+  | { readonly kind: "workspace.create"; readonly name: string }
+  | { readonly kind: "workspace.list" }
+  | { readonly kind: "repo.add"; readonly path: string; readonly workspaceId: string | undefined }
+  | { readonly kind: "repo.list"; readonly workspaceId: string | undefined }
   | {
       readonly kind: "usage";
       readonly sessionId: string | undefined;
@@ -45,6 +49,11 @@ Commands:
       Print the session's events after <seq> (default 0), then the running turn if there is one.
       --follow keeps printing until the session ends.
   session list [--workspace <id>]
+  workspace create <name>
+  workspace list
+  repo add <path> [--workspace <id>]
+      Register a local git checkout in place; --workspace also pins it to that workspace.
+  repo list [--workspace <id>]
   usage [--session <id>] [--workspace <id>] [--by session|agent|model|workspace|day]
       Calls, tokens and credits from the engine's usage ledger, with the estimated savings.
 
@@ -63,15 +72,17 @@ const globalOptions = {
   help: { type: "boolean", short: "h" },
 } as const satisfies ParseArgsConfig["options"];
 
+// Commands named by two words, such as `session new`.
+const groups: ReadonlySet<string> = new Set(["session", "workspace", "repo"]);
 const sendModes = SendMode.options;
 const groupings = UsageGroupBy.options;
 
 export function parseInvocation(argv: readonly string[]): Invocation {
   const [first, second] = commandWords(argv);
-  const route = first === "session" ? `session ${second ?? ""}` : (first ?? "help");
+  const route = first !== undefined && groups.has(first) ? `${first} ${second ?? ""}` : (first ?? "help");
   const parsed = parse(route, argv);
   const values = parsed.values;
-  const positionals = parsed.positionals.slice(route.startsWith("session") ? 2 : 1);
+  const positionals = parsed.positionals.slice(route.includes(" ") ? 2 : 1);
   const socketPath = stringValue(values["socket"]);
   const json = values["json"] === true;
   if (values["help"] === true) {
@@ -121,6 +132,8 @@ function commandOptions(route: string): ParseArgsConfig["options"] {
     case "session attach":
       return { after: { type: "string" }, follow: { type: "boolean" } };
     case "session list":
+    case "repo add":
+    case "repo list":
       return { workspace: { type: "string" } };
     case "usage":
       return { session: { type: "string" }, workspace: { type: "string" }, by: { type: "string" } };
@@ -155,6 +168,17 @@ function buildCommand(route: string, values: Values, positionals: readonly strin
     case "session list":
       noExtra(positionals);
       return { kind: "session.list", workspaceId: stringValue(values["workspace"]) };
+    case "workspace create":
+      return { kind: "workspace.create", name: required(positionals.join(" ") || undefined, "the workspace name") };
+    case "workspace list":
+      noExtra(positionals);
+      return { kind: "workspace.list" };
+    case "repo add":
+      noExtra(positionals.slice(1));
+      return { kind: "repo.add", path: required(positionals[0], "a repository path"), workspaceId: stringValue(values["workspace"]) };
+    case "repo list":
+      noExtra(positionals);
+      return { kind: "repo.list", workspaceId: stringValue(values["workspace"]) };
     case "usage":
       noExtra(positionals);
       return {

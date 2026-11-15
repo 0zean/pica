@@ -2,6 +2,7 @@
 // way it starts the real engine; the rest comes from the environment the test gives the CLI:
 // PICA_TEST_DB, PICA_TEST_SCENARIO, and PICA_TEST_STARTS (a file that gets one line per start).
 import { appendFileSync } from "node:fs";
+import { dirname } from "node:path";
 import { parseArgs } from "node:util";
 // The store and runtime entries, not the package indexes: those also load Copilot modules whose
 // parameter properties Node's type stripping rejects.
@@ -14,6 +15,7 @@ import {
   steppingClock,
 } from "../../../testkit/src/runtime/index.ts";
 import { silentLogger, startEngine } from "../../../server/src/index.ts";
+import { workspaceOptions } from "../../../server/src/composition-workspaces.ts";
 
 function required(name: string, value: string | undefined): string {
   if (value === undefined) {
@@ -49,9 +51,17 @@ const prices = new Map([
 ]);
 
 const ids = sequentialIds();
+// E-11: workspaces and the repo registry as `picad` composes them, so `pica workspace` and `pica repo` work.
+const workspaceIds = sequentialIds();
 const listener = await startEngine({
   socketPath: required("--socket", values.socket),
   log: silentLogger,
+  ...workspaceOptions({
+    store: store.value,
+    dataDir: dirname(required("PICA_TEST_DB", process.env["PICA_TEST_DB"])),
+    env: process.env,
+    newId: () => workspaceIds("id"),
+  }),
   sessions: {
     store: store.value,
     runtime: new FakeRuntime({

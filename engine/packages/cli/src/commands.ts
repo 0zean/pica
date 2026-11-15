@@ -1,10 +1,11 @@
+import { resolve } from "node:path";
 import type { SessionEvent } from "@pica/protocol";
 import type { Command } from "./args.ts";
 import type { EngineConnection } from "./client.ts";
 import { EngineError, SessionFailure } from "./errors.ts";
 import { follow, isBusy, isSessionEnd, isTurnEnd } from "./follow.ts";
 import type { Followed, Until } from "./follow.ts";
-import { renderEvent, renderSessions, renderUsage } from "./render.ts";
+import { renderEvent, renderRepos, renderSessions, renderUsage, renderWorkspaces } from "./render.ts";
 
 export interface Output {
   readonly json: boolean;
@@ -23,6 +24,14 @@ export async function runCommand(command: EngineCommand, connection: EngineConne
       return sessionAttach(command, connection, out);
     case "session.list":
       return sessionList(command, connection, out);
+    case "workspace.create":
+      return workspaceCreate(command, connection, out);
+    case "workspace.list":
+      return workspaceList(connection, out);
+    case "repo.add":
+      return repoAdd(command, connection, out);
+    case "repo.list":
+      return repoList(command, connection, out);
     case "usage":
       return usage(command, connection, out);
   }
@@ -167,4 +176,32 @@ async function usage(command: Extract<Command, { kind: "usage" }>, connection: E
     ...(command.workspaceId === undefined ? {} : { workspaceId: command.workspaceId }),
   });
   out.write(out.json ? JSON.stringify({ groupBy: command.groupBy, ...result }) : renderUsage(command.groupBy, result));
+}
+
+async function workspaceCreate(
+  command: Extract<Command, { kind: "workspace.create" }>,
+  connection: EngineConnection,
+  out: Output,
+): Promise<void> {
+  const { workspace } = await connection.request("workspace.create", { name: command.name });
+  out.write(out.json ? JSON.stringify({ workspace }) : `Workspace ${workspace.id}`);
+}
+
+async function workspaceList(connection: EngineConnection, out: Output): Promise<void> {
+  const { workspaces } = await connection.request("workspace.list", {});
+  out.write(out.json ? JSON.stringify({ workspaces }) : renderWorkspaces(workspaces));
+}
+
+// A relative path is taken from the directory `pica` runs in, so `pica repo add .` works.
+async function repoAdd(command: Extract<Command, { kind: "repo.add" }>, connection: EngineConnection, out: Output): Promise<void> {
+  const { repo } = await connection.request("repo.addPath", { path: resolve(command.path) });
+  if (command.workspaceId !== undefined) {
+    await connection.request("workspace.pinRepo", { workspaceId: command.workspaceId, repoId: repo.id });
+  }
+  out.write(out.json ? JSON.stringify({ repo }) : `Repo ${repo.id} ${repo.remoteUrl ?? repo.localPath ?? ""}`);
+}
+
+async function repoList(command: Extract<Command, { kind: "repo.list" }>, connection: EngineConnection, out: Output): Promise<void> {
+  const { repos } = await connection.request("repo.list", command.workspaceId === undefined ? {} : { workspaceId: command.workspaceId });
+  out.write(out.json ? JSON.stringify({ repos }) : renderRepos(repos));
 }
