@@ -1,8 +1,8 @@
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { afterAll, describe, expect, it } from "vitest";
 
 const runner = join(import.meta.dirname, "..", "..", "tools", "verify", "run.sh");
 
@@ -13,10 +13,18 @@ interface Check {
   manual?: boolean;
 }
 
+// Each call with `units` writes them to a fresh temp folder; all are removed when the file's tests end.
+const tempDirs: string[] = [];
+afterAll(() => {
+  for (const dir of tempDirs.splice(0)) rmSync(dir, { recursive: true, force: true });
+});
+
 function verify(unit: string | undefined, units?: Record<string, Check[]>, extraEnv: NodeJS.ProcessEnv = {}) {
   const env: NodeJS.ProcessEnv = { ...process.env, ...extraEnv };
   if (units !== undefined) {
-    const file = join(mkdtempSync(join(tmpdir(), "pica-verify-")), "units.json");
+    const dir = mkdtempSync(join(tmpdir(), "pica-verify-"));
+    tempDirs.push(dir);
+    const file = join(dir, "units.json");
     writeFileSync(file, JSON.stringify(units));
     env.VERIFY_UNITS_FILE = file;
   }

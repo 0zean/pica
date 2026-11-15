@@ -1,4 +1,6 @@
-// One GitHub server Pica can authenticate against: github.com or a GitHub Enterprise Server instance.
+// One GitHub server Pica can authenticate against (Q-02: all three deployments): github.com,
+// GitHub Enterprise Cloud with data residency (`<subdomain>.ghe.com`), or a GitHub Enterprise
+// Server instance on its own host.
 export interface GitHubHostSettings {
   readonly host: string;
   readonly webBaseUrl?: string;
@@ -29,9 +31,14 @@ export function resolveGitHubHost(settings: GitHubHostSettings): GitHubHost {
   };
 }
 
-// GitHub Enterprise Server serves its REST API under /api/v3 on the instance host.
+export const dataResidencySuffix = ".ghe.com";
+
+// github.com and GHE.com serve the REST API on an `api.` subdomain; GitHub Enterprise Server serves
+// it under /api/v3 on the instance host.
 function defaultApiBaseUrl(host: string): string {
-  return host === githubDotCom ? "https://api.github.com" : `https://${host}/api/v3`;
+  if (host === githubDotCom) return "https://api.github.com";
+  if (host.endsWith(dataResidencySuffix)) return `https://api.${host}`;
+  return `https://${host}/api/v3`;
 }
 
 function trimTrailingSlash(url: string): string {

@@ -98,14 +98,14 @@
   ],
   "S-06": [
     {
-      "check": "GitHub, Datadog, ClickUp, and Snowflake each connect and list tools; the exact endpoint and auth method used are recorded, replacing the entries in §2.2.",
+      "check": "GitHub connects and lists tools, and the endpoint and auth method used are recorded in §2.2. Datadog, ClickUp and Snowflake are optional (D-18): `s06.mjs connect <server>` checks each on a machine that has it.",
       "live": true,
-      "run": "node spikes/s-06-mcp/s06.mjs connect"
+      "run": "node spikes/s-06-mcp/s06.mjs connect github"
     },
     {
-      "check": "Tool-definition token cost per server is recorded from `contextInfo`.",
+      "check": "Tool-definition token cost per server is recorded from `contextInfo` (GitHub: 13,835 tokens).",
       "live": true,
-      "run": "node spikes/s-06-mcp/s06.mjs tokens"
+      "run": "node spikes/s-06-mcp/s06.mjs tokens github"
     },
     {
       "check": "A8 is resolved.",
@@ -633,7 +633,10 @@
   ],
   "M-02": [
     {
-      "check": "Each preset renders the expected definition for sample parameters, using the endpoints recorded by S-06."
+      "check": "Each preset renders the expected definition for sample parameters, using the endpoints in §2.2."
+    },
+    {
+      "check": "With no preset enabled, a session's config carries no MCP servers."
     },
     {
       "check": "Missing or malformed parameters fail validation with the parameter named."
@@ -685,6 +688,23 @@
     {
       "check": "A crashing stdio server is restarted with backoff and gives up after the configured attempts.",
       "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/mcp-health/restart-backoff.test.ts packages/adapters/tests/mcp-client/restart.test.ts"
+    }
+  ],
+  "M-07": [
+    {
+      "check": "Golden tests: one fixture per platform format converts to the expected Pica entries, with notes for fields Pica drops."
+    },
+    {
+      "check": "A pasted snippet in each common shape (`mcpServers`, `servers`, a bare name map, one entry) imports; a malformed one fails with the key path named."
+    },
+    {
+      "check": "An imported entry with an inline secret is stored with a secret reference, and the secret value is in the broker, not the file."
+    },
+    {
+      "check": "A platform file that is missing or unreadable yields no candidates and no error."
+    },
+    {
+      "check": "Candidates are never attached to a session until the user attaches them."
     }
   ],
   "A-01": [
