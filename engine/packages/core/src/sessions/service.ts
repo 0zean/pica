@@ -89,6 +89,8 @@ interface LiveSession {
   readonly budget: SessionBudget;
   // True when the limit is below what the runtime accepts, so the engine stops the turn itself.
   readonly enforcesBudget: boolean;
+  // Budget approvals the engine raised for its own limit; resolving them involves no runtime call.
+  readonly engineApprovals: Set<string>;
   unsubscribe: () => void;
   steer: string | undefined;
   abortReason: AbortReason;
@@ -148,7 +150,7 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     return session.ok ? session.value.state : undefined;
   }
 
-  function attach(sessionId: string, runtime: RuntimeSession, budget: SessionBudget): void {
+  function attach(sessionId: string, runtime: RuntimeSession, budget: SessionBudget): LiveSession {
     const limit = budget.limit();
     const session: LiveSession = {
       runtime,
@@ -157,6 +159,7 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
       queue: [],
       budget,
       enforcesBudget: limit !== null && runtimeLimit(limit) === undefined,
+      engineApprovals: new Set(),
       unsubscribe: () => undefined,
       steer: undefined,
       abortReason: "user",
@@ -165,6 +168,7 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
       onRuntimeEvent(sessionId, session, event);
     });
     live.set(sessionId, session);
+    return session;
   }
 
   // The service records what it knows better than the runtime: the user's message and its mode,
@@ -237,6 +241,30 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     if (!aborted.ok) {
       append(sessionId, { type: "session.error", payload: { code: aborted.error.code, message: aborted.error.message }, timestamp: clock() });
     }
+    requestEngineBudgetApproval(sessionId, session);
+  }
+
+  // The same budget approval the runtime raises (`budget.exhausted`), so allowing it with
+  // `budgetCredits` raises the engine's limit and the session can take turns again.
+  function requestEngineBudgetApproval(sessionId: string, session: LiveSession): void {
+    const limit = session.budget.limit();
+    if (limit === null) {
+      return;
+    }
+    // Unique across resumes, since earlier approvals stay in the session's event log.
+    const requestId = `${sessionId}-budget-${clock()}-${String(session.engineApprovals.size + 1)}`;
+    const event: RuntimeEvent = {
+      id: requestId,
+      timestamp: clock(),
+      type: "session_limits_exhausted.requested",
+      data: { requestId, usedAiCredits: session.budget.spent(), maxAiCredits: limit },
+    };
+    for (const appended of session.recorder.record(event).appended) {
+      if (appended.type === "approval.requested") {
+        session.approvals.set(appended.payload.id, appended.payload);
+        session.engineApprovals.add(appended.payload.id);
+      }
+    }
   }
 
   // The limit to hand the runtime as `maxAiCredits`, or undefined when it is below the runtime's floor.
@@ -248,9 +276,11 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     if (!session.enforcesBudget || !session.budget.exhausted()) {
       return undefined;
     }
+    const pending = [...session.engineApprovals].find((id) => session.approvals.has(id));
+    const raise = pending === undefined ? "" : `; allow approval ${pending} with a higher budget to continue`;
     return sessionFailure(
       "session.budget_exhausted",
-      `session ${sessionId} has used ${String(session.budget.spent())} of its ${String(session.budget.limit())} credits`,
+      `session ${sessionId} has used ${String(session.budget.spent())} of its ${String(session.budget.limit())} credits${raise}`,
     );
   }
 
@@ -427,6 +457,10 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     if (session.approvals.size === 0 && stateOf(sessionId) === "awaiting_approval") {
       move(sessionId, "approval_resolved");
     }
+    if (session.engineApprovals.has(approvalId)) {
+      // The engine already ended the turn when it raised this approval; the runtime knows nothing of it.
+      return ok(undefined);
+    }
     if (limit === null) {
       append(sessionId, { type: "session.aborted", payload: { reason: "budget" }, timestamp: clock() });
     }
@@ -487,8 +521,13 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
       move(sessionId, "fail");
       return runtimeFailure(resumed.error);
     }
-    attach(sessionId, resumed.value, budgetFor(limit, deps.usage === undefined ? 0 : sessionSpend(deps.usage, sessionId)));
-    return move(sessionId, "resume");
+    const attached = attach(sessionId, resumed.value, budgetFor(limit, deps.usage === undefined ? 0 : sessionSpend(deps.usage, sessionId)));
+    const moved = move(sessionId, "resume");
+    // A limit the engine enforces was used up before the restart: offer to raise it again.
+    if (moved.ok && attached.enforcesBudget && attached.budget.exhausted()) {
+      requestEngineBudgetApproval(sessionId, attached);
+    }
+    return moved;
   }
 
   async function end(sessionId: string): Promise<SessionResult<undefined>> {
