@@ -40,6 +40,10 @@ const subagentStep = z.strictObject({
   model: z.string().min(1),
   steps: z.array(z.discriminatedUnion("type", [textStep, toolCallStep, usageStep])),
   failure: z.string().min(1).optional(),
+  // As the Copilot runtime does (S-02), the parent first calls `task`; the sub-agent's events carry
+  // that call's id, and the call completes with the sub-agent's last text or its failure. Off by
+  // default, so older scenarios keep their event streams.
+  viaTask: z.boolean().default(false),
 });
 
 const contextUsageStep = z.strictObject({

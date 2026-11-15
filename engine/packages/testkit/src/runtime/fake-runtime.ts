@@ -34,6 +34,7 @@ export class FakeRuntime implements AgentRuntime {
   readonly #ids: IdSource;
   readonly #sessions = new Map<string, FakeSession>();
   readonly #log: RuntimeEvent[] = [];
+  readonly #options = new Map<string, SessionOptions>();
   readonly #resumable: ReadonlySet<string>;
   readonly minSessionCredits: number | undefined;
 
@@ -47,6 +48,11 @@ export class FakeRuntime implements AgentRuntime {
 
   eventLog(): readonly RuntimeEvent[] {
     return [...this.#log];
+  }
+
+  // The options the session was last created or resumed with.
+  sessionOptions(sessionId: string): SessionOptions | undefined {
+    return this.#options.get(sessionId);
   }
 
   listModels(): RuntimeResult<readonly RuntimeModel[]> {
@@ -86,6 +92,7 @@ export class FakeRuntime implements AgentRuntime {
         err({ code: "runtime.session_not_found", message: `no session with id ${options.sessionId}` }),
       );
     }
+    this.#options.set(options.sessionId, options);
     session.reopen(sessionOptions(options));
     return Promise.resolve(ok(session));
   }
@@ -95,6 +102,7 @@ export class FakeRuntime implements AgentRuntime {
   }
 
   #newSession(id: string, options: SessionOptions): FakeSession {
+    this.#options.set(id, options);
     const session = new FakeSession(
       { id, scenario: this.#scenario, clock: this.#clock, ids: this.#ids, record: (event) => this.#log.push(event) },
       sessionOptions(options),
@@ -114,7 +122,7 @@ export class FakeRuntime implements AgentRuntime {
 }
 
 function sessionOptions(options: SessionOptions): FakeSessionOptions {
-  return { hooks: options.hooks ?? {}, maxAiCredits: options.maxAiCredits };
+  return { hooks: options.hooks ?? {}, maxAiCredits: options.maxAiCredits, customAgents: options.customAgents };
 }
 
 function toRuntimeModel(model: Scenario["models"][number]): RuntimeModel {
