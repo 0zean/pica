@@ -24,6 +24,7 @@ import type {
   Delegator,
   EventLog,
   FanOutInfo,
+  GitHubHost,
   McpHealthMonitor,
   McpSecretRedactor,
   OutputGuardDeps,
@@ -39,7 +40,7 @@ import type {
 import { registerAccountHandlers } from "./account-handlers.ts";
 import { registerEngineHandlers } from "./engine-handlers.ts";
 import { registerFanOutHandlers, toFanOutDto } from "./fanout-handlers.ts";
-import { registerMcpHealthHandlers } from "./mcp-handlers.ts";
+import { registerMcpHealthHandlers, registerMcpPresetHandlers } from "./mcp-handlers.ts";
 import { SocketListener } from "./listener.ts";
 import type { ConnectionLimits } from "./connection.ts";
 import type { Logger } from "./logger.ts";
@@ -84,6 +85,8 @@ export interface EngineOptions {
   readonly sessions?: EngineSessionOptions;
   // M-06: answers `mcp.status*` and `mcp.restart`, and broadcasts `mcp.statusChanged`.
   readonly mcpHealth?: McpHealthMonitor;
+  // D-20: the configured GitHub host, which the GitHub MCP preset follows. Absent means github.com.
+  readonly githubHost?: GitHubHost;
   // R-06: answers `workspace.*`, `repo.list` and `repo.get`, and broadcasts `workspace.changed`.
   readonly workspaces?: WorkspaceService;
 }
@@ -116,6 +119,8 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
   if (options.sessions !== undefined) {
     registerAccountHandlers(router, options.sessions.runtime);
   }
+  // M-02: presets need no adapter, so they are always answered.
+  registerMcpPresetHandlers(router, options.githubHost === undefined ? {} : { githubHost: options.githubHost });
   if (options.mcpHealth !== undefined) {
     registerMcpHealthHandlers(router, options.mcpHealth);
   }

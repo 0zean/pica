@@ -15,6 +15,7 @@ export * from "./github/index.ts";
 export * from "./discovery/index.ts";
 export * from "./repos/index.ts";
 export * from "./mcp-auth/index.ts";
+export * from "./mcp-presets/index.ts";
 export * from "./routing/index.ts";
 export * from "./models/index.ts";
 export * from "./sessions/index.ts";

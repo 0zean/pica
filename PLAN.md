@@ -712,9 +712,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **M-02 · Presets** — M-01, S-06
 - Build: parameterized, optional presets for GitHub, Datadog, ClickUp, Snowflake (D-18). None is enabled by default. The GitHub preset follows the configured GitHub host (D-20).
 - Verify:
-  - [ ] Each preset renders the expected definition for sample parameters, using the endpoints in §2.2.
-  - [ ] With no preset enabled, a session's config carries no MCP servers.
-  - [ ] Missing or malformed parameters fail validation with the parameter named.
+  - [x] Each preset renders the expected definition for sample parameters, using the endpoints in §2.2.
+  - [x] With no preset enabled, a session's config carries no MCP servers.
+  - [x] Missing or malformed parameters fail validation with the parameter named.
 
 **M-03 · Secrets and OAuth** — M-01, E-05
 - Build: secret references resolved through the client broker or environment; OAuth login orchestration.
@@ -1012,7 +1012,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | R-10 | Multi-repo change sets | R-02, R-07 | done |
 | R-11 | Fan-out runs | R-06, E-08 | done |
 | M-01 | MCP registry and configuration | E-04 | done |
-| M-02 | MCP presets | M-01, S-06 | todo |
+| M-02 | MCP presets | M-01, S-06 | done |
 | M-03 | Secrets and OAuth | M-01, E-05 | done |
 | M-04 | Scoping and tool budgets | M-01, C-02 | done |
 | M-05 | MCP permissions | C-03, M-04 | done |

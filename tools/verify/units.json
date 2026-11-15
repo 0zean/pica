@@ -637,13 +637,16 @@
   ],
   "M-02": [
     {
-      "check": "Each preset renders the expected definition for sample parameters, using the endpoints in §2.2."
+      "check": "Each preset renders the expected definition for sample parameters, using the endpoints in §2.2.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/mcp-presets/render.test.ts packages/server/tests/mcp/presets-rpc.test.ts"
     },
     {
-      "check": "With no preset enabled, a session's config carries no MCP servers."
+      "check": "With no preset enabled, a session's config carries no MCP servers.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/mcp-presets/no-preset.test.ts"
     },
     {
-      "check": "Missing or malformed parameters fail validation with the parameter named."
+      "check": "Missing or malformed parameters fail validation with the parameter named.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/mcp-presets/validation.test.ts packages/server/tests/mcp/presets-rpc.test.ts"
     }
   ],
   "M-03": [
