@@ -1,69 +1,91 @@
-# Session Handoff — M-02, C-07 and M-07 landed; the import is wired into picad
+# Session Handoff — E-11 landed: picad has a production composition, and Milestone M1 passes live
 
 ## Where it started
-Phase 0 and G0 closed on 2026-11-15 (#66 to #68). The owner then asked for M-07 and M-02 to run in parallel sessions, and C-07 in a third, followed by all three landed one at a time. Wiring M-07's import service into `picad` came last.
+The previous handoff named the biggest gap: `picad` had no production composition, so a real engine answered `session.*` as not implemented, and Milestone M1 had never run end to end. This session added unit E-11 for that composition, built it, ran M1 live, and landed it.
 
 ## Decisions locked + what shipped
-- **https://github.com/0zean/pica/pull/69, M-02 presets, merged as `c8774ee`.**
-  - What it adds: `engine/packages/core/src/mcp-presets/`, presets for GitHub, Datadog, ClickUp and Snowflake. They use only the §2.2 endpoints and only secret references, and none is enabled by default.
-  - RPCs: `mcp.presets` and `mcp.renderPreset`, which add or attach nothing.
-  - The GitHub preset follows the configured host. GHE.com and GHES require an explicit `url`, because their Copilot MCP endpoint is not recorded.
-  - Spec: `docs/mcp-presets.md`.
-- **https://github.com/0zean/pica/pull/70, C-07 Delegator, merged as `0dd41a5`.**
-  - What it adds: the `Delegator` port in `engine/packages/core/src/delegation/`, and a runtime-native implementation that builds `customAgents` from C-02 definitions and C-05 profiles. Each child gets exactly its definition's tools, and `model` is omitted when its tier resolves to `null`.
-  - Wiring: through `createSessionService({ delegator })` and `EngineSessionOptions.delegator`.
-  - Live run on Copilot Free: no worker model was requested, and bulk-reader's calls routed to `gpt-6-luna`. The check records that and passes.
-  - The `child_session` fallback mode is declared but not built; it is a follow-up in `PLAN.md` C-07.
-- **https://github.com/0zean/pica/pull/71, M-07 import, merged as `d8d7e58`.**
-  - What it adds:
-    - Pure formats in `engine/packages/core/src/mcp-import/` for Claude Desktop, Claude Code, Cursor, Windsurf, VS Code user settings and Gemini CLI, plus a paste parser.
-    - macOS discovery in `engine/packages/adapters/src/config/mcp-import-paths.ts`.
-    - The `mcp.importCandidates` and `mcp.import` RPCs, and the engine→client `secrets.set` request, which Swift's `SecretBroker.store` answers.
-  - Codex is deferred: it needs a TOML parser, and adding `smol-toml` was not approved in that session. Spec: `docs/mcp-import.md`.
-  - It conflicted with #69 in `methods.ts` and `engine.ts`, because both added methods and handlers. The resolution keeps both sides, with the protocol schema and Swift regenerated.
-- **https://github.com/0zean/pica/pull/72, wiring, merged as `c33b9aa`.**
-  - `engine/packages/server/src/main.ts` composes `mcpImportOptions(homedir())`, defined in `engine/packages/server/src/composition.ts`.
-  - That made `picad` load `@pica/adapters` for the first time, and it crashed at startup. The CLI runs `picad` with `node --experimental-strip-types`, which cannot run TypeScript parameter properties.
-  - Five classes were fixed, including `CopilotRuntimeSession`. `engine/tsconfig.json` now sets `erasableSyntaxOnly`.
-  - `engine/packages/server/tests/main-startup.test.ts` starts `picad` the way the CLI does, and fails if the fix is reverted.
-- **Landing:** `verify-engine` is required on `main`, and GitHub auto-merge is off. The procedure is to merge `origin/main` into the branch, run `make verify-engine` and `make verify UNIT=<ID>` (plus `make verify-app` if protocol files changed), push, then run `gh pr checks <n> --watch --fail-fast && gh pr merge <n> --merge --match-head-commit <sha>`.
-- **Pitfall:** a Unix socket path over 104 bytes fails with a misleading `EADDRINUSE` on macOS. Use a short directory under `$TMPDIR` for hand-run sockets.
+- **https://github.com/0zean/pica/pull/74, E-11, merged as `20f039b`.**
+  - `composeEngine` in `engine/packages/server/src/composition.ts` runs from `main.ts` before the socket opens. Its helpers are `composition-config.ts` and `composition-workspaces.ts`.
+  - Everything lives under `~/Library/Application Support/Pica/`: `pica.db`, `audit/audit.jsonl`, `sessions/<id>/artifacts/`, and `repos/` for managed clones.
+  - It composes:
+    - `CopilotRuntime`, which connects lazily, so startup needs no login.
+    - The user `config.jsonc` with the managed policy (H-01). Each call re-reads it; an edit that doesn't validate is logged and the last good config is kept.
+    - The model catalog with fallback prices (C-01).
+    - The read gate (C-04) and output guard (C-06).
+    - The runtime-native delegator over the built-in and user agents (C-07), the usage ledger (C-08), budgets (C-09) and the audit log (H-02).
+    - Workspaces (R-06), with discovery through `gh auth token` on github.com.
+    - The repo registry (R-03).
+    - The MCP import (M-07).
+  - New engine option `EngineSessionOptions.readGate`: read-gate decisions go to the audited session log, the same way the output guard's do.
+  - New handlers (`repo-handlers.ts`): `repo.addPath`, `repo.addUrl` and `repo.remove`. Before this, nothing answered them.
+  - If the store, config, agent files or audit log can't be opened, `picad` exits with code 1 before its ready line, naming the file and key path.
+  - CLI: new `pica workspace create|list` and `pica repo add <path> [--workspace <id>]|list`. `repo add .` resolves against the directory the CLI runs in.
+  - `@pica/adapters` moved to `dependencies` of `@pica/server`, because `picad` loads it at runtime.
+  - `engine-lifecycle.test.ts` used to start the real `picad` with the developer's real `HOME`. It now uses the test directory and checks for a real answer.
+- **Milestone M1 met, 2026-11-15, Copilot Free.**
+  - Two main-agent calls routed to `mai-code-1.1-flash`: 10,541 input, 12,800 cached and 139 output tokens, 0.2531 credits.
+  - The README `view` needed no permission prompt.
+  - Recorded under E-11's live check and the M1 line in `PLAN.md`.
+- **https://github.com/0zean/pica/pull/75, merged as `3230be7`:** E-11 is `done` in the unit index.
+- **Landing on this repo:**
+  - GitHub auto-merge is not allowed. `mcp__ccd_pr__set_auto_merge` fails with "Auto merge is not allowed for this repository".
+  - Land with `gh pr checks <n> --watch --fail-fast && gh pr merge <n> --merge --match-head-commit <sha>`, run in the background.
+  - The auto-mode permission check blocked turning Auto-fix on (`mcp__ccd_pr__set_monitor`). It also blocked merging a PR the owner hadn't explicitly said to merge. Ask the owner first, each time.
 
 ## Key files for next session
-- `PLAN.md` — §10 C-07 (follow-ups), M-02, M-07 (Codex deferred), and §12 for what is still `todo`.
-- `engine/packages/server/src/main.ts` and `engine/packages/server/src/engine.ts` (`EngineOptions`) — what `picad` composes today, and what it could.
-- `docs/mcp-presets.md`, `docs/mcp-import.md`.
+- `engine/packages/server/src/composition.ts`, `composition-config.ts` and `composition-workspaces.ts` — what `picad` composes, and where each follow-up plugs in.
+- `engine/packages/server/src/engine.ts` (`EngineOptions`, `EngineSessionOptions`) — the options the composition fills.
+- `PLAN.md` — E-11's "Not composed yet" list, C-10, A-01, and §12 for what is still `todo`.
+- Tests:
+  - `engine/packages/server/tests/composition/production.test.ts`: the composition over the socket with a FakeRuntime, plus the bad-config startup case.
+  - `engine/packages/cli/tests/workspace-repo.test.ts`
+  - `engine/packages/cli/tests/live-m1.test.ts`
 - Memory files touched: none.
 
 ## Running state
-- Background processes: none.
+- Background processes: none. No `picad` is running.
 - Dev servers / ports: none.
-- Branches: only `main`, at `c33b9aa`, locally and on origin.
-- Side-session worktrees still exist for the three idle sessions:
-  - `.claude/worktrees/m-02-mcp-presets-9608d0`
-  - `.claude/worktrees/c-07-delegator-6533f3`
-  - `.claude/worktrees/m-07-mcp-import-f88fb7`
-
-  Their branches are merged. Archiving those sessions removes them.
+- Branches: `main` at `3230be7`, locally and on origin. These merged branches still exist locally and on origin:
+  - `dev/e-11-picad-composition`
+  - `dev/e-11-done`
+  - `dev/c-07-delegator-6533f3`
+  - `dev/m-02-mcp-presets-9608d0`
+  - `dev/m-07-mcp-import-f88fb7`
+- The worktrees for the three earlier side sessions still exist under `.claude/worktrees/`, at detached heads. Archiving those sessions removes them.
+- The live M1 run left an "M1 check" workspace and this checkout as a repo in the owner's real Pica data directory. Later runs reuse them. Its session shows `resumable` because the test stops `picad` afterwards.
 
 ## Verification — how to confirm things still work
-- `make verify` (from the repository root) — passed on `main` at `d8d7e58`, the engine (1756 tests), Swift packages, app build and UI tests included. `make verify-engine` passed again after #72 (1759 tests).
-- `make verify UNIT=M-02`, `UNIT=C-07` and `UNIT=M-07` pass. C-07's live check needs `PICA_LIVE=1` and a Copilot CLI login.
-- `pnpm -C engine exec vitest run packages/server/tests/main-startup.test.ts` — `picad` starts under type stripping.
+- `make verify-engine` passed on the E-11 branch: 1764 tests. CI's `verify-engine` passed on #74 and #75.
+- `make verify UNIT=E-11` passes its four deterministic checks.
+- The live check: `PICA_LIVE=1 pnpm -C engine exec vitest run packages/cli/tests/live-m1.test.ts`. It needs a Copilot CLI login, spends a little of the quota, and writes to the real Pica data directory.
+- By hand, with a short socket path:
+  - Start: `PICA_ENGINE_ENTRY=engine/packages/server/src/main.ts node --experimental-strip-types engine/packages/cli/src/main.ts --socket /tmp/x/s session list`
+  - Stop the engine afterwards with `pkill -f /tmp/x/s`.
+- `make verify-app` was not run. No protocol or app files changed.
 
 ## Deferred + open questions
-- **Deferred, the largest gap: `picad` has no production composition.**
-  - `main.ts` passes only the socket, log and MCP import. It opens no SQLite store and creates no `CopilotRuntime`, session service, delegator, workspaces, model catalog pricing, MCP health monitor or presets host.
-  - So the CLI's `pica session new` gets no `session.*` handlers from a real `picad`, and Milestone M1 (live: `pica session new --repo . "summarize the README"`, then `pica usage`) has never been run end to end.
-  - No unit in §12 owns this composition.
-- **Deferred:**
-  - C-07 follow-ups: the `child_session` delegator; merging M-04's per-agent `mcpServers` into `customAgents`; passing the profile's `excludedTools` and delegation guide to the runtime.
-  - M-07: Codex (TOML). Workspace- and repo-scope imports need `picad` to compose workspaces.
-  - M-02: the GitHub preset's Copilot MCP endpoint for GHE.com and GHES is not recorded.
-  - Nothing reads `engine.account` yet.
+- **Deferred: E-11's "Not composed yet" list in `PLAN.md`.**
+  - Per-session workspace and repo config layers. The read gate, output guard and budgets use only the user layer and the managed policy, and budgets are read once at start.
+  - The MCP registry, attachment and health monitor (M-01, M-04, M-06).
+  - User hooks (X-03), OTLP export (H-04), and the R-08 repo tools.
+  - Per-session worktrees (R-02). Sessions run in the registered checkout, so `session.writeRoots` (worktrees) is empty.
+  - PAT and device-flow GitHub auth, and hosts other than github.com (R-04, D-20).
+- **Still deferred from before:**
+  - C-07: the `child_session` delegator, per-agent `mcpServers`, and the profile's `excludedTools` and delegation guide.
+  - M-07: Codex (needs TOML).
+  - M-02: the GHE.com and GHES Copilot MCP endpoint is not recorded.
 - **Open:**
   - May a TOML parser such as `smol-toml` be added for Codex import?
-  - Should the `picad` composition become its own unit (for example E-11), ahead of C-10 and A-01?
+  - Should Auto-fix and the merge step be allowed in this repo's Claude permission settings, so landing doesn't stop for approval?
+  - Should the merged `dev/*` branches be deleted?
 
 ## Pick up here
-Add a unit for `picad`'s production composition and build it, then run Milestone M1 live. C-10 (eval harness) and A-01 (app shell) both need a real engine behind the socket.
+With a real engine behind the socket, the two units waiting on one can start:
+- **C-10, eval harness.** Its live check needs the composed engine and a plan that lists models for a meaningful reasoning-vs-worker comparison.
+- **A-01, app shell and engine supervision.** It supervises the real `picad`.
+
+Some composition follow-ups gate other milestones:
+- MCP attachment and health, for A-13.
+- Per-session worktrees, for A-08 and A-10.
+
+Pick those up as their units need them.
