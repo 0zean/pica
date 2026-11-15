@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { mainAgentTools, provisionalBuiltinTools, routingProfileNames, toolKind } from "../../src/index.ts";
+import { builtinTools, mainAgentTools, routingProfileNames, toolKind } from "../../src/index.ts";
 
-// Asserted against C-02's tool catalog, which is provisional until S-02 records the real names.
-const createFileTools = provisionalBuiltinTools.filter((tool) => tool.createsFiles === true).map((tool) => tool.name);
+// Asserted against C-02's tool catalog, built from the tools S-02 observed.
+const createFileTools = builtinTools.filter((tool) => tool.createsFiles === true).map((tool) => tool.name);
 
 describe("main-agent tools per profile", () => {
   it("the catalog names at least one create-file tool", () => {
@@ -21,8 +21,13 @@ describe("main-agent tools per profile", () => {
     expect(tools.some((name) => toolKind(name) === "write")).toBe(true);
   });
 
+  it("balanced: apply_patch is hidden with create, since a patch can add files (S-04)", () => {
+    expect(mainAgentTools("balanced")).not.toContain("apply_patch");
+    expect(toolKind("rg")).toBe("search");
+  });
+
   it("off: the main agent has every built-in tool", () => {
-    expect(mainAgentTools("off")).toEqual(provisionalBuiltinTools.map((tool) => tool.name).sort());
+    expect(mainAgentTools("off")).toEqual(builtinTools.map((tool) => tool.name).sort());
   });
 
   it.each(routingProfileNames)("%s: the tool list is sorted and free of duplicates", (profile) => {

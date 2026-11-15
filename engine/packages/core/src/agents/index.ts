@@ -3,7 +3,7 @@ export type { AgentLoader } from "./port.ts";
 export { agentLayerPrecedence, resolveAgents } from "./resolve.ts";
 export {
   expandTool,
-  provisionalBuiltinTools,
+  builtinTools,
   toolKind,
   type BuiltinTool,
   type ToolKind,

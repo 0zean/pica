@@ -9,49 +9,58 @@ export interface BuiltinTool {
   readonly createsFiles?: true;
 }
 
-// TODO(S-02): provisional. Replace with the tool names recorded in docs/spikes/S-02-tools.json
-// once S-02 has run against the real runtime. These are the Copilot CLI built-in tools as
-// documented, not yet observed.
-export const provisionalBuiltinTools: readonly BuiltinTool[] = [
+// The runtime's built-in tools as `tools.list` reports them (SDK 1.0.28, docs/spikes/S-02-tools.json),
+// plus the names some models call instead once `auto` routes to them: `rg` for `grep` (S-02) and
+// `apply_patch`, whose patch text can add files (S-04). Those two are not in `tools.list`.
+export const builtinTools: readonly BuiltinTool[] = [
   { name: "view", kind: "read" },
   { name: "grep", kind: "search" },
+  { name: "rg", kind: "search" },
   { name: "glob", kind: "search" },
   { name: "create", kind: "write", createsFiles: true },
   { name: "edit", kind: "write" },
+  { name: "apply_patch", kind: "write", createsFiles: true },
   { name: "bash", kind: "shell" },
   { name: "read_bash", kind: "shell" },
-  { name: "write_bash", kind: "shell" },
   { name: "stop_bash", kind: "shell" },
   { name: "list_bash", kind: "shell" },
   { name: "web_fetch", kind: "web" },
   { name: "task", kind: "agent" },
-  { name: "update_todo", kind: "other" },
+  { name: "read_agent", kind: "agent" },
+  { name: "list_agents", kind: "agent" },
+  { name: "write_agent", kind: "agent" },
+  { name: "skill", kind: "other" },
 ];
 
-// The custom-agent tool aliases from the Copilot custom agents reference, matched without
-// regard to case. TODO(S-02): confirm each alias expands to these names.
+const shellTools = ["bash", "read_bash", "stop_bash", "list_bash"];
+const agentTools = ["task", "read_agent", "list_agents", "write_agent"];
+
+// The custom-agent tool aliases from the Copilot custom agents reference, matched without regard
+// to case. S-02 confirmed the tool names they expand to, not the aliases themselves. `todo` has
+// no tool on this runtime, so it expands to nothing rather than failing validation.
 const aliases: Readonly<Record<string, readonly string[]>> = {
-  execute: ["bash", "read_bash", "write_bash", "stop_bash", "list_bash"],
-  shell: ["bash", "read_bash", "write_bash", "stop_bash", "list_bash"],
-  bash: ["bash", "read_bash", "write_bash", "stop_bash", "list_bash"],
-  powershell: ["bash", "read_bash", "write_bash", "stop_bash", "list_bash"],
+  execute: shellTools,
+  shell: shellTools,
+  bash: shellTools,
+  powershell: shellTools,
   read: ["view"],
   notebookread: ["view"],
-  edit: ["create", "edit"],
-  multiedit: ["create", "edit"],
-  write: ["create", "edit"],
-  notebookedit: ["create", "edit"],
-  search: ["grep", "glob"],
-  grep: ["grep", "glob"],
-  glob: ["grep", "glob"],
-  agent: ["task"],
-  "custom-agent": ["task"],
-  task: ["task"],
+  edit: ["create", "edit", "apply_patch"],
+  multiedit: ["create", "edit", "apply_patch"],
+  write: ["create", "edit", "apply_patch"],
+  notebookedit: ["create", "edit", "apply_patch"],
+  search: ["grep", "rg", "glob"],
+  grep: ["grep", "rg", "glob"],
+  glob: ["grep", "rg", "glob"],
+  agent: agentTools,
+  "custom-agent": agentTools,
+  task: agentTools,
   web: ["web_fetch"],
   websearch: ["web_fetch"],
   webfetch: ["web_fetch"],
-  todo: ["update_todo"],
-  todowrite: ["update_todo"],
+  skill: ["skill"],
+  todo: [],
+  todowrite: [],
 };
 
 const mcpToolPattern = /^[A-Za-z0-9._-]+\/([A-Za-z0-9._-]+|\*)$/;
@@ -60,7 +69,7 @@ export function toolKind(name: string): ToolKind | "mcp" | undefined {
   if (mcpToolPattern.test(name)) {
     return "mcp";
   }
-  return provisionalBuiltinTools.find((tool) => tool.name === name)?.kind;
+  return builtinTools.find((tool) => tool.name === name)?.kind;
 }
 
 // Copilot's own `.github/agents` files use alias semantics, where `edit` also means create.

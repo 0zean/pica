@@ -72,7 +72,7 @@ describe("MarkdownAgentLoader", () => {
     writeFile(join(githubAgentsDir(repo), "docs.agent.md"), agentFile("docs", "'read, search'"));
     writeFile(join(githubAgentsDir(repo), "notes.txt"), "not an agent");
     const agent = load([{ layer: "github_agents", dir: githubAgentsDir(repo) }]).get("docs");
-    expect(agent).toMatchObject({ tools: ["glob", "grep", "view"], sourceLayer: "github_agents" });
+    expect(agent).toMatchObject({ tools: ["glob", "grep", "rg", "view"], sourceLayer: "github_agents" });
   });
 
   it("reports a YAML error with its file and line", () => {

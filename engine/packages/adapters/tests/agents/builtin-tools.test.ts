@@ -1,8 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { provisionalBuiltinTools, toolKind } from "@pica/core";
+import { builtinTools, toolKind } from "@pica/core";
 import { builtinAgent, builtinAgents } from "./helpers.ts";
 
-// TODO(S-02): asserted against the provisional tool list until docs/spikes/S-02-tools.json exists.
 const forbiddenForReaders = new Set(["write", "shell"]);
 
 describe("built-in agent tools", () => {
@@ -11,7 +10,7 @@ describe("built-in agent tools", () => {
   });
 
   it("checks against a tool list that has write and shell tools to find", () => {
-    const kinds = new Set(provisionalBuiltinTools.map((tool) => tool.kind));
+    const kinds = new Set(builtinTools.map((tool) => tool.kind));
     expect(kinds.has("write") && kinds.has("shell")).toBe(true);
   });
 
