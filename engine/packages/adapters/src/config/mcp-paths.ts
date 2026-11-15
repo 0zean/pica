@@ -7,6 +7,11 @@ export function userMcpConfigPath(homeDir: string): string {
   return join(homeDir, "Library", "Application Support", "Pica", "mcp.jsonc");
 }
 
+// M-07: a workspace's servers, written by `mcp.import` at workspace scope.
+export function workspaceMcpConfigPath(homeDir: string, workspaceId: string): string {
+  return join(homeDir, "Library", "Application Support", "Pica", "workspaces", workspaceId, "mcp.jsonc");
+}
+
 export function repoMcpConfigPath(repoRoot: string): string {
   return join(repoRoot, ".pica", "mcp.jsonc");
 }
@@ -31,13 +36,16 @@ export interface McpFileSource {
   readonly home?: string;
 }
 
-// Every file a session rooted in `repoRoot` reads, global first. Workspace definitions live in the
-// store and are added by the caller as a value source.
-export function mcpFileSources(homeDir: string, repoRoot?: string): McpFileSource[] {
+// Every file a session rooted in `repoRoot` reads, global first. With `workspaceId`, the
+// workspace's own `mcp.jsonc` too; callers may also add workspace definitions as a value source.
+export function mcpFileSources(homeDir: string, repoRoot?: string, workspaceId?: string): McpFileSource[] {
   const sources: McpFileSource[] = [
     { scope: "global", format: "copilot-cli", file: copilotCliMcpConfigPath(homeDir), home: homeDir },
     { scope: "global", format: "pica", file: userMcpConfigPath(homeDir), home: homeDir },
   ];
+  if (workspaceId !== undefined) {
+    sources.push({ scope: "workspace", format: "pica", file: workspaceMcpConfigPath(homeDir, workspaceId), home: homeDir });
+  }
   if (repoRoot !== undefined) {
     sources.push(
       { scope: "repo", format: "mcp-json", file: projectMcpJsonPath(repoRoot), root: repoRoot, home: homeDir },

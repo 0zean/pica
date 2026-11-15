@@ -26,6 +26,7 @@ import type {
   FanOutInfo,
   GitHubHost,
   McpHealthMonitor,
+  McpImportService,
   McpSecretRedactor,
   OutputGuardDeps,
   RuntimeHooks,
@@ -41,6 +42,7 @@ import { registerAccountHandlers } from "./account-handlers.ts";
 import { registerEngineHandlers } from "./engine-handlers.ts";
 import { registerFanOutHandlers, toFanOutDto } from "./fanout-handlers.ts";
 import { registerMcpHealthHandlers, registerMcpPresetHandlers } from "./mcp-handlers.ts";
+import { registerMcpImportHandlers } from "./mcp-import-handlers.ts";
 import { SocketListener } from "./listener.ts";
 import type { ConnectionLimits } from "./connection.ts";
 import type { Logger } from "./logger.ts";
@@ -89,6 +91,14 @@ export interface EngineOptions {
   readonly githubHost?: GitHubHost;
   // R-06: answers `workspace.*`, `repo.list` and `repo.get`, and broadcasts `workspace.changed`.
   readonly workspaces?: WorkspaceService;
+  // M-07: answers `mcp.importCandidates` and `mcp.import`. Repo ids resolve through `workspaces`
+  // unless `repoRoot` is given.
+  readonly mcpImport?: EngineMcpImportOptions;
+}
+
+export interface EngineMcpImportOptions {
+  readonly service: McpImportService;
+  readonly repoRoot?: (repoId: string) => string | undefined;
 }
 
 // Composition root: later units construct their adapters and register their handlers here.
@@ -123,6 +133,16 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
   registerMcpPresetHandlers(router, options.githubHost === undefined ? {} : { githubHost: options.githubHost });
   if (options.mcpHealth !== undefined) {
     registerMcpHealthHandlers(router, options.mcpHealth);
+  }
+  if (options.mcpImport !== undefined) {
+    const { workspaces } = options;
+    const repoRoot =
+      options.mcpImport.repoRoot ??
+      ((repoId: string): string | undefined => {
+        const repo = workspaces?.repo(repoId);
+        return repo?.ok === true ? (repo.value.localPath ?? undefined) : undefined;
+      });
+    registerMcpImportHandlers(router, { service: options.mcpImport.service, repoRoot });
   }
   if (options.workspaces !== undefined) {
     registerWorkspaceHandlers(router, {

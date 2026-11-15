@@ -37,6 +37,11 @@ const tokenPatterns: readonly RegExp[] = [
 ];
 
 export function findMcpInlineSecrets(entry: PicaMcpServerEntry, keyPath: readonly string[]): ConfigIssue[] {
+  return findMcpInlineSecretPaths(entry, keyPath).map((path) => ({ keyPath: path.join("."), message: inlineSecretMessage }));
+}
+
+// The key path of each inline secret in `entry`, below `keyPath`.
+export function findMcpInlineSecretPaths(entry: PicaMcpServerEntry, keyPath: readonly string[]): string[][] {
   const found: string[][] = [];
   const check = (path: string[], value: string, sensitive: boolean): void => {
     if (isInlineSecret(value, sensitive)) {
@@ -56,7 +61,7 @@ export function findMcpInlineSecrets(entry: PicaMcpServerEntry, keyPath: readonl
     }
     checkRecord(entry.headers ?? {}, [...keyPath, "headers"], check);
   }
-  return found.map((path) => ({ keyPath: path.join("."), message: inlineSecretMessage }));
+  return found;
 }
 
 type Check = (path: string[], value: string, sensitive: boolean) => void;

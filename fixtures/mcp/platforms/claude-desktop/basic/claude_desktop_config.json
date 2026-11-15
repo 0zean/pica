@@ -1,0 +1,19 @@
+{
+  "globalShortcut": "Alt+Space",
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/dev/Desktop"]
+    },
+    "github": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "-e", "GITHUB_PERSONAL_ACCESS_TOKEN", "ghcr.io/github/github-mcp-server"],
+      "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "test-pat-value-not-real" }
+    },
+    "My Notes": {
+      "command": "node",
+      "args": ["notes.js"],
+      "url": "https://example.com/ignored"
+    }
+  }
+}

@@ -9,7 +9,7 @@ JSONC (comments and trailing commas allowed), beside `config.jsonc` at each leve
 | Scope | Location |
 |---|---|
 | global | `~/Library/Application Support/Pica/mcp.jsonc` |
-| workspace | stored with the workspace in the engine database (passed to the loader as a value) |
+| workspace | `~/Library/Application Support/Pica/workspaces/<workspaceId>/mcp.jsonc` (`mcpFileSources(home, repo, workspaceId)`); the loader also takes workspace definitions as a value |
 | repo | `<repo>/.pica/mcp.jsonc` |
 
 ```jsonc
@@ -32,6 +32,9 @@ JSONC (comments and trailing commas allowed), beside `config.jsonc` at each leve
   }
 }
 ```
+
+An entry copied in by `mcp.import` also has `importedFrom: { platform, source?, name, project? }`, where it came from
+([mcp-import.md](mcp-import.md)).
 
 The key is the server id, `[A-Za-z0-9][A-Za-z0-9._-]*`, which is also the `server` in MCP tool names `server/tool`. Unknown keys are errors. Secrets are written as references; see [secret-references.md](secret-references.md).
 

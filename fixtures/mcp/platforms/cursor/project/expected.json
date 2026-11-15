@@ -1,0 +1,29 @@
+{
+  "platform": "cursor",
+  "source": "~/fixtures/cursor/project/mcp.json",
+  "candidates": [
+    {
+      "candidateId": "[\"cursor\",\"~/fixtures/cursor/project/mcp.json\",\"mcpServers\",\"local-docs\"]",
+      "platform": "cursor",
+      "name": "local-docs",
+      "id": "local-docs",
+      "project": null,
+      "transport": {
+        "type": "stdio",
+        "command": "node",
+        "args": [
+          "/Users/dev/work/app/tools/docs.js",
+          "--name",
+          "app"
+        ],
+        "env": {},
+        "cwd": null
+      },
+      "toolAllowlist": null,
+      "secretFields": [],
+      "notes": [],
+      "issues": []
+    }
+  ],
+  "notes": []
+}

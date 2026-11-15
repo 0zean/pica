@@ -20,6 +20,30 @@ import Testing
         await harness.shutDown()
     }
 
+    /// M-07: a secret the engine moved out of an imported MCP entry is kept by the broker.
+    @Test func secretsSetStoresTheValueInTheBroker() async throws {
+        let broker = InMemorySecretBroker()
+        let harness = try await Harness.connected(broker: broker)
+        try await harness.peer.request(
+            id: .string("engine-2"), method: Methods.SecretsSet.name,
+            params: SecretsSetParams(secretRef: "keychain:mcp/github/GITHUB_TOKEN", value: "imported-test-value"))
+        let answer = try await harness.peer.receive()
+        #expect(answer.id == .string("engine-2"))
+        #expect(answer.error == nil)
+        #expect(answer.result == .object(["ok": .bool(true)]))
+        #expect(broker.secrets == ["keychain:mcp/github/GITHUB_TOKEN": "imported-test-value"])
+        await harness.shutDown()
+    }
+
+    @Test func secretsSetWithoutAValueIsAnsweredWithInvalidParams() async throws {
+        let harness = try await Harness.connected()
+        try await harness.peer.request(
+            id: .int(10), method: Methods.SecretsSet.name, params: SecretsGetParams(secretRef: "keychain:x"))
+        let answer = try await harness.peer.receive()
+        #expect(answer.error?.code == RpcErrorNumber.invalidParams.rawValue)
+        await harness.shutDown()
+    }
+
     @Test func missingSecretIsAnsweredWithSecretUnresolved() async throws {
         let harness = try await Harness.connected()
         try await harness.peer.request(

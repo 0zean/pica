@@ -135,6 +135,7 @@ export class Connection {
         onClose: (listener) => {
           this.onClose(listener);
         },
+        request: (method, params) => this.request(method, params),
       });
       if (message.method === "engine.hello") {
         this.handshaken = true;

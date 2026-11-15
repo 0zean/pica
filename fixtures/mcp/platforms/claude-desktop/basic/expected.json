@@ -1,0 +1,85 @@
+{
+  "platform": "claude-desktop",
+  "source": "~/fixtures/claude-desktop/basic/claude_desktop_config.json",
+  "candidates": [
+    {
+      "candidateId": "[\"claude-desktop\",\"~/fixtures/claude-desktop/basic/claude_desktop_config.json\",\"mcpServers\",\"filesystem\"]",
+      "platform": "claude-desktop",
+      "name": "filesystem",
+      "id": "filesystem",
+      "project": null,
+      "transport": {
+        "type": "stdio",
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-filesystem",
+          "/Users/dev/Desktop"
+        ],
+        "env": {},
+        "cwd": null
+      },
+      "toolAllowlist": null,
+      "secretFields": [],
+      "notes": [],
+      "issues": []
+    },
+    {
+      "candidateId": "[\"claude-desktop\",\"~/fixtures/claude-desktop/basic/claude_desktop_config.json\",\"mcpServers\",\"github\"]",
+      "platform": "claude-desktop",
+      "name": "github",
+      "id": "github",
+      "project": null,
+      "transport": {
+        "type": "stdio",
+        "command": "docker",
+        "args": [
+          "run",
+          "-i",
+          "--rm",
+          "-e",
+          "GITHUB_PERSONAL_ACCESS_TOKEN",
+          "ghcr.io/github/github-mcp-server"
+        ],
+        "env": {
+          "GITHUB_PERSONAL_ACCESS_TOKEN": {
+            "secretRef": "keychain:mcp/github/GITHUB_PERSONAL_ACCESS_TOKEN"
+          }
+        },
+        "cwd": null
+      },
+      "toolAllowlist": null,
+      "secretFields": [
+        "mcpServers.github.env.GITHUB_PERSONAL_ACCESS_TOKEN"
+      ],
+      "notes": [],
+      "issues": []
+    },
+    {
+      "candidateId": "[\"claude-desktop\",\"~/fixtures/claude-desktop/basic/claude_desktop_config.json\",\"mcpServers\",\"My Notes\"]",
+      "platform": "claude-desktop",
+      "name": "My Notes",
+      "id": "My-Notes",
+      "project": null,
+      "transport": {
+        "type": "stdio",
+        "command": "node",
+        "args": [
+          "notes.js"
+        ],
+        "env": {},
+        "cwd": null
+      },
+      "toolAllowlist": null,
+      "secretFields": [],
+      "notes": [
+        {
+          "keyPath": "mcpServers.My Notes.url",
+          "message": "ignored: Pica has no equivalent setting"
+        }
+      ],
+      "issues": []
+    }
+  ],
+  "notes": []
+}

@@ -1,7 +1,7 @@
 import type * as z from "zod";
 import { methods, RpcRequest } from "@pica/protocol";
 import type { MethodName, NotificationName, RequestId, RpcSuccessResponse } from "@pica/protocol";
-import { parseClientResponse, type ClientResponse } from "./client-requests.ts";
+import { parseClientResponse, type ClientReply, type ClientResponse, type EngineMethodName, type EngineMethodParams } from "./client-requests.ts";
 import { RpcFailure } from "./errors.ts";
 
 export type MethodParams<M extends MethodName> = z.output<(typeof methods)[M]["params"]>;
@@ -12,6 +12,8 @@ export interface RequestContext {
   // Sends a notification to the requesting client only, after any response already written.
   readonly notify: (method: NotificationName, params: unknown) => void;
   readonly onClose: (listener: () => void) => void;
+  // Sends an engine-to-client request (`secrets.*`) to the requesting client. Never rejects.
+  readonly request: <M extends EngineMethodName>(method: M, params: EngineMethodParams<M>) => Promise<ClientReply>;
 }
 
 export type Handler<M extends MethodName> = (

@@ -12,6 +12,7 @@ struct Harness {
 
     static func connected(
         secrets: [String: String] = [:],
+        broker: InMemorySecretBroker? = nil,
         configure: (inout EngineClient.Configuration) -> Void = { _ in }
     ) async throws -> Harness {
         let server = try ScriptedEngineServer()
@@ -19,7 +20,7 @@ struct Harness {
         var configuration = EngineClient.Configuration()
         configure(&configuration)
         let client = EngineClient(
-            socketPath: server.socketPath, secrets: InMemorySecretBroker(secrets), clock: clock,
+            socketPath: server.socketPath, secrets: broker ?? InMemorySecretBroker(secrets), clock: clock,
             configuration: configuration)
         async let hello = client.connect()
         let peer = try await server.nextPeer()

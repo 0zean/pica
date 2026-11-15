@@ -9,6 +9,7 @@ import { FileEntry, QuickOpenHit } from "./dto/files.ts";
 import { Branch, Commit, FileDiff, GitStatus } from "./dto/git.ts";
 import { GitHubAuthStatus, GitHubRepo, GitHubTeam } from "./dto/github.ts";
 import { McpPreset, McpScope, McpServerDef, McpServerStatus } from "./dto/mcp.ts";
+import { McpImportNote, McpImportSelection, McpImportSnippet, McpImportSource } from "./dto/mcp-import.ts";
 import { ModelInfo, TierAssignment } from "./dto/models.ts";
 import { ApprovalChoice, ApprovalRequest } from "./dto/policy.ts";
 import { Repo, RepoCard, RepoSource, RepoSourceKind } from "./dto/repo.ts";
@@ -199,6 +200,30 @@ export const methods = {
   "mcp.statusList": clientMethod(Empty, z.object({ statuses: z.array(McpServerStatus) })),
   "mcp.restart": clientMethod(ById, Ok),
   "mcp.login": clientMethod(ById, Ok),
+  // M-07: servers found in other agent platforms' files, or in `snippet` when one is given.
+  "mcp.importCandidates": clientMethod(
+    z.object({ repoId: Id.optional(), snippet: McpImportSnippet.optional() }),
+    z.object({ sources: z.array(McpImportSource) }),
+  ),
+  // Copies the chosen candidates, or every server in `snippet`, into `mcp.jsonc` at `scope`. Exactly
+  // one of `candidates` and `snippet`. `workspace` needs `workspaceId`; `repo` needs `repoId`. Pass
+  // the `repoId` the candidates were listed with, whatever the scope, so project files are read again.
+  // Inline secrets go to the Keychain through `secrets.set`. Nothing is attached to a session.
+  "mcp.import": clientMethod(
+    z.object({
+      scope: McpScope,
+      workspaceId: Id.optional(),
+      repoId: Id.optional(),
+      candidates: z.array(McpImportSelection).optional(),
+      snippet: McpImportSnippet.optional(),
+    }),
+    z.object({
+      servers: z.array(McpServerDef),
+      file: AbsolutePath,
+      secretRefs: z.array(z.string().min(1)),
+      notes: z.array(McpImportNote),
+    }),
+  ),
   // M-02: optional presets (D-18). Rendering returns a definition; it adds or attaches nothing.
   "mcp.presets": clientMethod(Empty, z.object({ presets: z.array(McpPreset) })),
   "mcp.renderPreset": clientMethod(
@@ -255,6 +280,12 @@ export const methods = {
     direction: "engine",
     params: z.object({ secretRef: z.string().min(1) }),
     result: z.object({ value: z.string() }),
+  },
+  // M-07: stores a secret the engine moved out of an imported MCP entry, under its reference text.
+  "secrets.set": {
+    direction: "engine",
+    params: z.object({ secretRef: z.string().min(1), value: z.string().min(1) }),
+    result: Ok,
   },
 } as const satisfies Record<string, MethodSpec>;
 

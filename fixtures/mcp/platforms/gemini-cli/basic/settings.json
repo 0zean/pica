@@ -1,0 +1,20 @@
+{
+  "theme": "GitHub",
+  "selectedAuthType": "oauth-personal",
+  "mcpServers": {
+    "http-server": {
+      "httpUrl": "https://api.example.com/mcp",
+      "headers": { "Authorization": "Bearer $EXAMPLE_TOKEN" },
+      "timeout": 5000
+    },
+    "sse-server": { "url": "https://sse.example.com/sse", "trust": true },
+    "python-tools": {
+      "command": "python",
+      "args": ["-m", "my_mcp_server", "--port", "8080"],
+      "cwd": "./mcp-servers/python",
+      "env": { "DATABASE_URL": "$DB_CONNECTION_STRING", "API_KEY": "${EXTERNAL_API_KEY}" },
+      "includeTools": ["safe_tool", "file_reader"],
+      "excludeTools": ["dangerous_tool"]
+    }
+  }
+}

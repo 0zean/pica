@@ -699,19 +699,24 @@
   ],
   "M-07": [
     {
-      "check": "Golden tests: one fixture per platform format converts to the expected Pica entries, with notes for fields Pica drops."
+      "check": "Golden tests: one fixture per platform format converts to the expected Pica entries, with notes for fields Pica drops.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/mcp/platform-import-golden.test.ts"
     },
     {
-      "check": "A pasted snippet in each common shape (`mcpServers`, `servers`, a bare name map, one entry) imports; a malformed one fails with the key path named."
+      "check": "A pasted snippet in each common shape (`mcpServers`, `servers`, a bare name map, one entry) imports; a malformed one fails with the key path named.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/mcp-import/paste.test.ts"
     },
     {
-      "check": "An imported entry with an inline secret is stored with a secret reference, and the secret value is in the broker, not the file."
+      "check": "An imported entry with an inline secret is stored with a secret reference, and the secret value is in the broker, not the file.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/mcp/platform-import.test.ts -t \"M-07 import\""
     },
     {
-      "check": "A platform file that is missing or unreadable yields no candidates and no error."
+      "check": "A platform file that is missing or unreadable yields no candidates and no error.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/mcp/platform-import.test.ts -t \"M-07 discovery\""
     },
     {
-      "check": "Candidates are never attached to a session until the user attaches them."
+      "check": "Candidates are never attached to a session until the user attaches them.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/mcp/import-rpc.test.ts"
     }
   ],
   "A-01": [

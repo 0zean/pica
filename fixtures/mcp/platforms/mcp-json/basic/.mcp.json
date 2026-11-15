@@ -1,0 +1,5 @@
+{
+  "mcpServers": {
+    "api": { "type": "http", "url": "https://api.example.com/mcp", "headers": { "X-Token": "${API_TOKEN}" }, "timeout": 30 }
+  }
+}

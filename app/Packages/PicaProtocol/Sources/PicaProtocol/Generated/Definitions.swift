@@ -2727,6 +2727,372 @@ public struct McpDetachParams: Codable, Hashable, Sendable {
     }
 }
 
+public struct McpImportCandidate: Codable, Hashable, Sendable {
+    public var candidateId: String
+    public var platform: McpImportPlatform
+    public var name: String
+    public var id: String
+    public var project: String?
+    public var transport: McpTransport?
+    public var toolAllowlist: [String]?
+    public var secretFields: [String]
+    public var notes: [McpImportNote]
+    public var issues: [McpImportNote]
+
+    public init(
+        candidateId: String,
+        platform: McpImportPlatform,
+        name: String,
+        id: String,
+        project: String?,
+        transport: McpTransport?,
+        toolAllowlist: [String]?,
+        secretFields: [String],
+        notes: [McpImportNote],
+        issues: [McpImportNote]
+    ) {
+        self.candidateId = candidateId
+        self.platform = platform
+        self.name = name
+        self.id = id
+        self.project = project
+        self.transport = transport
+        self.toolAllowlist = toolAllowlist
+        self.secretFields = secretFields
+        self.notes = notes
+        self.issues = issues
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case candidateId
+        case platform
+        case name
+        case id
+        case project
+        case transport
+        case toolAllowlist
+        case secretFields
+        case notes
+        case issues
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        candidateId = try container.decode(String.self, forKey: .candidateId)
+        platform = try container.decode(McpImportPlatform.self, forKey: .platform)
+        name = try container.decode(String.self, forKey: .name)
+        id = try container.decode(String.self, forKey: .id)
+        project = try container.decode(String?.self, forKey: .project)
+        transport = try container.decode(McpTransport?.self, forKey: .transport)
+        toolAllowlist = try container.decode([String]?.self, forKey: .toolAllowlist)
+        secretFields = try container.decode([String].self, forKey: .secretFields)
+        notes = try container.decode([McpImportNote].self, forKey: .notes)
+        issues = try container.decode([McpImportNote].self, forKey: .issues)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(candidateId, forKey: .candidateId)
+        try container.encode(platform, forKey: .platform)
+        try container.encode(name, forKey: .name)
+        try container.encode(id, forKey: .id)
+        try container.encode(project, forKey: .project)
+        try container.encode(transport, forKey: .transport)
+        try container.encode(toolAllowlist, forKey: .toolAllowlist)
+        try container.encode(secretFields, forKey: .secretFields)
+        try container.encode(notes, forKey: .notes)
+        try container.encode(issues, forKey: .issues)
+    }
+}
+
+public struct McpImportCandidatesParams: Codable, Hashable, Sendable {
+    public var repoId: Id?
+    public var snippet: McpImportSnippet?
+
+    public init(
+        repoId: Id? = nil,
+        snippet: McpImportSnippet? = nil
+    ) {
+        self.repoId = repoId
+        self.snippet = snippet
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case repoId
+        case snippet
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        repoId = try container.decodeIfPresent(Id.self, forKey: .repoId)
+        snippet = try container.decodeIfPresent(McpImportSnippet.self, forKey: .snippet)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(repoId, forKey: .repoId)
+        try container.encodeIfPresent(snippet, forKey: .snippet)
+    }
+}
+
+public struct McpImportCandidatesResult: Codable, Hashable, Sendable {
+    public var sources: [McpImportSource]
+
+    public init(
+        sources: [McpImportSource]
+    ) {
+        self.sources = sources
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case sources
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        sources = try container.decode([McpImportSource].self, forKey: .sources)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(sources, forKey: .sources)
+    }
+}
+
+public struct McpImportNote: Codable, Hashable, Sendable {
+    public var keyPath: String
+    public var message: String
+
+    public init(
+        keyPath: String,
+        message: String
+    ) {
+        self.keyPath = keyPath
+        self.message = message
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case keyPath
+        case message
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        keyPath = try container.decode(String.self, forKey: .keyPath)
+        message = try container.decode(String.self, forKey: .message)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(keyPath, forKey: .keyPath)
+        try container.encode(message, forKey: .message)
+    }
+}
+
+public struct McpImportParams: Codable, Hashable, Sendable {
+    public var scope: McpScope
+    public var workspaceId: Id?
+    public var repoId: Id?
+    public var candidates: [McpImportSelection]?
+    public var snippet: McpImportSnippet?
+
+    public init(
+        scope: McpScope,
+        workspaceId: Id? = nil,
+        repoId: Id? = nil,
+        candidates: [McpImportSelection]? = nil,
+        snippet: McpImportSnippet? = nil
+    ) {
+        self.scope = scope
+        self.workspaceId = workspaceId
+        self.repoId = repoId
+        self.candidates = candidates
+        self.snippet = snippet
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case scope
+        case workspaceId
+        case repoId
+        case candidates
+        case snippet
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        scope = try container.decode(McpScope.self, forKey: .scope)
+        workspaceId = try container.decodeIfPresent(Id.self, forKey: .workspaceId)
+        repoId = try container.decodeIfPresent(Id.self, forKey: .repoId)
+        candidates = try container.decodeIfPresent([McpImportSelection].self, forKey: .candidates)
+        snippet = try container.decodeIfPresent(McpImportSnippet.self, forKey: .snippet)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(scope, forKey: .scope)
+        try container.encodeIfPresent(workspaceId, forKey: .workspaceId)
+        try container.encodeIfPresent(repoId, forKey: .repoId)
+        try container.encodeIfPresent(candidates, forKey: .candidates)
+        try container.encodeIfPresent(snippet, forKey: .snippet)
+    }
+}
+
+public enum McpImportPlatform: String, CaseIterable, Codable, Hashable, Sendable {
+    case claudeDesktop = "claude-desktop"
+    case claudeCode = "claude-code"
+    case cursor
+    case windsurf
+    case vscode
+    case geminiCli = "gemini-cli"
+    case copilotCli = "copilot-cli"
+    case mcpJson = "mcp-json"
+    case paste
+}
+
+public struct McpImportResult: Codable, Hashable, Sendable {
+    public var servers: [McpServerDef]
+    public var file: AbsolutePath
+    public var secretRefs: [String]
+    public var notes: [McpImportNote]
+
+    public init(
+        servers: [McpServerDef],
+        file: AbsolutePath,
+        secretRefs: [String],
+        notes: [McpImportNote]
+    ) {
+        self.servers = servers
+        self.file = file
+        self.secretRefs = secretRefs
+        self.notes = notes
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case servers
+        case file
+        case secretRefs
+        case notes
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        servers = try container.decode([McpServerDef].self, forKey: .servers)
+        file = try container.decode(AbsolutePath.self, forKey: .file)
+        secretRefs = try container.decode([String].self, forKey: .secretRefs)
+        notes = try container.decode([McpImportNote].self, forKey: .notes)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(servers, forKey: .servers)
+        try container.encode(file, forKey: .file)
+        try container.encode(secretRefs, forKey: .secretRefs)
+        try container.encode(notes, forKey: .notes)
+    }
+}
+
+public struct McpImportSelection: Codable, Hashable, Sendable {
+    public var candidateId: String
+    public var id: String?
+
+    public init(
+        candidateId: String,
+        id: String? = nil
+    ) {
+        self.candidateId = candidateId
+        self.id = id
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case candidateId
+        case id
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        candidateId = try container.decode(String.self, forKey: .candidateId)
+        id = try container.decodeIfPresent(String.self, forKey: .id)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(candidateId, forKey: .candidateId)
+        try container.encodeIfPresent(id, forKey: .id)
+    }
+}
+
+public struct McpImportSnippet: Codable, Hashable, Sendable {
+    public var text: String
+    public var name: String?
+
+    public init(
+        text: String,
+        name: String? = nil
+    ) {
+        self.text = text
+        self.name = name
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case text
+        case name
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        text = try container.decode(String.self, forKey: .text)
+        name = try container.decodeIfPresent(String.self, forKey: .name)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(text, forKey: .text)
+        try container.encodeIfPresent(name, forKey: .name)
+    }
+}
+
+public struct McpImportSource: Codable, Hashable, Sendable {
+    public var platform: McpImportPlatform
+    public var source: String
+    public var candidates: [McpImportCandidate]
+    public var notes: [McpImportNote]
+
+    public init(
+        platform: McpImportPlatform,
+        source: String,
+        candidates: [McpImportCandidate],
+        notes: [McpImportNote]
+    ) {
+        self.platform = platform
+        self.source = source
+        self.candidates = candidates
+        self.notes = notes
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case platform
+        case source
+        case candidates
+        case notes
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        platform = try container.decode(McpImportPlatform.self, forKey: .platform)
+        source = try container.decode(String.self, forKey: .source)
+        candidates = try container.decode([McpImportCandidate].self, forKey: .candidates)
+        notes = try container.decode([McpImportNote].self, forKey: .notes)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(platform, forKey: .platform)
+        try container.encode(source, forKey: .source)
+        try container.encode(candidates, forKey: .candidates)
+        try container.encode(notes, forKey: .notes)
+    }
+}
+
 public struct McpListParams: Codable, Hashable, Sendable {
     public var workspaceId: Id?
 
@@ -4428,6 +4794,36 @@ public struct SecretsGetResult: Codable, Hashable, Sendable {
 
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(value, forKey: .value)
+    }
+}
+
+public struct SecretsSetParams: Codable, Hashable, Sendable {
+    public var secretRef: String
+    public var value: String
+
+    public init(
+        secretRef: String,
+        value: String
+    ) {
+        self.secretRef = secretRef
+        self.value = value
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case secretRef
+        case value
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        secretRef = try container.decode(String.self, forKey: .secretRef)
+        value = try container.decode(String.self, forKey: .value)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(secretRef, forKey: .secretRef)
         try container.encode(value, forKey: .value)
     }
 }

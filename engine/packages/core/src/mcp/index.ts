@@ -1,6 +1,6 @@
 export { buildMcpDefinitions, mcpServerIdPattern } from "./definitions.ts";
 export { importMcpSource } from "./import/index.ts";
-export { findMcpInlineSecrets, inlineSecretMessage, isSensitiveMcpName } from "./inline-secrets.ts";
+export { findMcpInlineSecretPaths, findMcpInlineSecrets, inlineSecretMessage, isSensitiveMcpName } from "./inline-secrets.ts";
 export type { McpRegistryLoader } from "./port.ts";
 export { mcpFormatPrecedence, mcpScopePrecedence, resolveMcpServers } from "./resolve.ts";
 export {
