@@ -20,6 +20,7 @@ export interface RuntimeModel {
   readonly contextWindow?: number;
 }
 
+// The account's AI-credit quota. `entitlementCredits` is null when the entitlement is unlimited.
 export interface QuotaInfo {
   readonly usedCredits: number;
   readonly entitlementCredits: number | null;
@@ -100,7 +101,8 @@ export interface AgentRuntime {
   // instead (S-03: Copilot refuses limits under 30). Absent means any limit is accepted.
   readonly minSessionCredits?: number | undefined;
   listModels(): RuntimeResult<readonly RuntimeModel[]>;
-  quota(): RuntimeResult<QuotaInfo>;
+  // null when the plan reports no AI-credit quota: Copilot Free counts requests, not credits (S-01).
+  quota(): RuntimeResult<QuotaInfo | null>;
   createSession(options: SessionOptions): RuntimeResult<RuntimeSession>;
   resumeSession(options: ResumeOptions): RuntimeResult<RuntimeSession>;
 }

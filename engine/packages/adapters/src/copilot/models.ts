@@ -38,15 +38,15 @@ interface QuotaSnapshot {
   readonly resetDate?: string | undefined;
 }
 
-// The quota API still reports request counts per quota type. Until S-01 shows which type holds
-// AI Credits, the first snapshot in this order is used.
-const preferredQuotaTypes = ["ai_credits", "premium_interactions"];
+// Only the `ai_credits` snapshot is a credit quota. The others (`chat`, `completions`,
+// `premium_interactions`) count requests, so reading one as credits would show a working Free plan
+// as "0 of 0 credits" (S-01).
+const creditQuotaType = "ai_credits";
 
-export function toQuotaInfo(snapshots: Readonly<Record<string, QuotaSnapshot | undefined>>): QuotaInfo {
-  const key = preferredQuotaTypes.find((type) => snapshots[type] !== undefined) ?? Object.keys(snapshots).sort()[0];
-  const snapshot = key === undefined ? undefined : snapshots[key];
+export function toQuotaInfo(snapshots: Readonly<Record<string, QuotaSnapshot | undefined>>): QuotaInfo | null {
+  const snapshot = snapshots[creditQuotaType];
   if (snapshot === undefined) {
-    return { usedCredits: 0, entitlementCredits: null, resetDate: null };
+    return null;
   }
   return {
     usedCredits: snapshot.usedRequests,

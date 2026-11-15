@@ -9,8 +9,11 @@ import type { ToolResult } from "./hooks.ts";
 // reports it for every event is unverified until S-02, so consumers must treat it as optional.
 
 export interface RuntimeEventDataMap {
+  // `model` on `session.start` is "" when the runtime has not said yet; `session.model_change` follows.
   "session.start": { readonly sessionId: string; readonly model: string; readonly workingDirectory: string };
   "session.resume": { readonly sessionId: string };
+  // The session's model changed; Copilot reports the model first here, not on `session.start` (S-01).
+  "session.model_change": { readonly model: string };
   "user.message": { readonly messageId: string; readonly content: string };
   "assistant.turn_start": { readonly turnId: string };
   "assistant.message_delta": { readonly messageId: string; readonly deltaContent: string; readonly agentId?: string };
