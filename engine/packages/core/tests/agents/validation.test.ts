@@ -77,7 +77,12 @@ describe("agent validation", () => {
 
   it("expands Copilot aliases with alias meaning in .github/agents", () => {
     const result = validateAgent(agentDocument("github_agents", "agent", { tools: ["read", "edit", "Grep"] }));
-    expect(result.ok && result.value.tools).toEqual(["create", "edit", "glob", "grep", "view"]);
+    expect(result.ok && result.value.tools).toEqual(["apply_patch", "create", "edit", "glob", "grep", "rg", "view"]);
+  });
+
+  it("accepts the todo alias, which has no tool on this runtime", () => {
+    const result = validateAgent(agentDocument("github_agents", "agent", { tools: ["read", "todo"] }));
+    expect(result.ok && result.value.tools).toEqual(["view"]);
   });
 
   it("prefers exact tool names in Pica layers", () => {

@@ -1,5 +1,5 @@
 import type { PicaConfig } from "@pica/protocol";
-import { provisionalBuiltinTools, type BuiltinTool } from "../agents/tool-catalog.ts";
+import { builtinTools, type BuiltinTool } from "../agents/tool-catalog.ts";
 
 export type RoutingProfileName = PicaConfig["routing"]["profile"];
 
@@ -14,7 +14,7 @@ const mainAgentHides: Readonly<Record<RoutingProfileName, (tool: BuiltinTool) =>
 
 export function mainAgentTools(profile: RoutingProfileName): readonly string[] {
   const hides = mainAgentHides[profile];
-  return provisionalBuiltinTools
+  return builtinTools
     .filter((tool) => !hides(tool))
     .map((tool) => tool.name)
     .sort();

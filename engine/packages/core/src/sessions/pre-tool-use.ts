@@ -83,8 +83,7 @@ function policyContext(deps: ReadGateDeps, session: Session): PolicyContext {
   };
 }
 
-// TODO(S-02): the argument shape of `view` is the documented one (`path`, `view_range: [start, end]`
-// with -1 meaning end of file); confirm it against the recorded tool list.
+// `view` takes `path` and `view_range: [start, end]`, with -1 meaning end of file (confirmed by S-02).
 function readArguments(args: JsonValue): ReadArguments | undefined {
   if (!isJsonObject(args)) {
     return undefined;
