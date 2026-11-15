@@ -38,22 +38,27 @@
   "S-03": [
     {
       "check": "The sub-agent's `subagent.started.model` and `assistant.usage.model` are recorded next to the configured worker model. If `models.list` offers models beyond `auto`, they are equal. If it offers only `auto`, the override is shown to be ignored and A4's fallback is recorded as the decision for such plans.",
-      "live": true
+      "live": true,
+      "run": "node --experimental-strip-types --disable-warning=ExperimentalWarning spikes/s-03-attribution/s03.mjs attribution"
     },
     {
       "check": "Each `assistant.usage` can be assigned to exactly one agent; the method is recorded.",
-      "live": true
+      "live": true,
+      "run": "node --experimental-strip-types --disable-warning=ExperimentalWarning spikes/s-03-attribution/s03.mjs agents"
     },
     {
       "check": "A session with `maxAiCredits` set low is stopped by spending that occurs inside a sub-agent. If the plan does not enforce `maxAiCredits`, that is recorded, and C-09's engine-side budget is shown to stop the same session instead.",
-      "live": true
+      "live": true,
+      "run": "node --experimental-strip-types --disable-warning=ExperimentalWarning spikes/s-03-attribution/s03.mjs limit"
     },
     {
       "check": "Credits Pica computes match `getMetrics` within 1%: from tokens and `tokenPrices` when the plan lists prices, otherwise from the cost `assistant.usage` reports (`copilotUsage.totalNanoAiu`).",
-      "live": true
+      "live": true,
+      "run": "node --experimental-strip-types --disable-warning=ExperimentalWarning spikes/s-03-attribution/s03.mjs credits"
     },
     {
-      "check": "A4 and A5 are resolved, each with the plan it was tested on."
+      "check": "A4 and A5 are resolved, each with the plan it was tested on.",
+      "run": "node --experimental-strip-types --disable-warning=ExperimentalWarning spikes/s-03-attribution/s03.mjs resolved"
     }
   ],
   "S-04": [
