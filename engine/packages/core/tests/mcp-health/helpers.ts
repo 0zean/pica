@@ -99,10 +99,13 @@ export class StubConnector implements McpConnector {
   readonly closed: string[] = [];
   private readonly exits = new Map<string, McpExitListener>();
 
-  constructor(
-    private readonly clock: FakeClock,
-    private readonly behaviors: Readonly<Record<string, StubBehavior>>,
-  ) {}
+  private readonly clock: FakeClock;
+  private readonly behaviors: Readonly<Record<string, StubBehavior>>;
+
+  constructor(clock: FakeClock, behaviors: Readonly<Record<string, StubBehavior>>) {
+    this.clock = clock;
+    this.behaviors = behaviors;
+  }
 
   connect(definition: McpServerDef, onExit: McpExitListener): Promise<Result<McpConnection, McpProbeFailure>> {
     const id = definition.id;

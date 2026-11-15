@@ -13,6 +13,9 @@
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    // picad and the CLI run under `node --experimental-strip-types`, which cannot run parameter
+    // properties, enums or namespaces.
+    "erasableSyntaxOnly": true,
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "allowImportingTsExtensions": true,

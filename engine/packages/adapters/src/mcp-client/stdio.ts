@@ -55,7 +55,10 @@ class StdioServer implements McpRpcSession {
   private exitListener: McpExitListener | undefined;
   private readonly exited: Promise<void>;
 
-  constructor(private readonly child: ChildProcessWithoutNullStreams) {
+  private readonly child: ChildProcessWithoutNullStreams;
+
+  constructor(child: ChildProcessWithoutNullStreams) {
+    this.child = child;
     child.stderr.resume();
     child.stdin.on("error", () => undefined);
     createInterface({ input: child.stdout }).on("line", (line) => {
