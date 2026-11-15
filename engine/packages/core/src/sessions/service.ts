@@ -19,6 +19,9 @@ import type {
 import { isLiveSessionState, transitionSession } from "./transitions.ts";
 import type { SessionTrigger } from "./transitions.ts";
 
+// Rounding between the runtime's nano-AIU total and the ledger's per-call credits.
+const spendTolerance = 1e-6;
+
 export interface SessionServiceDeps {
   readonly store: Pick<Store, "workspaces" | "repos" | "sessions" | "events">;
   readonly events: EventLog;
@@ -191,6 +194,13 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
       case "assistant.usage":
         recordUsage(sessionId, session, event);
         return;
+      case "session.usage_checkpoint":
+        catchUpSpend(sessionId, session, event.data.billedCredits, event.timestamp);
+        return;
+      case "session.shutdown":
+        if (event.data.billedCredits !== undefined) catchUpSpend(sessionId, session, event.data.billedCredits, event.timestamp);
+        session.recorder.record(event);
+        return;
       case "session.idle":
         move(sessionId, "turn_ended");
         void startNext(sessionId, session);
@@ -227,6 +237,21 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
       for (const warning of session.budget.record(appended.payload.credits)) {
         append(sessionId, { type: "budget.warning", payload: warning, timestamp: appended.timestamp });
       }
+    }
+    if (session.enforcesBudget && session.budget.exhausted() && session.abortReason !== "budget") {
+      void stopForBudget(sessionId, session);
+    }
+  }
+
+  // The runtime's running total of what it billed (S-01) is the floor for the session's spend. When
+  // the ledger has less, because a call carried no billed credits and its model has no prices, the
+  // budget takes the difference so enforcement never trails the runtime. The ledger is unchanged:
+  // the gap has no model or agent to attribute it to.
+  function catchUpSpend(sessionId: string, session: LiveSession, billedCredits: number, timestamp: string): void {
+    const gap = billedCredits - session.budget.spent();
+    if (gap <= spendTolerance) return;
+    for (const warning of session.budget.record(gap)) {
+      append(sessionId, { type: "budget.warning", payload: warning, timestamp });
     }
     if (session.enforcesBudget && session.budget.exhausted() && session.abortReason !== "budget") {
       void stopForBudget(sessionId, session);

@@ -1,6 +1,7 @@
 import * as z from "zod";
 import { AbsolutePath, Count, Credits, Empty, Id, ProtocolVersion, Timestamp } from "./common.ts";
 import { SessionEvent } from "./events.ts";
+import { CopilotAccount } from "./dto/account.ts";
 import { AgentDef } from "./dto/agents.ts";
 import { ConfigLayer, ConfigValue } from "./dto/config.ts";
 import { FanOut } from "./dto/fanout.ts";
@@ -203,6 +204,8 @@ export const methods = {
     z.object({ workspaceId: Id.optional(), repoId: Id.optional() }),
     z.object({ agents: z.array(AgentDef) }),
   ),
+
+  "engine.account": clientMethod(Empty, z.object({ account: CopilotAccount })),
 
   "models.list": clientMethod(
     Empty,

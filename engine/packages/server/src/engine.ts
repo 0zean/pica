@@ -35,6 +35,7 @@ import type {
   UsageRepository,
   WorkspaceService,
 } from "@pica/core";
+import { registerAccountHandlers } from "./account-handlers.ts";
 import { registerEngineHandlers } from "./engine-handlers.ts";
 import { registerFanOutHandlers, toFanOutDto } from "./fanout-handlers.ts";
 import { registerMcpHealthHandlers } from "./mcp-handlers.ts";
@@ -109,6 +110,9 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
     uptimeMs: () => performance.now() - startedAt,
     sessionsRunning: () => sessions?.runningCount() ?? 0,
   });
+  if (options.sessions !== undefined) {
+    registerAccountHandlers(router, options.sessions.runtime);
+  }
   if (options.mcpHealth !== undefined) {
     registerMcpHealthHandlers(router, options.mcpHealth);
   }

@@ -48,6 +48,12 @@ const contextUsageStep = z.strictObject({
   tokenLimit: tokenCount,
 });
 
+// The runtime's running total of credits billed in the session (Copilot's `session.usage_checkpoint`).
+const usageCheckpointStep = z.strictObject({
+  type: z.literal("usageCheckpoint"),
+  billedCredits: z.number().nonnegative(),
+});
+
 const errorStep = z.strictObject({
   type: z.literal("error"),
   code: z.enum(runtimeErrorCodes),
@@ -60,6 +66,7 @@ const step = z.discriminatedUnion("type", [
   usageStep,
   subagentStep,
   contextUsageStep,
+  usageCheckpointStep,
   errorStep,
 ]);
 

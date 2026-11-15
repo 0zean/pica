@@ -113,6 +113,35 @@ describe("plans without token prices (S-03)", () => {
     expect(approvals[0]?.id).not.toBe(first.payload["approvalId"]);
   });
 
+  it("lets the runtime's credit total catch up a budget the ledger could not price (S-01)", async () => {
+    // No billed credits and no prices: the ledger records 0 credits, but the runtime billed 2.
+    const unbilled = { type: "usage", model: "auto", inputTokens: 1000, outputTokens: 10 };
+    const turn = { steps: [unbilled, unbilled, { type: "usageCheckpoint", billedCredits: 2 }, { type: "text", content: "late" }] };
+    running = await startBudgetEngine(freePlan([turn]), {}, runtimeFloor);
+    const { client } = running;
+    const sessionId = (await createSessionWith(client, { budgetCredits: 1 }))["id"] as string;
+    const subscriptionId = await subscribe(client, sessionId);
+    await call(client, "session.send", { sessionId, text: "go", mode: "send" });
+
+    const aborted = await waitForEvent(client, subscriptionId, (event) => event.type === "session.aborted");
+    expect(aborted.payload).toEqual({ reason: "budget" });
+    const rollup = await call(client, "usage.rollup", { groupBy: "session", sessionId });
+    expect(rollup["rows"]).toMatchObject([{ calls: 2, credits: 0 }]);
+  });
+
+  it("changes nothing when the runtime's total matches the ledger", async () => {
+    const turn = { steps: [billedCall, billedCall, { type: "usageCheckpoint", billedCredits: 0.8 }, { type: "text", content: "done" }] };
+    running = await startBudgetEngine(freePlan([turn]), {}, runtimeFloor);
+    const { client } = running;
+    const sessionId = (await createSessionWith(client, { budgetCredits: 1 }))["id"] as string;
+    const subscriptionId = await subscribe(client, sessionId);
+    await call(client, "session.send", { sessionId, text: "go", mode: "send" });
+    await waitForEvent(client, subscriptionId, (event) => isState("idle")(event) && event.payload["from"] === "running");
+    const types = received(client, subscriptionId).map((event) => event.type);
+    expect(types).not.toContain("session.aborted");
+    expect(types.filter((type) => type === "budget.warning")).toHaveLength(1);
+  });
+
   it("still hands the runtime a limit at or above its floor", async () => {
     running = await startBudgetEngine(freePlan([]), {}, runtimeFloor);
     const created = await running.client.request("session.create", createRequest({ budgetCredits: runtimeFloor }));

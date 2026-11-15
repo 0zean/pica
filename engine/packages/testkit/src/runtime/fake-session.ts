@@ -226,6 +226,9 @@ export class FakeSession implements RuntimeSession {
       case "contextUsage":
         this.emit("session.usage_info", { currentTokens: step.currentTokens, tokenLimit: step.tokenLimit });
         return "continue";
+      case "usageCheckpoint":
+        this.emit("session.usage_checkpoint", { billedCredits: step.billedCredits });
+        return "continue";
       case "error":
         this.emit("session.error", { code: step.code, message: step.message });
         return "stop";
