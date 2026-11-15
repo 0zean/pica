@@ -1089,6 +1089,7 @@ public struct SubagentCompletedPayload: Codable, Hashable, Sendable {
     public var toolCallId: Id
     public var agent: String
     public var model: Id
+    public var requestedModel: Id?
     public var totalTokens: Count
     public var durationMs: Count
 
@@ -1096,12 +1097,14 @@ public struct SubagentCompletedPayload: Codable, Hashable, Sendable {
         toolCallId: Id,
         agent: String,
         model: Id,
+        requestedModel: Id? = nil,
         totalTokens: Count,
         durationMs: Count
     ) {
         self.toolCallId = toolCallId
         self.agent = agent
         self.model = model
+        self.requestedModel = requestedModel
         self.totalTokens = totalTokens
         self.durationMs = durationMs
     }
@@ -1110,6 +1113,7 @@ public struct SubagentCompletedPayload: Codable, Hashable, Sendable {
         case toolCallId
         case agent
         case model
+        case requestedModel
         case totalTokens
         case durationMs
     }
@@ -1119,6 +1123,7 @@ public struct SubagentCompletedPayload: Codable, Hashable, Sendable {
         toolCallId = try container.decode(Id.self, forKey: .toolCallId)
         agent = try container.decode(String.self, forKey: .agent)
         model = try container.decode(Id.self, forKey: .model)
+        requestedModel = try container.decodeIfPresent(Id.self, forKey: .requestedModel)
         totalTokens = try container.decode(Count.self, forKey: .totalTokens)
         durationMs = try container.decode(Count.self, forKey: .durationMs)
     }
@@ -1128,6 +1133,7 @@ public struct SubagentCompletedPayload: Codable, Hashable, Sendable {
         try container.encode(toolCallId, forKey: .toolCallId)
         try container.encode(agent, forKey: .agent)
         try container.encode(model, forKey: .model)
+        try container.encodeIfPresent(requestedModel, forKey: .requestedModel)
         try container.encode(totalTokens, forKey: .totalTokens)
         try container.encode(durationMs, forKey: .durationMs)
     }

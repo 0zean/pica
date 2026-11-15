@@ -10,6 +10,13 @@ export const UsageRecord = z.object({
   outputTokens: Count,
   credits: Credits,
   timestamp: Timestamp,
+  // The sub-agent instance (its runtime id), when `agent` names a sub-agent; two instances of one
+  // agent share `agent` (S-03).
+  agentInstanceId: Id.optional(),
+  // Who made the call as the runtime bills it (`user`, `agent`, `sub-agent`), and the premium
+  // requests it counted, when the runtime reports them.
+  initiator: z.string().min(1).optional(),
+  premiumRequests: z.number().nonnegative().optional(),
 });
 
 export const UsageGroupBy = z.enum(["session", "agent", "model", "workspace", "day"]);

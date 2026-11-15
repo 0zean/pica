@@ -4584,6 +4584,9 @@ public struct UsageRecord: Codable, Hashable, Sendable {
     public var outputTokens: Count
     public var credits: Credits
     public var timestamp: Timestamp
+    public var agentInstanceId: Id?
+    public var initiator: String?
+    public var premiumRequests: Double?
 
     public init(
         sessionId: Id,
@@ -4593,7 +4596,10 @@ public struct UsageRecord: Codable, Hashable, Sendable {
         cachedInputTokens: Count,
         outputTokens: Count,
         credits: Credits,
-        timestamp: Timestamp
+        timestamp: Timestamp,
+        agentInstanceId: Id? = nil,
+        initiator: String? = nil,
+        premiumRequests: Double? = nil
     ) {
         self.sessionId = sessionId
         self.agent = agent
@@ -4603,6 +4609,9 @@ public struct UsageRecord: Codable, Hashable, Sendable {
         self.outputTokens = outputTokens
         self.credits = credits
         self.timestamp = timestamp
+        self.agentInstanceId = agentInstanceId
+        self.initiator = initiator
+        self.premiumRequests = premiumRequests
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -4614,6 +4623,9 @@ public struct UsageRecord: Codable, Hashable, Sendable {
         case outputTokens
         case credits
         case timestamp
+        case agentInstanceId
+        case initiator
+        case premiumRequests
     }
 
     public init(from decoder: any Decoder) throws {
@@ -4626,6 +4638,9 @@ public struct UsageRecord: Codable, Hashable, Sendable {
         outputTokens = try container.decode(Count.self, forKey: .outputTokens)
         credits = try container.decode(Credits.self, forKey: .credits)
         timestamp = try container.decode(Timestamp.self, forKey: .timestamp)
+        agentInstanceId = try container.decodeIfPresent(Id.self, forKey: .agentInstanceId)
+        initiator = try container.decodeIfPresent(String.self, forKey: .initiator)
+        premiumRequests = try container.decodeIfPresent(Double.self, forKey: .premiumRequests)
     }
 
     public func encode(to encoder: any Encoder) throws {
@@ -4638,6 +4653,9 @@ public struct UsageRecord: Codable, Hashable, Sendable {
         try container.encode(outputTokens, forKey: .outputTokens)
         try container.encode(credits, forKey: .credits)
         try container.encode(timestamp, forKey: .timestamp)
+        try container.encodeIfPresent(agentInstanceId, forKey: .agentInstanceId)
+        try container.encodeIfPresent(initiator, forKey: .initiator)
+        try container.encodeIfPresent(premiumRequests, forKey: .premiumRequests)
     }
 }
 

@@ -73,7 +73,7 @@ export function toRuntimeEvent(event: SessionEvent, context: EventContext): Runt
         toolCallId: event.data.toolCallId,
         agentId: subagentId(event, event.data.toolCallId),
         agentName: event.data.agentName,
-        model: event.data.model ?? "",
+        ...subagentModels(event.data.model, event.data.firstDispatchedModel),
         totalTokens: event.data.totalTokens ?? 0,
       });
     case "subagent.failed":
@@ -90,6 +90,8 @@ export function toRuntimeEvent(event: SessionEvent, context: EventContext): Runt
         cachedInputTokens: event.data.cacheReadTokens ?? 0,
         outputTokens: event.data.outputTokens ?? 0,
         ...(event.data.copilotUsage === undefined ? {} : { billedCredits: event.data.copilotUsage.totalNanoAiu / nanoAiuPerCredit }),
+        ...(event.data.initiator === undefined ? {} : { initiator: event.data.initiator }),
+        ...(event.data.cost === undefined ? {} : { premiumRequests: event.data.cost }),
         ...scope,
       });
     case "session_limits_exhausted.requested":
@@ -142,6 +144,17 @@ function toolCompleted(
     },
     ...scope,
   });
+}
+
+// `model` on `subagent.completed` is the one requested; `firstDispatchedModel` is the one used (S-03).
+function subagentModels(
+  requested: string | undefined,
+  used: string | undefined,
+): { readonly model: string; readonly requestedModel?: string } {
+  if (used === undefined || used === "" || used === requested) {
+    return { model: requested ?? "" };
+  }
+  return requested === undefined || requested === "" ? { model: used } : { model: used, requestedModel: requested };
 }
 
 function subagentId(event: SessionEvent, toolCallId: string): string {

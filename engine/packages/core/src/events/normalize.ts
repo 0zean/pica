@@ -42,6 +42,8 @@ interface ToolInfo {
 export interface NormalizerState {
   readonly subagents: ReadonlyMap<string, SubagentInfo>;
   readonly tools: ReadonlyMap<string, ToolInfo>;
+  // Tool calls closed by an abort; the runtime may still report them completing.
+  readonly interrupted: ReadonlySet<string>;
 }
 
 export interface Normalized {
@@ -49,7 +51,7 @@ export interface Normalized {
   readonly drafts: readonly EventDraft[];
 }
 
-export const initialNormalizerState: NormalizerState = { subagents: new Map(), tools: new Map() };
+export const initialNormalizerState: NormalizerState = { subagents: new Map(), tools: new Map(), interrupted: new Set() };
 
 export const resultPreviewChars = 2000;
 
@@ -112,17 +114,7 @@ const handlers: Handlers = {
       }),
     ),
   "subagent.started": subagentStarted,
-  "subagent.completed": (state, event) =>
-    emit(
-      withoutSubagent(state, event.data.agentId),
-      draft(event, "subagent.completed", {
-        toolCallId: event.data.toolCallId,
-        agent: event.data.agentName,
-        model: event.data.model,
-        totalTokens: event.data.totalTokens,
-        durationMs: elapsedMs(state.subagents.get(event.data.agentId)?.startedAt, event.timestamp),
-      }),
-    ),
+  "subagent.completed": subagentCompleted,
   "subagent.failed": (state, event) =>
     emit(
       withoutSubagent(state, event.data.agentId),
@@ -146,6 +138,9 @@ const handlers: Handlers = {
         // from token prices as the event is logged (core/src/usage).
         credits: event.data.billedCredits ?? 0,
         timestamp: event.timestamp,
+        ...(event.data.agentId === undefined ? {} : { agentInstanceId: event.data.agentId }),
+        ...(event.data.initiator === undefined ? {} : { initiator: event.data.initiator }),
+        ...(event.data.premiumRequests === undefined ? {} : { premiumRequests: event.data.premiumRequests }),
       }),
     ),
   "session_limits_exhausted.requested": (state, event, context) =>
@@ -183,7 +178,10 @@ const handlers: Handlers = {
   "session.error": (state, event) =>
     emit(state, draft(event, "session.error", { code: event.data.code, message: event.data.message })),
   // The session service records `abort` itself with the reason it aborted for; this is the fallback.
-  abort: (state, event) => emit(state, draft(event, "session.aborted", { reason: "user" })),
+  abort: (state, event) => {
+    const interrupted = interruptOpen(state, event.timestamp);
+    return emit(interrupted.state, ...interrupted.drafts, draft(event, "session.aborted", { reason: "user" }));
+  },
 };
 
 // Maps one runtime event to the Pica events it stands for. Anything that cannot be mapped (an
@@ -246,6 +244,9 @@ function toolStarted(
 function toolCompleted(state: NormalizerState, event: RuntimeEventOf<"tool.execution_complete">): Normalized {
   const { toolCallId, result } = event.data;
   const started = state.tools.get(toolCallId);
+  if (started === undefined && state.interrupted.has(toolCallId)) {
+    return emit(state);
+  }
   if (started === undefined) {
     throw new Error(`tool call ${toolCallId} completed without starting`);
   }
@@ -277,6 +278,43 @@ function subagentStarted(
     { ...state, subagents: new Map(state.subagents).set(agentId, info) },
     draft(event, "subagent.started", { toolCallId, agent: name, model }),
   );
+}
+
+// After an abort the runtime still reports the interrupted sub-agent as completed (S-03); it was
+// already closed as failed by `interruptOpen`, so a completion for an agent not open is dropped.
+function subagentCompleted(state: NormalizerState, event: RuntimeEventOf<"subagent.completed">): Normalized {
+  const { agentId, toolCallId, agentName: name, model, requestedModel, totalTokens } = event.data;
+  const open = state.subagents.get(agentId);
+  if (open === undefined) {
+    return emit(state);
+  }
+  return emit(
+    withoutSubagent(state, agentId),
+    draft(event, "subagent.completed", {
+      toolCallId,
+      agent: name,
+      model,
+      ...(requestedModel === undefined ? {} : { requestedModel }),
+      totalTokens,
+      durationMs: elapsedMs(open.startedAt, event.timestamp),
+    }),
+  );
+}
+
+const interruptedError = "Interrupted: the turn was aborted";
+
+// An abort ends the turn without completing its open tool calls or sub-agents (S-03); they are
+// closed here as failed so the timeline does not show them running forever.
+export function interruptOpen(state: NormalizerState, timestamp: string): Normalized {
+  const at = { timestamp };
+  const tools = [...state.tools].map(([toolCallId, info]) =>
+    draft(at, "tool.failed", { toolCallId, ...info, error: interruptedError }),
+  );
+  const subagents = [...state.subagents.values()].map((info) =>
+    draft(at, "subagent.failed", { toolCallId: info.toolCallId, agent: info.name, error: interruptedError }),
+  );
+  const interrupted = new Set([...state.interrupted, ...state.tools.keys()]);
+  return { state: { subagents: new Map(), tools: new Map(), interrupted }, drafts: [...tools, ...subagents] };
 }
 
 function withoutSubagent(state: NormalizerState, agentId: string): NormalizerState {

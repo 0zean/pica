@@ -1,5 +1,5 @@
 import { SessionEvent } from "@pica/protocol";
-import { readdirSync, readFileSync } from "node:fs";
+import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { initialNormalizerState, normalizeRuntimeEvent } from "../../src/index.ts";
@@ -79,6 +79,9 @@ describe("runtime event normalization goldens", () => {
   it.each(cases)("%s maps to its golden Pica events", (name) => {
     const runtimeEvents = readNdjson(`${name}.runtime.ndjson`) as IncomingRuntimeEvent[];
     const drafts = normalizeAll(runtimeEvents);
+    if (process.env["UPDATE_GOLDEN"] === "1") {
+      writeFileSync(join(goldenDir, `${name}.pica.ndjson`), drafts.map((draft) => JSON.stringify(draft)).join("\n") + "\n");
+    }
     expect(JSON.parse(JSON.stringify(drafts))).toEqual(readNdjson(`${name}.pica.ndjson`));
   });
 
