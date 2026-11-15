@@ -3,7 +3,7 @@ import { decide } from "../../src/index.ts";
 import { groups, largeRead, managed, maxBytes, other, rangeExemptLines, shell, withResult } from "./cases.ts";
 import { baseContext, toolCall } from "./fixtures.ts";
 import { mcpPermissionCases } from "./mcp-cases.ts";
-import { scopeCases, shellScopeCases } from "./scope-cases.ts";
+import { scopeCases, shellArgumentCases, shellScopeCases } from "./scope-cases.ts";
 
 describe("decide", () => {
   it("has at least 60 table cases", () => {
@@ -15,6 +15,7 @@ describe("decide", () => {
     "MCP permissions (M-05)": mcpPermissionCases,
     "session scope (R-07)": scopeCases,
     "shell scope (R-07)": shellScopeCases,
+    "shell scope (R-07): path arguments": shellArgumentCases,
   })) {
     describe(group, () => {
       it.each(cases)("$name", ({ call, context, outcome, ruleId }) => {

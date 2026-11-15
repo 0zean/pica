@@ -62,3 +62,28 @@ export const shellScopeCases: Case[] = [
   { name: "a redirect through a symlink out of the roots asks", call: toolCall(shell("echo x > out/a")), context: links({ [`${writeRoot}/out/a`]: "/tmp/a" }), outcome: "ask", ruleId: "safety.shell-outside-write-roots" },
   { name: "a relative working directory resolves against the session cwd", call: toolCall(shell("ls", "src")), context: auto, outcome: "allow", ruleId: "permission.auto" },
 ];
+
+// Paths named as command arguments, found by S-04: a command run inside the write root can still
+// write outside it through its arguments.
+export const shellArgumentCases: Case[] = [
+  { name: "touch outside the write roots is denied in auto mode", call: toolCall(shell("touch /tmp/f")), context: auto, outcome: "deny", ruleId: "safety.shell-outside-write-roots" },
+  { name: "cp into a reference root is denied in auto mode", call: toolCall(shell(`cp README.md ${referenceRoot}/f`)), context: auto, outcome: "deny", ruleId: "safety.shell-outside-write-roots" },
+  { name: "cp into a climbing relative path asks", call: toolCall(shell("cp README.md ../../ref/lib/f")), outcome: "ask", ruleId: "safety.shell-outside-write-roots" },
+  { name: "an absolute path inside an inline script is checked", call: toolCall(shell(`python3 -c "open('${referenceRoot}/f','w').write('x')"`)), context: auto, outcome: "deny", ruleId: "safety.shell-outside-write-roots" },
+  { name: "git -C names a working directory", call: toolCall(shell(`git -C ${referenceRoot} commit -am x`)), context: auto, outcome: "deny", ruleId: "safety.shell-outside-write-roots" },
+  { name: "an option value is checked", call: toolCall(shell("npm pack --pack-destination=/tmp/out")), context: auto, outcome: "deny", ruleId: "safety.shell-outside-write-roots" },
+  { name: "a NAME=value argument is checked", call: toolCall(shell("make DESTDIR=/tmp/stage install")), context: auto, outcome: "deny", ruleId: "safety.shell-outside-write-roots" },
+  { name: "an argument under ~ cannot be resolved", call: toolCall(shell("touch ~/f")), outcome: "ask", ruleId: "safety.shell-outside-write-roots" },
+  { name: "a variable path argument cannot be resolved", call: toolCall(shell("rm -f $HOME/f")), context: auto, outcome: "deny", ruleId: "safety.shell-outside-write-roots" },
+  { name: "a find that deletes is not read-only", call: toolCall(shell(`find ${referenceRoot} -name '*.tmp' -delete`)), context: auto, outcome: "deny", ruleId: "safety.shell-outside-write-roots" },
+  { name: "a read-only command outside every root is denied in auto mode", call: toolCall(shell("cat /etc/passwd")), context: auto, outcome: "deny", ruleId: "safety.shell-outside-write-roots" },
+  { name: "a read-only command may read a reference root", call: toolCall(shell(`grep -rn TODO ${referenceRoot}/src`)), context: auto, outcome: "allow", ruleId: "permission.auto" },
+  { name: "a read-only command in a pipeline may read a reference root", call: toolCall(shell("cat ../../ref/lib/a.ts | wc -l")), context: auto, outcome: "allow", ruleId: "permission.auto" },
+  { name: "arguments inside the write root are allowed", call: toolCall(shell("cp src/a.ts src/b.ts && mv build/x ./y")), context: auto, outcome: "allow", ruleId: "permission.auto" },
+  { name: "a message with slashes is not a path outside", call: toolCall(shell('git commit -m "fix a/b and c/d"')), context: auto, outcome: "allow", ruleId: "permission.auto" },
+  { name: "a sed expression is not a path", call: toolCall(shell("sed -i 's/old/new/g' src/a.ts")), context: auto, outcome: "allow", ruleId: "permission.auto" },
+  { name: "a URL is not a path", call: toolCall(shell("curl -o out.json https://example.com/a/b")), context: auto, outcome: "allow", ruleId: "permission.auto" },
+  { name: "the program's own path is not an argument", call: toolCall(shell("/usr/bin/env node scripts/x.js")), context: auto, outcome: "allow", ruleId: "permission.auto" },
+  { name: "echo only prints its arguments", call: toolCall(shell("echo see /etc/motd")), context: auto, outcome: "allow", ruleId: "permission.auto" },
+  { name: "an argument through a symlink out of the roots is denied in auto mode", call: toolCall(shell("touch out/a")), context: { ...auto, ...links({ [`${writeRoot}/out/a`]: "/tmp/a" }) }, outcome: "deny", ruleId: "safety.shell-outside-write-roots" },
+];

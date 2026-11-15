@@ -58,15 +58,19 @@ export const commandDenyListRule: Rule = (call, context) => {
   };
 };
 
-// A command that runs or writes outside the write roots needs a person: ask, or deny in auto mode.
+// A command that runs, writes or names a path outside the write roots needs a person: ask, or deny in
+// auto mode. Read-only commands may also name paths in the reference roots.
 export const shellScopeRule: Rule = (call, context) => {
   const { target } = call;
   if (target.kind !== "shell" || call.result !== undefined) {
     return undefined;
   }
-  const roots = realRoots(context.writeRoots, context);
+  const writeRoots = realRoots(context.writeRoots, context);
+  const readRoots = [...writeRoots, ...realRoots(context.referenceRoots, context)];
   const outside = shellPaths(target.command, joinPath(context.cwd, target.cwd)).find(
-    (entry) => entry.path === undefined || !isInsideAny(realPath(entry.path, context), roots),
+    (entry) =>
+      entry.path === undefined ||
+      !isInsideAny(realPath(entry.path, context), entry.role === "read argument" ? readRoots : writeRoots),
   );
   return outside === undefined ? undefined : shellScopeDecision(call, context, outside);
 };
@@ -75,7 +79,7 @@ function shellScopeDecision(call: ToolCall, context: PolicyContext, outside: She
   const where =
     outside.path === undefined
       ? `${outside.role} ${outside.raw} cannot be resolved before the command runs`
-      : `${outside.role} ${realPath(outside.path, context)} is outside the session's write roots`;
+      : `${outside.role} ${realPath(outside.path, context)} is outside the session's ${outside.role === "read argument" ? "roots" : "write roots"}`;
   const base = { ruleId: "safety.shell-outside-write-roots", ruleGroup: "safety", call } as const;
   if (context.config.permissions.mode === "auto") {
     return { ...base, outcome: "deny", reason: `${where}; permission mode is auto, so it is denied` };

@@ -1,10 +1,12 @@
 import { joinPath, resolvePath } from "./paths.ts";
 
-// What a shell command touches beyond its arguments: the directories it runs in and the files it
-// writes by redirection or `tee`. `path` is absolute but not normalized, or `undefined` when it
-// depends on something only the shell knows (`$VAR`, `~`, `cd -`).
+// What a shell command touches: the directories it runs in, the files it writes by redirection or
+// `tee`, and the paths named in its arguments. A command is not parsed for what it does with an
+// argument, so every path argument may be written, except for the read-only commands below.
+// `path` is absolute but not normalized, or `undefined` when it depends on something only the
+// shell knows (`$VAR`, `~`, `cd -`).
 export interface ShellPath {
-  readonly role: "working directory" | "write target";
+  readonly role: "working directory" | "write target" | "path argument" | "read argument";
   readonly raw: string;
   readonly path: string | undefined;
 }
@@ -18,6 +20,14 @@ const separators = new Set([";", "|", "&", "\n", "(", ")"]);
 const changeDirectory = new Set(["cd", "pushd"]);
 const redirectSuffixes = new Set([">", "|", "&"]);
 const deviceTargets = new Set(["/dev/null", "/dev/stdout", "/dev/stderr"]);
+const printOnly = new Set(["echo", "printf"]);
+const readOnly = new Set(["cat", "head", "tail", "less", "more", "wc", "ls", "tree", "du", "stat", "file", "diff", "grep", "egrep", "fgrep", "rg", "find"]);
+const findWrites = new Set(["-delete", "-exec", "-execdir", "-ok", "-okdir", "-fprint", "-fprint0", "-fprintf", "-fls"]);
+// Programs whose `-C <dir>` makes them run in `<dir>`.
+const directoryOption = new Set(["git", "make", "tar"]);
+// An absolute path inside a larger argument, such as an inline script. The look-behind skips the
+// inner slashes of words like `s/a/b/`, `a/b` and `https://host/a`.
+const embeddedAbsolute = /(?<![\w.~:/$-])\/[^\s'"`,;()]+/g;
 
 export function shellPaths(command: string, cwd: string): readonly ShellPath[] {
   const found: ShellPath[] = [{ role: "working directory", raw: cwd, path: cwd }];
@@ -37,9 +47,49 @@ export function shellPaths(command: string, cwd: string): readonly ShellPath[] {
       for (const arg of args.filter((word) => !word.value.startsWith("-"))) {
         found.push({ role: "write target", raw: arg.value, path: located(arg, current) });
       }
+    } else if (program !== undefined) {
+      found.push(...argumentPaths(program.value, args, current));
     }
   }
   return found.filter((entry) => entry.path === undefined || !deviceTargets.has(resolvePath("/", entry.path)));
+}
+
+function argumentPaths(program: string, args: readonly Word[], cwd: string | undefined): ShellPath[] {
+  if (printOnly.has(program)) {
+    return [];
+  }
+  const role = isReadOnly(program, args) ? "read argument" : "path argument";
+  const found: ShellPath[] = [];
+  let base = cwd;
+  for (let index = 0; index < args.length; index += 1) {
+    const arg = args[index];
+    const next = args[index + 1];
+    if (arg?.value === "-C" && next !== undefined && directoryOption.has(program)) {
+      base = located(next, base);
+      found.push({ role: "working directory", raw: next.value, path: base });
+      index += 1;
+    } else if (arg !== undefined) {
+      found.push(...pathsIn(arg, base, role));
+    }
+  }
+  return found;
+}
+
+function isReadOnly(program: string, args: readonly Word[]): boolean {
+  return readOnly.has(program) && !(program === "find" && args.some((arg) => findWrites.has(arg.value)));
+}
+
+// The value of `--name=value` or `NAME=value`, or the whole word; nothing for a bare option.
+function pathsIn(arg: Word, cwd: string | undefined, role: ShellPath["role"]): ShellPath[] {
+  const assignment = /^(--?[\w-]+|[A-Za-z_]\w*)=/.exec(arg.value);
+  if (assignment === null && arg.value.startsWith("-")) {
+    return [];
+  }
+  const value = arg.value.slice(assignment?.[0].length ?? 0);
+  const candidates = value.startsWith("/") ? [value] : [value, ...(value.match(embeddedAbsolute) ?? [])];
+  return candidates
+    .filter((candidate) => candidate.includes("/") || candidate === ".." || (arg.dynamic && candidate.startsWith("~")))
+    .map((candidate) => ({ role, raw: candidate, path: located({ ...arg, value: candidate }, cwd) }));
 }
 
 interface SimpleCommand {
