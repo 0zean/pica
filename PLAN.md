@@ -1001,7 +1001,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | E-08 | Session service | E-05, E-07 | done |
 | E-09 | Copilot adapter | E-06 | done |
 | E-10 | CLI | E-08 | done |
-| E-11 | `picad` production composition | E-10, C-01, C-04, C-06, C-07, C-08, C-09, R-03, R-06, H-01, H-02, M-07 | doing |
+| E-11 | `picad` production composition | E-10, C-01, C-04, C-06, C-07, C-08, C-09, R-03, R-06, H-01, H-02, M-07 | done |
 | C-01 | Model catalog and tiers | E-09 | done |
 | C-02 | Agent definitions | E-04 | done |
 | C-03 | Policy engine | E-04 | done |
