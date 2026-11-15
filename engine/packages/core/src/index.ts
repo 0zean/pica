@@ -21,6 +21,7 @@ export * from "./sessions/index.ts";
 export * from "./usage/index.ts";
 export * from "./sandbox/index.ts";
 export * from "./mcp-health/index.ts";
+export * from "./mcp-import/index.ts";
 export * from "./repo-cards/index.ts";
 export * from "./audit/index.ts";
 export * from "./managed-policy/index.ts";

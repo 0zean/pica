@@ -1,0 +1,27 @@
+{
+  "platform": "copilot-cli",
+  "source": "~/fixtures/copilot-cli/basic/mcp-config.json",
+  "candidates": [
+    {
+      "candidateId": "[\"copilot-cli\",\"~/fixtures/copilot-cli/basic/mcp-config.json\",\"mcpServers\",\"playwright\"]",
+      "platform": "copilot-cli",
+      "name": "playwright",
+      "id": "playwright",
+      "project": null,
+      "transport": {
+        "type": "stdio",
+        "command": "npx",
+        "args": [
+          "@playwright/mcp@latest"
+        ],
+        "env": {},
+        "cwd": null
+      },
+      "toolAllowlist": null,
+      "secretFields": [],
+      "notes": [],
+      "issues": []
+    }
+  ],
+  "notes": []
+}

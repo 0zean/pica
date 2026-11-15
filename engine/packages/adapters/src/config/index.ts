@@ -9,8 +9,11 @@ export {
   repoMcpConfigPath,
   userMcpConfigPath,
   vscodeMcpConfigPath,
+  workspaceMcpConfigPath,
   type McpFileSource,
 } from "./mcp-paths.ts";
+export { createMcpImportFiles, type McpImportFilesOptions } from "./mcp-import-files.ts";
+export { mcpImportFileLocations, type McpImportFileLocation } from "./mcp-import-paths.ts";
 export {
   ManagedPolicyLoader,
   nodeManagedPolicyFileSystem,

@@ -529,6 +529,24 @@
         "$ref": "#/$defs/Ok"
       }
     },
+    "mcp.importCandidates": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/McpImportCandidatesParams"
+      },
+      "result": {
+        "$ref": "#/$defs/McpImportCandidatesResult"
+      }
+    },
+    "mcp.import": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/McpImportParams"
+      },
+      "result": {
+        "$ref": "#/$defs/McpImportResult"
+      }
+    },
     "agents.list": {
       "direction": "client",
       "params": {
@@ -599,6 +617,15 @@
       },
       "result": {
         "$ref": "#/$defs/SecretsGetResult"
+      }
+    },
+    "secrets.set": {
+      "direction": "engine",
+      "params": {
+        "$ref": "#/$defs/SecretsSetParams"
+      },
+      "result": {
+        "$ref": "#/$defs/Ok"
       }
     }
   },
@@ -2665,6 +2692,261 @@
         "sessionId"
       ]
     },
+    "McpImportCandidate": {
+      "type": "object",
+      "properties": {
+        "candidateId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "platform": {
+          "$ref": "#/$defs/McpImportPlatform"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "project": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "transport": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/McpTransport"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "toolAllowlist": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "secretFields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/McpImportNote"
+          }
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/McpImportNote"
+          }
+        }
+      },
+      "required": [
+        "candidateId",
+        "platform",
+        "name",
+        "id",
+        "project",
+        "transport",
+        "toolAllowlist",
+        "secretFields",
+        "notes",
+        "issues"
+      ]
+    },
+    "McpImportCandidatesParams": {
+      "type": "object",
+      "properties": {
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        },
+        "snippet": {
+          "$ref": "#/$defs/McpImportSnippet"
+        }
+      }
+    },
+    "McpImportCandidatesResult": {
+      "type": "object",
+      "properties": {
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/McpImportSource"
+          }
+        }
+      },
+      "required": [
+        "sources"
+      ]
+    },
+    "McpImportNote": {
+      "type": "object",
+      "properties": {
+        "keyPath": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "keyPath",
+        "message"
+      ]
+    },
+    "McpImportParams": {
+      "type": "object",
+      "properties": {
+        "scope": {
+          "$ref": "#/$defs/McpScope"
+        },
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        },
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        },
+        "candidates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/McpImportSelection"
+          }
+        },
+        "snippet": {
+          "$ref": "#/$defs/McpImportSnippet"
+        }
+      },
+      "required": [
+        "scope"
+      ]
+    },
+    "McpImportPlatform": {
+      "type": "string",
+      "enum": [
+        "claude-desktop",
+        "claude-code",
+        "cursor",
+        "windsurf",
+        "vscode",
+        "gemini-cli",
+        "copilot-cli",
+        "mcp-json",
+        "paste"
+      ]
+    },
+    "McpImportResult": {
+      "type": "object",
+      "properties": {
+        "servers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/McpServerDef"
+          }
+        },
+        "file": {
+          "$ref": "#/$defs/AbsolutePath"
+        },
+        "secretRefs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/McpImportNote"
+          }
+        }
+      },
+      "required": [
+        "servers",
+        "file",
+        "secretRefs",
+        "notes"
+      ]
+    },
+    "McpImportSelection": {
+      "type": "object",
+      "properties": {
+        "candidateId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "candidateId"
+      ]
+    },
+    "McpImportSnippet": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "text"
+      ]
+    },
+    "McpImportSource": {
+      "type": "object",
+      "properties": {
+        "platform": {
+          "$ref": "#/$defs/McpImportPlatform"
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "candidates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/McpImportCandidate"
+          }
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/McpImportNote"
+          }
+        }
+      },
+      "required": [
+        "platform",
+        "source",
+        "candidates",
+        "notes"
+      ]
+    },
     "McpListParams": {
       "type": "object",
       "properties": {
@@ -3639,6 +3921,23 @@
         }
       },
       "required": [
+        "value"
+      ]
+    },
+    "SecretsSetParams": {
+      "type": "object",
+      "properties": {
+        "secretRef": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "secretRef",
         "value"
       ]
     },

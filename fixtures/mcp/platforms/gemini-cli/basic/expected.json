@@ -1,0 +1,89 @@
+{
+  "platform": "gemini-cli",
+  "source": "~/fixtures/gemini-cli/basic/settings.json",
+  "candidates": [
+    {
+      "candidateId": "[\"gemini-cli\",\"~/fixtures/gemini-cli/basic/settings.json\",\"mcpServers\",\"http-server\"]",
+      "platform": "gemini-cli",
+      "name": "http-server",
+      "id": "http-server",
+      "project": null,
+      "transport": {
+        "type": "http",
+        "url": "https://api.example.com/mcp",
+        "headers": {
+          "Authorization": "Bearer ${secret:env:EXAMPLE_TOKEN}"
+        }
+      },
+      "toolAllowlist": null,
+      "secretFields": [],
+      "notes": [
+        {
+          "keyPath": "mcpServers.http-server.timeout",
+          "message": "ignored: Pica has no equivalent setting"
+        }
+      ],
+      "issues": []
+    },
+    {
+      "candidateId": "[\"gemini-cli\",\"~/fixtures/gemini-cli/basic/settings.json\",\"mcpServers\",\"sse-server\"]",
+      "platform": "gemini-cli",
+      "name": "sse-server",
+      "id": "sse-server",
+      "project": null,
+      "transport": {
+        "type": "sse",
+        "url": "https://sse.example.com/sse",
+        "headers": {}
+      },
+      "toolAllowlist": null,
+      "secretFields": [],
+      "notes": [
+        {
+          "keyPath": "mcpServers.sse-server.trust",
+          "message": "ignored: Pica has no equivalent setting"
+        }
+      ],
+      "issues": []
+    },
+    {
+      "candidateId": "[\"gemini-cli\",\"~/fixtures/gemini-cli/basic/settings.json\",\"mcpServers\",\"python-tools\"]",
+      "platform": "gemini-cli",
+      "name": "python-tools",
+      "id": "python-tools",
+      "project": null,
+      "transport": {
+        "type": "stdio",
+        "command": "python",
+        "args": [
+          "-m",
+          "my_mcp_server",
+          "--port",
+          "8080"
+        ],
+        "env": {
+          "DATABASE_URL": {
+            "secretRef": "env:DB_CONNECTION_STRING"
+          },
+          "API_KEY": {
+            "secretRef": "env:EXTERNAL_API_KEY"
+          }
+        },
+        "cwd": "./mcp-servers/python"
+      },
+      "toolAllowlist": [
+        "safe_tool",
+        "file_reader"
+      ],
+      "secretFields": [],
+      "notes": [
+        {
+          "keyPath": "mcpServers.python-tools.excludeTools",
+          "message": "ignored: Pica has no equivalent setting"
+        }
+      ],
+      "issues": []
+    }
+  ],
+  "notes": []
+}

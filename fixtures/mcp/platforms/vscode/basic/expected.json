@@ -1,0 +1,58 @@
+{
+  "platform": "vscode",
+  "source": "~/fixtures/vscode/basic/mcp.json",
+  "candidates": [
+    {
+      "candidateId": "[\"vscode\",\"~/fixtures/vscode/basic/mcp.json\",\"servers\",\"perplexity\"]",
+      "platform": "vscode",
+      "name": "perplexity",
+      "id": "perplexity",
+      "project": null,
+      "transport": {
+        "type": "stdio",
+        "command": "npx",
+        "args": [
+          "-y",
+          "server-perplexity-ask"
+        ],
+        "env": {
+          "PERPLEXITY_API_KEY": {
+            "secretRef": "keychain:perplexity-key"
+          }
+        },
+        "cwd": null
+      },
+      "toolAllowlist": null,
+      "secretFields": [],
+      "notes": [
+        {
+          "keyPath": "servers.perplexity.envFile",
+          "message": "ignored: Pica has no equivalent setting"
+        }
+      ],
+      "issues": []
+    },
+    {
+      "candidateId": "[\"vscode\",\"~/fixtures/vscode/basic/mcp.json\",\"servers\",\"fetch\"]",
+      "platform": "vscode",
+      "name": "fetch",
+      "id": "fetch",
+      "project": null,
+      "transport": {
+        "type": "http",
+        "url": "https://fetch.example.com/mcp",
+        "headers": {}
+      },
+      "toolAllowlist": null,
+      "secretFields": [],
+      "notes": [
+        {
+          "keyPath": "servers.fetch.dev",
+          "message": "ignored: Pica has no equivalent setting"
+        }
+      ],
+      "issues": []
+    }
+  ],
+  "notes": []
+}

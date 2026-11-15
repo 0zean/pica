@@ -1,0 +1,26 @@
+{
+  "numStartups": 12,
+  "theme": "dark",
+  "mcpServers": {
+    "sentry": {
+      "type": "http",
+      "url": "https://mcp.sentry.dev/mcp",
+      "headers": { "Authorization": "Bearer ${SENTRY_TOKEN}" }
+    },
+    "linear": { "type": "sse", "url": "https://mcp.linear.app/sse" }
+  },
+  "projects": {
+    "/Users/dev/work/app": {
+      "allowedTools": [],
+      "mcpServers": {
+        "db": {
+          "type": "stdio",
+          "command": "npx",
+          "args": ["-y", "@example/db-mcp"],
+          "env": { "DATABASE_URL": "${DATABASE_URL:-postgres://localhost/app}", "DB_PASSWORD": "hunter2-test" }
+        }
+      }
+    },
+    "/Users/dev/work/empty": { "allowedTools": [] }
+  }
+}

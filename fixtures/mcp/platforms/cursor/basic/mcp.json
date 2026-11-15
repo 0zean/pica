@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "search": {
+      "command": "npx",
+      "args": ["-y", "@example/search-mcp", "--api-key", "${env:SEARCH_API_KEY}"],
+      "env": { "LOG_DIR": "${userHome}/logs" },
+      "envFile": "${userHome}/.search.env"
+    },
+    "remote": {
+      "url": "https://mcp.example.com/mcp",
+      "headers": { "Authorization": "Bearer test-bearer-not-real" }
+    }
+  }
+}

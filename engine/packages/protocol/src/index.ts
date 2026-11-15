@@ -15,6 +15,7 @@ export * from "./dto/files.ts";
 export * from "./dto/git.ts";
 export * from "./dto/github.ts";
 export * from "./dto/mcp.ts";
+export * from "./dto/mcp-import.ts";
 export * from "./dto/models.ts";
 export * from "./dto/policy.ts";
 export * from "./dto/repo.ts";

@@ -69,8 +69,12 @@ The engine asks the app for secrets with `secrets.get {secretRef}` (§4.5). The 
   `data.details.secretRef`.
 - Bad params get `invalid_params`. Any other engine method gets `method_not_found`.
 
-`KeychainSecretBroker` reads generic-password items with service `dev.pica.Pica.secrets` and account set to the
-secret reference. M-03 settles the reference format and how secrets are written. Tests use `InMemorySecretBroker` from
+`secrets.set {secretRef, value}` (M-07) hands the app a secret the engine moved out of an imported MCP entry
+([mcp-import.md](mcp-import.md)). The client stores it under the reference, replacing any value there, and answers
+`{ok: true}`; when the store fails it answers `secret_unresolved` as above.
+
+`KeychainSecretBroker` reads and writes generic-password items with service `dev.pica.Pica.secrets` and account set
+to the secret reference; items it adds are `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`. M-03 settles the reference format and how secrets are written. Tests use `InMemorySecretBroker` from
 `EngineClientTestSupport` and never touch the Keychain.
 
 ## Test support

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "local-docs": {
+      "command": "node",
+      "args": ["${workspaceFolder}${pathSeparator}tools${/}docs.js", "--name", "${workspaceFolderBasename}"]
+    }
+  }
+}

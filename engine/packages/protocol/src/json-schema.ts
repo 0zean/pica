@@ -7,6 +7,7 @@ import * as files from "./dto/files.ts";
 import * as git from "./dto/git.ts";
 import * as github from "./dto/github.ts";
 import * as mcp from "./dto/mcp.ts";
+import * as mcpImport from "./dto/mcp-import.ts";
 import * as models from "./dto/models.ts";
 import * as policy from "./dto/policy.ts";
 import * as repo from "./dto/repo.ts";
@@ -19,7 +20,7 @@ import { RPC_ERROR_NUMBERS } from "./jsonrpc.ts";
 import { ById, ByRepo, BySession, ByWorktree, methodNames, methods, notificationNames, notifications, Ok } from "./methods.ts";
 import { PROTOCOL_VERSION } from "./version.ts";
 
-const dtoModules = [common, agents, config, fanout, files, git, github, mcp, models, policy, repo, session, usage, workspace, jsonrpc];
+const dtoModules = [common, agents, config, fanout, files, git, github, mcp, mcpImport, models, policy, repo, session, usage, workspace, jsonrpc];
 const sharedShapes = { ById, ByRepo, BySession, ByWorktree, Ok };
 
 // "session.state_changed" → "SessionStateChanged"

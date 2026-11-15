@@ -412,6 +412,20 @@ public enum Methods {
         public static let direction = MethodDirection.client
     }
 
+    public enum McpImportCandidates: PicaMethod {
+        public typealias Params = McpImportCandidatesParams
+        public typealias Result = McpImportCandidatesResult
+        public static let name = "mcp.importCandidates"
+        public static let direction = MethodDirection.client
+    }
+
+    public enum McpImport: PicaMethod {
+        public typealias Params = McpImportParams
+        public typealias Result = McpImportResult
+        public static let name = "mcp.import"
+        public static let direction = MethodDirection.client
+    }
+
     public enum AgentsList: PicaMethod {
         public typealias Params = AgentsListParams
         public typealias Result = AgentsListResult
@@ -465,6 +479,13 @@ public enum Methods {
         public typealias Params = SecretsGetParams
         public typealias Result = SecretsGetResult
         public static let name = "secrets.get"
+        public static let direction = MethodDirection.engine
+    }
+
+    public enum SecretsSet: PicaMethod {
+        public typealias Params = SecretsSetParams
+        public typealias Result = Ok
+        public static let name = "secrets.set"
         public static let direction = MethodDirection.engine
     }
 }

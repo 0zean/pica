@@ -1,0 +1,32 @@
+{
+  "platform": "mcp-json",
+  "source": "~/fixtures/mcp-json/basic/.mcp.json",
+  "candidates": [
+    {
+      "candidateId": "[\"mcp-json\",\"~/fixtures/mcp-json/basic/.mcp.json\",\"mcpServers\",\"api\"]",
+      "platform": "mcp-json",
+      "name": "api",
+      "id": "api",
+      "project": null,
+      "transport": {
+        "type": "http",
+        "url": "https://api.example.com/mcp",
+        "headers": {
+          "X-Token": {
+            "secretRef": "env:API_TOKEN"
+          }
+        }
+      },
+      "toolAllowlist": null,
+      "secretFields": [],
+      "notes": [
+        {
+          "keyPath": "mcpServers.api.timeout",
+          "message": "ignored: Pica has no equivalent setting"
+        }
+      ],
+      "issues": []
+    }
+  ],
+  "notes": []
+}

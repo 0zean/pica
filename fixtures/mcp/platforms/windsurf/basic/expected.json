@@ -1,0 +1,54 @@
+{
+  "platform": "windsurf",
+  "source": "~/fixtures/windsurf/basic/mcp_config.json",
+  "candidates": [
+    {
+      "candidateId": "[\"windsurf\",\"~/fixtures/windsurf/basic/mcp_config.json\",\"mcpServers\",\"figma\"]",
+      "platform": "windsurf",
+      "name": "figma",
+      "id": "figma",
+      "project": null,
+      "transport": {
+        "type": "http",
+        "url": "https://mcp.figma.example/mcp",
+        "headers": {
+          "X-Api-Key": {
+            "secretRef": "env:FIGMA_KEY"
+          }
+        }
+      },
+      "toolAllowlist": null,
+      "secretFields": [],
+      "notes": [
+        {
+          "keyPath": "mcpServers.figma.disabledTools",
+          "message": "ignored: Pica has no equivalent setting"
+        }
+      ],
+      "issues": []
+    },
+    {
+      "candidateId": "[\"windsurf\",\"~/fixtures/windsurf/basic/mcp_config.json\",\"mcpServers\",\"shell\"]",
+      "platform": "windsurf",
+      "name": "shell",
+      "id": "shell",
+      "project": null,
+      "transport": null,
+      "toolAllowlist": null,
+      "secretFields": [],
+      "notes": [
+        {
+          "keyPath": "mcpServers.shell.disabled",
+          "message": "ignored: Pica has no equivalent setting"
+        }
+      ],
+      "issues": [
+        {
+          "keyPath": "mcpServers.shell.env.SHELL_TOKEN",
+          "message": "unsupported Windsurf variable ${file:/Users/dev/.shell-token}"
+        }
+      ]
+    }
+  ],
+  "notes": []
+}

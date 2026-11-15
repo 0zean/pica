@@ -10,6 +10,11 @@ export interface ForeignMcpFormat {
   readonly entryKeys: ReadonlySet<string>;
   // Rewrites the format's variables into Pica's syntax, or returns an issue message.
   readonly rewrite: (text: string, keyPath: string, notes: NoteSink) => string | { readonly issue: string };
+  // Maps a format's own field names onto the shared ones (`serverUrl` → `url`) before conversion.
+  // Keys it consumes must be absent from its result; keys it leaves are converted as usual.
+  readonly normalize?: (raw: Readonly<Record<string, unknown>>, keyPath: string, notes: NoteSink) => Record<string, unknown>;
+  // Settings files with many unrelated keys (Gemini CLI, `~/.claude.json`) get no note for each.
+  readonly quietTopLevel?: boolean;
 }
 
 export type NoteSink = (keyPath: string, message: string) => void;
@@ -31,7 +36,7 @@ export function importForeign(format: ForeignMcpFormat, source: string, value: u
     return { entries: [], notes, issues: [{ keyPath: "", message: "expected an object" }] };
   }
   for (const key of Object.keys(value)) {
-    if (key !== format.serversKey && !format.topLevelKeys.has(key)) {
+    if (key !== format.serversKey && !format.topLevelKeys.has(key) && format.quietTopLevel !== true) {
       note(key, "ignored: not an MCP server setting");
     }
   }
@@ -57,7 +62,8 @@ export function importForeign(format: ForeignMcpFormat, source: string, value: u
       issues.push({ keyPath: keyPath.join("."), message: "expected an object" });
       continue;
     }
-    const entry = convertEntry(format, raw, keyPath, note, issues);
+    const normalized = format.normalize === undefined ? raw : format.normalize(raw, keyPath.join("."), note);
+    const entry = convertEntry(format, normalized, keyPath, note, issues);
     entries.push({ id, keyPath, entry: id === key ? entry : { name: key, ...entry } });
   }
   return { entries, notes, issues };

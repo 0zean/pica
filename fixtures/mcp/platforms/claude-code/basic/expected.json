@@ -1,0 +1,76 @@
+{
+  "platform": "claude-code",
+  "source": "~/fixtures/claude-code/basic/.claude.json",
+  "candidates": [
+    {
+      "candidateId": "[\"claude-code\",\"~/fixtures/claude-code/basic/.claude.json\",\"mcpServers\",\"sentry\"]",
+      "platform": "claude-code",
+      "name": "sentry",
+      "id": "sentry",
+      "project": null,
+      "transport": {
+        "type": "http",
+        "url": "https://mcp.sentry.dev/mcp",
+        "headers": {
+          "Authorization": "Bearer ${secret:env:SENTRY_TOKEN}"
+        }
+      },
+      "toolAllowlist": null,
+      "secretFields": [],
+      "notes": [],
+      "issues": []
+    },
+    {
+      "candidateId": "[\"claude-code\",\"~/fixtures/claude-code/basic/.claude.json\",\"mcpServers\",\"linear\"]",
+      "platform": "claude-code",
+      "name": "linear",
+      "id": "linear",
+      "project": null,
+      "transport": {
+        "type": "sse",
+        "url": "https://mcp.linear.app/sse",
+        "headers": {}
+      },
+      "toolAllowlist": null,
+      "secretFields": [],
+      "notes": [],
+      "issues": []
+    },
+    {
+      "candidateId": "[\"claude-code\",\"~/fixtures/claude-code/basic/.claude.json\",\"projects\",\"/Users/dev/work/app\",\"mcpServers\",\"db\"]",
+      "platform": "claude-code",
+      "name": "db",
+      "id": "db",
+      "project": "~/work/app",
+      "transport": {
+        "type": "stdio",
+        "command": "npx",
+        "args": [
+          "-y",
+          "@example/db-mcp"
+        ],
+        "env": {
+          "DATABASE_URL": {
+            "secretRef": "env:DATABASE_URL"
+          },
+          "DB_PASSWORD": {
+            "secretRef": "keychain:mcp/db/DB_PASSWORD"
+          }
+        },
+        "cwd": null
+      },
+      "toolAllowlist": null,
+      "secretFields": [
+        "projects./Users/dev/work/app.mcpServers.db.env.DB_PASSWORD"
+      ],
+      "notes": [
+        {
+          "keyPath": "projects./Users/dev/work/app.mcpServers.db.env.DATABASE_URL",
+          "message": "default for ${DATABASE_URL} dropped; set DATABASE_URL in the environment or the keychain"
+        }
+      ],
+      "issues": []
+    }
+  ],
+  "notes": []
+}

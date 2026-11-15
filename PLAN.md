@@ -742,13 +742,14 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
   - [x] A crashing stdio server is restarted with backoff and gives up after the configured attempts.
 
 **M-07 · Import from other agent platforms** — M-01
-- Build: bring in MCP servers the user already runs elsewhere, without Pica naming specific servers (D-18). Discover the config files other agent platforms keep (for example Claude Desktop, Claude Code, Cursor, Windsurf, VS Code user settings, Gemini CLI, Codex, and the Copilot CLI and `.mcp.json` sources M-01 reads) and list their servers as import candidates. Accept a pasted `mcpServers` / `servers` JSON snippet or a single entry. Importing copies the chosen entries into Pica's `mcp.jsonc` at a scope the user picks, moves inline secrets into secret references, and records where each came from. Nothing is imported or attached without the user choosing it. RPC: `mcp.importCandidates`, `mcp.import`.
+- Build: bring in MCP servers the user already runs elsewhere, without Pica naming specific servers (D-18). Discover the config files other agent platforms keep (for example Claude Desktop, Claude Code, Cursor, Windsurf, VS Code user settings, Gemini CLI, Codex, and the Copilot CLI and `.mcp.json` sources M-01 reads) and list their servers as import candidates. Accept a pasted `mcpServers` / `servers` JSON snippet or a single entry. Importing copies the chosen entries into Pica's `mcp.jsonc` at a scope the user picks, moves inline secrets into secret references, and records where each came from. Nothing is imported or attached without the user choosing it. RPC: `mcp.importCandidates`, `mcp.import`; secrets reach the app's Keychain through the engine→client `secrets.set`. Spec: `docs/mcp-import.md`.
+- Deferred: Codex (`~/.codex/config.toml`, `[mcp_servers.*]`) is TOML, and adding a TOML parser dependency was not approved for this unit, so Codex is not read yet. Pasting a Codex server converted to JSON works today.
 - Verify:
-  - [ ] Golden tests: one fixture per platform format converts to the expected Pica entries, with notes for fields Pica drops.
-  - [ ] A pasted snippet in each common shape (`mcpServers`, `servers`, a bare name map, one entry) imports; a malformed one fails with the key path named.
-  - [ ] An imported entry with an inline secret is stored with a secret reference, and the secret value is in the broker, not the file.
-  - [ ] A platform file that is missing or unreadable yields no candidates and no error.
-  - [ ] Candidates are never attached to a session until the user attaches them.
+  - [x] Golden tests: one fixture per platform format converts to the expected Pica entries, with notes for fields Pica drops.
+  - [x] A pasted snippet in each common shape (`mcpServers`, `servers`, a bare name map, one entry) imports; a malformed one fails with the key path named.
+  - [x] An imported entry with an inline secret is stored with a secret reference, and the secret value is in the broker, not the file.
+  - [x] A platform file that is missing or unreadable yields no candidates and no error.
+  - [x] Candidates are never attached to a session until the user attaches them.
 
 ### Phase 5 — macOS app
 
@@ -1016,7 +1017,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | M-04 | Scoping and tool budgets | M-01, C-02 | done |
 | M-05 | MCP permissions | C-03, M-04 | done |
 | M-06 | Health and diagnostics | M-04 | done |
-| M-07 | Import from other agent platforms | M-01 | todo |
+| M-07 | Import from other agent platforms | M-01 | done |
 | A-01 | App shell and engine supervision | E-05, S-05 | todo |
 | A-02 | EngineClient | E-02 | done |
 | A-03 | Design system | F-01 | done |

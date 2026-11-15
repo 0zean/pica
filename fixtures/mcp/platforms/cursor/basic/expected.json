@@ -1,0 +1,57 @@
+{
+  "platform": "cursor",
+  "source": "~/fixtures/cursor/basic/mcp.json",
+  "candidates": [
+    {
+      "candidateId": "[\"cursor\",\"~/fixtures/cursor/basic/mcp.json\",\"mcpServers\",\"search\"]",
+      "platform": "cursor",
+      "name": "search",
+      "id": "search",
+      "project": null,
+      "transport": {
+        "type": "stdio",
+        "command": "npx",
+        "args": [
+          "-y",
+          "@example/search-mcp",
+          "--api-key",
+          "${secret:env:SEARCH_API_KEY}"
+        ],
+        "env": {
+          "LOG_DIR": "/Users/dev/logs"
+        },
+        "cwd": null
+      },
+      "toolAllowlist": null,
+      "secretFields": [],
+      "notes": [
+        {
+          "keyPath": "mcpServers.search.envFile",
+          "message": "ignored: Pica has no equivalent setting"
+        }
+      ],
+      "issues": []
+    },
+    {
+      "candidateId": "[\"cursor\",\"~/fixtures/cursor/basic/mcp.json\",\"mcpServers\",\"remote\"]",
+      "platform": "cursor",
+      "name": "remote",
+      "id": "remote",
+      "project": null,
+      "transport": {
+        "type": "http",
+        "url": "https://mcp.example.com/mcp",
+        "headers": {
+          "Authorization": "Bearer ${secret:keychain:mcp/remote/Authorization}"
+        }
+      },
+      "toolAllowlist": null,
+      "secretFields": [
+        "mcpServers.remote.headers.Authorization"
+      ],
+      "notes": [],
+      "issues": []
+    }
+  ],
+  "notes": []
+}

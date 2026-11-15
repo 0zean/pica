@@ -1,0 +1,13 @@
+{
+  "inputs": [{ "type": "promptString", "id": "perplexity-key", "description": "Perplexity API key", "password": true }],
+  "servers": {
+    "perplexity": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "server-perplexity-ask"],
+      "env": { "PERPLEXITY_API_KEY": "${input:perplexity-key}" },
+      "envFile": "${userHome}/.perplexity.env"
+    },
+    "fetch": { "type": "http", "url": "https://fetch.example.com/mcp", "dev": { "watch": "src/**" } }
+  }
+}

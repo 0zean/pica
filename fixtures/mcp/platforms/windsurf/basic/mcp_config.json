@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "figma": {
+      "serverUrl": "https://mcp.figma.example/mcp",
+      "headers": { "X-Api-Key": "${env:FIGMA_KEY}" },
+      "disabledTools": ["delete_file"]
+    },
+    "shell": {
+      "command": "uvx",
+      "args": ["shell-mcp"],
+      "env": { "SHELL_TOKEN": "${file:/Users/dev/.shell-token}" },
+      "disabled": true
+    }
+  }
+}
