@@ -412,6 +412,20 @@ public enum Methods {
         public static let direction = MethodDirection.client
     }
 
+    public enum McpPresets: PicaMethod {
+        public typealias Params = Empty
+        public typealias Result = McpPresetsResult
+        public static let name = "mcp.presets"
+        public static let direction = MethodDirection.client
+    }
+
+    public enum McpRenderPreset: PicaMethod {
+        public typealias Params = McpRenderPresetParams
+        public typealias Result = McpRenderPresetResult
+        public static let name = "mcp.renderPreset"
+        public static let direction = MethodDirection.client
+    }
+
     public enum AgentsList: PicaMethod {
         public typealias Params = AgentsListParams
         public typealias Result = AgentsListResult
