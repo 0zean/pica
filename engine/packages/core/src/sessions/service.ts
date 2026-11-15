@@ -87,6 +87,8 @@ interface LiveSession {
   readonly approvals: Map<string, PendingApproval>;
   readonly queue: string[];
   readonly budget: SessionBudget;
+  // True when the limit is below what the runtime accepts, so the engine stops the turn itself.
+  readonly enforcesBudget: boolean;
   unsubscribe: () => void;
   steer: string | undefined;
   abortReason: AbortReason;
@@ -147,12 +149,14 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
   }
 
   function attach(sessionId: string, runtime: RuntimeSession, budget: SessionBudget): void {
+    const limit = budget.limit();
     const session: LiveSession = {
       runtime,
       recorder: createRuntimeEventRecorder(deps.events, { sessionId, rootAgent }),
       approvals: new Map(),
       queue: [],
       budget,
+      enforcesBudget: limit !== null && runtimeLimit(limit) === undefined,
       unsubscribe: () => undefined,
       steer: undefined,
       abortReason: "user",
@@ -219,6 +223,35 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
         append(sessionId, { type: "budget.warning", payload: warning, timestamp: appended.timestamp });
       }
     }
+    if (session.enforcesBudget && session.budget.exhausted() && session.abortReason !== "budget") {
+      void stopForBudget(sessionId, session);
+    }
+  }
+
+  // The engine's own stop for a limit the runtime does not hold (S-03): it ends the turn at once,
+  // which stops billing even inside a sub-agent, and drops queued messages.
+  async function stopForBudget(sessionId: string, session: LiveSession): Promise<void> {
+    session.queue.length = 0;
+    session.steer = undefined;
+    const aborted = await abortTurn(session, "budget");
+    if (!aborted.ok) {
+      append(sessionId, { type: "session.error", payload: { code: aborted.error.code, message: aborted.error.message }, timestamp: clock() });
+    }
+  }
+
+  // The limit to hand the runtime as `maxAiCredits`, or undefined when it is below the runtime's floor.
+  function runtimeLimit(limit: number | null): number | undefined {
+    return limit !== null && limit >= (deps.runtime.minSessionCredits ?? 0) ? limit : undefined;
+  }
+
+  function budgetExhausted(sessionId: string, session: LiveSession): SessionResult<never> | undefined {
+    if (!session.enforcesBudget || !session.budget.exhausted()) {
+      return undefined;
+    }
+    return sessionFailure(
+      "session.budget_exhausted",
+      `session ${sessionId} has used ${String(session.budget.spent())} of its ${String(session.budget.limit())} credits`,
+    );
   }
 
   function budgetFor(limitCredits: number | null, spentCredits: number): SessionBudget {
@@ -239,6 +272,10 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     text: string,
     mode: SessionSendMode | undefined,
   ): Promise<SessionResult<undefined>> {
+    const exhausted = budgetExhausted(sessionId, session);
+    if (exhausted !== undefined) {
+      return exhausted;
+    }
     const running = move(sessionId, "send");
     if (!running.ok) {
       return running;
@@ -441,7 +478,7 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     const resumed = await deps.runtime.resumeSession({
       sessionId,
       workingDirectory: directory,
-      ...(limit === null ? {} : { maxAiCredits: limit }),
+      ...withRuntimeLimit(runtimeLimit(limit)),
       ...runtimeHooks(sessionId),
       ...engineTools(stored.value),
     });
@@ -520,7 +557,7 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     const opened = await deps.runtime.createSession({
       sessionId: session.id,
       workingDirectory: directory,
-      ...(limit === null ? {} : { maxAiCredits: limit }),
+      ...withRuntimeLimit(runtimeLimit(limit)),
       ...runtimeHooks(session.id),
       ...engineTools(session),
     });
@@ -670,4 +707,8 @@ function storeFailure(error: StoreError, subject?: string): ReturnType<typeof se
     return sessionFailure("session.not_found", subject === undefined ? error.message : `${subject} not found`);
   }
   return sessionFailure("session.store_failed", error.message);
+}
+
+function withRuntimeLimit(limit: number | undefined): { readonly maxAiCredits?: number } {
+  return limit === undefined ? {} : { maxAiCredits: limit };
 }

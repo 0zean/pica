@@ -2,6 +2,9 @@ import type { JsonValue, RuntimeEvent, RuntimeEventDataMap, RuntimeEventType, To
 import type { SessionEvent } from "@github/copilot-sdk";
 import { classifyError } from "./errors.ts";
 
+// One AI credit is 10^9 nano-AIU (S-03: the sum matches `getMetrics` to the nano-AIU).
+const nanoAiuPerCredit = 1_000_000_000;
+
 export interface EventContext {
   readonly sessionId: string;
   readonly workingDirectory: string;
@@ -86,6 +89,7 @@ export function toRuntimeEvent(event: SessionEvent, context: EventContext): Runt
         inputTokens: event.data.inputTokens ?? 0,
         cachedInputTokens: event.data.cacheReadTokens ?? 0,
         outputTokens: event.data.outputTokens ?? 0,
+        ...(event.data.copilotUsage === undefined ? {} : { billedCredits: event.data.copilotUsage.totalNanoAiu / nanoAiuPerCredit }),
         ...scope,
       });
     case "session_limits_exhausted.requested":

@@ -54,11 +54,14 @@ export interface RuntimeEventDataMap {
     readonly agentName: string;
     readonly error: string;
   };
+  // `billedCredits`: what the call was billed, when the runtime reports it (Copilot's
+  // `copilotUsage.totalNanoAiu`). It is the only cost on plans without token prices (S-03).
   "assistant.usage": {
     readonly model: string;
     readonly inputTokens: number;
     readonly cachedInputTokens: number;
     readonly outputTokens: number;
+    readonly billedCredits?: number;
     readonly agentId?: string;
   };
   // The session's credit spend reached `maxAiCredits` after a model call; the next call waits for

@@ -3,7 +3,8 @@ import type { UsageRepository } from "../store/index.ts";
 import type { SessionResult } from "./errors.ts";
 
 // `budget.*` in config (PLAN.md §4.6). The session limit is enforced by the runtime as a soft cap
-// (`maxAiCredits`); the workspace daily cap is enforced here, when a session starts or resumes.
+// (`maxAiCredits`) when the runtime accepts it, and by the session service otherwise; the
+// workspace daily cap is enforced here, when a session starts or resumes.
 export interface BudgetSettings {
   // The limit for a session created without one.
   readonly sessionCredits?: number | undefined;
@@ -32,6 +33,7 @@ export interface BudgetWarning {
 export interface SessionBudget {
   spent(): number;
   limit(): number | null;
+  exhausted(): boolean;
   // Adds one model call's credits and returns the warnings it crossed.
   record(credits: number): readonly BudgetWarning[];
   raise(limitCredits: number): void;
@@ -56,6 +58,7 @@ export function createSessionBudget(
   return {
     spent: () => spent,
     limit: () => limit,
+    exhausted: () => limit !== null && spent >= limit,
     record: (credits) => {
       spent += credits;
       const newly = crossed();

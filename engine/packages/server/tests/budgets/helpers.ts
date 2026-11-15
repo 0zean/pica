@@ -31,11 +31,15 @@ export interface BudgetEngine {
   stop(): Promise<void>;
 }
 
-export async function startBudgetEngine(scenario: Scenario, budget: BudgetSettings): Promise<BudgetEngine> {
+export async function startBudgetEngine(
+  scenario: Scenario,
+  budget: BudgetSettings,
+  minSessionCredits?: number,
+): Promise<BudgetEngine> {
   const dir = await mkdtemp(join(tmpdir(), "picad-budgets-"));
   const socketPath = join(dir, "run", "picad.sock");
   const store = openSeededStore(join(dir, "pica.db"));
-  const runtime = new FakeRuntime({ scenario, clock: steppingClock(engineStart) });
+  const runtime = new FakeRuntime({ scenario, clock: steppingClock(engineStart), minSessionCredits });
   const ids = sequentialIds();
   const engine: SocketListener = await startEngine({
     socketPath,

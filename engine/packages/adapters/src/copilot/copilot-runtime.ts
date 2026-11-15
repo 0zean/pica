@@ -32,6 +32,8 @@ export interface CopilotRuntimeOptions {
 // `AgentRuntime` over `@github/copilot-sdk`. Every SDK failure becomes a `RuntimeError` with a
 // stable code; nothing thrown by the SDK leaves this class.
 export class CopilotRuntime implements AgentRuntime {
+  // `session.create` refuses a lower `sessionLimits.maxAiCredits` (S-03, Copilot Free).
+  readonly minSessionCredits = 30;
   private readonly client: CopilotClient;
   private readonly sessionIds: () => string;
   private connected = false;
