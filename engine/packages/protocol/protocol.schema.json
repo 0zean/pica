@@ -529,6 +529,24 @@
         "$ref": "#/$defs/Ok"
       }
     },
+    "mcp.presets": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/Empty"
+      },
+      "result": {
+        "$ref": "#/$defs/McpPresetsResult"
+      }
+    },
+    "mcp.renderPreset": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/McpRenderPresetParams"
+      },
+      "result": {
+        "$ref": "#/$defs/McpRenderPresetResult"
+      }
+    },
     "agents.list": {
       "direction": "client",
       "params": {
@@ -2685,6 +2703,196 @@
       },
       "required": [
         "servers"
+      ]
+    },
+    "McpPreset": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string"
+        },
+        "parameters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/McpPresetParameter"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description",
+        "parameters"
+      ]
+    },
+    "McpPresetIssue": {
+      "type": "object",
+      "properties": {
+        "parameter": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "parameter",
+        "message"
+      ]
+    },
+    "McpPresetParameter": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "choice",
+            "text",
+            "url",
+            "hostname",
+            "identifier",
+            "secretRef"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "default": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "choices": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "examples": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "onlyWhen": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "parameter": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "required": [
+                "parameter",
+                "values"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "name",
+        "label",
+        "description",
+        "kind",
+        "required",
+        "default",
+        "choices",
+        "examples",
+        "onlyWhen"
+      ]
+    },
+    "McpPresetsResult": {
+      "type": "object",
+      "properties": {
+        "presets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/McpPreset"
+          }
+        }
+      },
+      "required": [
+        "presets"
+      ]
+    },
+    "McpRenderPresetParams": {
+      "type": "object",
+      "properties": {
+        "presetId": {
+          "$ref": "#/$defs/Id"
+        },
+        "parameters": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "serverId": {
+          "$ref": "#/$defs/Id"
+        },
+        "scope": {
+          "$ref": "#/$defs/McpScope"
+        }
+      },
+      "required": [
+        "presetId",
+        "parameters"
+      ]
+    },
+    "McpRenderPresetResult": {
+      "type": "object",
+      "properties": {
+        "server": {
+          "$ref": "#/$defs/McpServerDef"
+        }
+      },
+      "required": [
+        "server"
       ]
     },
     "McpScope": {
