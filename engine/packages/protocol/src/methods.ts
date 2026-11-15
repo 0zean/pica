@@ -8,7 +8,7 @@ import { FanOut } from "./dto/fanout.ts";
 import { FileEntry, QuickOpenHit } from "./dto/files.ts";
 import { Branch, Commit, FileDiff, GitStatus } from "./dto/git.ts";
 import { GitHubAuthStatus, GitHubRepo, GitHubTeam } from "./dto/github.ts";
-import { McpScope, McpServerDef, McpServerStatus } from "./dto/mcp.ts";
+import { McpPreset, McpScope, McpServerDef, McpServerStatus } from "./dto/mcp.ts";
 import { McpImportNote, McpImportSelection, McpImportSnippet, McpImportSource } from "./dto/mcp-import.ts";
 import { ModelInfo, TierAssignment } from "./dto/models.ts";
 import { ApprovalChoice, ApprovalRequest } from "./dto/policy.ts";
@@ -223,6 +223,17 @@ export const methods = {
       secretRefs: z.array(z.string().min(1)),
       notes: z.array(McpImportNote),
     }),
+  ),
+  // M-02: optional presets (D-18). Rendering returns a definition; it adds or attaches nothing.
+  "mcp.presets": clientMethod(Empty, z.object({ presets: z.array(McpPreset) })),
+  "mcp.renderPreset": clientMethod(
+    z.object({
+      presetId: Id,
+      parameters: z.record(z.string(), z.string()),
+      serverId: Id.optional(),
+      scope: McpScope.optional(),
+    }),
+    z.object({ server: McpServerDef }),
   ),
 
   "agents.list": clientMethod(

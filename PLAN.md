@@ -587,12 +587,13 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
   - [x] Fuzz test: the returned result never exceeds the cap.
 
 **C-07 · Delegator** — C-02, C-05, G0
-- Build: the `Delegator` port and the implementation chosen by D-08.
+- Build: the `Delegator` port and the implementation chosen by D-08. The runtime-native delegator turns the resolved agent definitions into `customAgents`: each gets exactly its definition's tools and its tier's model, and no `model` when the tier resolves to none. The session service takes it in place of building `customAgents` itself. The live check holds on whichever plan is signed in, as D-16 requires: on a default-model-only plan, such as Copilot Free, no worker model is requested and the check records the model `assistant.usage` reports instead of asserting equality, as S-03's checks do. (Revised 2026-11-15.)
+- Follow-up: the engine-managed child-session delegator, `DelegationMode` `child_session`, for plans that list models but ignore the per-agent `model` override (A4, D-08). It is not built: it needs child-session events nested in the parent's log, budget and usage carried across sessions, and the hooks applied to the child, which is more than C-07. The seam is the `Delegator` port; the live check fails on such a plan, which is the signal to build it. Re-run the live check on a plan that lists models when one is available.
 - Verify:
-  - [ ] FakeRuntime: a delegation produces child events nested under the parent's tool call.
-  - [ ] A failing child emits a failure event and the parent run continues.
-  - [ ] The child runs with exactly the tools in its agent definition.
-  - [ ] **(live)** A `bulk-reader` delegation runs on the worker-tier model.
+  - [x] FakeRuntime: a delegation produces child events nested under the parent's tool call.
+  - [x] A failing child emits a failure event and the parent run continues.
+  - [x] The child runs with exactly the tools in its agent definition.
+  - [x] **(live)** A `bulk-reader` delegation runs on the worker-tier model. On a default-model-only plan (the worker tier resolves to none), no worker model is requested and the model `assistant.usage` reports is recorded instead (D-16).
 
 **C-08 · Usage ledger** — E-07, C-01
 - Build: `UsageRecord` persistence, rollups, savings estimate.
@@ -711,9 +712,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 **M-02 · Presets** — M-01, S-06
 - Build: parameterized, optional presets for GitHub, Datadog, ClickUp, Snowflake (D-18). None is enabled by default. The GitHub preset follows the configured GitHub host (D-20).
 - Verify:
-  - [ ] Each preset renders the expected definition for sample parameters, using the endpoints in §2.2.
-  - [ ] With no preset enabled, a session's config carries no MCP servers.
-  - [ ] Missing or malformed parameters fail validation with the parameter named.
+  - [x] Each preset renders the expected definition for sample parameters, using the endpoints in §2.2.
+  - [x] With no preset enabled, a session's config carries no MCP servers.
+  - [x] Missing or malformed parameters fail validation with the parameter named.
 
 **M-03 · Secrets and OAuth** — M-01, E-05
 - Build: secret references resolved through the client broker or environment; OAuth login orchestration.
@@ -996,7 +997,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | C-04 | Read delegation gate | C-03, E-08 | done |
 | C-05 | Routing profiles | C-02, C-03 | done |
 | C-06 | Output guard | C-03, E-08 | done |
-| C-07 | Delegator | C-02, C-05, G0 | todo |
+| C-07 | Delegator | C-02, C-05, G0 | done |
 | C-08 | Usage ledger | E-07, C-01 | done |
 | C-09 | Budgets | C-08 | done |
 | C-10 | Eval harness | C-04, C-05, C-06, C-07, C-08 | todo |
@@ -1012,7 +1013,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | R-10 | Multi-repo change sets | R-02, R-07 | done |
 | R-11 | Fan-out runs | R-06, E-08 | done |
 | M-01 | MCP registry and configuration | E-04 | done |
-| M-02 | MCP presets | M-01, S-06 | todo |
+| M-02 | MCP presets | M-01, S-06 | done |
 | M-03 | Secrets and OAuth | M-01, E-05 | done |
 | M-04 | Scoping and tool budgets | M-01, C-02 | done |
 | M-05 | MCP permissions | C-03, M-04 | done |

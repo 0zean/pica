@@ -3141,6 +3141,279 @@ public struct McpListResult: Codable, Hashable, Sendable {
     }
 }
 
+public struct McpPreset: Codable, Hashable, Sendable {
+    public var id: Id
+    public var name: String
+    public var description: String
+    public var parameters: [McpPresetParameter]
+
+    public init(
+        id: Id,
+        name: String,
+        description: String,
+        parameters: [McpPresetParameter]
+    ) {
+        self.id = id
+        self.name = name
+        self.description = description
+        self.parameters = parameters
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case description
+        case parameters
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(Id.self, forKey: .id)
+        name = try container.decode(String.self, forKey: .name)
+        description = try container.decode(String.self, forKey: .description)
+        parameters = try container.decode([McpPresetParameter].self, forKey: .parameters)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(name, forKey: .name)
+        try container.encode(description, forKey: .description)
+        try container.encode(parameters, forKey: .parameters)
+    }
+}
+
+public struct McpPresetIssue: Codable, Hashable, Sendable {
+    public var parameter: String
+    public var message: String
+
+    public init(
+        parameter: String,
+        message: String
+    ) {
+        self.parameter = parameter
+        self.message = message
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case parameter
+        case message
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        parameter = try container.decode(String.self, forKey: .parameter)
+        message = try container.decode(String.self, forKey: .message)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(parameter, forKey: .parameter)
+        try container.encode(message, forKey: .message)
+    }
+}
+
+public struct McpPresetParameter: Codable, Hashable, Sendable {
+    public var name: String
+    public var label: String
+    public var description: String
+    public var kind: Kind
+    public var required: Bool
+    public var `default`: String?
+    public var choices: [String]?
+    public var examples: [String]
+    public var onlyWhen: OnlyWhen?
+
+    public init(
+        name: String,
+        label: String,
+        description: String,
+        kind: Kind,
+        required: Bool,
+        `default`: String?,
+        choices: [String]?,
+        examples: [String],
+        onlyWhen: OnlyWhen?
+    ) {
+        self.name = name
+        self.label = label
+        self.description = description
+        self.kind = kind
+        self.required = required
+        self.`default` = `default`
+        self.choices = choices
+        self.examples = examples
+        self.onlyWhen = onlyWhen
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case name
+        case label
+        case description
+        case kind
+        case required
+        case `default`
+        case choices
+        case examples
+        case onlyWhen
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        name = try container.decode(String.self, forKey: .name)
+        label = try container.decode(String.self, forKey: .label)
+        description = try container.decode(String.self, forKey: .description)
+        kind = try container.decode(Kind.self, forKey: .kind)
+        required = try container.decode(Bool.self, forKey: .required)
+        `default` = try container.decode(String?.self, forKey: .`default`)
+        choices = try container.decode([String]?.self, forKey: .choices)
+        examples = try container.decode([String].self, forKey: .examples)
+        onlyWhen = try container.decode(OnlyWhen?.self, forKey: .onlyWhen)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(name, forKey: .name)
+        try container.encode(label, forKey: .label)
+        try container.encode(description, forKey: .description)
+        try container.encode(kind, forKey: .kind)
+        try container.encode(required, forKey: .required)
+        try container.encode(`default`, forKey: .`default`)
+        try container.encode(choices, forKey: .choices)
+        try container.encode(examples, forKey: .examples)
+        try container.encode(onlyWhen, forKey: .onlyWhen)
+    }
+
+    public enum Kind: String, CaseIterable, Codable, Hashable, Sendable {
+        case choice
+        case text
+        case url
+        case hostname
+        case identifier
+        case secretRef
+    }
+
+    public struct OnlyWhen: Codable, Hashable, Sendable {
+        public var parameter: String
+        public var values: [String]
+
+        public init(
+            parameter: String,
+            values: [String]
+        ) {
+            self.parameter = parameter
+            self.values = values
+        }
+
+        private enum CodingKeys: String, CodingKey {
+            case parameter
+            case values
+        }
+
+        public init(from decoder: any Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            parameter = try container.decode(String.self, forKey: .parameter)
+            values = try container.decode([String].self, forKey: .values)
+        }
+
+        public func encode(to encoder: any Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(parameter, forKey: .parameter)
+            try container.encode(values, forKey: .values)
+        }
+    }
+}
+
+public struct McpPresetsResult: Codable, Hashable, Sendable {
+    public var presets: [McpPreset]
+
+    public init(
+        presets: [McpPreset]
+    ) {
+        self.presets = presets
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case presets
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        presets = try container.decode([McpPreset].self, forKey: .presets)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(presets, forKey: .presets)
+    }
+}
+
+public struct McpRenderPresetParams: Codable, Hashable, Sendable {
+    public var presetId: Id
+    public var parameters: [String: String]
+    public var serverId: Id?
+    public var scope: McpScope?
+
+    public init(
+        presetId: Id,
+        parameters: [String: String],
+        serverId: Id? = nil,
+        scope: McpScope? = nil
+    ) {
+        self.presetId = presetId
+        self.parameters = parameters
+        self.serverId = serverId
+        self.scope = scope
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case presetId
+        case parameters
+        case serverId
+        case scope
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        presetId = try container.decode(Id.self, forKey: .presetId)
+        parameters = try container.decode([String: String].self, forKey: .parameters)
+        serverId = try container.decodeIfPresent(Id.self, forKey: .serverId)
+        scope = try container.decodeIfPresent(McpScope.self, forKey: .scope)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(presetId, forKey: .presetId)
+        try container.encode(parameters, forKey: .parameters)
+        try container.encodeIfPresent(serverId, forKey: .serverId)
+        try container.encodeIfPresent(scope, forKey: .scope)
+    }
+}
+
+public struct McpRenderPresetResult: Codable, Hashable, Sendable {
+    public var server: McpServerDef
+
+    public init(
+        server: McpServerDef
+    ) {
+        self.server = server
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case server
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        server = try container.decode(McpServerDef.self, forKey: .server)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(server, forKey: .server)
+    }
+}
+
 public enum McpScope: String, CaseIterable, Codable, Hashable, Sendable {
     case global
     case workspace

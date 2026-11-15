@@ -407,17 +407,21 @@
   ],
   "C-07": [
     {
-      "check": "FakeRuntime: a delegation produces child events nested under the parent's tool call."
+      "check": "FakeRuntime: a delegation produces child events nested under the parent's tool call.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/delegation/nesting.test.ts"
     },
     {
-      "check": "A failing child emits a failure event and the parent run continues."
+      "check": "A failing child emits a failure event and the parent run continues.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/delegation/failure.test.ts"
     },
     {
-      "check": "The child runs with exactly the tools in its agent definition."
+      "check": "The child runs with exactly the tools in its agent definition.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/delegation/child-tools.test.ts"
     },
     {
-      "check": "A `bulk-reader` delegation runs on the worker-tier model.",
-      "live": true
+      "check": "A `bulk-reader` delegation runs on the worker-tier model. On a default-model-only plan (the worker tier resolves to none), no worker model is requested and the model `assistant.usage` reports is recorded instead (D-16).",
+      "live": true,
+      "run": "make engine-install && cd engine && PICA_LIVE=1 pnpm exec vitest run packages/adapters/tests/delegation/live-worker-model.test.ts"
     }
   ],
   "C-08": [
@@ -633,13 +637,16 @@
   ],
   "M-02": [
     {
-      "check": "Each preset renders the expected definition for sample parameters, using the endpoints in §2.2."
+      "check": "Each preset renders the expected definition for sample parameters, using the endpoints in §2.2.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/mcp-presets/render.test.ts packages/server/tests/mcp/presets-rpc.test.ts"
     },
     {
-      "check": "With no preset enabled, a session's config carries no MCP servers."
+      "check": "With no preset enabled, a session's config carries no MCP servers.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/mcp-presets/no-preset.test.ts"
     },
     {
-      "check": "Missing or malformed parameters fail validation with the parameter named."
+      "check": "Missing or malformed parameters fail validation with the parameter named.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/mcp-presets/validation.test.ts packages/server/tests/mcp/presets-rpc.test.ts"
     }
   ],
   "M-03": [
