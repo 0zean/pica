@@ -37,7 +37,7 @@
   ],
   "S-03": [
     {
-      "check": "`subagent.started.model` and the sub-agent's `assistant.usage.model` equal the worker model configured.",
+      "check": "The sub-agent's `subagent.started.model` and `assistant.usage.model` are recorded next to the configured worker model. If `models.list` offers models beyond `auto`, they are equal. If it offers only `auto`, the override is shown to be ignored and A4's fallback is recorded as the decision for such plans.",
       "live": true
     },
     {
@@ -45,15 +45,15 @@
       "live": true
     },
     {
-      "check": "A session with `maxAiCredits` set low is stopped by spending that occurs inside a sub-agent.",
+      "check": "A session with `maxAiCredits` set low is stopped by spending that occurs inside a sub-agent. If the plan does not enforce `maxAiCredits`, that is recorded, and C-09's engine-side budget is shown to stop the same session instead.",
       "live": true
     },
     {
-      "check": "Credits computed from tokens and `tokenPrices` match `getMetrics` within 1%.",
+      "check": "Credits Pica computes match `getMetrics` within 1%: from tokens and `tokenPrices` when the plan lists prices, otherwise from the cost `assistant.usage` reports (`copilotUsage.totalNanoAiu`).",
       "live": true
     },
     {
-      "check": "A4 and A5 are resolved."
+      "check": "A4 and A5 are resolved, each with the plan it was tested on."
     }
   ],
   "S-04": [

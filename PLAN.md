@@ -69,7 +69,7 @@ The billing change is why this project pays off: token-heavy, low-reasoning work
 | GitHub | Remote HTTP | `https://api.githubcopilot.com/mcp/` | The Copilot sign-in, which the runtime attaches itself (no header); or a PAT as `Authorization: Bearer` | **Connected** in S-06: 46 tools, 13,835 tool-definition tokens ([findings](docs/spikes/S-06.md)). |
 | Datadog | Remote HTTP | `https://mcp.<site>/api/unstable/mcp-server/mcp` (US1: `mcp.datadoghq.com`) | OAuth (DCR, PKCE, scope `mcp_all`), or `DD-API-KEY` + `DD-APPLICATION-KEY` headers | S-06 reached the consent step on US1; connecting waits on the owner. |
 | ClickUp | Remote HTTP | `https://mcp.clickup.com/mcp` | OAuth only (DCR, PKCE, scopes `read`, `write`) | S-06 reached the consent step; connecting waits on the owner. |
-| Snowflake | Remote HTTP | `https://<account_url>/api/v2/databases/{db}/schemas/{schema}/mcp-servers/{name}` | Snowflake OAuth, external OAuth, or PAT | Admin creates the server with `CREATE MCP SERVER`. Tools only, max 50, SQL read-only by default, no dynamic client registration [13]. |
+| Snowflake | Remote HTTP | `https://<account_url>/api/v2/databases/{db}/schemas/{schema}/mcp-servers/{name}` | **PAT** in the owner's org (Q-06); Snowflake OAuth and external OAuth also exist | Admin creates the server with `CREATE MCP SERVER`. Tools only, max 50, SQL read-only by default, no dynamic client registration [13]. |
 
 ### 2.3 GitHub repository discovery
 
@@ -86,7 +86,7 @@ REST endpoints: `GET /user/teams`, `GET /orgs/{org}/teams/{team_slug}/repos` (pa
 | A5 | Usage can be attributed per agent | S-03 | Attribute by `toolCallId` window, or by child session |
 | A6 | A session can read outside its `workingDirectory` once the host approves. **Confirmed** by S-04: the runtime raises a `read` permission request for the path and reads it on `approve-once`; `additionalDirectories` halves the requests but does not remove them. A `preToolUse` deny blocks file-tool and shell writes to a reference root, and R-07's shell parser, which first missed argument writes such as `touch` and `cp`, now checks path arguments too ([findings](docs/spikes/S-04.md)) | S-04 | Session root directory of symlinks, or cross-repo access only through engine tools |
 | A7 | Node, the engine bundle, and the Copilot CLI can be ad-hoc signed inside the app and run on a Mac without developer tools after a GitHub Releases download; Developer ID signing and notarization come later (D-17). **Confirmed** by S-05, with a different install path: the ad-hoc, hardened-runtime bundle passes `--deep --strict`, survives zip/unzip, and runs once installed without quarantine. On macOS 27 a quarantined ad-hoc app offers no "Open Anyway", so the quarantine is cleared before the first launch: an install script (curl, sha256, signature check) or a documented `xattr -dr com.apple.quarantine` step. `copilot-runtime` needs `disable-library-validation` when re-signed ad-hoc. The second-account check of that path is pending with the owner ([findings](docs/spikes/S-05.md)) | S-05 | Install the engine separately (pkg or Homebrew) |
-| A8 | All four MCP servers connect through the SDK, including OAuth. **Partly confirmed** by S-06: GitHub connects with no prompt; the runtime runs OAuth for Datadog and ClickUp up to consent and also accepts host-supplied tokens; Snowflake is untried (Q-06) ([findings](docs/spikes/S-06.md)) | S-06 | Host-managed tokens supplied by Pica |
+| A8 | All four MCP servers connect through the SDK, including OAuth. **Partly confirmed** by S-06: GitHub connects with no prompt; the runtime runs OAuth for Datadog and ClickUp up to consent and also accepts host-supplied tokens; Snowflake is untried; it uses a PAT (Q-06). All three wait on a machine with the owner's access ([findings](docs/spikes/S-06.md)) | S-06 | Host-managed tokens supplied by Pica |
 | A9 | Event streaming over a Unix socket meets the throughput budget. **Confirmed** by S-07: 50,000 events at 25,000/s in order, p99 write-to-decoded ≈ 0.1 ms ([findings](docs/spikes/S-07.md)) | S-07 | Coalesce events per display frame in the engine |
 
 ---
@@ -400,12 +400,13 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
   - [x] A2 and A3 are resolved and D-08 is confirmed or changed.
 
 **S-03 · Per-agent model and attribution** — S-02
+- Build: the checks below hold on whichever plan is signed in, as D-16 requires. On a default-model-only plan, such as Copilot Free, `models.list` offers only `auto` and S-02 found the sub-agent `model` override is not honored. So there, model checks record the fallback instead of asserting equality, and credit checks use the cost the runtime reports instead of `tokenPrices`. Re-run on a plan that lists models and prices when one is available. (Revised 2026-11-14.)
 - Verify:
-  - [ ] **(live)** `subagent.started.model` and the sub-agent's `assistant.usage.model` equal the worker model configured.
+  - [ ] **(live)** The sub-agent's `subagent.started.model` and `assistant.usage.model` are recorded next to the configured worker model. If `models.list` offers models beyond `auto`, they are equal. If it offers only `auto`, the override is shown to be ignored and A4's fallback is recorded as the decision for such plans.
   - [ ] **(live)** Each `assistant.usage` can be assigned to exactly one agent; the method is recorded.
-  - [ ] **(live)** A session with `maxAiCredits` set low is stopped by spending that occurs inside a sub-agent.
-  - [ ] **(live)** Credits computed from tokens and `tokenPrices` match `getMetrics` within 1%.
-  - [ ] A4 and A5 are resolved.
+  - [ ] **(live)** A session with `maxAiCredits` set low is stopped by spending that occurs inside a sub-agent. If the plan does not enforce `maxAiCredits`, that is recorded, and C-09's engine-side budget is shown to stop the same session instead.
+  - [ ] **(live)** Credits Pica computes match `getMetrics` within 1%: from tokens and `tokenPrices` when the plan lists prices, otherwise from the cost `assistant.usage` reports (`copilotUsage.totalNanoAiu`).
+  - [ ] A4 and A5 are resolved, each with the plan it was tested on.
 
 **S-04 · Multi-root access** — S-01
 - Verify:
@@ -941,7 +942,7 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 | Q-03 | ~~Can the minimum be raised above macOS 15 across the fleet?~~ Answered 2026-11-13: yes, to macOS 26 (D-13) | A-03 |
 | Q-04 | ~~Is an Apple Developer ID available for signing, and will distribution go through MDM?~~ Answered 2026-11-14: no Developer ID yet (maybe later); GitHub Releases, no MDM (D-17) | S-05, H-06 |
 | Q-05 | Can the org register a GitHub App or OAuth App for team discovery, or must Pica rely on `gh` and PATs? | R-04 |
-| Q-06 | Is the Snowflake MCP server already created by an admin, and with which auth? | S-06 |
+| Q-06 | ~~Is the Snowflake MCP server already created by an admin, and with which auth?~~ Answered 2026-11-14: the org's Snowflake MCP server uses a PAT. ClickUp and Datadog use browser OAuth. None of the three is available on the development Mac, so they are tested later on a machine that has them | S-06 |
 | Q-07 | Is this for one team or the whole engineering org? This sets the priority of H-01 and H-04. | Phase 6 |
 
 ---
@@ -957,7 +958,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | S-03 | Per-agent model and attribution | S-02 | todo |
 | S-04 | Multi-root access | S-01 | done |
 | S-05 | Packaging | — | doing (awaiting owner's manual check) |
-| S-06 | MCP connectivity | S-01 | todo (GitHub done; Datadog and ClickUp need the owner's OAuth consent, Snowflake needs Q-06) |
+| S-06 | MCP connectivity | S-01 | todo (GitHub done. Datadog and ClickUp (browser OAuth) and Snowflake (PAT) wait on a machine with the owner's access) |
 | S-07 | IPC throughput | — | done |
 | F-01 | Repository scaffold | — | done |
 | F-02 | Architecture guardrails | F-01 | done |
