@@ -1127,7 +1127,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | M-05 | MCP permissions | C-03, M-04 | done |
 | M-06 | Health and diagnostics | M-04 | done |
 | M-07 | Import from other agent platforms | M-01 | done |
-| A-01 | App shell and engine supervision | E-05, S-05 | doing (PR open) |
+| A-01 | App shell and engine supervision | E-05, S-05 | done |
 | A-02 | EngineClient | E-02 | done |
 | A-03 | Design system | F-01 | done |
 | A-04 | Navigation shell | A-01, A-02, A-03 | todo |
