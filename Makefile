@@ -1,6 +1,6 @@
 SWIFT_PACKAGES := $(wildcard app/Packages/*)
 
-.PHONY: verify verify-engine verify-app lint lint-arch lint-swift-boundary typecheck test build engine-install codegen codegen-drift app-packages app-build app-ui-test
+.PHONY: verify verify-engine verify-app lint lint-arch lint-swift-boundary typecheck test build engine-install codegen codegen-drift app-packages app-build app-ui-test app-ui-test-gallery app-ui-test-pica
 
 # `make verify UNIT=<ID>` runs only that unit's checks from tools/verify/units.json (PLAN.md §8.1).
 ifdef UNIT
@@ -43,7 +43,8 @@ test: engine-install
 
 build: app-packages app-build
 
-app-packages:
+# AppShell's tests start `picad` with a FakeRuntime (A-01): they need the engine's packages and Node on PATH.
+app-packages: engine-install
 	@set -e; for package in $(SWIFT_PACKAGES); do \
 		swift build --package-path $$package; \
 		if [ -d $$package/Tests ]; then swift test --package-path $$package; fi; \
@@ -55,7 +56,17 @@ app-build:
 
 # UI tests need macOS automation mode and run only locally, not in CI. Run
 # `automationmodetool enable-automationmode-without-authentication` once, or approve the prompt.
-app-ui-test:
+app-ui-test: app-ui-test-gallery app-ui-test-pica
+
+app-ui-test-gallery:
 	rm -rf app/.derived/ui-tests.xcresult
 	xcodebuild -project app/Pica.xcodeproj -scheme PicaGallery -destination 'platform=macOS,arch=$(shell uname -m)' \
 		-derivedDataPath app/.derived -resultBundlePath app/.derived/ui-tests.xcresult test
+
+# The launch performance test (A-01) runs Pica against `picad` with a FakeRuntime. Variables prefixed
+# TEST_RUNNER_ reach the (sandboxed) test runner, which hands Pica the Node to start the engine with.
+app-ui-test-pica: engine-install
+	rm -rf app/.derived/pica-ui-tests.xcresult
+	TEST_RUNNER_PICA_NODE="$$(command -v node)" xcodebuild -project app/Pica.xcodeproj -scheme Pica \
+		-destination 'platform=macOS,arch=$(shell uname -m)' \
+		-derivedDataPath app/.derived -resultBundlePath app/.derived/pica-ui-tests.xcresult test

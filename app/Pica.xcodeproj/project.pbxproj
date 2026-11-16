@@ -10,6 +10,7 @@
 		A10000000000000000000021 /* PicaProtocol in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000031 /* PicaProtocol */; };
 		A10000000000000000000022 /* EngineClient in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000032 /* EngineClient */; };
 		A10000000000000000000023 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000033 /* DesignSystem */; };
+		A10000000000000000000024 /* AppShell in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000034 /* AppShell */; };
 		A10000000000000000000121 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000131 /* DesignSystem */; };
 /* End PBXBuildFile section */
 
@@ -21,12 +22,20 @@
 			remoteGlobalIDString = A10000000000000000000110;
 			remoteInfo = PicaGallery;
 		};
+		A10000000000000000000314 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A10000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A10000000000000000000010;
+			remoteInfo = Pica;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		A10000000000000000000002 /* Pica.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pica.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10000000000000000000102 /* PicaGallery.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PicaGallery.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10000000000000000000202 /* PicaGalleryUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PicaGalleryUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A10000000000000000000302 /* PicaUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PicaUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -45,6 +54,11 @@
 			path = GalleryUITests;
 			sourceTree = "<group>";
 		};
+		A10000000000000000000303 /* PicaUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = PicaUITests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +69,7 @@
 				A10000000000000000000021 /* PicaProtocol in Frameworks */,
 				A10000000000000000000022 /* EngineClient in Frameworks */,
 				A10000000000000000000023 /* DesignSystem in Frameworks */,
+				A10000000000000000000024 /* AppShell in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -73,6 +88,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A10000000000000000000312 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -82,6 +104,7 @@
 				A10000000000000000000003 /* Pica */,
 				A10000000000000000000103 /* Gallery */,
 				A10000000000000000000203 /* GalleryUITests */,
+				A10000000000000000000303 /* PicaUITests */,
 				A10000000000000000000005 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -92,6 +115,7 @@
 				A10000000000000000000002 /* Pica.app */,
 				A10000000000000000000102 /* PicaGallery.app */,
 				A10000000000000000000202 /* PicaGalleryUITests.xctest */,
+				A10000000000000000000302 /* PicaUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -119,6 +143,7 @@
 				A10000000000000000000031 /* PicaProtocol */,
 				A10000000000000000000032 /* EngineClient */,
 				A10000000000000000000033 /* DesignSystem */,
+				A10000000000000000000034 /* AppShell */,
 			);
 			productName = Pica;
 			productReference = A10000000000000000000002 /* Pica.app */;
@@ -168,6 +193,27 @@
 			productReference = A10000000000000000000202 /* PicaGalleryUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		A10000000000000000000310 /* PicaUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A10000000000000000000350 /* Build configuration list for PBXNativeTarget "PicaUITests" */;
+			buildPhases = (
+				A10000000000000000000311 /* Sources */,
+				A10000000000000000000312 /* Frameworks */,
+				A10000000000000000000313 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A10000000000000000000315 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				A10000000000000000000303 /* PicaUITests */,
+			);
+			name = PicaUITests;
+			productName = PicaUITests;
+			productReference = A10000000000000000000302 /* PicaUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -188,6 +234,10 @@
 						CreatedOnToolsVersion = 16.0;
 						TestTargetID = A10000000000000000000110;
 					};
+					A10000000000000000000310 = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = A10000000000000000000010;
+					};
 				};
 			};
 			buildConfigurationList = A10000000000000000000040 /* Build configuration list for PBXProject "Pica" */;
@@ -203,6 +253,7 @@
 				A10000000000000000000061 /* XCLocalSwiftPackageReference "Packages/PicaProtocol" */,
 				A10000000000000000000062 /* XCLocalSwiftPackageReference "Packages/EngineClient" */,
 				A10000000000000000000063 /* XCLocalSwiftPackageReference "Packages/DesignSystem" */,
+				A10000000000000000000064 /* XCLocalSwiftPackageReference "Packages/AppShell" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A10000000000000000000005 /* Products */;
@@ -212,6 +263,7 @@
 				A10000000000000000000010 /* Pica */,
 				A10000000000000000000110 /* PicaGallery */,
 				A10000000000000000000210 /* PicaGalleryUITests */,
+				A10000000000000000000310 /* PicaUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -232,6 +284,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		A10000000000000000000213 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10000000000000000000313 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -262,6 +321,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A10000000000000000000311 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -269,6 +335,11 @@
 			isa = PBXTargetDependency;
 			target = A10000000000000000000110 /* PicaGallery */;
 			targetProxy = A10000000000000000000214 /* PBXContainerItemProxy */;
+		};
+		A10000000000000000000315 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A10000000000000000000010 /* Pica */;
+			targetProxy = A10000000000000000000314 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -424,6 +495,34 @@
 			};
 			name = Release;
 		};
+		A10000000000000000000351 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 0.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.pica.PicaUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = Pica;
+			};
+			name = Debug;
+		};
+		A10000000000000000000352 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 0.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.pica.PicaUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = Pica;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -463,6 +562,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		A10000000000000000000350 /* Build configuration list for PBXNativeTarget "PicaUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000000000000000000351 /* Debug */,
+				A10000000000000000000352 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
@@ -478,6 +586,10 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/DesignSystem;
 		};
+		A10000000000000000000064 /* XCLocalSwiftPackageReference "Packages/AppShell" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/AppShell;
+		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -492,6 +604,10 @@
 		A10000000000000000000033 /* DesignSystem */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = DesignSystem;
+		};
+		A10000000000000000000034 /* AppShell */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AppShell;
 		};
 		A10000000000000000000131 /* DesignSystem */ = {
 			isa = XCSwiftPackageProductDependency;
