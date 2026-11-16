@@ -398,6 +398,10 @@
     {
       "check": "Changing `read.minBytes` in workspace config changes the outcome without restarting the session.",
       "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/sessions/read-gate.test.ts -t 'applies a changed read.minBytes'"
+    },
+    {
+      "check": "Under `balanced` and `strict`, a main-agent shell write into the write roots is denied naming `code-writer`. Read-only shell, writes outside the repo, sub-agents and `off` pass.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/policy/decide.test.ts -t 'shell writes' && pnpm exec vitest run packages/core/tests/policy/shell-write.test.ts packages/core/tests/sessions/pre-tool-use.test.ts"
     }
   ],
   "C-05": [

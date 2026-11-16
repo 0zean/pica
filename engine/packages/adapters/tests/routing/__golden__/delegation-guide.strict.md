@@ -15,3 +15,4 @@ Hand them work that does not need your judgment, and keep planning, decisions an
 - Large tool output is truncated and saved to a file. Ask `bulk-reader` about that file instead of reading it whole.
 - To find where something lives across the workspace's repositories, ask `repo-scout`.
 - You have no tools that write files. Send every change to `code-writer` as a precise spec, then review what it reports.
+- Shell commands that write files into the repository (redirects, `tee`, `cp`) are denied as well.

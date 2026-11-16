@@ -65,6 +65,9 @@ describe("createReadGate", () => {
     ["cat of a small file in bash", "bash", { command: "cat small.ts | wc -l", description: "count" }, "allow"],
     ["head of a large file in bash", "bash", { command: "head -n 20 big.sql", description: "peek" }, "allow"],
     ["a bash call without a command", "read_bash", { shellId: "1" }, "allow"],
+    ["a heredoc into a new file in bash (cost.shell-write)", "bash", { command: "cat > test/a.test.mjs <<'EOF'\nx\nEOF", description: "write" }, "deny"],
+    ["a redirect to an absolute path in the root", "bash", { command: `echo {} > ${root}/config.json`, description: "write" }, "deny"],
+    ["running the tests in bash", "bash", { command: "node --test test/ 2>&1 | tail -5", description: "test" }, "allow"],
     ["a read without a path", "view", { file: "big.sql" }, "allow"],
     ["a read whose arguments are not an object", "view", ["big.sql"], "allow"],
   ] as const)("%s → %s", async (_name, toolName, args, decision) => {
@@ -85,6 +88,25 @@ describe("createReadGate", () => {
     const typed = await hooks.onPreToolUse?.({ ...input, agentType: "main-ish" });
     expect(typed?.decision).toBe("deny");
     expect(decisions.map((decision) => decision.call.agent)).toEqual(["bulk-reader", "main"]);
+  });
+
+  it("gates main-agent shell writes only: a sub-agent's, and any under off, pass", async () => {
+    const decisions: PolicyDecision[] = [];
+    const hooks = createReadGate({
+      sessions: { get: () => ok(session()) },
+      config: () => PicaConfig.parse({}),
+      fileSize: (path) => Promise.resolve(sizes[path]),
+      onDecision: (_id, decision) => decisions.push(decision),
+    })("s1");
+    const input = { sessionId: "s1", toolCallId: "t1", toolName: "bash", arguments: { command: "echo x > notes.txt", description: "w" } };
+    const main = await hooks.onPreToolUse?.(input);
+    expect(main).toMatchObject({ decision: "deny" });
+    expect(main?.decision === "deny" ? main.reason : "").toContain("code-writer");
+    expect((await hooks.onPreToolUse?.({ ...input, agentId: "9f0c", agentType: "code-writer", parentAgentId: "p" }))?.decision).toBe("allow");
+    expect(decisions.map((decision) => decision.ruleId)).toEqual(["cost.shell-write"]);
+    expect((await gate("bash", input.arguments, session({ routingProfile: "off" }))).decision).toBe("allow");
+    const resolver: RealPathResolver = (path) => Promise.resolve(path);
+    expect((await gate("bash", input.arguments, session(), resolver)).decision).toBe("deny");
   });
 
   it("follows the session's routing profile", async () => {

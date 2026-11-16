@@ -99,6 +99,7 @@ export type RuleId =
   | `safety.command-denied:${string}`
   | "safety.shell-outside-write-roots"
   | "cost.large-read"
+  | "cost.shell-write"
   | "cost.oversized-output"
   | `permission.mcp-tool:${string}`
   | "permission.mcp-read-only"

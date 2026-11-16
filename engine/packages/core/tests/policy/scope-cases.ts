@@ -1,6 +1,11 @@
 import type { PolicyContext } from "../../src/index.ts";
-import { auto, shell, smallRead, write, type Case } from "./cases.ts";
+import { auto, routing, shell, smallRead, write, type Case } from "./cases.ts";
 import { referenceRoot, toolCall, writeRoot } from "./fixtures.ts";
+
+// The shell-scope cases that write inside the write root run under `off`, where the cost gate on
+// main-agent shell writes (C-04) is off; `shell-write.test.ts` covers that gate.
+const off = routing({ profile: "off" });
+const offAuto = routing({ profile: "off" }, { mode: "auto" });
 
 const links = (entries: Record<string, string>): Partial<PolicyContext> => ({ realPaths: new Map(Object.entries(entries)) });
 
@@ -24,8 +29,8 @@ export const scopeCases: Case[] = [
 
 // The shell's working directory, `cd` targets, redirects and `tee` files against the write roots.
 export const shellScopeCases: Case[] = [
-  { name: "a redirect inside the write root reaches permission mode", call: toolCall(shell("npm test > out.log 2>&1")), outcome: "ask", ruleId: "permission.ask" },
-  { name: "a redirect inside the write root is allowed in auto mode", call: toolCall(shell("npm test >> logs/out.log")), context: auto, outcome: "allow", ruleId: "permission.auto" },
+  { name: "a redirect inside the write root reaches permission mode", call: toolCall(shell("npm test > out.log 2>&1")), context: off, outcome: "ask", ruleId: "permission.ask" },
+  { name: "a redirect inside the write root is allowed in auto mode", call: toolCall(shell("npm test >> logs/out.log")), context: offAuto, outcome: "allow", ruleId: "permission.auto" },
   { name: "a redirect outside the write roots asks", call: toolCall(shell("echo x > /etc/motd")), outcome: "ask", ruleId: "safety.shell-outside-write-roots" },
   { name: "a redirect outside the write roots is denied in auto mode", call: toolCall(shell("echo x > /etc/motd")), context: auto, outcome: "deny", ruleId: "safety.shell-outside-write-roots" },
   { name: "a redirect into a reference root is denied in auto mode", call: toolCall(shell("echo x >../../ref/lib/a.ts")), context: auto, outcome: "deny", ruleId: "safety.shell-outside-write-roots" },
@@ -41,12 +46,12 @@ export const shellScopeCases: Case[] = [
   { name: "a redirect target with a variable cannot be resolved", call: toolCall(shell("echo x > $HOME/a")), context: auto, outcome: "deny", ruleId: "safety.shell-outside-write-roots" },
   { name: "a double-quoted variable cannot be resolved", call: toolCall(shell('echo x > "$OUT"')), context: auto, outcome: "deny", ruleId: "safety.shell-outside-write-roots" },
   { name: "a redirect target under ~ cannot be resolved", call: toolCall(shell("echo x > ~/a")), outcome: "ask", ruleId: "safety.shell-outside-write-roots" },
-  { name: "a quoted ~ is a literal directory name", call: toolCall(shell("echo x > '~'/a")), context: auto, outcome: "allow", ruleId: "permission.auto" },
-  { name: "an unterminated quote runs to the end of the command", call: toolCall(shell("echo x > 'out.log")), context: auto, outcome: "allow", ruleId: "permission.auto" },
+  { name: "a quoted ~ is a literal directory name", call: toolCall(shell("echo x > '~'/a")), context: offAuto, outcome: "allow", ruleId: "permission.auto" },
+  { name: "an unterminated quote runs to the end of the command", call: toolCall(shell("echo x > 'out.log")), context: offAuto, outcome: "allow", ruleId: "permission.auto" },
   { name: "a redirect with no target is ignored", call: toolCall(shell("echo x >")), context: auto, outcome: "allow", ruleId: "permission.auto" },
   { name: "a redirect followed by a separator is ignored", call: toolCall(shell("echo x > ; ls")), context: auto, outcome: "allow", ruleId: "permission.auto" },
   { name: "tee writes its file arguments", call: toolCall(shell("make | tee -a build.log /etc/build.log")), context: auto, outcome: "deny", ruleId: "safety.shell-outside-write-roots" },
-  { name: "tee inside the write root is allowed", call: toolCall(shell("make | tee build.log")), context: auto, outcome: "allow", ruleId: "permission.auto" },
+  { name: "tee inside the write root is allowed", call: toolCall(shell("make | tee build.log")), context: offAuto, outcome: "allow", ruleId: "permission.auto" },
   { name: "cd outside the write roots asks", call: toolCall(shell("cd /tmp && ls")), outcome: "ask", ruleId: "safety.shell-outside-write-roots" },
   { name: "cd outside the write roots is denied in auto mode", call: toolCall(shell("cd /tmp; ls")), context: auto, outcome: "deny", ruleId: "safety.shell-outside-write-roots" },
   { name: "pushd into a reference root asks", call: toolCall(shell("pushd -q ../../ref/lib")), outcome: "ask", ruleId: "safety.shell-outside-write-roots" },
@@ -73,13 +78,14 @@ export const shellArgumentCases: Case[] = [
   { name: "git -C names a working directory", call: toolCall(shell(`git -C ${referenceRoot} commit -am x`)), context: auto, outcome: "deny", ruleId: "safety.shell-outside-write-roots" },
   { name: "an option value is checked", call: toolCall(shell("npm pack --pack-destination=/tmp/out")), context: auto, outcome: "deny", ruleId: "safety.shell-outside-write-roots" },
   { name: "a NAME=value argument is checked", call: toolCall(shell("make DESTDIR=/tmp/stage install")), context: auto, outcome: "deny", ruleId: "safety.shell-outside-write-roots" },
+  { name: "a bare ~ argument cannot be resolved", call: toolCall(shell("ls ~")), outcome: "ask", ruleId: "safety.shell-outside-write-roots" },
   { name: "an argument under ~ cannot be resolved", call: toolCall(shell("touch ~/f")), outcome: "ask", ruleId: "safety.shell-outside-write-roots" },
   { name: "a variable path argument cannot be resolved", call: toolCall(shell("rm -f $HOME/f")), context: auto, outcome: "deny", ruleId: "safety.shell-outside-write-roots" },
   { name: "a find that deletes is not read-only", call: toolCall(shell(`find ${referenceRoot} -name '*.tmp' -delete`)), context: auto, outcome: "deny", ruleId: "safety.shell-outside-write-roots" },
   { name: "a read-only command outside every root is denied in auto mode", call: toolCall(shell("cat /etc/passwd")), context: auto, outcome: "deny", ruleId: "safety.shell-outside-write-roots" },
   { name: "a read-only command may read a reference root", call: toolCall(shell(`grep -rn TODO ${referenceRoot}/src`)), context: auto, outcome: "allow", ruleId: "permission.auto" },
   { name: "a read-only command in a pipeline may read a reference root", call: toolCall(shell("cat ../../ref/lib/a.ts | wc -l")), context: auto, outcome: "allow", ruleId: "permission.auto" },
-  { name: "arguments inside the write root are allowed", call: toolCall(shell("cp src/a.ts src/b.ts && mv build/x ./y")), context: auto, outcome: "allow", ruleId: "permission.auto" },
+  { name: "arguments inside the write root are allowed", call: toolCall(shell("cp src/a.ts src/b.ts && mv build/x ./y")), context: offAuto, outcome: "allow", ruleId: "permission.auto" },
   { name: "a message with slashes is not a path outside", call: toolCall(shell('git commit -m "fix a/b and c/d"')), context: auto, outcome: "allow", ruleId: "permission.auto" },
   { name: "a sed expression is not a path", call: toolCall(shell("sed -i 's/old/new/g' src/a.ts")), context: auto, outcome: "allow", ruleId: "permission.auto" },
   { name: "a URL is not a path", call: toolCall(shell("curl -o out.json https://example.com/a/b")), context: auto, outcome: "allow", ruleId: "permission.auto" },
