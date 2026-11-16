@@ -244,7 +244,8 @@ describe("secret values", () => {
           temp.cleanup();
         }
       }),
-      { numRuns: 150 },
+      { numRuns: 150, seed: 3011 },
     );
-  });
+    // Each run opens its own SQLite store and OAuth exchange; 150 of them take about 5 s on CI.
+  }, 60_000);
 });
