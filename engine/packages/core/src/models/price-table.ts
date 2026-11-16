@@ -23,5 +23,6 @@ export function toCatalogModel(model: RuntimeModel, table: PriceTable): CatalogM
     prices,
     priceSource,
     contextWindow: model.contextWindow ?? null,
+    ...(model.supportsReasoningEffort === undefined ? {} : { supportsReasoningEffort: model.supportsReasoningEffort }),
   };
 }

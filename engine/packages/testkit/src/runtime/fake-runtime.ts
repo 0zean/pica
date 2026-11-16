@@ -131,5 +131,6 @@ function toRuntimeModel(model: Scenario["models"][number]): RuntimeModel {
     name: model.name,
     ...(model.tokenPrices === undefined ? {} : { tokenPrices: model.tokenPrices }),
     ...(model.contextWindow === undefined ? {} : { contextWindow: model.contextWindow }),
+    ...(model.supportsReasoningEffort === undefined ? {} : { supportsReasoningEffort: model.supportsReasoningEffort }),
   };
 }

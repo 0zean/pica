@@ -124,6 +124,7 @@ describe("E-11 picad production composition", () => {
       workspaceId: workspace.id,
       writeRepoIds: [added.id],
       referenceRepoIds: [],
+      routingProfile: "balanced",
       prompt: "what does the schema define?",
     })) as { session: { id: string; routingProfile: string } };
     expect(session.routingProfile).toBe("balanced");
@@ -147,6 +148,29 @@ describe("E-11 picad production composition", () => {
     const audited = audit.map((line) => JSON.parse(line) as { kind: string; data: { outcome?: string; toolName?: string } });
     const denied = audited.filter((entry) => entry.kind === "policy.decision" && entry.data.outcome === "deny");
     expect(denied.map((entry) => entry.data.toolName)).toEqual(["view"]);
+  });
+});
+
+describe("D-22 default routing profile", () => {
+  it("gives a session created without a profile off, a workspace override, or the user config's choice", async () => {
+    running = await start(() => []);
+    const { client, repo, home } = running;
+    const { repo: added } = (await call(client, "repo.addPath", { path: repo })) as { repo: { id: string } };
+    const profileOf = async (workspaceId: string): Promise<string> => {
+      const { session } = (await call(client, "session.create", { workspaceId, writeRepoIds: [added.id], referenceRepoIds: [] })) as {
+        session: { routingProfile: string };
+      };
+      return session.routingProfile;
+    };
+    const { workspace: plain } = (await call(client, "workspace.create", { name: "Plain" })) as { workspace: { id: string } };
+    const { workspace: tuned } = (await call(client, "workspace.create", { name: "Tuned" })) as { workspace: { id: string } };
+    await call(client, "workspace.update", { id: tuned.id, overrides: { routingProfile: "balanced" } });
+    expect(await profileOf(plain.id)).toBe("off");
+    expect(await profileOf(tuned.id)).toBe("balanced");
+
+    writeFileSync(join(picaDataDir(home), "config.jsonc"), '{ "routing": { "profile": "strict" } }\n');
+    expect(await profileOf(plain.id)).toBe("strict");
+    expect(await profileOf(tuned.id)).toBe("balanced");
   });
 });
 

@@ -4,8 +4,16 @@ import { defaultCommandDenyList, type PolicyConfig, type PolicyContext, type Too
 export const writeRoot = "/work/repo";
 export const referenceRoot = "/ref/lib";
 
+// The tables test the cost gates, which only `balanced` and `strict` apply. Since D-22 the product
+// default is `off`, so a case that sets no profile runs under `balanced`.
 export function policyConfig(overrides: unknown = {}): PolicyConfig {
-  return PicaConfig.parse(overrides);
+  const given = isObject(overrides) ? overrides : {};
+  const routing = isObject(given["routing"]) ? given["routing"] : {};
+  return PicaConfig.parse({ ...given, routing: { profile: "balanced", ...routing } });
+}
+
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 export function baseContext(overrides: Partial<PolicyContext> = {}): PolicyContext {

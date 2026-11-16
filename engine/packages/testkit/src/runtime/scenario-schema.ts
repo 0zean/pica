@@ -81,6 +81,7 @@ const model = z.strictObject({
     .strictObject({ input: z.number().nonnegative(), cachedInput: z.number().nonnegative(), output: z.number().nonnegative() })
     .optional(),
   contextWindow: tokenCount.optional(),
+  supportsReasoningEffort: z.boolean().optional(),
 });
 
 const turn = z.strictObject({
