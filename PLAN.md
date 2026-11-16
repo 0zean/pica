@@ -559,6 +559,7 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
   - Price alone put `claude-haiku-4.5` on the reasoning tier on Copilot Pro: it is the most expensive model per token there (100/500 credits per million) and the only one without reasoning effort.
   - With the rule, the Pro list resolves reasoning to `gpt-5.6-luna` and worker to `gpt-6-luna`. A model whose support isn't reported counts as capable.
   - That Pro account bills by tokens (`tokenBasedBilling`, no premium-request entitlement), so the catalog has no per-call multiplier to rank by.
+  - The main agent now runs on the reasoning tier's model: the delegator sets the session's `model` to it, or leaves it unset when the tier resolves to none. Before, only sub-agents got a tier's model, and the main agent ran on the runtime's default (`claude-haiku-4.5` on that account).
 - Verify:
   - [x] Tier resolution table tests, including a preferred model missing and a model blocked by managed policy.
   - [x] Credits computed for fixture usage (input, cached input, output) match expected values exactly.
