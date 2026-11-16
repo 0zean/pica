@@ -576,7 +576,7 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 
 **C-04 · Read delegation gate** — C-03, E-08
 - Build: large-read rule wired into `onPreToolUse`, with range exemption and per-path exclusions.
-- Shell-write gate (added 2026-11-16, after C-10's smoke run found the main agent writing a new test file with `cat > … <<EOF` once `create` was gone). Rule `cost.shell-write`: under `balanced` and `strict`, a main-agent shell command that writes a file inside the write roots is denied, with a reason naming `code-writer`. It reuses the R-07 shell parser.
+- Shell-write gate (added 2026-11-16, after C-10's smoke run found the main agent writing a new test file with `cat > … <<EOF` once `create` was gone). Rule `cost.shell-write`: under `balanced` and `strict`, a main-agent shell command that writes a file inside the write roots is denied, with a reason naming `code-writer`. It reuses the R-07 shell parser. The read gate in `onPreToolUse` applies this one rule to shell calls, not the whole policy.
   - What counts as a write: redirections (`>`, `>>`, `&>`, with or without a heredoc), `tee`, `touch`, and the destination of `cp`, `mv` and `install`.
   - Limits, all passed on to the later rules:
     - Interpreters and scripts that write (`node -e`, `python -c`, a build script) are not classified.

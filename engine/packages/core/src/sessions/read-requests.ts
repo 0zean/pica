@@ -57,6 +57,11 @@ function searchRequests(toolName: string, args: JsonObject): readonly ReadReques
     .map((path) => ({ path, sized }));
 }
 
+// The command line of a shell tool call, by the `bash` argument shape S-02 recorded.
+export function shellCommand(toolName: string, args: JsonValue): string | undefined {
+  return toolKind(toolName) === "shell" && isJsonObject(args) && typeof args.command === "string" ? args.command : undefined;
+}
+
 // A shell command reads whole files through `cat`, `less` and `more` (S-02).
 function shellRequests(command: string, cwd: string): readonly ReadRequest[] {
   return shellPaths(command, cwd).flatMap((entry) =>
