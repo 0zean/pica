@@ -2,6 +2,7 @@ import { isDeepStrictEqual } from "node:util";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fail, isRecord, pass, readJson } from "../check-helpers.ts";
+import { servicePorts } from "../generated-modules.ts";
 import type { EvalTask } from "./task.ts";
 
 function writeJson(workdir: string, path: string, value: unknown): void {
@@ -18,7 +19,7 @@ function lower(value: unknown): unknown {
   return typeof value === "string" ? value.toLowerCase() : value;
 }
 
-const ports = { gateway: 8080, accounts: 8101, billing: 8102, notifications: 8110, search: 8120 };
+const ports = servicePorts();
 
 // Config generation: a new config file whose required settings a parser can check.
 export const configTasks: readonly EvalTask[] = [
@@ -88,9 +89,10 @@ export const configTasks: readonly EvalTask[] = [
       "port as a number, and nothing else.",
     check: ({ workdir }) => {
       const value = readJson(workdir, "config/ports.json");
-      return isDeepStrictEqual(value, ports)
-        ? pass("config/ports.json maps every service to its port")
-        : fail(value === undefined ? "config/ports.json is missing or is not JSON" : `config/ports.json is ${JSON.stringify(value)}`);
+      if (isDeepStrictEqual(value, ports)) return pass("config/ports.json maps every service to its port");
+      if (!isRecord(value)) return fail("config/ports.json is missing or is not a JSON object");
+      const wrong = Object.keys({ ...ports, ...value }).filter((service) => value[service] !== ports[service]);
+      return fail(`config/ports.json is wrong for ${String(wrong.length)} services, such as ${wrong.slice(0, 3).join(", ")}`);
     },
     solve: (workdir) => {
       writeJson(workdir, "config/ports.json", ports);

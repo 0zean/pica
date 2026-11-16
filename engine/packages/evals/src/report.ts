@@ -14,13 +14,31 @@ export interface TokenTotals {
   readonly wallTimeMs: number;
 }
 
+// One session of one task.
+export interface RunMeasurement extends TokenTotals {
+  readonly succeeded: boolean;
+  readonly detail: string;
+  // Cost-rule policy decisions that were not `allow`: redirected reads, denied shell writes,
+  // truncated outputs.
+  readonly costDecisions: number;
+}
+
+export interface Spread {
+  readonly min: number;
+  readonly max: number;
+}
+
+// A task over all its runs: the token, credit and time fields are means (tokens and milliseconds
+// rounded to whole numbers), and the spreads are per-run minimum and maximum.
 export interface TaskMeasurement extends TokenTotals {
   readonly taskId: string;
   readonly category: TaskCategory;
-  readonly succeeded: boolean;
-  readonly detail: string;
-  // Cost-rule policy decisions that were not `allow`: redirected reads, truncated outputs.
+  readonly successes: number;
+  readonly runCount: number;
   readonly costDecisions: number;
+  readonly reasoningInputSpread: Spread;
+  readonly creditsSpread: Spread;
+  readonly runs: readonly RunMeasurement[];
 }
 
 // The models each tier's calls ran on, from the ledger.
@@ -32,12 +50,14 @@ export interface TierModels {
 export interface ProfileResult {
   readonly profile: RoutingProfile;
   readonly tiers: TierModels;
+  // Sums of the per-task means; `succeeded` is the mean number of tasks that succeeded per run.
   readonly totals: TokenTotals & { readonly tasks: number; readonly succeeded: number };
   readonly tasks: readonly TaskMeasurement[];
 }
 
 // PLAN.md C-10: `balanced` uses at least 60% fewer reasoning-tier input tokens than `off`, with at
-// most one fewer task succeeding. Input counts fresh and cached tokens: both fill the context.
+// most one fewer task succeeding, both judged on means over runs. Input counts fresh and cached
+// tokens: both fill the context.
 export const savingsTarget = { minReduction: 0.6, maxSuccessDrop: 1 } as const;
 
 export interface Comparison {
@@ -75,17 +95,40 @@ const tokenKeys = [
   "wallTimeMs",
 ] as const satisfies readonly (keyof TokenTotals)[];
 
-export function profileResult(profile: RoutingProfile, tiers: TierModels, tasks: readonly TaskMeasurement[]): ProfileResult {
-  const sums = Object.fromEntries(tokenKeys.map((key) => [key, tasks.reduce((sum, task) => sum + task[key], 0)])) as Record<
-    (typeof tokenKeys)[number],
-    number
-  >;
+function sumOf(rows: readonly TokenTotals[]): TokenTotals {
+  return Object.fromEntries(tokenKeys.map((key) => [key, rows.reduce((sum, row) => sum + row[key], 0)])) as Record<(typeof tokenKeys)[number], number>;
+}
+
+function spread(values: readonly number[]): Spread {
+  return { min: Math.min(...values), max: Math.max(...values) };
+}
+
+function round(value: number, places: number): number {
+  const factor = 10 ** places;
+  return Math.round(value * factor) / factor;
+}
+
+export function taskMeasurement(task: { readonly id: string; readonly category: TaskCategory }, runs: readonly RunMeasurement[]): TaskMeasurement {
+  const sums = sumOf(runs);
+  const means = Object.fromEntries(tokenKeys.map((key) => [key, Math.round(sums[key] / runs.length)])) as Record<(typeof tokenKeys)[number], number>;
   return {
-    profile,
-    tiers,
-    totals: { tasks: tasks.length, succeeded: tasks.filter((task) => task.succeeded).length, ...sums, credits: roundCredits(sums.credits) },
-    tasks,
+    taskId: task.id,
+    category: task.category,
+    successes: runs.filter((run) => run.succeeded).length,
+    runCount: runs.length,
+    ...means,
+    credits: roundCredits(sums.credits / runs.length),
+    costDecisions: round(runs.reduce((sum, run) => sum + run.costDecisions, 0) / runs.length, 2),
+    reasoningInputSpread: spread(runs.map(reasoningInput)),
+    creditsSpread: spread(runs.map((run) => run.credits)),
+    runs,
   };
+}
+
+export function profileResult(profile: RoutingProfile, tiers: TierModels, tasks: readonly TaskMeasurement[]): ProfileResult {
+  const sums = sumOf(tasks);
+  const succeeded = round(tasks.reduce((sum, task) => sum + task.successes / task.runCount, 0), 2);
+  return { profile, tiers, totals: { tasks: tasks.length, succeeded, ...sums, credits: roundCredits(sums.credits) }, tasks };
 }
 
 export function reasoningInput(totals: TokenTotals): number {
@@ -96,7 +139,7 @@ export function compareProfiles(baseline: ProfileResult, candidate: ProfileResul
   const baselineInput = reasoningInput(baseline.totals);
   const candidateInput = reasoningInput(candidate.totals);
   const reduction = baselineInput === 0 ? null : Math.round((1 - candidateInput / baselineInput) * 10_000) / 10_000;
-  const successDelta = candidate.totals.succeeded - baseline.totals.succeeded;
+  const successDelta = round(candidate.totals.succeeded - baseline.totals.succeeded, 2);
   const tiers = candidate.tiers;
   return {
     baseline: baseline.profile,

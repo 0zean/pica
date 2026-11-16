@@ -8,7 +8,8 @@ import type { RoutingProfile } from "../src/index.ts";
 // C-10 (live; PICA_LIVE=1 and a Copilot CLI login): the suite under `off` and `balanced` against
 // Copilot, through the production composition. Each task gets its own Pica data directory under a
 // scratch directory, so the signed-in user's Pica data is untouched; it does spend Copilot quota.
-// The report is written to docs/evals/ for committing. EVAL_TASKS=id,id runs a subset.
+// The report is written to docs/evals/ for committing. EVAL_TASKS=id,id runs a subset, EVAL_PROFILES=a,b
+// other profiles, and EVAL_RUNS=n sets the runs per task (3 by default).
 const live = process.env["PICA_LIVE"] === "1";
 const docsDir = join(import.meta.dirname, "..", "..", "..", "..", "docs", "evals");
 const workRoot = realpathSync(mkdtempSync(join(tmpdir(), "pica-ev-")));
@@ -29,8 +30,9 @@ describe.skipIf(!live)("C-10 live: balanced against off", () => {
       workRoot,
       now: () => Date.now(),
       sessionCredits: 100,
-      onTaskDone: (profile, task) => {
-        console.log(`${profile} ${task.taskId}: ${task.succeeded ? "pass" : "FAIL"}, ${String(reasoningInput(task))} reasoning input, ${task.detail}`);
+      runs: Number(process.env["EVAL_RUNS"] ?? "3"),
+      onRunDone: (profile, task, run, measurement) => {
+        console.log(`${profile} ${task.id} run ${String(run)}: ${measurement.succeeded ? "pass" : "FAIL"}, ${String(reasoningInput(measurement))} reasoning input, ${measurement.detail}`);
       },
     });
     mkdirSync(docsDir, { recursive: true });

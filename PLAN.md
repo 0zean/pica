@@ -652,7 +652,9 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
     - The fixture files are small, so delegation saves less than those turns cost.
     - The denied heredoc had already spent 893 output tokens, the cost §5.4 warns about.
     - Run-to-run spread is large: `schema-column-owner` under `balanced` came to 49k, 65k and 82k reasoning input in three runs.
-  - With this suite the 60% target looks unreachable whatever the thresholds. The full run waits for a decision on the suite: larger inputs where delegation can save more than a turn costs, or several runs per task, or a revised target. `EVAL_KEEP=1`, `EVAL_PROFILES` and `EVAL_TASKS` keep a run's data or narrow it for inspection.
+  - With that suite the 60% target looked unreachable whatever the thresholds. The owner chose larger fixtures and 3 runs per task (2026-11-16):
+    - The inputs are now 80–100 KB or more wherever a task needs the content read, sized from the per-turn cost above. See "Sizing" in `docs/evals/README.md`.
+    - The runner takes `runs` (`EVAL_RUNS`, 3 by default live). The report gives per-task means and ranges, and the target is checked on the means. `EVAL_KEEP=1`, `EVAL_PROFILES` and `EVAL_TASKS` keep a run's data or narrow it for inspection.
 - Verify:
   - [x] Against FakeRuntime the harness produces exactly the expected report.
   - [x] Each task's success check passes on a reference solution and fails on an empty one.

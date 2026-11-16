@@ -56,7 +56,8 @@ function tasks(profiles: readonly ProfileResult[]): string {
     const cells = profiles.map((result) => {
       const task = result.tasks.find((entry) => entry.taskId === id);
       if (task === undefined) return "—";
-      return `${task.succeeded ? "pass" : "FAIL"}, ${count(reasoningInput(task))} in, ${String(task.costDecisions)} gated`;
+      const range = task.runCount > 1 ? ` (${count(task.reasoningInputSpread.min)}–${count(task.reasoningInputSpread.max)})` : "";
+      return `${String(task.successes)}/${String(task.runCount)} pass, ${count(reasoningInput(task))} in${range}, ${String(task.costDecisions)} gated`;
     });
     const category = profiles[0]?.tasks.find((task) => task.taskId === id)?.category ?? "";
     return [id, category, ...cells];
@@ -66,9 +67,16 @@ function tasks(profiles: readonly ProfileResult[]): string {
 
 function failures(profiles: readonly ProfileResult[]): string {
   const lines = profiles.flatMap((result) =>
-    result.tasks.filter((task) => !task.succeeded).map((task) => `- ${result.profile} / ${task.taskId}: ${task.detail}`),
+    result.tasks.flatMap((task) =>
+      task.runs.flatMap((run, index) => (run.succeeded ? [] : [`- ${result.profile} / ${task.taskId} (run ${String(index + 1)}): ${run.detail}`])),
+    ),
   );
   return lines.length === 0 ? "None." : lines.join("\n");
+}
+
+function runsLabel(report: EvalReport): string {
+  const counts = [...new Set(report.profiles.flatMap((result) => result.tasks.map((task) => task.runCount)))];
+  return counts.length === 1 && counts[0] === 1 ? "once" : `${counts.join(" or ")} times`;
 }
 
 // The human-readable form of the report; the JSON form is the record.
@@ -76,7 +84,7 @@ export function renderMarkdown(report: EvalReport): string {
   const sections = [
     "# Pica eval report (C-10)",
     "",
-    `Runtime: ${report.runtime}. Generated ${report.generatedAt}. "Reasoning input" counts fresh and cached input tokens of reasoning-tier calls; "gated" counts cost-rule decisions that were not allow.`,
+    `Runtime: ${report.runtime}. Generated ${report.generatedAt}. Each task ran ${runsLabel(report)} per profile; token, credit and time figures are means over runs, with the per-run range in brackets. "Reasoning input" counts fresh and cached input tokens of reasoning-tier calls; "gated" is the mean number of cost-rule decisions that were not allow.`,
     "",
     "## Summary",
     "",

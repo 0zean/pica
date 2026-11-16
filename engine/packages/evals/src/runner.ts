@@ -8,14 +8,16 @@ import type { ProductionOptions } from "@pica/server";
 import { fail } from "./check-helpers.ts";
 import type { CheckResult } from "./check-helpers.ts";
 import { isolatedGitEnv, materializeRepo } from "./fixture-repos.ts";
-import { buildReport, profileResult } from "./report.ts";
-import type { EvalReport, RoutingProfile, TaskMeasurement, TierModels } from "./report.ts";
+import { buildReport, profileResult, taskMeasurement } from "./report.ts";
+import type { EvalReport, RoutingProfile, RunMeasurement, TierModels } from "./report.ts";
 import { EvalClient } from "./rpc-client.ts";
 import type { EvalTask } from "./tasks/index.ts";
 
 export interface TaskRun {
   readonly task: EvalTask;
   readonly profile: RoutingProfile;
+  // 1-based, among the task's runs under this profile.
+  readonly run: number;
   readonly workdir: string;
 }
 
@@ -39,28 +41,34 @@ export interface RunSuiteOptions {
   readonly managedPolicy?: ProductionOptions["managedPolicy"];
   readonly sessionCredits?: number;
   readonly taskTimeoutMs?: number;
-  readonly onTaskDone?: (profile: RoutingProfile, measurement: TaskMeasurement) => void;
+  // Sessions per task and profile; the report gives their mean and spread. Defaults to 1.
+  readonly runs?: number;
+  readonly onRunDone?: (profile: RoutingProfile, task: EvalTask, run: number, measurement: RunMeasurement) => void;
 }
 
 const defaultTaskTimeoutMs = 15 * 60_000;
 
-// C-10: runs every task once per profile, each in a fresh engine with the production composition
+// C-10: runs every task `runs` times per profile, each run in a fresh engine with the production composition
 // (E-11), a fresh copy of its fixture repo, and its own Pica data directory, then measures the
 // session from the usage ledger (C-08).
 export async function runSuite(options: RunSuiteOptions): Promise<EvalReport> {
   const results = [];
   let index = 0;
   for (const profile of options.profiles) {
-    const measurements: TaskMeasurement[] = [];
+    const measurements = [];
     const reasoning = new Set<string>();
     const worker = new Set<string>();
     for (const task of options.tasks) {
-      const done = await runTask(options, { profile, task, index });
-      index += 1;
-      for (const model of done.tiers.reasoning) reasoning.add(model);
-      for (const model of done.tiers.worker) worker.add(model);
-      measurements.push(done.measurement);
-      options.onTaskDone?.(profile, done.measurement);
+      const runs: RunMeasurement[] = [];
+      for (let run = 1; run <= (options.runs ?? 1); run += 1) {
+        const done = await runTask(options, { profile, task, run, index });
+        index += 1;
+        for (const model of done.tiers.reasoning) reasoning.add(model);
+        for (const model of done.tiers.worker) worker.add(model);
+        runs.push(done.measurement);
+        options.onRunDone?.(profile, task, run, done.measurement);
+      }
+      measurements.push(taskMeasurement(task, runs));
     }
     results.push(profileResult(profile, { reasoning: [...reasoning].sort(), worker: [...worker].sort() }, measurements));
   }
@@ -70,14 +78,15 @@ export async function runSuite(options: RunSuiteOptions): Promise<EvalReport> {
 interface TaskSlot {
   readonly profile: RoutingProfile;
   readonly task: EvalTask;
+  readonly run: number;
   readonly index: number;
 }
 
-async function runTask(options: RunSuiteOptions, slot: TaskSlot): Promise<{ measurement: TaskMeasurement; tiers: TierModels }> {
-  const dir = join(options.workRoot, slot.profile, slot.task.id);
+async function runTask(options: RunSuiteOptions, slot: TaskSlot): Promise<{ measurement: RunMeasurement; tiers: TierModels }> {
+  const dir = join(options.workRoot, slot.profile, slot.task.id, `run-${String(slot.run)}`);
   const home = join(dir, "home");
   materializeRepo(slot.task.repo, join(dir, "repo"));
-  const run: TaskRun = { task: slot.task, profile: slot.profile, workdir: realpathSync(join(dir, "repo")) };
+  const run: TaskRun = { task: slot.task, profile: slot.profile, run: slot.run, workdir: realpathSync(join(dir, "repo")) };
   writeUserConfig(home);
   const runtime = options.backend.runtime(run);
   const composed = composeEngine({
@@ -109,7 +118,7 @@ function writeUserConfig(home: string): void {
   writeFileSync(join(dataDir, "config.jsonc"), `${JSON.stringify({ permissions: { mode: "auto" } }, null, 2)}\n`);
 }
 
-async function measureSession(options: RunSuiteOptions, run: TaskRun, client: EvalClient, store: Store): Promise<{ measurement: TaskMeasurement; tiers: TierModels }> {
+async function measureSession(options: RunSuiteOptions, run: TaskRun, client: EvalClient, store: Store): Promise<{ measurement: RunMeasurement; tiers: TierModels }> {
   const { workspace } = await client.call<{ workspace: { id: string } }>("workspace.create", { name: `eval ${run.task.id}` });
   const { repo } = await client.call<{ repo: { id: string } }>("repo.addPath", { path: run.workdir });
   const { session } = await client.call<{ session: { id: string } }>("session.create", {
@@ -132,8 +141,6 @@ async function measureSession(options: RunSuiteOptions, run: TaskRun, client: Ev
   return {
     tiers: tierModels(store, session.id),
     measurement: {
-      taskId: run.task.id,
-      category: run.task.category,
       succeeded: outcome === "idle" && result.passed,
       detail: result.detail,
       costDecisions: events.filter(isGatedCostDecision).length,
@@ -209,7 +216,7 @@ function tierModels(store: Store, sessionId: string): TierModels {
 
 const noUsage: UsageTotals = { key: "", calls: 0, inputTokens: 0, cachedTokens: 0, outputTokens: 0, credits: 0 };
 
-function tierUsage(store: Store, sessionId: string): Omit<TaskMeasurement, "taskId" | "category" | "succeeded" | "detail" | "costDecisions" | "wallTimeMs"> {
+function tierUsage(store: Store, sessionId: string): Omit<RunMeasurement, "succeeded" | "detail" | "costDecisions" | "wallTimeMs"> {
   const rows = store.usage.rollup({ groupBy: "tier", sessionId });
   if (!rows.ok) throw new Error(`usage rollup: ${rows.error.message}`);
   const reasoning = rows.value.find((row) => row.key === "reasoning") ?? noUsage;

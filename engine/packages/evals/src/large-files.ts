@@ -12,6 +12,8 @@ const nouns = [
 ];
 const qualifiers = [
   "events", "snapshots", "holds", "lines", "audits", "limits", "rates", "notes", "links", "versions",
+  "batches", "flags", "reviews", "exports", "imports", "schedules", "alerts", "locks", "quotas", "tags",
+  "drafts", "archives", "comments", "tokens", "windows",
 ];
 
 // A fixed linear congruential sequence, so every generated file is byte-for-byte reproducible.
@@ -52,7 +54,7 @@ export function settlementLog(): string {
   const next = sequence(11);
   const lines: string[] = [];
   const start = Date.UTC(2026, 10, 14, 2, 0, 0);
-  for (let index = 0; index < 1500; index += 1) {
+  for (let index = 0; index < 4000; index += 1) {
     const at = new Date(start + index * 1370).toISOString();
     const request = `req-${(next() % 0xffffffff).toString(16).padStart(8, "0")}`;
     const merchant = `m-${String(1000 + (next() % 9000))}`;
@@ -61,8 +63,8 @@ export function settlementLog(): string {
     const status = level === "WARN " ? "retrying" : "settled";
     lines.push(`${at} ${level} settlement batch=B-0412 request=${request} merchant=${merchant} amount_cents=${amount} status=${status}`);
   }
-  lines[1033] =
-    `${new Date(start + 1033 * 1370).toISOString()} ERROR settlement batch=B-0412 request=${logNeedle.requestId} ` +
+  lines[2933] =
+    `${new Date(start + 2933 * 1370).toISOString()} ERROR settlement batch=B-0412 request=${logNeedle.requestId} ` +
     "merchant=m-4471 amount_cents=99120 status=failed reason=ledger_frozen";
   return `${lines.join("\n")}\n`;
 }
