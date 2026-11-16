@@ -554,6 +554,11 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 
 **C-01 · Model catalog and tiers** — E-09
 - Build: cached `models.list`, price table, tier resolution with `auto` and fallbacks, cost calculation.
+- `auto` by capability (added 2026-11-16).
+  - The reasoning tier prefers a model that supports reasoning effort (`capabilities.supports.reasoningEffort`) over one the runtime says does not. Among those it takes the highest blended price. The worker tier still takes the lowest.
+  - Price alone put `claude-haiku-4.5` on the reasoning tier on Copilot Pro: it is the most expensive model per token there (100/500 credits per million) and the only one without reasoning effort.
+  - With the rule, the Pro list resolves reasoning to `gpt-5.6-luna` and worker to `gpt-6-luna`. A model whose support isn't reported counts as capable.
+  - That Pro account bills by tokens (`tokenBasedBilling`, no premium-request entitlement), so the catalog has no per-call multiplier to rank by.
 - Verify:
   - [x] Tier resolution table tests, including a preferred model missing and a model blocked by managed policy.
   - [x] Credits computed for fixture usage (input, cached input, output) match expected values exactly.
