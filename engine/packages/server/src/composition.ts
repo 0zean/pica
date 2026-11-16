@@ -22,12 +22,14 @@ import {
   createRuntimeNativeDelegator,
   defaultCommandDenyList,
   fallbackPriceTable,
+  isRoutingProfile,
+  sessionDefaultProfile,
   managedBudgetSettings,
   managedPolicyContext,
   openAuditLog,
   resolveTier,
 } from "@pica/core";
-import type { AgentRuntime, ModelCatalog, PolicyContext, Store, TierSettingsInput, TokenPrices } from "@pica/core";
+import type { AgentRuntime, JsonObject, JsonValue, ModelCatalog, PolicyContext, SessionRoutingProfile, Store, TierSettingsInput, TokenPrices } from "@pica/core";
 import { loadEngineConfig } from "./composition-config.ts";
 import type { EngineConfig, EngineConfigOptions } from "./composition-config.ts";
 import { workspaceOptions } from "./composition-workspaces.ts";
@@ -172,7 +174,24 @@ function sessionOptions(deps: SessionComposition): EngineSessionOptions {
     ),
     audit: audit.value,
     newSessionId: randomUUID,
+    defaultProfile: (workspaceId) => defaultProfileFor(store, config, workspaceId),
   };
+}
+
+// The workspace's `routing.profile` override, unless managed policy locks the key; else the user
+// config's, which defaults to `off` (D-22).
+function defaultProfileFor(store: Store, config: EngineConfig, workspaceId: string): SessionRoutingProfile {
+  const lockedRouting = config.policy?.configLocks?.["routing"];
+  const workspace = store.workspaces.get(workspaceId);
+  return sessionDefaultProfile({
+    configured: config.current().routing.profile,
+    locked: isJsonObject(lockedRouting) && "profile" in lockedRouting,
+    workspaceRouting: workspace.ok ? workspace.value.settingsOverrides["routing"] : undefined,
+  });
+}
+
+function isJsonObject(value: JsonValue | undefined): value is JsonObject {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 function catalogPrices(catalog: Pick<ModelCatalog, "current">, model: string): TokenPrices | null {
@@ -184,11 +203,14 @@ function catalogPrices(catalog: Pick<ModelCatalog, "current">, model: string): T
 function sessionPolicyContext(store: Store, config: EngineConfig, sessionId: string): PolicyContext {
   const session = store.sessions.get(sessionId);
   const roots = session.ok ? session.value : { writeRoots: [], referenceRoots: [] };
+  const current = config.current();
+  // The session's own profile, chosen at creation, as the read gate uses it.
+  const profile = session.ok && isRoutingProfile(session.value.routingProfile) ? session.value.routingProfile : current.routing.profile;
   return {
     cwd: roots.writeRoots[0] ?? "/",
     writeRoots: roots.writeRoots,
     referenceRoots: roots.referenceRoots,
-    config: config.current(),
+    config: { ...current, routing: { ...current.routing, profile } },
     ...managedPolicyContext(config.policy),
     commandDenyList: defaultCommandDenyList,
   };

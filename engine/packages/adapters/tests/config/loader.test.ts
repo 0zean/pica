@@ -41,7 +41,7 @@ describe("JsoncConfigLoader", () => {
       { layer: "user", file: join(root, "missing", "config.jsonc") },
       { layer: "repo", file: empty },
     ]).load();
-    expect(result.ok && result.value.config.routing.profile).toBe("balanced");
+    expect(result.ok && result.value.config.routing.profile).toBe("off");
   });
 
   it("reports a file that cannot be read", () => {

@@ -94,7 +94,8 @@ function auditedService(turns: unknown[]): Audited {
   const readGate = createReadGate({ sessions: store.sessions, config, fileSize, onDecision });
   const guard = createOutputGuard({
     artifacts: createSessionArtifacts(join(dir, "sessions")),
-    policyContext: () => ({ cwd: repo, writeRoots: [repo], referenceRoots: [], config: config(), managed: [], commandDenyList: defaultCommandDenyList }),
+    // The session's profile, as the composition passes it (D-22 made `off` the config default).
+    policyContext: () => ({ cwd: repo, writeRoots: [repo], referenceRoots: [], config: { ...config(), routing: { ...config().routing, profile: "balanced" } }, managed: [], commandDenyList: defaultCommandDenyList }),
     onDecision,
   });
   const hooks = (sessionId: string): RuntimeHooks => {
@@ -117,7 +118,7 @@ function auditedService(turns: unknown[]): Audited {
 }
 
 async function startSession(sessions: SessionService): Promise<string> {
-  const created = await sessions.create({ workspaceId, writeRepoIds: [repoId], referenceRepoIds: [] });
+  const created = await sessions.create({ workspaceId, writeRepoIds: [repoId], referenceRepoIds: [], routingProfile: "balanced" });
   if (!created.ok) {
     throw new Error(created.error.message);
   }

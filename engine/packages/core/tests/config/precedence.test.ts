@@ -98,7 +98,7 @@ describe("config precedence", () => {
     const resolved = resolve([]);
     expect(resolved.config).toEqual({
       routing: {
-        profile: "balanced",
+        profile: "off",
         tiers: { reasoning: "auto", worker: "auto" },
         delegation: { read: { minBytes: 32768, rangeExemptLines: 400, exclude: [] }, output: { maxBytes: 16384 } },
       },

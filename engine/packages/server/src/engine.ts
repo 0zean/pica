@@ -33,6 +33,7 @@ import type {
   ReadGateDeps,
   RepoRegistry,
   RuntimeHooks,
+  SessionRoutingProfile,
   SessionService,
   Store,
   TokenPrices,
@@ -84,6 +85,8 @@ export interface EngineSessionOptions {
   readonly newFanOutId?: () => string;
   // C-07: builds each session's sub-agents (`customAgents`); without it sessions get none.
   readonly delegator?: Delegator;
+  // The routing profile for a session created without one (D-22); without it, `off`.
+  readonly defaultProfile?: (workspaceId: string) => SessionRoutingProfile;
 }
 
 export interface EngineOptions {
@@ -210,6 +213,7 @@ function startSessions(
     usage: options.store.usage,
     ...(options.budget === undefined ? {} : { budget: options.budget }),
     ...(options.delegator === undefined ? {} : { delegator: options.delegator }),
+    ...(options.defaultProfile === undefined ? {} : { defaultProfile: options.defaultProfile }),
     ...sessionHooks(options, eventLog, clock),
     ...lifecycleHooks(options.userHooks, log),
   });
