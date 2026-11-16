@@ -654,7 +654,14 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
     - Run-to-run spread is large: `schema-column-owner` under `balanced` came to 49k, 65k and 82k reasoning input in three runs.
   - With that suite the 60% target looked unreachable whatever the thresholds. The owner chose larger fixtures and 3 runs per task (2026-11-16):
     - The inputs are now 80–100 KB or more wherever a task needs the content read, sized from the per-turn cost above. See "Sizing" in `docs/evals/README.md`.
-    - The runner takes `runs` (`EVAL_RUNS`, 3 by default live). The report gives per-task means and ranges, and the target is checked on the means. `EVAL_KEEP=1`, `EVAL_PROFILES` and `EVAL_TASKS` keep a run's data or narrow it for inspection.
+    - The runner takes `runs` (`EVAL_RUNS`, 3 by default live). The report gives per-task means and ranges, and the target is checked on the means.
+  - A fifth smoke run on Pro (2026-11-16) used the larger inputs, 1 run per task.
+    - Totals: `off` 218k reasoning input, `balanced` 225k (3% more). Both tasks passed in both profiles.
+    - Copilot's own `view` refuses a whole read of a large file. On the 92 KB `money.mjs` it returned "File too large to read at once (92.3 KB)", 148 bytes, under `off` too. So the `off` main agent never takes in big files: its context grew only from 16.1k to 18.0k over the session.
+    - Bigger inputs can't widen the gap. Reasoning input is about main-agent turns × the ~17k prompt prefix, and delegating adds turns: `balanced` took 8 main turns on `money-tests` against 6 under `off`.
+    - Two of those turns were attempts the gates then denied: the whole `view`, then the heredoc.
+    - Premium requests: each main call on `claude-haiku-4.5` counted 0.33, and each worker call on `gpt-6-luna` counted 1.0. So `balanced` used 11.3 premium requests on the two tasks, against 4.3 under `off`. On this plan, `auto` puts the cheaper model on the reasoning tier.
+    - On Copilot the 60% reasoning-input target measures something the runtime already limits. The full run waits for a decision on the target and on the tier models. `EVAL_KEEP=1`, `EVAL_PROFILES` and `EVAL_TASKS` keep a run's data or narrow it for inspection.
 - Verify:
   - [x] Against FakeRuntime the harness produces exactly the expected report.
   - [x] Each task's success check passes on a reference solution and fails on an empty one.
