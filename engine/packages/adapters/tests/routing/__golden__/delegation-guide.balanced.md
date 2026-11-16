@@ -16,3 +16,4 @@ Hand them work that does not need your judgment, and keep planning, decisions an
 - To find where something lives across the workspace's repositories, ask `repo-scout`.
 - You have no tool that creates files. Ask `code-writer` to create new files from a precise spec.
 - Make small edits to existing files yourself; send mechanical or repetitive edits to `code-writer`.
+- Shell commands that write files into the repository (redirects, `tee`, `cp`) are denied as well.
