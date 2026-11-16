@@ -71,7 +71,7 @@ The previous handoff named the biggest gap: `picad` had no production compositio
   - Per-session worktrees (R-02). Sessions run in the registered checkout, so `session.writeRoots` (worktrees) is empty.
   - PAT and device-flow GitHub auth, and hosts other than github.com (R-04, D-20).
 - **Still deferred from before:**
-  - C-07: the `child_session` delegator, per-agent `mcpServers`, and the profile's `excludedTools` and delegation guide.
+  - C-07: the `child_session` delegator and per-agent `mcpServers`. (The profile's main-agent `excludedTools` and the delegation guide are now passed to the runtime.)
   - M-07: Codex (needs TOML).
   - M-02: the GHE.com and GHES Copilot MCP endpoint is not recorded.
 - **Open:**

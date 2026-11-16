@@ -10,7 +10,7 @@
       "type": "object",
       "properties": {
         "profile": {
-          "default": "balanced",
+          "default": "off",
           "type": "string",
           "enum": [
             "off",

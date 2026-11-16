@@ -42,6 +42,7 @@ function rules(profile: Exclude<RoutingProfileName, "off">, has: (name: string) 
     lines.push("- To find where something lives across the workspace's repositories, ask `repo-scout`.");
   }
   lines.push(...writeRules(profile, has("code-writer")));
+  lines.push("- Shell commands that write files into the repository (redirects, `tee`, `cp`) are denied as well.");
   return lines;
 }
 

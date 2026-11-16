@@ -35,6 +35,8 @@ export interface FakeSessionOptions {
   // When given, a sub-agent must be one of these and can call only its listed tools, as with the
   // runtime's `customAgents`. Absent, any sub-agent and any tool are played as written.
   readonly customAgents?: readonly CustomAgentDefinition[] | undefined;
+  // Tools the main agent does not have, as with the runtime's `defaultAgent.excludedTools`.
+  readonly excludedTools?: readonly string[] | undefined;
 }
 
 type StepOutcome = "continue" | "stop";
@@ -83,6 +85,7 @@ export class FakeSession implements RuntimeSession {
   #hooks: RuntimeHooks;
   #maxAiCredits: number | undefined;
   #customAgents: readonly CustomAgentDefinition[] | undefined;
+  #excludedTools: readonly string[];
   readonly #agentNames = new Map<string, string>();
   #usedAiCredits = 0;
   #nextTurn = 0;
@@ -95,12 +98,14 @@ export class FakeSession implements RuntimeSession {
     this.#hooks = options.hooks;
     this.#maxAiCredits = options.maxAiCredits;
     this.#customAgents = options.customAgents;
+    this.#excludedTools = options.excludedTools ?? [];
   }
 
   reopen(options: FakeSessionOptions): void {
     this.#hooks = options.hooks;
     this.#maxAiCredits = options.maxAiCredits;
     this.#customAgents = options.customAgents;
+    this.#excludedTools = options.excludedTools ?? [];
     this.#closed = false;
     this.emit("session.resume", { sessionId: this.id });
   }
@@ -461,9 +466,13 @@ export class FakeSession implements RuntimeSession {
     return `No custom agent named ${agentName}`;
   }
 
-  // A sub-agent's tool list is all it can call; a tool outside it fails as an unknown tool would.
+  // A sub-agent's tool list is all it can call, and the main agent has every tool but its excluded
+  // ones; a tool outside that fails as an unknown tool would.
   #unavailableTool(toolName: string, agentId: string | undefined): string | undefined {
-    if (agentId === undefined || this.#customAgents === undefined) {
+    if (agentId === undefined) {
+      return this.#excludedTools.includes(toolName) ? `Tool ${toolName} is not available to the main agent` : undefined;
+    }
+    if (this.#customAgents === undefined) {
       return undefined;
     }
     const agentName = this.#agentNames.get(agentId);

@@ -25,7 +25,7 @@ function policyContext(): PolicyContext {
     cwd: "/src/acme/api",
     writeRoots: ["/src/acme/api"],
     referenceRoots: [],
-    config: PicaConfig.parse({ routing: { delegation: { output: { maxBytes } } } }),
+    config: PicaConfig.parse({ routing: { profile: "balanced", delegation: { output: { maxBytes } } } }),
     managed: [],
     commandDenyList: defaultCommandDenyList,
   };

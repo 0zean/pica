@@ -244,7 +244,24 @@ importers:
         specifier: workspace:*
         version: link:../protocol
 
-  packages/evals: {}
+  packages/evals:
+    dependencies:
+      '@pica/core':
+        specifier: workspace:*
+        version: link:../core
+      '@pica/protocol':
+        specifier: workspace:*
+        version: link:../protocol
+      '@pica/server':
+        specifier: workspace:*
+        version: link:../server
+    devDependencies:
+      '@pica/adapters':
+        specifier: workspace:*
+        version: link:../adapters
+      '@pica/testkit':
+        specifier: workspace:*
+        version: link:../testkit
 
   packages/protocol:
     dependencies:

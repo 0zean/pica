@@ -21,7 +21,7 @@ const context: PolicyContext = {
   cwd: "/work/repo",
   writeRoots: ["/work/repo"],
   referenceRoots: [],
-  config: PicaConfig.parse({ routing: { delegation: { output: { maxBytes: 256 } } } }),
+  config: PicaConfig.parse({ routing: { profile: "balanced", delegation: { output: { maxBytes: 256 } } } }),
   managed: [],
   commandDenyList: defaultCommandDenyList,
 };

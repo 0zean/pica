@@ -34,7 +34,7 @@ const Delegation = z.strictObject({
 });
 
 const Routing = z.strictObject({
-  profile: RoutingProfile.default("balanced"),
+  profile: RoutingProfile.default("off"),
   tiers: TierSettings.prefault({}),
   delegation: Delegation.prefault({}),
 });

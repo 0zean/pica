@@ -102,11 +102,13 @@ export async function call(client: TestClient, method: string, params: unknown):
   return response["result"] as JsonObject;
 }
 
+// Under `balanced`, whose gates these tests exercise; the product default is `off` (D-22).
 export async function createSession(client: TestClient): Promise<string> {
   const result = await call(client, "session.create", {
     workspaceId,
     writeRepoIds: [repoId],
     referenceRepoIds: [],
+    routingProfile: "balanced",
   });
   return (result["session"] as JsonObject)["id"] as string;
 }

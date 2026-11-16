@@ -34,6 +34,10 @@ export interface PendingApproval {
   readonly summary: string;
 }
 
+// The product default (D-22): on Copilot, `off` cost less than `balanced` for the same task success
+// in the C-10 live report. `balanced` and `strict` are opt-ins.
+export const defaultRoutingProfile: SessionRoutingProfile = "off";
+
 const routingProfiles: readonly string[] = ["off", "balanced", "strict"] satisfies SessionRoutingProfile[];
 
 export function isRoutingProfile(value: string): value is SessionRoutingProfile {
@@ -49,7 +53,7 @@ export function toSessionInfo(session: Session, lastSeq: number): SessionInfo {
     // TODO(R-10): report the worktrees Pica creates per write root; until then sessions run in the repo itself.
     writeRoots: [],
     referenceRoots: session.referenceRoots,
-    routingProfile: isRoutingProfile(session.routingProfile) ? session.routingProfile : "balanced",
+    routingProfile: isRoutingProfile(session.routingProfile) ? session.routingProfile : defaultRoutingProfile,
     budgetCredits: session.budgetMaxCredits,
     lastSeq,
     createdAt: session.createdAt,

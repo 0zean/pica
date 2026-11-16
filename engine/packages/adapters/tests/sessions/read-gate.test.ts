@@ -92,7 +92,7 @@ function toolOutcomes(sessionId: string): ToolOutcome[] {
 }
 
 async function startSession(sessions: SessionService): Promise<string> {
-  const created = await sessions.create({ workspaceId, writeRepoIds: [repoId], referenceRepoIds: [] });
+  const created = await sessions.create({ workspaceId, writeRepoIds: [repoId], referenceRepoIds: [], routingProfile: "balanced" });
   if (!created.ok) {
     throw new Error(created.error.message);
   }

@@ -1,6 +1,7 @@
 export { runtimeFailure, sessionFailure, sessionServiceErrorCodes } from "./errors.ts";
 export type { SessionResult, SessionServiceError, SessionServiceErrorCode } from "./errors.ts";
-export { isRoutingProfile, toSessionInfo } from "./info.ts";
+export { defaultRoutingProfile, isRoutingProfile, toSessionInfo } from "./info.ts";
+export { sessionDefaultProfile, type DefaultProfileInputs } from "./default-profile.ts";
 export type {
   PendingApproval,
   SessionApprovalChoice,

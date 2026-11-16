@@ -398,6 +398,10 @@
     {
       "check": "Changing `read.minBytes` in workspace config changes the outcome without restarting the session.",
       "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/sessions/read-gate.test.ts -t 'applies a changed read.minBytes'"
+    },
+    {
+      "check": "Under `balanced` and `strict`, a main-agent shell write into the write roots is denied naming `code-writer`. Read-only shell, writes outside the repo, sub-agents and `off` pass.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/policy/decide.test.ts -t 'shell writes' && pnpm exec vitest run packages/core/tests/policy/shell-write.test.ts packages/core/tests/sessions/pre-tool-use.test.ts"
     }
   ],
   "C-05": [
@@ -477,17 +481,31 @@
   ],
   "C-10": [
     {
-      "check": "Against FakeRuntime the harness produces exactly the expected report."
+      "check": "Against FakeRuntime the harness produces exactly the expected report.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/evals/tests/report.test.ts"
     },
     {
-      "check": "Each task's success check passes on a reference solution and fails on an empty one."
+      "check": "Each task's success check passes on a reference solution and fails on an empty one.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/evals/tests/checks.test.ts"
     },
     {
-      "check": "On the suite, `balanced` uses at least 60% fewer reasoning-tier input tokens than `off`, with at most one fewer task succeeding. The report is committed to `docs/evals/`.",
-      "live": true
+      "check": "On the suite, on the mean of 3 runs, either `balanced` passes the D-21 gate against `off` (at most 5% more reasoning-tier input, at most 35% more credits, at most one fewer task succeeding), or the gap is explained and the routing changed. The report is committed to `docs/evals/`. Met 2026-11-16 by the second branch (D-22): the gate failed, the gap is explained and the default changed. The live test that judges the gate is C-11's check.",
+      "manual": true
     },
     {
-      "check": "Default thresholds in §4.6 are updated from the report, with the change recorded in §3."
+      "check": "Default thresholds in §4.6 are updated from the report, or the reason they stay is recorded in §4.6.",
+      "manual": true
+    }
+  ],
+  "C-11": [
+    {
+      "check": "On the C-10 suite, on the mean of 3 runs, `balanced` passes the D-21 gate against `off`. The report is committed to `docs/evals/`.",
+      "live": true,
+      "run": "make engine-install && cd engine && PICA_LIVE=1 pnpm exec vitest run packages/evals/tests/live-suite.test.ts"
+    },
+    {
+      "check": "If it passes, the owner decides whether `balanced` becomes the default again (D-22).",
+      "manual": true
     }
   ],
   "R-01": [

@@ -9,7 +9,7 @@ import { checkWorkspaceDailyCap, createSessionBudget, sessionSpend, withinSessio
 import type { BudgetSettings, SessionBudget } from "./budget.ts";
 import { runtimeFailure, sessionFailure } from "./errors.ts";
 import type { SessionResult } from "./errors.ts";
-import { isRoutingProfile, toSessionInfo } from "./info.ts";
+import { defaultRoutingProfile, isRoutingProfile, toSessionInfo } from "./info.ts";
 import type {
   PendingApproval,
   SessionApprovalChoice,
@@ -36,6 +36,9 @@ export interface SessionServiceDeps {
   readonly tools?: (session: Session) => readonly EngineTool[];
   // C-07: the session's sub-agents. Without it the runtime gets no `customAgents`.
   readonly delegator?: Delegator;
+  // The profile for a session created without one: the workspace's override, else the user's
+  // config. Without it, `defaultRoutingProfile`.
+  readonly defaultProfile?: (workspaceId: string) => SessionRoutingProfile;
   readonly onChanged?: (session: SessionInfo) => void;
   // C-09: without `usage` the workspace daily cap is not checked and spend starts at zero on resume.
   readonly budget?: BudgetSettings;
@@ -624,7 +627,7 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
       workspaceId: request.workspaceId,
       ...roots.value,
       state: "starting",
-      routingProfile: request.routingProfile ?? "balanced",
+      routingProfile: request.routingProfile ?? deps.defaultProfile?.(request.workspaceId) ?? defaultRoutingProfile,
       budgetMaxCredits: budgetCredits ?? null,
       createdAt: at,
       updatedAt: at,

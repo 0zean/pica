@@ -18,6 +18,8 @@ export interface RuntimeModel {
   readonly name: string;
   readonly tokenPrices?: TokenPrices;
   readonly contextWindow?: number;
+  // Whether the model takes a reasoning-effort setting, as the runtime reports its capabilities.
+  readonly supportsReasoningEffort?: boolean;
 }
 
 // The account's AI-credit quota. `entitlementCredits` is null when the entitlement is unlimited.
@@ -79,7 +81,10 @@ export interface SessionOptions {
   readonly workingDirectory: string;
   readonly model?: string;
   readonly customAgents?: readonly CustomAgentDefinition[];
+  // Built-in tools hidden from the main agent; sub-agents keep the tools their definitions list.
   readonly excludedTools?: readonly string[];
+  // Appended to the runtime's system prompt: the routing profile's delegation guide (C-05).
+  readonly systemMessage?: string;
   readonly tools?: readonly EngineTool[];
   readonly maxAiCredits?: number;
   readonly hooks?: RuntimeHooks;

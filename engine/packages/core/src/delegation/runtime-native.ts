@@ -1,5 +1,6 @@
 import type { Tier } from "@pica/protocol";
 import type { AgentLoader } from "../agents/port.ts";
+import { builtinTools } from "../agents/tool-catalog.ts";
 import type { TierResolution } from "../models/tiers.ts";
 import { err, ok } from "../result.ts";
 import type { Result } from "../result.ts";
@@ -15,6 +16,9 @@ export interface RuntimeNativeDelegatorDeps {
 
 // D-08: sub-agents are the runtime's `customAgents`, one per resolved agent definition. Each gets
 // exactly its definition's tools and its tier's model, and no `model` when the tier resolves to none.
+// The main agent runs on the reasoning tier's model the same way; without one the runtime's default
+// model applies. It also loses the tools its routing profile hides (C-05) and gets the profile's
+// delegation guide; under `off` it gets neither.
 export function createRuntimeNativeDelegator(deps: RuntimeNativeDelegatorDeps): Delegator {
   return {
     async setup(request: DelegationRequest): Promise<Result<DelegationSetup, DelegationError>> {
@@ -25,6 +29,11 @@ export function createRuntimeNativeDelegator(deps: RuntimeNativeDelegatorDeps): 
       const routing = routingSessionConfig(request.routingProfile, loaded.value);
       const byName = new Map(loaded.value.map((agent) => [agent.name, agent]));
       const resolutions = new Map<Tier, TierResolution>();
+      const resolved = async (tier: Tier): Promise<TierResolution> => {
+        const known = resolutions.get(tier) ?? (await deps.resolveTier(tier));
+        resolutions.set(tier, known);
+        return known;
+      };
       const agents: DelegatedAgent[] = [];
       const customAgents: CustomAgentDefinition[] = [];
       for (const visible of routing.agents) {
@@ -32,11 +41,7 @@ export function createRuntimeNativeDelegator(deps: RuntimeNativeDelegatorDeps): 
         if (definition === undefined) {
           continue;
         }
-        let resolution = resolutions.get(visible.tier);
-        if (resolution === undefined) {
-          resolution = await deps.resolveTier(visible.tier);
-          resolutions.set(visible.tier, resolution);
-        }
+        const resolution = await resolved(visible.tier);
         const model = resolution.resolvedModelId;
         agents.push({ name: visible.name, tier: visible.tier, tools: visible.tools, model, modelReason: resolution.reason });
         customAgents.push({
@@ -47,7 +52,18 @@ export function createRuntimeNativeDelegator(deps: RuntimeNativeDelegatorDeps): 
           ...(model === null ? {} : { model }),
         });
       }
-      return ok({ mode: "runtime_native", agents, sessionOptions: { customAgents } });
+      const excludedTools = builtinTools.map((tool) => tool.name).filter((name) => !routing.main.tools.includes(name)).sort();
+      const main = await resolved(routing.main.tier);
+      return ok({
+        mode: "runtime_native",
+        agents,
+        sessionOptions: {
+          customAgents,
+          ...(main.resolvedModelId === null ? {} : { model: main.resolvedModelId }),
+          ...(excludedTools.length === 0 ? {} : { excludedTools }),
+          ...(routing.delegationGuide === "" ? {} : { systemMessage: routing.delegationGuide }),
+        },
+      });
     },
   };
 }

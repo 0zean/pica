@@ -191,6 +191,7 @@ function sessionConfig(sessionId: string, options: SessionOptions, session: Copi
         }),
     // Hidden from the main agent only; sub-agents keep them (§2.1, `defaultAgent.excludedTools`).
     ...(options.excludedTools === undefined ? {} : { defaultAgent: { excludedTools: [...options.excludedTools] } }),
+    ...(options.systemMessage === undefined ? {} : { systemMessage: { mode: "append", content: options.systemMessage } }),
     ...(options.tools === undefined || options.tools.length === 0 ? {} : { tools: toSdkTools(options.tools) }),
     ...(options.maxAiCredits === undefined ? {} : { sessionLimits: { maxAiCredits: options.maxAiCredits } }),
   };

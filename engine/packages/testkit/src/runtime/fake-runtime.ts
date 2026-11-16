@@ -122,7 +122,7 @@ export class FakeRuntime implements AgentRuntime {
 }
 
 function sessionOptions(options: SessionOptions): FakeSessionOptions {
-  return { hooks: options.hooks ?? {}, maxAiCredits: options.maxAiCredits, customAgents: options.customAgents };
+  return { hooks: options.hooks ?? {}, maxAiCredits: options.maxAiCredits, customAgents: options.customAgents, excludedTools: options.excludedTools };
 }
 
 function toRuntimeModel(model: Scenario["models"][number]): RuntimeModel {
@@ -131,5 +131,6 @@ function toRuntimeModel(model: Scenario["models"][number]): RuntimeModel {
     name: model.name,
     ...(model.tokenPrices === undefined ? {} : { tokenPrices: model.tokenPrices }),
     ...(model.contextWindow === undefined ? {} : { contextWindow: model.contextWindow }),
+    ...(model.supportsReasoningEffort === undefined ? {} : { supportsReasoningEffort: model.supportsReasoningEffort }),
   };
 }

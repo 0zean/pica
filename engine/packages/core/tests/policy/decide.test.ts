@@ -4,6 +4,7 @@ import { groups, largeRead, managed, maxBytes, other, rangeExemptLines, shell, w
 import { baseContext, toolCall } from "./fixtures.ts";
 import { mcpPermissionCases } from "./mcp-cases.ts";
 import { scopeCases, shellArgumentCases, shellScopeCases } from "./scope-cases.ts";
+import { shellWriteBlockedCases, shellWritePassedCases, shellWriteScopeCases } from "./shell-write-cases.ts";
 
 describe("decide", () => {
   it("has at least 60 table cases", () => {
@@ -16,6 +17,9 @@ describe("decide", () => {
     "session scope (R-07)": scopeCases,
     "shell scope (R-07)": shellScopeCases,
     "shell scope (R-07): path arguments": shellArgumentCases,
+    "shell writes (C-04): denied under balanced and strict": shellWriteBlockedCases,
+    "shell writes (C-04): passed on": shellWritePassedCases,
+    "shell writes (C-04): left to the shell scope rule": shellWriteScopeCases,
   })) {
     describe(group, () => {
       it.each(cases)("$name", ({ call, context, outcome, ruleId }) => {

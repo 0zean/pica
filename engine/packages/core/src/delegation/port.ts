@@ -33,7 +33,7 @@ export interface DelegationSetup {
   readonly mode: DelegationMode;
   readonly agents: readonly DelegatedAgent[];
   // Spread into the runtime's `createSession` / `resumeSession` options.
-  readonly sessionOptions: Pick<SessionOptions, "customAgents">;
+  readonly sessionOptions: Pick<SessionOptions, "customAgents" | "excludedTools" | "systemMessage" | "model">;
 }
 
 export type DelegationErrorCode = "delegation.agents_invalid" | "delegation.invalid_profile";

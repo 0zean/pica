@@ -117,6 +117,8 @@ REST endpoints: `GET /user/teams`, `GET /orgs/{org}/teams/{team_slug}/repos` (pa
 | D-18 | MCP servers are optional extensions. No Pica feature depends on any server; a session with none works fully. GitHub, Datadog, ClickUp and Snowflake are presets (M-02), not requirements. Pica does not try to anticipate which other servers users want; instead any server can be added by hand, by pasting a standard `mcpServers` entry, or by importing the servers a user already runs in other agent platforms (M-01, M-07) | Owner, 2026-11-15: the three org servers work elsewhere and should extend Pica, not gate it; users should bring the MCP servers they already use | 2026-11-15 |
 | D-19 | Pica assumes no organization. It is for any individual, team, company or org; nothing needs an org admin, a registered GitHub App or OAuth App, or a managed policy file. Org features (H-01 managed policy, H-04 export, pooled-credit budgets) are optional layers that apply when present (Q-05, Q-07) | Owner answered Q-05 and Q-07: no registered app may be assumed, and the audience is not one team | 2026-11-15 |
 | D-20 | GitHub access supports all three deployments: github.com, GitHub Enterprise Cloud with data residency (`<subdomain>.ghe.com`, API at `api.<subdomain>.ghe.com`), and GitHub Enterprise Server (API under `/api/v3`). Auth uses `gh` credentials and PATs; device flow runs only when the user configures their own OAuth client ID (Q-02, Q-05) | Owner answered Q-02: cover all three | 2026-11-15 |
+| D-21 | C-10 judges `balanced` against `off` with a no-regression gate, not a savings target. On the mean of 3 runs, `balanced` may use at most 5% more reasoning-tier input and at most 35% more credits, with at most one fewer task succeeding. The eval pins the reasoning tier (`gpt-5.6-luna` for the 2026-11-16 run) and records the pin in the report | The original target (60% fewer reasoning-tier input tokens) assumed the main agent would otherwise read large files whole. Copilot's own `view` refuses whole reads of large files, and the main agent searches, reads ranges or writes scripts in every profile. Six smoke runs on Free and Pro showed no reasoning-tier saving to claim. The pin keeps a run comparable while the account's model list changes | 2026-11-16 |
+| D-22 | The default routing profile is `off`. `balanced` and `strict` are opt-ins a user, workspace or session can select. A session created without a profile takes the workspace's override, unless managed policy locks `routing.profile`, else the user config's | The C-10 live report (`docs/evals/2026-11-16-c10-live.md`, Copilot Pro, 3 runs of 15 tasks): `balanced` succeeded on as many tasks as `off` but used 11.3% more reasoning-tier input and 179% more credits, mostly `code-writer`'s output. So it fails D-21's gate. C-11 is to make `balanced` pass the gate before it is offered as the default again | 2026-11-16 |
 
 ---
 
@@ -216,7 +218,7 @@ Precedence, lowest to highest: built-in defaults → user (`~/Library/Applicatio
 ```jsonc
 {
   "routing": {
-    "profile": "balanced",
+    "profile": "off",
     "tiers": { "reasoning": "auto", "worker": "auto" },
     "delegation": {
       "read":   { "minBytes": 32768, "rangeExemptLines": 400 },
@@ -229,6 +231,13 @@ Precedence, lowest to highest: built-in defaults → user (`~/Library/Applicatio
 ```
 
 The numbers above are starting defaults. C-10 tunes them from measurements.
+
+The C-10 live report of 2026-11-16 (`docs/evals/2026-11-16-c10-live.md`) leaves them unchanged:
+- No threshold value would have made `balanced` cheaper. The extra cost comes from delegation itself: worker calls, most of them `code-writer`'s, and the extra main-agent turns around them. The threshold sizes don't drive it.
+- Raising `read.minBytes` wouldn't change what the main agent reads. Copilot's own `view` already refuses whole reads of large files under every profile.
+- `output.maxBytes` never fired in the run.
+
+The default profile is `off` since D-22: in that report, `off` cost less for the same task success. `balanced` and `strict` are opt-ins. A session created without a profile takes the workspace's `routing.profile` override, unless managed policy locks the key, and otherwise the user config's `routing.profile`. Until D-22 sessions always started as `balanced`, whatever the config said.
 
 ---
 
@@ -273,7 +282,7 @@ Cost gates:
 | Oversized output | Any tool result over `output.maxBytes` (shell, search, MCP) | Result is truncated head and tail; the full output is spilled to a session artifact with a pointer the agent can hand to `bulk-reader` |
 | MCP fan-in | MCP servers attach per session or per agent, never globally | Tool definitions for unused servers never enter the context |
 
-Profiles: `off` (no cost gates; the baseline for evals), `balanced` (default), `strict`.
+Profiles: `off` (no cost gates; the default since D-22 and the baseline for evals), `balanced` and `strict` (opt-in, per user, workspace or session).
 
 Every decision is emitted as an event with its rule ID, so the timeline can show "Read of `schema.sql` (212 KB) redirected to bulk-reader".
 
@@ -556,6 +565,12 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 
 **C-01 · Model catalog and tiers** — E-09
 - Build: cached `models.list`, price table, tier resolution with `auto` and fallbacks, cost calculation.
+- `auto` by capability (added 2026-11-16).
+  - The reasoning tier prefers a model that supports reasoning effort (`capabilities.supports.reasoningEffort`) over one the runtime says does not. Among those it takes the highest blended price. The worker tier still takes the lowest.
+  - Price alone put `claude-haiku-4.5` on the reasoning tier on Copilot Pro: it is the most expensive model per token there (100/500 credits per million) and the only one without reasoning effort.
+  - With the rule, the Pro list resolves reasoning to `gpt-5.6-luna` and worker to `gpt-6-luna`. A model whose support isn't reported counts as capable.
+  - That Pro account bills by tokens (`tokenBasedBilling`, no premium-request entitlement), so the catalog has no per-call multiplier to rank by.
+  - The main agent now runs on the reasoning tier's model: the delegator sets the session's `model` to it, or leaves it unset when the tier resolves to none. Before, only sub-agents got a tier's model, and the main agent ran on the runtime's default (`claude-haiku-4.5` on that account).
 - Verify:
   - [x] Tier resolution table tests, including a preferred model missing and a model blocked by managed policy.
   - [x] Credits computed for fixture usage (input, cached input, output) match expected values exactly.
@@ -578,11 +593,19 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 
 **C-04 · Read delegation gate** — C-03, E-08
 - Build: large-read rule wired into `onPreToolUse`, with range exemption and per-path exclusions.
+- Shell-write gate (added 2026-11-16, after C-10's smoke run found the main agent writing a new test file with `cat > … <<EOF` once `create` was gone). Rule `cost.shell-write`: under `balanced` and `strict`, a main-agent shell command that writes a file inside the write roots is denied, with a reason naming `code-writer`. It reuses the R-07 shell parser. The read gate in `onPreToolUse` applies this one rule to shell calls, not the whole policy.
+  - What counts as a write: redirections (`>`, `>>`, `&>`, with or without a heredoc), `tee`, `touch`, and the destination of `cp`, `mv` and `install`.
+  - Limits, all passed on to the later rules:
+    - Interpreters and scripts that write (`node -e`, `python -c`, a build script) are not classified.
+    - In-place edits (`sed -i`, `perl -i`) pass, as `edit` does.
+    - `/dev/null` targets, and targets outside the roots or unresolvable (`$OUT`), are left to the shell scope rule.
+    - Sub-agents and `off` are not gated.
 - Verify:
   - [x] FakeRuntime: a main-agent read of a 200 KB file is denied with a reason naming `bulk-reader`.
   - [x] The same read from a sub-agent is allowed.
   - [x] A 10 KB read and a 300-line ranged read of the large file are allowed.
   - [x] Changing `read.minBytes` in workspace config changes the outcome without restarting the session.
+  - [x] Under `balanced` and `strict`, a main-agent shell write into the write roots is denied naming `code-writer`. Read-only shell, writes outside the repo, sub-agents and `off` pass.
 
 **C-05 · Routing profiles** — C-02, C-03
 - Build: `off`, `balanced`, `strict` mapped to per-agent tool visibility and the delegation guide text.
@@ -599,7 +622,7 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
   - [x] Fuzz test: the returned result never exceeds the cap.
 
 **C-07 · Delegator** — C-02, C-05, G0
-- Build: the `Delegator` port and the implementation chosen by D-08. The runtime-native delegator turns the resolved agent definitions into `customAgents`: each gets exactly its definition's tools and its tier's model, and no `model` when the tier resolves to none. The session service takes it in place of building `customAgents` itself. The live check holds on whichever plan is signed in, as D-16 requires: on a default-model-only plan, such as Copilot Free, no worker model is requested and the check records the model `assistant.usage` reports instead of asserting equality, as S-03's checks do. (Revised 2026-11-15.)
+- Build: the `Delegator` port and the implementation chosen by D-08. The runtime-native delegator turns the resolved agent definitions into `customAgents`: each gets exactly its definition's tools and its tier's model, and no `model` when the tier resolves to none. The session service takes it in place of building `customAgents` itself. The delegator also passes the routing profile's main-agent tools to the runtime: under `balanced` and `strict`, the tools the profile hides go in `defaultAgent.excludedTools`, and the profile's delegation guide is appended to the system message. Under `off` it passes neither. (Added 2026-11-16: until then only `customAgents` reached the runtime, so under `balanced` the main agent still had `create`.) The live check holds on whichever plan is signed in, as D-16 requires: on a default-model-only plan, such as Copilot Free, no worker model is requested and the check records the model `assistant.usage` reports instead of asserting equality, as S-03's checks do. (Revised 2026-11-15.)
 - Follow-up: the engine-managed child-session delegator, `DelegationMode` `child_session`, for plans that list models but ignore the per-agent `model` override (A4, D-08). It is not built: it needs child-session events nested in the parent's log, budget and usage carried across sessions, and the hooks applied to the child, which is more than C-07. The seam is the `Delegator` port; the live check fails on such a plan, which is the signal to build it. Re-run the live check on a plan that lists models when one is available.
 - Verify:
   - [x] FakeRuntime: a delegation produces child events nested under the parent's tool call.
@@ -623,13 +646,83 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 
 **C-10 · Eval harness** — C-04, C-05, C-06, C-07, C-08
 - Build: at least 12 tasks over fixture repos (large-file questions, test scaffolding, config generation, multi-file mechanical edits), each with a programmatic success check; a runner that executes the suite per profile and writes a JSON and Markdown report.
-- Verify:
-  - [ ] Against FakeRuntime the harness produces exactly the expected report.
-  - [ ] Each task's success check passes on a reference solution and fails on an empty one.
-  - [ ] **(live)** On the suite, `balanced` uses at least 60% fewer reasoning-tier input tokens than `off`, with at most one fewer task succeeding. The report is committed to `docs/evals/`.
-  - [ ] Default thresholds in §4.6 are updated from the report, with the change recorded in §3.
+- Built (2026-11-16): 12 tasks over `fixtures/evals/`, three per category, in `engine/packages/evals`. The runner gives each task a fresh engine with the production composition (E-11), its own data directory, and a fresh git copy of the fixture. It measures from the ledger grouped by tier, and "reasoning input" counts fresh and cached tokens. `models.tiers` is not served yet, so the report takes each tier's models from the ledger records. See `docs/evals/README.md`.
+- Remaining: the live run, then the §4.6 retune. A live smoke run on 2026-11-16 used Copilot Free, two tasks, `off` and `balanced`. It showed the full run would not be a meaningful comparison there:
+  - The worker tier resolves to none, and no worker-tier call was recorded.
+  - The main agent finds the needle with `rg` and a ranged `view`, so the read gate never fires.
+  - The session model is not pinned: `gpt-6-luna` and `mai-code-1.1-flash` both ran as the main agent.
+  - Result: 24% fewer reasoning-tier input tokens, which is noise from the model mix and not delegation, and 1 fewer success.
+  - A second smoke run on Copilot Pro (2026-11-16) resolved the tiers to different models: reasoning `claude-haiku-4.5`, worker `gpt-6-luna`.
+    - The large-file question worked: the gate denied `grep` on `db/schema.sql`, the main agent delegated to `bulk-reader` on the worker model, and reasoning input fell from 118k to 49k.
+    - The write task did not delegate: under `balanced` the main agent still had `create`. The session service passes only `customAgents`. The profile's main-agent `excludedTools` and the delegation guide are not composed (the C-07 deferral). Until they are, the write tasks cannot show a saving, and the full run would miss the target for that reason, not because of the thresholds.
+  - A third smoke run on Pro (2026-11-16), after #79 wired the main agent's excluded tools and the guide:
+    - `money-tests` under `balanced`: the main agent no longer had `create`. It still did not delegate. It wrote the test file through `bash` (`cat > test/money.test.mjs`).
+    - `schema-column-owner` delegated to `bulk-reader` again.
+    - Result: 11% fewer reasoning-tier input tokens.
+    - Every main-agent call carries about 16k cached prompt tokens. So a task saves only when delegating keeps file contents out of the main context, and the main agent's `grep` and ranged reads already do that.
+  - A fourth smoke run on Pro (2026-11-16), with #80's shell-write gate. The routing worked end to end:
+    - The main agent's heredoc write was denied (`cost.shell-write`).
+    - It delegated to `code-writer` on `gpt-6-luna`, which wrote the file with `apply_patch`.
+    - Then it ran the tests itself, and both tasks passed.
+  - But `balanced` used 45% more reasoning-tier input than `off` (169k against 117k):
+    - Each extra main-agent turn (the denied attempt, the delegation, the review) costs about 16 to 18k cached prompt tokens.
+    - The fixture files are small, so delegation saves less than those turns cost.
+    - The denied heredoc had already spent 893 output tokens, the cost §5.4 warns about.
+    - Run-to-run spread is large: `schema-column-owner` under `balanced` came to 49k, 65k and 82k reasoning input in three runs.
+  - With that suite the 60% target looked unreachable whatever the thresholds. The owner chose larger fixtures and 3 runs per task (2026-11-16):
+    - The inputs are now 80–100 KB or more wherever a task needs the content read, sized from the per-turn cost above. See "Sizing" in `docs/evals/README.md`.
+    - The runner takes `runs` (`EVAL_RUNS`, 3 by default live). The report gives per-task means and ranges, and the target is checked on the means.
+  - A fifth smoke run on Pro (2026-11-16) used the larger inputs, 1 run per task.
+    - Totals: `off` 218k reasoning input, `balanced` 225k (3% more). Both tasks passed in both profiles.
+    - Copilot's own `view` refuses a whole read of a large file. On the 92 KB `money.mjs` it returned "File too large to read at once (92.3 KB)", 148 bytes, under `off` too. So the `off` main agent never takes in big files: its context grew only from 16.1k to 18.0k over the session.
+    - Bigger inputs can't widen the gap. Reasoning input is about main-agent turns × the ~17k prompt prefix, and delegating adds turns: `balanced` took 8 main turns on `money-tests` against 6 under `off`.
+    - Two of those turns were attempts the gates then denied: the whole `view`, then the heredoc.
+    - Premium requests: each main call on `claude-haiku-4.5` counted 0.33, and each worker call on `gpt-6-luna` counted 1.0. So `balanced` used 11.3 premium requests on the two tasks, against 4.3 under `off`. On this plan, `auto` puts the cheaper model on the reasoning tier.
+    - On Copilot the 60% reasoning-input target measures something the runtime already limits. The full run waits for a decision on the target and on the tier models.
+    - Correction: that account bills by tokens (`getQuota`: `tokenBasedBilling: true`, no premium-request entitlement), so the `premiumRequests` on usage events aren't what it pays. #81 fixes the tier choice and runs the main agent on the reasoning tier's model.
+  - A sixth smoke run on Pro (2026-11-16) with #81: main agent on `gpt-5.6-luna`, workers on `gpt-6-luna`, 1 run. Both tasks passed in both profiles.
 
-**Milestone M2 — measured savings:** the C-10 live report exists and meets its target, or the gap is explained and the thresholds are retuned.
+    | Profile | Reasoning input | Main calls | All calls | Credits |
+    |---|---|---|---|---|
+    | `off` | 124,574 | 9 | 9 | 0.8665 |
+    | `balanced` | 126,534 | 9 | 22 | 1.1379 |
+
+    - Delegation no longer adds main turns. But the 13 worker calls add credits (+31%) and wall time (21 s against 60 s), and save the main agent nothing, because Copilot's `view` limit already keeps big files out of its context.
+    - The target is awaiting the owner's decision.
+  - The owner chose to add comprehension tasks first (2026-11-16). There are three, each finding a planted bug that no searchable word marks, in `money.mjs` (92 KB), the 32 report modules, or the 36 toolkit modules. They are the work the main agent can't shortcut with `grep`, and so where delegation should pay. The suite now has 15 tasks.
+  - Smoke run on the comprehension tasks (2026-11-16): `allocation-bug` and `report-total-bug`, 1 run. The account's catalog had grown to 14 models, so `auto` picked `kimi-k3` (300/1500) for reasoning and `claude-haiku-5.5` (10/50) for worker. All four sessions found the bug.
+
+    | Profile | Reasoning input | Credits |
+    |---|---|---|
+    | `off` | 142,403 | 16.03 |
+    | `balanced` | 129,594 | 15.90 |
+
+    - `balanced` used 9% less reasoning input and about the same credits.
+    - Under `off` the main agent didn't read the code either. On `allocation-bug` it wrote a `node` script that called every `allocate*` function and checked the sums. On `report-total-bug` it guessed patterns for `grep` (`slice\(1`, `shift\(\)`).
+    - Under `balanced` it delegated once (`bulk-reader`, after two denied whole reads) and took as many main turns as `off`.
+    - A frontier main agent with search and a shell doesn't take in large content in either profile, so delegation has little reasoning-tier input left to save on Copilot. `EVAL_KEEP=1`, `EVAL_PROFILES` and `EVAL_TASKS` keep a run's data or narrow it for inspection.
+- Verify:
+  - [x] Against FakeRuntime the harness produces exactly the expected report.
+  - [x] Each task's success check passes on a reference solution and fails on an empty one.
+  - [x] **(live)** On the suite, on the mean of 3 runs, either `balanced` passes the D-21 gate against `off` (at most 5% more reasoning-tier input, at most 35% more credits, at most one fewer task succeeding), or the gap is explained and the routing changed. The report is committed to `docs/evals/`. *Met 2026-11-16 by the second branch: the gate failed, the gap is explained below, and the default changed to `off` (D-22). Report: `docs/evals/2026-11-16-c10-live.md`.*
+    - *Setup: Copilot Pro, reasoning pinned to `gpt-5.6-luna`, worker `claude-haiku-5.5` (auto), 90 sessions, 70.9 credits.*
+    - *All 15 tasks passed in both profiles.*
+    - *Reasoning-tier input: +11.3% (1,125,020 against 1,010,326).*
+    - *Credits: +179% (17.39 against 6.23 per suite run).*
+    - *`code-writer` used 29.7 of `balanced`'s 52.2 credits: 199 calls producing 381k output tokens. `bulk-reader` used 2.9.*
+    - *Main-agent calls rose from 201 to 225, so delegation added reasoning-tier turns rather than saving any.*
+  - [x] Default thresholds in §4.6 are updated from the report, or the reason they stay is recorded in §4.6. *They stay (2026-11-16); see the note under §4.6.*
+
+**C-11 · Make `balanced` pass the gate** — C-10
+- Build:
+  - Cap `code-writer`'s calls and output per delegation, and tighten its prompt so it applies a precise spec without exploring. In the C-10 live run it made 199 calls producing 381k output tokens, 29.7 of `balanced`'s 52.2 credits.
+  - Cut the main agent's denied attempts. A whole-file `view` or a shell write that the gate then denies still costs a main-agent turn.
+  - Rerun the C-10 suite with the same pin and 3 runs.
+- Verify:
+  - [ ] **(live)** On the C-10 suite, on the mean of 3 runs, `balanced` passes the D-21 gate against `off`. The report is committed to `docs/evals/`.
+  - [ ] If it passes, the owner decides whether `balanced` becomes the default again (D-22).
+
+**Milestone M2 — measured cost routing:** the C-10 live report exists and passes the no-regression gate (D-21), or the gap is explained and the routing is changed. **Met 2026-11-16:** the report exists and fails the gate. The gap is explained under C-10, and the routing changed: `off` is the default (D-22), and C-11 is to make `balanced` pass the gate.
 
 ### Phase 3 — Repositories and workspaces
 
@@ -1014,7 +1107,8 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | C-07 | Delegator | C-02, C-05, G0 | done |
 | C-08 | Usage ledger | E-07, C-01 | done |
 | C-09 | Budgets | C-08 | done |
-| C-10 | Eval harness | C-04, C-05, C-06, C-07, C-08 | todo |
+| C-10 | Eval harness | C-04, C-05, C-06, C-07, C-08 | done |
+| C-11 | Make `balanced` pass the gate | C-10 | todo |
 | R-01 | Git service | F-01 | done |
 | R-02 | Worktrees | R-01 | done |
 | R-03 | Repo registry | E-03, R-01 | done |
