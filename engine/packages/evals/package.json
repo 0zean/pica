@@ -3,5 +3,14 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "exports": "./src/index.ts"
+  "exports": "./src/index.ts",
+  "dependencies": {
+    "@pica/core": "workspace:*",
+    "@pica/protocol": "workspace:*",
+    "@pica/server": "workspace:*"
+  },
+  "devDependencies": {
+    "@pica/adapters": "workspace:*",
+    "@pica/testkit": "workspace:*"
+  }
 }

@@ -477,14 +477,17 @@
   ],
   "C-10": [
     {
-      "check": "Against FakeRuntime the harness produces exactly the expected report."
+      "check": "Against FakeRuntime the harness produces exactly the expected report.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/evals/tests/report.test.ts"
     },
     {
-      "check": "Each task's success check passes on a reference solution and fails on an empty one."
+      "check": "Each task's success check passes on a reference solution and fails on an empty one.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/evals/tests/checks.test.ts"
     },
     {
       "check": "On the suite, `balanced` uses at least 60% fewer reasoning-tier input tokens than `off`, with at most one fewer task succeeding. The report is committed to `docs/evals/`.",
-      "live": true
+      "live": true,
+      "run": "make engine-install && cd engine && PICA_LIVE=1 pnpm exec vitest run packages/evals/tests/live-suite.test.ts"
     },
     {
       "check": "Default thresholds in §4.6 are updated from the report, with the change recorded in §3."

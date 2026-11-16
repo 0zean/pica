@@ -621,9 +621,11 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 
 **C-10 · Eval harness** — C-04, C-05, C-06, C-07, C-08
 - Build: at least 12 tasks over fixture repos (large-file questions, test scaffolding, config generation, multi-file mechanical edits), each with a programmatic success check; a runner that executes the suite per profile and writes a JSON and Markdown report.
+- Built (2026-11-16): 12 tasks over `fixtures/evals/`, three per category, in `engine/packages/evals`. The runner gives each task a fresh engine with the production composition (E-11), its own data directory, and a fresh git copy of the fixture. It measures from the ledger grouped by tier, and "reasoning input" counts fresh and cached tokens. `models.tiers` is not served yet, so the report takes each tier's models from the ledger records. See `docs/evals/README.md`.
+- Remaining: the live run (owner's go-ahead; it spends Copilot quota), then the §4.6 retune. On a default-model-only plan, such as Copilot Free, worker-tier calls run on the main model (D-16). There the run can show the reasoning-tier token cut, but not a credit saving, and the report flags this.
 - Verify:
-  - [ ] Against FakeRuntime the harness produces exactly the expected report.
-  - [ ] Each task's success check passes on a reference solution and fails on an empty one.
+  - [x] Against FakeRuntime the harness produces exactly the expected report.
+  - [x] Each task's success check passes on a reference solution and fails on an empty one.
   - [ ] **(live)** On the suite, `balanced` uses at least 60% fewer reasoning-tier input tokens than `off`, with at most one fewer task succeeding. The report is committed to `docs/evals/`.
   - [ ] Default thresholds in §4.6 are updated from the report, with the change recorded in §3.
 
@@ -1011,7 +1013,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | C-07 | Delegator | C-02, C-05, G0 | done |
 | C-08 | Usage ledger | E-07, C-01 | done |
 | C-09 | Budgets | C-08 | done |
-| C-10 | Eval harness | C-04, C-05, C-06, C-07, C-08 | todo |
+| C-10 | Eval harness | C-04, C-05, C-06, C-07, C-08 | doing |
 | R-01 | Git service | F-01 | done |
 | R-02 | Worktrees | R-01 | done |
 | R-03 | Repo registry | E-03, R-01 | done |
