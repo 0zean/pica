@@ -68,20 +68,33 @@ function withAuto(
 interface PricedModel {
   readonly id: string;
   readonly prices: TokenPrices;
+  readonly reasons: boolean;
 }
 
-// The `auto` rule (D-09: no model ids in code): among allowed models with known prices,
-// `reasoning` takes the highest blended rate and `worker` the lowest. Ties go to the smaller id.
+// The `auto` rule (D-09: no model ids in code), among allowed models with known prices:
+// - `worker` takes the lowest blended rate.
+// - `reasoning` takes a model that supports reasoning effort over one the runtime says does not, and
+//   among those the highest blended rate. Price alone is not capability: a small model can cost more
+//   per token than a frontier one (C-10, Copilot Pro 2026-11-16). A model whose support is not
+//   reported counts as capable, so a runtime that reports none ranks by price as before.
+// Ties go to the smaller id.
 function pickAuto(tier: ModelTier, models: readonly CatalogModel[], policy: ManagedModelPolicy): string | undefined {
   const candidates: PricedModel[] = [];
   for (const model of models) {
     if (model.prices !== null && isModelAllowed(model.id, policy)) {
-      candidates.push({ id: model.id, prices: model.prices });
+      candidates.push({ id: model.id, prices: model.prices, reasons: model.supportsReasoningEffort !== false });
     }
   }
-  const direction = tier === "reasoning" ? -1 : 1;
-  candidates.sort((a, b) => direction * (blendedRate(a.prices) - blendedRate(b.prices)) || compareIds(a.id, b.id));
+  candidates.sort(tier === "reasoning" ? byReasoningFit : byWorkerFit);
   return candidates[0]?.id;
+}
+
+function byReasoningFit(a: PricedModel, b: PricedModel): number {
+  return Number(b.reasons) - Number(a.reasons) || blendedRate(b.prices) - blendedRate(a.prices) || compareIds(a.id, b.id);
+}
+
+function byWorkerFit(a: PricedModel, b: PricedModel): number {
+  return blendedRate(a.prices) - blendedRate(b.prices) || compareIds(a.id, b.id);
 }
 
 function blendedRate(prices: TokenPrices): number {

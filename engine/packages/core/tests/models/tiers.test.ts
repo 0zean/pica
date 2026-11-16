@@ -126,6 +126,45 @@ describe("resolveTier", () => {
   });
 });
 
+// The Copilot Pro list seen on 2026-11-16 (`models.list`, ai_credits per million tokens). The
+// small model costs the most per token and is the only one without reasoning effort; by price alone
+// it took the reasoning tier (C-10 smoke runs).
+const proCatalog: readonly CatalogModel[] = [
+  { ...model("auto", null) },
+  { ...model("claude-haiku-4.5", 100, 500), supportsReasoningEffort: false },
+  { ...model("gpt-6-luna", 10, 50), supportsReasoningEffort: true },
+  { ...model("gpt-5.6-luna", 20, 120), supportsReasoningEffort: true },
+  { ...model("mai-code-1.1-flash", 20, 120), supportsReasoningEffort: true },
+];
+
+describe("auto tiers by capability, then price", () => {
+  it("Copilot Pro: a reasoning-capable model on the reasoning tier, the cheapest on the worker tier", () => {
+    const resolutions = resolveTiers({ reasoning: "auto", worker: "auto" }, proCatalog, {});
+    expect(resolutions.map((resolution) => [resolution.tier, resolution.resolvedModelId])).toEqual([
+      ["reasoning", "gpt-5.6-luna"],
+      ["worker", "gpt-6-luna"],
+    ]);
+  });
+
+  it("falls back to a model without reasoning effort when it is the only one allowed", () => {
+    expect(resolveTier("reasoning", "auto", proCatalog, { allow: ["claude-haiku-4.5", "auto"] }).resolvedModelId).toBe("claude-haiku-4.5");
+  });
+
+  it("ranks by price among capable models, and treats unreported support as capable", () => {
+    const mixed = [
+      { ...model("small-1", 500, 2000), supportsReasoningEffort: false },
+      model("unreported-1", 30, 100),
+      { ...model("capable-1", 20, 80), supportsReasoningEffort: true },
+    ];
+    expect(resolveTier("reasoning", "auto", mixed, {}).resolvedModelId).toBe("unreported-1");
+    expect(resolveTier("worker", "auto", mixed, {}).resolvedModelId).toBe("capable-1");
+  });
+
+  it("a configured model still wins over the capability rule", () => {
+    expect(resolveTier("reasoning", "claude-haiku-4.5", proCatalog, {})).toMatchObject({ resolvedModelId: "claude-haiku-4.5", reason: "configured" });
+  });
+});
+
 // Copilot Free lists only the virtual, unpriced `auto` model (S-01). Every tier must leave the
 // model unset, so the runtime's own routing applies, and no setting may pick `auto` as a model id.
 describe("default-model-only plans (S-01)", () => {

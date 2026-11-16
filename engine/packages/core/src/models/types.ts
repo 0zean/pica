@@ -13,6 +13,8 @@ export interface CatalogModel {
   readonly prices: TokenPrices | null;
   readonly priceSource: PriceSource | null;
   readonly contextWindow: number | null;
+  // Absent when the runtime does not say.
+  readonly supportsReasoningEffort?: boolean;
 }
 
 export interface ModelCatalogSnapshot {

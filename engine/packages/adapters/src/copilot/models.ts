@@ -31,6 +31,7 @@ export function toRuntimeModel(model: ModelInfo, unit: PriceUnit | undefined): R
           },
         }),
     ...(contextWindow > 0 ? { contextWindow } : {}),
+    supportsReasoningEffort: model.capabilities.supports.reasoningEffort,
   };
 }
 

@@ -18,6 +18,8 @@ export interface RuntimeModel {
   readonly name: string;
   readonly tokenPrices?: TokenPrices;
   readonly contextWindow?: number;
+  // Whether the model takes a reasoning-effort setting, as the runtime reports its capabilities.
+  readonly supportsReasoningEffort?: boolean;
 }
 
 // The account's AI-credit quota. `entitlementCredits` is null when the entitlement is unlimited.

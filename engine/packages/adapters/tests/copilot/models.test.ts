@@ -1,5 +1,5 @@
 import { afterAll, describe, expect, it } from "vitest";
-import { toQuotaInfo } from "../../src/copilot/models.ts";
+import { toQuotaInfo, toRuntimeModel } from "../../src/copilot/models.ts";
 import { ReplayRuntimes } from "./replay-harness.ts";
 
 const replays = new ReplayRuntimes();
@@ -15,6 +15,16 @@ describe("Copilot models and quota", () => {
     expect(worker?.tokenPrices?.cachedInput).toBeCloseTo(1.5);
     expect(worker?.tokenPrices?.output).toBeCloseTo(60);
     expect(worker?.contextWindow).toBe(128000);
+  });
+
+  it("carries whether the model supports reasoning effort", () => {
+    const info = (reasoningEffort: boolean) => ({
+      id: "m",
+      name: "M",
+      capabilities: { supports: { vision: false, reasoningEffort }, limits: { max_context_window_tokens: 1000 } },
+    });
+    expect(toRuntimeModel(info(true), undefined)).toMatchObject({ supportsReasoningEffort: true });
+    expect(toRuntimeModel(info(false), undefined)).toMatchObject({ supportsReasoningEffort: false });
   });
 
   it("converts nano-AIU prices to credits, using the unit models.listTokenPriceUnits reports (S-01)", async () => {
@@ -39,7 +49,7 @@ describe("Copilot models and quota", () => {
   it("drops every price when the price-unit call fails", async () => {
     const { runtime } = await replays.start("price-units-unavailable");
     const models = await runtime.listModels();
-    expect(models.ok ? models.value : models.error).toEqual([{ id: "worker-1", name: "Worker 1", contextWindow: 128000 }]);
+    expect(models.ok ? models.value : models.error).toEqual([{ id: "worker-1", name: "Worker 1", contextWindow: 128000, supportsReasoningEffort: false }]);
   });
 
   it("lists Free's virtual auto model with no prices and no context window (S-01)", async () => {
