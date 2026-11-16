@@ -643,7 +643,16 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
     - `schema-column-owner` delegated to `bulk-reader` again.
     - Result: 11% fewer reasoning-tier input tokens.
     - Every main-agent call carries about 16k cached prompt tokens. So a task saves only when delegating keeps file contents out of the main context, and the main agent's `grep` and ranged reads already do that.
-  - The full run waits for a decision: route shell file writes under `balanced` (for example, deny a shell redirect into a write root, naming `code-writer`), or change the suite or the target. `EVAL_KEEP=1`, `EVAL_PROFILES` and `EVAL_TASKS` keep a run's data or narrow it for inspection.
+  - A fourth smoke run on Pro (2026-11-16), with #80's shell-write gate. The routing worked end to end:
+    - The main agent's heredoc write was denied (`cost.shell-write`).
+    - It delegated to `code-writer` on `gpt-6-luna`, which wrote the file with `apply_patch`.
+    - Then it ran the tests itself, and both tasks passed.
+  - But `balanced` used 45% more reasoning-tier input than `off` (169k against 117k):
+    - Each extra main-agent turn (the denied attempt, the delegation, the review) costs about 16 to 18k cached prompt tokens.
+    - The fixture files are small, so delegation saves less than those turns cost.
+    - The denied heredoc had already spent 893 output tokens, the cost §5.4 warns about.
+    - Run-to-run spread is large: `schema-column-owner` under `balanced` came to 49k, 65k and 82k reasoning input in three runs.
+  - With this suite the 60% target looks unreachable whatever the thresholds. The full run waits for a decision on the suite: larger inputs where delegation can save more than a turn costs, or several runs per task, or a revised target. `EVAL_KEEP=1`, `EVAL_PROFILES` and `EVAL_TASKS` keep a run's data or narrow it for inspection.
 - Verify:
   - [x] Against FakeRuntime the harness produces exactly the expected report.
   - [x] Each task's success check passes on a reference solution and fails on an empty one.
