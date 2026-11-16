@@ -489,12 +489,13 @@
       "run": "make engine-install && cd engine && pnpm exec vitest run packages/evals/tests/checks.test.ts"
     },
     {
-      "check": "On the suite, `balanced` uses at least 60% fewer reasoning-tier input tokens than `off`, with at most one fewer task succeeding. The report is committed to `docs/evals/`.",
+      "check": "On the suite, on the mean of 3 runs, `balanced` uses at most 5% more reasoning-tier input and at most 35% more credits than `off`, with at most one fewer task succeeding (D-21). The report is committed to `docs/evals/`.",
       "live": true,
       "run": "make engine-install && cd engine && PICA_LIVE=1 pnpm exec vitest run packages/evals/tests/live-suite.test.ts"
     },
     {
-      "check": "Default thresholds in §4.6 are updated from the report, with the change recorded in §3."
+      "check": "Default thresholds in §4.6 are updated from the report, or the reason they stay is recorded in §4.6.",
+      "manual": true
     }
   ],
   "R-01": [

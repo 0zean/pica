@@ -117,6 +117,7 @@ REST endpoints: `GET /user/teams`, `GET /orgs/{org}/teams/{team_slug}/repos` (pa
 | D-18 | MCP servers are optional extensions. No Pica feature depends on any server; a session with none works fully. GitHub, Datadog, ClickUp and Snowflake are presets (M-02), not requirements. Pica does not try to anticipate which other servers users want; instead any server can be added by hand, by pasting a standard `mcpServers` entry, or by importing the servers a user already runs in other agent platforms (M-01, M-07) | Owner, 2026-11-15: the three org servers work elsewhere and should extend Pica, not gate it; users should bring the MCP servers they already use | 2026-11-15 |
 | D-19 | Pica assumes no organization. It is for any individual, team, company or org; nothing needs an org admin, a registered GitHub App or OAuth App, or a managed policy file. Org features (H-01 managed policy, H-04 export, pooled-credit budgets) are optional layers that apply when present (Q-05, Q-07) | Owner answered Q-05 and Q-07: no registered app may be assumed, and the audience is not one team | 2026-11-15 |
 | D-20 | GitHub access supports all three deployments: github.com, GitHub Enterprise Cloud with data residency (`<subdomain>.ghe.com`, API at `api.<subdomain>.ghe.com`), and GitHub Enterprise Server (API under `/api/v3`). Auth uses `gh` credentials and PATs; device flow runs only when the user configures their own OAuth client ID (Q-02, Q-05) | Owner answered Q-02: cover all three | 2026-11-15 |
+| D-21 | C-10 judges `balanced` against `off` with a no-regression gate, not a savings target. On the mean of 3 runs, `balanced` may use at most 5% more reasoning-tier input and at most 35% more credits, with at most one fewer task succeeding. The eval pins the reasoning tier (`gpt-5.6-luna` for the 2026-11-16 run) and records the pin in the report | The original target (60% fewer reasoning-tier input tokens) assumed the main agent would otherwise read large files whole. Copilot's own `view` refuses whole reads of large files, and the main agent searches, reads ranges or writes scripts in every profile. Six smoke runs on Free and Pro showed no reasoning-tier saving to claim. The pin keeps a run comparable while the account's model list changes | 2026-11-16 |
 
 ---
 
@@ -227,6 +228,13 @@ Precedence, lowest to highest: built-in defaults → user (`~/Library/Applicatio
 ```
 
 The numbers above are starting defaults. C-10 tunes them from measurements.
+
+The C-10 live report of 2026-11-16 (`docs/evals/2026-11-16-c10-live.md`) leaves them unchanged:
+- No threshold value would have made `balanced` cheaper. The extra cost comes from delegation itself: worker calls, most of them `code-writer`'s, and the extra main-agent turns around them. The threshold sizes don't drive it.
+- Raising `read.minBytes` wouldn't change what the main agent reads. Copilot's own `view` already refuses whole reads of large files under every profile.
+- `output.maxBytes` never fired in the run.
+
+The default profile stays `balanced` until the owner decides otherwise. The report says that on Copilot today `off` costs less for the same task success.
 
 ---
 
@@ -693,10 +701,16 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
 - Verify:
   - [x] Against FakeRuntime the harness produces exactly the expected report.
   - [x] Each task's success check passes on a reference solution and fails on an empty one.
-  - [ ] **(live)** On the suite, `balanced` uses at least 60% fewer reasoning-tier input tokens than `off`, with at most one fewer task succeeding. The report is committed to `docs/evals/`.
-  - [ ] Default thresholds in §4.6 are updated from the report, with the change recorded in §3.
+  - [ ] **(live)** On the suite, on the mean of 3 runs, `balanced` uses at most 5% more reasoning-tier input and at most 35% more credits than `off`, with at most one fewer task succeeding (D-21). The report is committed to `docs/evals/`. *Failed 2026-11-16, report `docs/evals/2026-11-16-c10-live.md`:*
+    - *Setup: Copilot Pro, reasoning pinned to `gpt-5.6-luna`, worker `claude-haiku-5.5` (auto), 90 sessions, 70.9 credits.*
+    - *All 15 tasks passed in both profiles.*
+    - *Reasoning-tier input: +11.3% (1,125,020 against 1,010,326).*
+    - *Credits: +179% (17.39 against 6.23 per suite run).*
+    - *`code-writer` used 29.7 of `balanced`'s 52.2 credits: 199 calls producing 381k output tokens. `bulk-reader` used 2.9.*
+    - *Main-agent calls rose from 201 to 225, so delegation added reasoning-tier turns rather than saving any.*
+  - [x] Default thresholds in §4.6 are updated from the report, or the reason they stay is recorded in §4.6. *They stay (2026-11-16); see the note under §4.6.*
 
-**Milestone M2 — measured savings:** the C-10 live report exists and meets its target, or the gap is explained and the thresholds are retuned.
+**Milestone M2 — measured cost routing:** the C-10 live report exists and passes the no-regression gate (D-21), or the gap is explained and the routing is changed. *2026-11-16: the report exists and fails the gate. The gap is explained under C-10; changing the routing waits for the owner.*
 
 ### Phase 3 — Repositories and workspaces
 

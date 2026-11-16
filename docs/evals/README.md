@@ -98,3 +98,10 @@ To run only some tasks, set `EVAL_TASKS=schema-column-owner,money-tests`.
 On a default-model-only plan such as Copilot Free, sub-agents run on the same model as the main agent
 (D-16). There, delegation moves tokens from the reasoning tier to the worker tier, but it cannot lower
 credits. When no worker-tier call ran on a model of its own, the report says so.
+
+## Reports
+
+- [`2026-11-16-c10-live.md`](2026-11-16-c10-live.md), with the [JSON](2026-11-16-c10-live.json): Copilot Pro,
+  reasoning pinned to `gpt-5.6-luna`, 3 runs per task, 90 sessions, 70.9 credits. All tasks passed in both
+  profiles. `balanced` used 11.3% more reasoning-tier input and 179% more credits than `off`, so it fails
+  the D-21 gate. Most of the extra cost is `code-writer`: 199 calls producing 381k output tokens.
