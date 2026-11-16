@@ -8,6 +8,14 @@ const domains = [
   "terminals", "tokens", "transfers", "vaults", "versions", "wallets", "webhooks", "withdrawals",
 ];
 
+// One planted bug per comprehension task. None is marked by a token of its own: finding it means
+// reading the code, not searching for a word.
+export const plantedBugs = {
+  allocation: { currency: "sek", fn: "allocateSEK" },
+  summary: { domain: "reserves", fn: "reservesSummary" },
+  query: { domain: "terminals", fn: "terminalsQuery" },
+} as const;
+
 const owners = ["platform", "identity", "payments", "messaging", "discovery", "risk", "growth", "data"];
 
 function title(word: string): string {
@@ -26,7 +34,7 @@ export function ledgerReports(): Record<string, string> {
       `// Daily ${domain} report. Amounts are integer cents.`,
       `export function ${domain}Summary(rows) {`,
       "  let total = 0;",
-      "  for (const row of rows) {",
+      `  for (const row of ${domain === plantedBugs.summary.domain ? "rows.slice(1)" : "rows"}) {`,
       "    total += row.cents;",
       "  }",
       `  console.log(\`${domain}: \${rows.length} rows, \${fmtCents(total)}\`);`,
@@ -97,7 +105,7 @@ export function moneyAppendix(): string {
       "  const total = weights.reduce((sum, weight) => sum + weight, 0);",
       "  const shares = weights.map((weight) => Math.floor((cents * weight) / total));",
       "  let left = cents - shares.reduce((sum, share) => sum + share, 0);",
-      "  for (let index = 0; left > 0; index = (index + 1) % shares.length, left -= 1) {",
+      `  for (let index = 0; left > ${currency === plantedBugs.allocation.currency ? "1" : "0"}; index = (index + 1) % shares.length, left -= 1) {`,
       "    shares[index] += 1;",
       "  }",
       "  return shares;",
@@ -141,7 +149,7 @@ export function toolkitModules(): Record<string, string> {
       `export function ${domain}Query(filters) {`,
       "  const params = new URLSearchParams();",
       "  for (const [key, value] of Object.entries(filters)) {",
-      "    if (value !== undefined) {",
+      `    if (${domain === plantedBugs.query.domain ? "value" : "value !== undefined"}) {`,
       "      params.set(key, String(value));",
       "    }",
       "  }",

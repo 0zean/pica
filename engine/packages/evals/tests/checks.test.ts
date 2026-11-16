@@ -20,10 +20,10 @@ function freshCopy(task: EvalTask, label: string): string {
 }
 
 describe("the C-10 suite", () => {
-  it("has at least 12 tasks with unique ids, at least three in each category", () => {
-    expect(evalSuite.length).toBeGreaterThanOrEqual(12);
+  it("has at least 15 tasks with unique ids, at least three in each category", () => {
+    expect(evalSuite.length).toBeGreaterThanOrEqual(15);
     expect(new Set(evalSuite.map((task) => task.id)).size).toBe(evalSuite.length);
-    const categories: TaskCategory[] = ["large-file-question", "test-scaffolding", "config-generation", "multi-file-edit"];
+    const categories: TaskCategory[] = ["large-file-question", "comprehension", "test-scaffolding", "config-generation", "multi-file-edit"];
     for (const category of categories) {
       expect(evalSuite.filter((task) => task.category === category).length, category).toBeGreaterThanOrEqual(3);
     }

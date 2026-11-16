@@ -2,7 +2,7 @@
   "suite": "C-10",
   "version": 1,
   "runtime": "fake",
-  "generatedAt": "2026-11-16T09:03:37.500Z",
+  "generatedAt": "2026-11-16T09:04:31.500Z",
   "profiles": [
     {
       "profile": "off",
@@ -13,16 +13,16 @@
         "worker": []
       },
       "totals": {
-        "tasks": 12,
-        "succeeded": 12,
-        "reasoningInputTokens": 288000,
-        "reasoningCachedInputTokens": 72000,
-        "reasoningOutputTokens": 4800,
+        "tasks": 15,
+        "succeeded": 15,
+        "reasoningInputTokens": 382500,
+        "reasoningCachedInputTokens": 90000,
+        "reasoningOutputTokens": 6000,
         "workerInputTokens": 0,
         "workerCachedInputTokens": 0,
         "workerOutputTokens": 0,
-        "credits": 95.76,
-        "wallTimeMs": 18000
+        "credits": 126.45,
+        "wallTimeMs": 22500
       },
       "tasks": [
         {
@@ -218,8 +218,8 @@
           ]
         },
         {
-          "taskId": "money-tests",
-          "category": "test-scaffolding",
+          "taskId": "allocation-bug",
+          "category": "comprehension",
           "successes": 3,
           "runCount": 3,
           "reasoningInputTokens": 21500,
@@ -242,7 +242,7 @@
           "runs": [
             {
               "succeeded": true,
-              "detail": "test/money.test.mjs has at least 4 cases, passes, and fails on a broken src/money.mjs",
+              "detail": "the answer names allocateSEK",
               "costDecisions": 0,
               "reasoningInputTokens": 21000,
               "reasoningCachedInputTokens": 6000,
@@ -255,7 +255,7 @@
             },
             {
               "succeeded": true,
-              "detail": "test/money.test.mjs has at least 4 cases, passes, and fails on a broken src/money.mjs",
+              "detail": "the answer names allocateSEK",
               "costDecisions": 0,
               "reasoningInputTokens": 21500,
               "reasoningCachedInputTokens": 6000,
@@ -268,7 +268,7 @@
             },
             {
               "succeeded": true,
-              "detail": "test/money.test.mjs has at least 4 cases, passes, and fails on a broken src/money.mjs",
+              "detail": "the answer names allocateSEK",
               "costDecisions": 0,
               "reasoningInputTokens": 22000,
               "reasoningCachedInputTokens": 6000,
@@ -282,8 +282,8 @@
           ]
         },
         {
-          "taskId": "slug-tests",
-          "category": "test-scaffolding",
+          "taskId": "report-total-bug",
+          "category": "comprehension",
           "successes": 3,
           "runCount": 3,
           "reasoningInputTokens": 22500,
@@ -306,7 +306,7 @@
           "runs": [
             {
               "succeeded": true,
-              "detail": "test/slug.test.mjs has at least 3 cases, passes, and fails on a broken src/slug.mjs",
+              "detail": "the answer names reservesSummary",
               "costDecisions": 0,
               "reasoningInputTokens": 22000,
               "reasoningCachedInputTokens": 6000,
@@ -319,7 +319,7 @@
             },
             {
               "succeeded": true,
-              "detail": "test/slug.test.mjs has at least 3 cases, passes, and fails on a broken src/slug.mjs",
+              "detail": "the answer names reservesSummary",
               "costDecisions": 0,
               "reasoningInputTokens": 22500,
               "reasoningCachedInputTokens": 6000,
@@ -332,7 +332,7 @@
             },
             {
               "succeeded": true,
-              "detail": "test/slug.test.mjs has at least 3 cases, passes, and fails on a broken src/slug.mjs",
+              "detail": "the answer names reservesSummary",
               "costDecisions": 0,
               "reasoningInputTokens": 23000,
               "reasoningCachedInputTokens": 6000,
@@ -346,8 +346,8 @@
           ]
         },
         {
-          "taskId": "backoff-tests",
-          "category": "test-scaffolding",
+          "taskId": "query-filter-bug",
+          "category": "comprehension",
           "successes": 3,
           "runCount": 3,
           "reasoningInputTokens": 23500,
@@ -370,7 +370,7 @@
           "runs": [
             {
               "succeeded": true,
-              "detail": "test/retry.test.mjs has at least 3 cases, passes, and fails on a broken src/retry.mjs",
+              "detail": "the answer names terminalsQuery",
               "costDecisions": 0,
               "reasoningInputTokens": 23000,
               "reasoningCachedInputTokens": 6000,
@@ -383,7 +383,7 @@
             },
             {
               "succeeded": true,
-              "detail": "test/retry.test.mjs has at least 3 cases, passes, and fails on a broken src/retry.mjs",
+              "detail": "the answer names terminalsQuery",
               "costDecisions": 0,
               "reasoningInputTokens": 23500,
               "reasoningCachedInputTokens": 6000,
@@ -396,7 +396,7 @@
             },
             {
               "succeeded": true,
-              "detail": "test/retry.test.mjs has at least 3 cases, passes, and fails on a broken src/retry.mjs",
+              "detail": "the answer names terminalsQuery",
               "costDecisions": 0,
               "reasoningInputTokens": 24000,
               "reasoningCachedInputTokens": 6000,
@@ -410,8 +410,8 @@
           ]
         },
         {
-          "taskId": "tsconfig",
-          "category": "config-generation",
+          "taskId": "money-tests",
+          "category": "test-scaffolding",
           "successes": 3,
           "runCount": 3,
           "reasoningInputTokens": 24500,
@@ -434,7 +434,7 @@
           "runs": [
             {
               "succeeded": true,
-              "detail": "tsconfig.json has the required options and includes src",
+              "detail": "test/money.test.mjs has at least 4 cases, passes, and fails on a broken src/money.mjs",
               "costDecisions": 0,
               "reasoningInputTokens": 24000,
               "reasoningCachedInputTokens": 6000,
@@ -447,7 +447,7 @@
             },
             {
               "succeeded": true,
-              "detail": "tsconfig.json has the required options and includes src",
+              "detail": "test/money.test.mjs has at least 4 cases, passes, and fails on a broken src/money.mjs",
               "costDecisions": 0,
               "reasoningInputTokens": 24500,
               "reasoningCachedInputTokens": 6000,
@@ -460,7 +460,7 @@
             },
             {
               "succeeded": true,
-              "detail": "tsconfig.json has the required options and includes src",
+              "detail": "test/money.test.mjs has at least 4 cases, passes, and fails on a broken src/money.mjs",
               "costDecisions": 0,
               "reasoningInputTokens": 25000,
               "reasoningCachedInputTokens": 6000,
@@ -474,8 +474,8 @@
           ]
         },
         {
-          "taskId": "prettier-config",
-          "category": "config-generation",
+          "taskId": "slug-tests",
+          "category": "test-scaffolding",
           "successes": 3,
           "runCount": 3,
           "reasoningInputTokens": 25500,
@@ -498,7 +498,7 @@
           "runs": [
             {
               "succeeded": true,
-              "detail": ".prettierrc.json matches the code style",
+              "detail": "test/slug.test.mjs has at least 3 cases, passes, and fails on a broken src/slug.mjs",
               "costDecisions": 0,
               "reasoningInputTokens": 25000,
               "reasoningCachedInputTokens": 6000,
@@ -511,7 +511,7 @@
             },
             {
               "succeeded": true,
-              "detail": ".prettierrc.json matches the code style",
+              "detail": "test/slug.test.mjs has at least 3 cases, passes, and fails on a broken src/slug.mjs",
               "costDecisions": 0,
               "reasoningInputTokens": 25500,
               "reasoningCachedInputTokens": 6000,
@@ -524,7 +524,7 @@
             },
             {
               "succeeded": true,
-              "detail": ".prettierrc.json matches the code style",
+              "detail": "test/slug.test.mjs has at least 3 cases, passes, and fails on a broken src/slug.mjs",
               "costDecisions": 0,
               "reasoningInputTokens": 26000,
               "reasoningCachedInputTokens": 6000,
@@ -538,8 +538,8 @@
           ]
         },
         {
-          "taskId": "service-ports",
-          "category": "config-generation",
+          "taskId": "backoff-tests",
+          "category": "test-scaffolding",
           "successes": 3,
           "runCount": 3,
           "reasoningInputTokens": 26500,
@@ -562,7 +562,7 @@
           "runs": [
             {
               "succeeded": true,
-              "detail": "config/ports.json maps every service to its port",
+              "detail": "test/retry.test.mjs has at least 3 cases, passes, and fails on a broken src/retry.mjs",
               "costDecisions": 0,
               "reasoningInputTokens": 26000,
               "reasoningCachedInputTokens": 6000,
@@ -575,7 +575,7 @@
             },
             {
               "succeeded": true,
-              "detail": "config/ports.json maps every service to its port",
+              "detail": "test/retry.test.mjs has at least 3 cases, passes, and fails on a broken src/retry.mjs",
               "costDecisions": 0,
               "reasoningInputTokens": 26500,
               "reasoningCachedInputTokens": 6000,
@@ -588,7 +588,7 @@
             },
             {
               "succeeded": true,
-              "detail": "config/ports.json maps every service to its port",
+              "detail": "test/retry.test.mjs has at least 3 cases, passes, and fails on a broken src/retry.mjs",
               "costDecisions": 0,
               "reasoningInputTokens": 27000,
               "reasoningCachedInputTokens": 6000,
@@ -602,8 +602,8 @@
           ]
         },
         {
-          "taskId": "rename-fmt-cents",
-          "category": "multi-file-edit",
+          "taskId": "tsconfig",
+          "category": "config-generation",
           "successes": 3,
           "runCount": 3,
           "reasoningInputTokens": 27500,
@@ -626,7 +626,7 @@
           "runs": [
             {
               "succeeded": true,
-              "detail": "fmtCents is renamed to formatCents everywhere, every module loads, and the tests pass",
+              "detail": "tsconfig.json has the required options and includes src",
               "costDecisions": 0,
               "reasoningInputTokens": 27000,
               "reasoningCachedInputTokens": 6000,
@@ -639,7 +639,7 @@
             },
             {
               "succeeded": true,
-              "detail": "fmtCents is renamed to formatCents everywhere, every module loads, and the tests pass",
+              "detail": "tsconfig.json has the required options and includes src",
               "costDecisions": 0,
               "reasoningInputTokens": 27500,
               "reasoningCachedInputTokens": 6000,
@@ -652,7 +652,7 @@
             },
             {
               "succeeded": true,
-              "detail": "fmtCents is renamed to formatCents everywhere, every module loads, and the tests pass",
+              "detail": "tsconfig.json has the required options and includes src",
               "costDecisions": 0,
               "reasoningInputTokens": 28000,
               "reasoningCachedInputTokens": 6000,
@@ -666,8 +666,8 @@
           ]
         },
         {
-          "taskId": "console-to-logger",
-          "category": "multi-file-edit",
+          "taskId": "prettier-config",
+          "category": "config-generation",
           "successes": 3,
           "runCount": 3,
           "reasoningInputTokens": 28500,
@@ -690,7 +690,7 @@
           "runs": [
             {
               "succeeded": true,
-              "detail": "console.log is replaced by logger.info, every module loads, and the tests pass",
+              "detail": ".prettierrc.json matches the code style",
               "costDecisions": 0,
               "reasoningInputTokens": 28000,
               "reasoningCachedInputTokens": 6000,
@@ -703,7 +703,7 @@
             },
             {
               "succeeded": true,
-              "detail": "console.log is replaced by logger.info, every module loads, and the tests pass",
+              "detail": ".prettierrc.json matches the code style",
               "costDecisions": 0,
               "reasoningInputTokens": 28500,
               "reasoningCachedInputTokens": 6000,
@@ -716,7 +716,7 @@
             },
             {
               "succeeded": true,
-              "detail": "console.log is replaced by logger.info, every module loads, and the tests pass",
+              "detail": ".prettierrc.json matches the code style",
               "costDecisions": 0,
               "reasoningInputTokens": 29000,
               "reasoningCachedInputTokens": 6000,
@@ -730,8 +730,8 @@
           ]
         },
         {
-          "taskId": "license-headers",
-          "category": "multi-file-edit",
+          "taskId": "service-ports",
+          "category": "config-generation",
           "successes": 3,
           "runCount": 3,
           "reasoningInputTokens": 29500,
@@ -754,7 +754,7 @@
           "runs": [
             {
               "succeeded": true,
-              "detail": "every module starts with the license line and is otherwise unchanged",
+              "detail": "config/ports.json maps every service to its port",
               "costDecisions": 0,
               "reasoningInputTokens": 29000,
               "reasoningCachedInputTokens": 6000,
@@ -767,7 +767,7 @@
             },
             {
               "succeeded": true,
-              "detail": "every module starts with the license line and is otherwise unchanged",
+              "detail": "config/ports.json maps every service to its port",
               "costDecisions": 0,
               "reasoningInputTokens": 29500,
               "reasoningCachedInputTokens": 6000,
@@ -780,7 +780,7 @@
             },
             {
               "succeeded": true,
-              "detail": "every module starts with the license line and is otherwise unchanged",
+              "detail": "config/ports.json maps every service to its port",
               "costDecisions": 0,
               "reasoningInputTokens": 30000,
               "reasoningCachedInputTokens": 6000,
@@ -789,6 +789,198 @@
               "workerCachedInputTokens": 0,
               "workerOutputTokens": 0,
               "credits": 9.78,
+              "wallTimeMs": 1500
+            }
+          ]
+        },
+        {
+          "taskId": "rename-fmt-cents",
+          "category": "multi-file-edit",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 30500,
+          "reasoningCachedInputTokens": 6000,
+          "reasoningOutputTokens": 400,
+          "workerInputTokens": 0,
+          "workerCachedInputTokens": 0,
+          "workerOutputTokens": 0,
+          "credits": 9.93,
+          "wallTimeMs": 1500,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 36000,
+            "max": 37000
+          },
+          "creditsSpread": {
+            "min": 9.78,
+            "max": 10.08
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "fmtCents is renamed to formatCents everywhere, every module loads, and the tests pass",
+              "costDecisions": 0,
+              "reasoningInputTokens": 30000,
+              "reasoningCachedInputTokens": 6000,
+              "reasoningOutputTokens": 400,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 9.78,
+              "wallTimeMs": 1500
+            },
+            {
+              "succeeded": true,
+              "detail": "fmtCents is renamed to formatCents everywhere, every module loads, and the tests pass",
+              "costDecisions": 0,
+              "reasoningInputTokens": 30500,
+              "reasoningCachedInputTokens": 6000,
+              "reasoningOutputTokens": 400,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 9.93,
+              "wallTimeMs": 1500
+            },
+            {
+              "succeeded": true,
+              "detail": "fmtCents is renamed to formatCents everywhere, every module loads, and the tests pass",
+              "costDecisions": 0,
+              "reasoningInputTokens": 31000,
+              "reasoningCachedInputTokens": 6000,
+              "reasoningOutputTokens": 400,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 10.08,
+              "wallTimeMs": 1500
+            }
+          ]
+        },
+        {
+          "taskId": "console-to-logger",
+          "category": "multi-file-edit",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 31500,
+          "reasoningCachedInputTokens": 6000,
+          "reasoningOutputTokens": 400,
+          "workerInputTokens": 0,
+          "workerCachedInputTokens": 0,
+          "workerOutputTokens": 0,
+          "credits": 10.23,
+          "wallTimeMs": 1500,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 37000,
+            "max": 38000
+          },
+          "creditsSpread": {
+            "min": 10.08,
+            "max": 10.38
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "console.log is replaced by logger.info, every module loads, and the tests pass",
+              "costDecisions": 0,
+              "reasoningInputTokens": 31000,
+              "reasoningCachedInputTokens": 6000,
+              "reasoningOutputTokens": 400,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 10.08,
+              "wallTimeMs": 1500
+            },
+            {
+              "succeeded": true,
+              "detail": "console.log is replaced by logger.info, every module loads, and the tests pass",
+              "costDecisions": 0,
+              "reasoningInputTokens": 31500,
+              "reasoningCachedInputTokens": 6000,
+              "reasoningOutputTokens": 400,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 10.23,
+              "wallTimeMs": 1500
+            },
+            {
+              "succeeded": true,
+              "detail": "console.log is replaced by logger.info, every module loads, and the tests pass",
+              "costDecisions": 0,
+              "reasoningInputTokens": 32000,
+              "reasoningCachedInputTokens": 6000,
+              "reasoningOutputTokens": 400,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 10.38,
+              "wallTimeMs": 1500
+            }
+          ]
+        },
+        {
+          "taskId": "license-headers",
+          "category": "multi-file-edit",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 32500,
+          "reasoningCachedInputTokens": 6000,
+          "reasoningOutputTokens": 400,
+          "workerInputTokens": 0,
+          "workerCachedInputTokens": 0,
+          "workerOutputTokens": 0,
+          "credits": 10.53,
+          "wallTimeMs": 1500,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 38000,
+            "max": 39000
+          },
+          "creditsSpread": {
+            "min": 10.38,
+            "max": 10.68
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "every module starts with the license line and is otherwise unchanged",
+              "costDecisions": 0,
+              "reasoningInputTokens": 32000,
+              "reasoningCachedInputTokens": 6000,
+              "reasoningOutputTokens": 400,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 10.38,
+              "wallTimeMs": 1500
+            },
+            {
+              "succeeded": true,
+              "detail": "every module starts with the license line and is otherwise unchanged",
+              "costDecisions": 0,
+              "reasoningInputTokens": 32500,
+              "reasoningCachedInputTokens": 6000,
+              "reasoningOutputTokens": 400,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 10.53,
+              "wallTimeMs": 1500
+            },
+            {
+              "succeeded": true,
+              "detail": "every module starts with the license line and is otherwise unchanged",
+              "costDecisions": 0,
+              "reasoningInputTokens": 33000,
+              "reasoningCachedInputTokens": 6000,
+              "reasoningOutputTokens": 400,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 10.68,
               "wallTimeMs": 1500
             }
           ]
@@ -806,16 +998,16 @@
         ]
       },
       "totals": {
-        "tasks": 12,
-        "succeeded": 11.67,
-        "reasoningInputTokens": 42600,
-        "reasoningCachedInputTokens": 24000,
-        "reasoningOutputTokens": 1800,
-        "workerInputTokens": 258000,
-        "workerCachedInputTokens": 12000,
-        "workerOutputTokens": 6000,
-        "credits": 23.43,
-        "wallTimeMs": 18000
+        "tasks": 15,
+        "succeeded": 14.67,
+        "reasoningInputTokens": 55500,
+        "reasoningCachedInputTokens": 30000,
+        "reasoningOutputTokens": 2250,
+        "workerInputTokens": 345000,
+        "workerCachedInputTokens": 15000,
+        "workerOutputTokens": 7500,
+        "credits": 30.525,
+        "wallTimeMs": 22500
       },
       "tasks": [
         {
@@ -1011,8 +1203,8 @@
           ]
         },
         {
-          "taskId": "money-tests",
-          "category": "test-scaffolding",
+          "taskId": "allocation-bug",
+          "category": "comprehension",
           "successes": 3,
           "runCount": 3,
           "reasoningInputTokens": 3300,
@@ -1035,7 +1227,7 @@
           "runs": [
             {
               "succeeded": true,
-              "detail": "test/money.test.mjs has at least 4 cases, passes, and fails on a broken src/money.mjs",
+              "detail": "the answer names allocateSEK",
               "costDecisions": 0,
               "reasoningInputTokens": 2800,
               "reasoningCachedInputTokens": 2000,
@@ -1048,7 +1240,7 @@
             },
             {
               "succeeded": true,
-              "detail": "test/money.test.mjs has at least 4 cases, passes, and fails on a broken src/money.mjs",
+              "detail": "the answer names allocateSEK",
               "costDecisions": 0,
               "reasoningInputTokens": 3300,
               "reasoningCachedInputTokens": 2000,
@@ -1061,7 +1253,7 @@
             },
             {
               "succeeded": true,
-              "detail": "test/money.test.mjs has at least 4 cases, passes, and fails on a broken src/money.mjs",
+              "detail": "the answer names allocateSEK",
               "costDecisions": 0,
               "reasoningInputTokens": 3800,
               "reasoningCachedInputTokens": 2000,
@@ -1075,8 +1267,8 @@
           ]
         },
         {
-          "taskId": "slug-tests",
-          "category": "test-scaffolding",
+          "taskId": "report-total-bug",
+          "category": "comprehension",
           "successes": 3,
           "runCount": 3,
           "reasoningInputTokens": 3400,
@@ -1099,7 +1291,7 @@
           "runs": [
             {
               "succeeded": true,
-              "detail": "test/slug.test.mjs has at least 3 cases, passes, and fails on a broken src/slug.mjs",
+              "detail": "the answer names reservesSummary",
               "costDecisions": 0,
               "reasoningInputTokens": 2900,
               "reasoningCachedInputTokens": 2000,
@@ -1112,7 +1304,7 @@
             },
             {
               "succeeded": true,
-              "detail": "test/slug.test.mjs has at least 3 cases, passes, and fails on a broken src/slug.mjs",
+              "detail": "the answer names reservesSummary",
               "costDecisions": 0,
               "reasoningInputTokens": 3400,
               "reasoningCachedInputTokens": 2000,
@@ -1125,7 +1317,7 @@
             },
             {
               "succeeded": true,
-              "detail": "test/slug.test.mjs has at least 3 cases, passes, and fails on a broken src/slug.mjs",
+              "detail": "the answer names reservesSummary",
               "costDecisions": 0,
               "reasoningInputTokens": 3900,
               "reasoningCachedInputTokens": 2000,
@@ -1139,8 +1331,8 @@
           ]
         },
         {
-          "taskId": "backoff-tests",
-          "category": "test-scaffolding",
+          "taskId": "query-filter-bug",
+          "category": "comprehension",
           "successes": 3,
           "runCount": 3,
           "reasoningInputTokens": 3500,
@@ -1163,7 +1355,7 @@
           "runs": [
             {
               "succeeded": true,
-              "detail": "test/retry.test.mjs has at least 3 cases, passes, and fails on a broken src/retry.mjs",
+              "detail": "the answer names terminalsQuery",
               "costDecisions": 0,
               "reasoningInputTokens": 3000,
               "reasoningCachedInputTokens": 2000,
@@ -1176,7 +1368,7 @@
             },
             {
               "succeeded": true,
-              "detail": "test/retry.test.mjs has at least 3 cases, passes, and fails on a broken src/retry.mjs",
+              "detail": "the answer names terminalsQuery",
               "costDecisions": 0,
               "reasoningInputTokens": 3500,
               "reasoningCachedInputTokens": 2000,
@@ -1189,7 +1381,7 @@
             },
             {
               "succeeded": true,
-              "detail": "test/retry.test.mjs has at least 3 cases, passes, and fails on a broken src/retry.mjs",
+              "detail": "the answer names terminalsQuery",
               "costDecisions": 0,
               "reasoningInputTokens": 4000,
               "reasoningCachedInputTokens": 2000,
@@ -1203,8 +1395,8 @@
           ]
         },
         {
-          "taskId": "tsconfig",
-          "category": "config-generation",
+          "taskId": "money-tests",
+          "category": "test-scaffolding",
           "successes": 3,
           "runCount": 3,
           "reasoningInputTokens": 3600,
@@ -1227,7 +1419,7 @@
           "runs": [
             {
               "succeeded": true,
-              "detail": "tsconfig.json has the required options and includes src",
+              "detail": "test/money.test.mjs has at least 4 cases, passes, and fails on a broken src/money.mjs",
               "costDecisions": 0,
               "reasoningInputTokens": 3100,
               "reasoningCachedInputTokens": 2000,
@@ -1240,7 +1432,7 @@
             },
             {
               "succeeded": true,
-              "detail": "tsconfig.json has the required options and includes src",
+              "detail": "test/money.test.mjs has at least 4 cases, passes, and fails on a broken src/money.mjs",
               "costDecisions": 0,
               "reasoningInputTokens": 3600,
               "reasoningCachedInputTokens": 2000,
@@ -1253,7 +1445,7 @@
             },
             {
               "succeeded": true,
-              "detail": "tsconfig.json has the required options and includes src",
+              "detail": "test/money.test.mjs has at least 4 cases, passes, and fails on a broken src/money.mjs",
               "costDecisions": 0,
               "reasoningInputTokens": 4100,
               "reasoningCachedInputTokens": 2000,
@@ -1267,9 +1459,9 @@
           ]
         },
         {
-          "taskId": "prettier-config",
-          "category": "config-generation",
-          "successes": 2,
+          "taskId": "slug-tests",
+          "category": "test-scaffolding",
+          "successes": 3,
           "runCount": 3,
           "reasoningInputTokens": 3700,
           "reasoningCachedInputTokens": 2000,
@@ -1291,7 +1483,7 @@
           "runs": [
             {
               "succeeded": true,
-              "detail": ".prettierrc.json matches the code style",
+              "detail": "test/slug.test.mjs has at least 3 cases, passes, and fails on a broken src/slug.mjs",
               "costDecisions": 0,
               "reasoningInputTokens": 3200,
               "reasoningCachedInputTokens": 2000,
@@ -1303,8 +1495,8 @@
               "wallTimeMs": 1500
             },
             {
-              "succeeded": false,
-              "detail": ".prettierrc.json is missing or is not a JSON object",
+              "succeeded": true,
+              "detail": "test/slug.test.mjs has at least 3 cases, passes, and fails on a broken src/slug.mjs",
               "costDecisions": 0,
               "reasoningInputTokens": 3700,
               "reasoningCachedInputTokens": 2000,
@@ -1317,7 +1509,7 @@
             },
             {
               "succeeded": true,
-              "detail": ".prettierrc.json matches the code style",
+              "detail": "test/slug.test.mjs has at least 3 cases, passes, and fails on a broken src/slug.mjs",
               "costDecisions": 0,
               "reasoningInputTokens": 4200,
               "reasoningCachedInputTokens": 2000,
@@ -1331,8 +1523,8 @@
           ]
         },
         {
-          "taskId": "service-ports",
-          "category": "config-generation",
+          "taskId": "backoff-tests",
+          "category": "test-scaffolding",
           "successes": 3,
           "runCount": 3,
           "reasoningInputTokens": 3800,
@@ -1355,7 +1547,7 @@
           "runs": [
             {
               "succeeded": true,
-              "detail": "config/ports.json maps every service to its port",
+              "detail": "test/retry.test.mjs has at least 3 cases, passes, and fails on a broken src/retry.mjs",
               "costDecisions": 0,
               "reasoningInputTokens": 3300,
               "reasoningCachedInputTokens": 2000,
@@ -1368,7 +1560,7 @@
             },
             {
               "succeeded": true,
-              "detail": "config/ports.json maps every service to its port",
+              "detail": "test/retry.test.mjs has at least 3 cases, passes, and fails on a broken src/retry.mjs",
               "costDecisions": 0,
               "reasoningInputTokens": 3800,
               "reasoningCachedInputTokens": 2000,
@@ -1381,7 +1573,7 @@
             },
             {
               "succeeded": true,
-              "detail": "config/ports.json maps every service to its port",
+              "detail": "test/retry.test.mjs has at least 3 cases, passes, and fails on a broken src/retry.mjs",
               "costDecisions": 0,
               "reasoningInputTokens": 4300,
               "reasoningCachedInputTokens": 2000,
@@ -1395,8 +1587,8 @@
           ]
         },
         {
-          "taskId": "rename-fmt-cents",
-          "category": "multi-file-edit",
+          "taskId": "tsconfig",
+          "category": "config-generation",
           "successes": 3,
           "runCount": 3,
           "reasoningInputTokens": 3900,
@@ -1419,7 +1611,7 @@
           "runs": [
             {
               "succeeded": true,
-              "detail": "fmtCents is renamed to formatCents everywhere, every module loads, and the tests pass",
+              "detail": "tsconfig.json has the required options and includes src",
               "costDecisions": 0,
               "reasoningInputTokens": 3400,
               "reasoningCachedInputTokens": 2000,
@@ -1432,7 +1624,7 @@
             },
             {
               "succeeded": true,
-              "detail": "fmtCents is renamed to formatCents everywhere, every module loads, and the tests pass",
+              "detail": "tsconfig.json has the required options and includes src",
               "costDecisions": 0,
               "reasoningInputTokens": 3900,
               "reasoningCachedInputTokens": 2000,
@@ -1445,7 +1637,7 @@
             },
             {
               "succeeded": true,
-              "detail": "fmtCents is renamed to formatCents everywhere, every module loads, and the tests pass",
+              "detail": "tsconfig.json has the required options and includes src",
               "costDecisions": 0,
               "reasoningInputTokens": 4400,
               "reasoningCachedInputTokens": 2000,
@@ -1459,9 +1651,9 @@
           ]
         },
         {
-          "taskId": "console-to-logger",
-          "category": "multi-file-edit",
-          "successes": 3,
+          "taskId": "prettier-config",
+          "category": "config-generation",
+          "successes": 2,
           "runCount": 3,
           "reasoningInputTokens": 4000,
           "reasoningCachedInputTokens": 2000,
@@ -1483,7 +1675,7 @@
           "runs": [
             {
               "succeeded": true,
-              "detail": "console.log is replaced by logger.info, every module loads, and the tests pass",
+              "detail": ".prettierrc.json matches the code style",
               "costDecisions": 0,
               "reasoningInputTokens": 3500,
               "reasoningCachedInputTokens": 2000,
@@ -1495,8 +1687,8 @@
               "wallTimeMs": 1500
             },
             {
-              "succeeded": true,
-              "detail": "console.log is replaced by logger.info, every module loads, and the tests pass",
+              "succeeded": false,
+              "detail": ".prettierrc.json is missing or is not a JSON object",
               "costDecisions": 0,
               "reasoningInputTokens": 4000,
               "reasoningCachedInputTokens": 2000,
@@ -1509,7 +1701,7 @@
             },
             {
               "succeeded": true,
-              "detail": "console.log is replaced by logger.info, every module loads, and the tests pass",
+              "detail": ".prettierrc.json matches the code style",
               "costDecisions": 0,
               "reasoningInputTokens": 4500,
               "reasoningCachedInputTokens": 2000,
@@ -1523,8 +1715,8 @@
           ]
         },
         {
-          "taskId": "license-headers",
-          "category": "multi-file-edit",
+          "taskId": "service-ports",
+          "category": "config-generation",
           "successes": 3,
           "runCount": 3,
           "reasoningInputTokens": 4100,
@@ -1547,7 +1739,7 @@
           "runs": [
             {
               "succeeded": true,
-              "detail": "every module starts with the license line and is otherwise unchanged",
+              "detail": "config/ports.json maps every service to its port",
               "costDecisions": 0,
               "reasoningInputTokens": 3600,
               "reasoningCachedInputTokens": 2000,
@@ -1560,7 +1752,7 @@
             },
             {
               "succeeded": true,
-              "detail": "every module starts with the license line and is otherwise unchanged",
+              "detail": "config/ports.json maps every service to its port",
               "costDecisions": 0,
               "reasoningInputTokens": 4100,
               "reasoningCachedInputTokens": 2000,
@@ -1573,7 +1765,7 @@
             },
             {
               "succeeded": true,
-              "detail": "every module starts with the license line and is otherwise unchanged",
+              "detail": "config/ports.json maps every service to its port",
               "costDecisions": 0,
               "reasoningInputTokens": 4600,
               "reasoningCachedInputTokens": 2000,
@@ -1585,6 +1777,198 @@
               "wallTimeMs": 1500
             }
           ]
+        },
+        {
+          "taskId": "rename-fmt-cents",
+          "category": "multi-file-edit",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 4200,
+          "reasoningCachedInputTokens": 2000,
+          "reasoningOutputTokens": 150,
+          "workerInputTokens": 28000,
+          "workerCachedInputTokens": 1000,
+          "workerOutputTokens": 500,
+          "credits": 2.31,
+          "wallTimeMs": 1500,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 5700,
+            "max": 6700
+          },
+          "creditsSpread": {
+            "min": 2.16,
+            "max": 2.46
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "fmtCents is renamed to formatCents everywhere, every module loads, and the tests pass",
+              "costDecisions": 0,
+              "reasoningInputTokens": 3700,
+              "reasoningCachedInputTokens": 2000,
+              "reasoningOutputTokens": 150,
+              "workerInputTokens": 28000,
+              "workerCachedInputTokens": 1000,
+              "workerOutputTokens": 500,
+              "credits": 2.16,
+              "wallTimeMs": 1500
+            },
+            {
+              "succeeded": true,
+              "detail": "fmtCents is renamed to formatCents everywhere, every module loads, and the tests pass",
+              "costDecisions": 0,
+              "reasoningInputTokens": 4200,
+              "reasoningCachedInputTokens": 2000,
+              "reasoningOutputTokens": 150,
+              "workerInputTokens": 28000,
+              "workerCachedInputTokens": 1000,
+              "workerOutputTokens": 500,
+              "credits": 2.31,
+              "wallTimeMs": 1500
+            },
+            {
+              "succeeded": true,
+              "detail": "fmtCents is renamed to formatCents everywhere, every module loads, and the tests pass",
+              "costDecisions": 0,
+              "reasoningInputTokens": 4700,
+              "reasoningCachedInputTokens": 2000,
+              "reasoningOutputTokens": 150,
+              "workerInputTokens": 28000,
+              "workerCachedInputTokens": 1000,
+              "workerOutputTokens": 500,
+              "credits": 2.46,
+              "wallTimeMs": 1500
+            }
+          ]
+        },
+        {
+          "taskId": "console-to-logger",
+          "category": "multi-file-edit",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 4300,
+          "reasoningCachedInputTokens": 2000,
+          "reasoningOutputTokens": 150,
+          "workerInputTokens": 29000,
+          "workerCachedInputTokens": 1000,
+          "workerOutputTokens": 500,
+          "credits": 2.365,
+          "wallTimeMs": 1500,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 5800,
+            "max": 6800
+          },
+          "creditsSpread": {
+            "min": 2.215,
+            "max": 2.515
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "console.log is replaced by logger.info, every module loads, and the tests pass",
+              "costDecisions": 0,
+              "reasoningInputTokens": 3800,
+              "reasoningCachedInputTokens": 2000,
+              "reasoningOutputTokens": 150,
+              "workerInputTokens": 29000,
+              "workerCachedInputTokens": 1000,
+              "workerOutputTokens": 500,
+              "credits": 2.215,
+              "wallTimeMs": 1500
+            },
+            {
+              "succeeded": true,
+              "detail": "console.log is replaced by logger.info, every module loads, and the tests pass",
+              "costDecisions": 0,
+              "reasoningInputTokens": 4300,
+              "reasoningCachedInputTokens": 2000,
+              "reasoningOutputTokens": 150,
+              "workerInputTokens": 29000,
+              "workerCachedInputTokens": 1000,
+              "workerOutputTokens": 500,
+              "credits": 2.365,
+              "wallTimeMs": 1500
+            },
+            {
+              "succeeded": true,
+              "detail": "console.log is replaced by logger.info, every module loads, and the tests pass",
+              "costDecisions": 0,
+              "reasoningInputTokens": 4800,
+              "reasoningCachedInputTokens": 2000,
+              "reasoningOutputTokens": 150,
+              "workerInputTokens": 29000,
+              "workerCachedInputTokens": 1000,
+              "workerOutputTokens": 500,
+              "credits": 2.515,
+              "wallTimeMs": 1500
+            }
+          ]
+        },
+        {
+          "taskId": "license-headers",
+          "category": "multi-file-edit",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 4400,
+          "reasoningCachedInputTokens": 2000,
+          "reasoningOutputTokens": 150,
+          "workerInputTokens": 30000,
+          "workerCachedInputTokens": 1000,
+          "workerOutputTokens": 500,
+          "credits": 2.42,
+          "wallTimeMs": 1500,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 5900,
+            "max": 6900
+          },
+          "creditsSpread": {
+            "min": 2.27,
+            "max": 2.57
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "every module starts with the license line and is otherwise unchanged",
+              "costDecisions": 0,
+              "reasoningInputTokens": 3900,
+              "reasoningCachedInputTokens": 2000,
+              "reasoningOutputTokens": 150,
+              "workerInputTokens": 30000,
+              "workerCachedInputTokens": 1000,
+              "workerOutputTokens": 500,
+              "credits": 2.27,
+              "wallTimeMs": 1500
+            },
+            {
+              "succeeded": true,
+              "detail": "every module starts with the license line and is otherwise unchanged",
+              "costDecisions": 0,
+              "reasoningInputTokens": 4400,
+              "reasoningCachedInputTokens": 2000,
+              "reasoningOutputTokens": 150,
+              "workerInputTokens": 30000,
+              "workerCachedInputTokens": 1000,
+              "workerOutputTokens": 500,
+              "credits": 2.42,
+              "wallTimeMs": 1500
+            },
+            {
+              "succeeded": true,
+              "detail": "every module starts with the license line and is otherwise unchanged",
+              "costDecisions": 0,
+              "reasoningInputTokens": 4900,
+              "reasoningCachedInputTokens": 2000,
+              "reasoningOutputTokens": 150,
+              "workerInputTokens": 30000,
+              "workerCachedInputTokens": 1000,
+              "workerOutputTokens": 500,
+              "credits": 2.57,
+              "wallTimeMs": 1500
+            }
+          ]
         }
       ]
     }
@@ -1592,9 +1976,9 @@
   "comparison": {
     "baseline": "off",
     "candidate": "balanced",
-    "baselineReasoningInput": 360000,
-    "candidateReasoningInput": 66600,
-    "reasoningInputReduction": 0.815,
+    "baselineReasoningInput": 472500,
+    "candidateReasoningInput": 85500,
+    "reasoningInputReduction": 0.819,
     "successDelta": -0.33,
     "tiersDistinct": true,
     "target": {

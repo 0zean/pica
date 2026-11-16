@@ -677,7 +677,8 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
     | `balanced` | 126,534 | 9 | 22 | 1.1379 |
 
     - Delegation no longer adds main turns. But the 13 worker calls add credits (+31%) and wall time (21 s against 60 s), and save the main agent nothing, because Copilot's `view` limit already keeps big files out of its context.
-    - The target is awaiting the owner's decision. `EVAL_KEEP=1`, `EVAL_PROFILES` and `EVAL_TASKS` keep a run's data or narrow it for inspection.
+    - The target is awaiting the owner's decision.
+  - The owner chose to add comprehension tasks first (2026-11-16). There are three, each finding a planted bug that no searchable word marks, in `money.mjs` (92 KB), the 32 report modules, or the 36 toolkit modules. They are the work the main agent can't shortcut with `grep`, and so where delegation should pay. The suite now has 15 tasks. `EVAL_KEEP=1`, `EVAL_PROFILES` and `EVAL_TASKS` keep a run's data or narrow it for inspection.
 - Verify:
   - [x] Against FakeRuntime the harness produces exactly the expected report.
   - [x] Each task's success check passes on a reference solution and fails on an empty one.

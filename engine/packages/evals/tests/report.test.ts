@@ -36,7 +36,7 @@ function steps(task: EvalTask, index: number, run: TaskRun): unknown[] {
   if (profile === "off") {
     return [...read, { type: "usage", model: "model-r", inputTokens: 18000 + index * 1000 + extra, cachedInputTokens: 6000, outputTokens: 400 }];
   }
-  const agentName = task.category === "large-file-question" ? "bulk-reader" : "code-writer";
+  const agentName = task.category === "large-file-question" || task.category === "comprehension" ? "bulk-reader" : "code-writer";
   return [
     ...read,
     { type: "usage", model: "model-r", inputTokens: 2500 + index * 100 + extra, cachedInputTokens: 2000, outputTokens: 150 },

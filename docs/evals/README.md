@@ -1,6 +1,6 @@
 # Eval reports (C-10)
 
-The eval harness (`engine/packages/evals`) runs a fixed suite of 12 tasks once per routing profile and
+The eval harness (`engine/packages/evals`) runs a fixed suite of 15 tasks once per routing profile and
 writes a JSON report and a Markdown report. It measures reasoning-tier input tokens, credits, wall time,
 and task success. PLAN.md §5.6 describes the measurement.
 
@@ -34,6 +34,16 @@ are:
 | 35 ledger modules (`src/reports/` and others) | 90 KB | `rename-fmt-cents`, `console-to-logger` |
 | 36 toolkit modules | 145 KB | `license-headers`, `prettier-config` |
 
+**Comprehension tasks.** These were added after the 2026-11-16 smoke runs. Those runs showed that
+the large-file questions and the edit tasks never put big content into the main agent's context, in
+either profile. Copilot's `view` refuses whole reads of large files, and the agent searches or uses
+`sed` instead.
+
+So each comprehension task plants one bug, defined in `plantedBugs` in `generated-modules.ts`, in a
+large body of code: `money.mjs` (92 KB), the 32 report modules, and the 36 toolkit modules. No word
+marks the bug, so it can only be found by reading the code. Under `off` the main agent reads it;
+under `balanced` it can hand the reading to `bulk-reader`.
+
 **What size can't control.** A model can still answer a needle question with `grep`, or make a
 mechanical edit with one `sed`, in either profile. Size makes delegation pay only where the main
 agent really has to hold the content.
@@ -41,6 +51,7 @@ agent really has to hold the content.
 | Category | Tasks | Success check |
 |---|---|---|
 | Large-file question | `schema-column-owner`, `settlement-log-error`, `error-code-value` | The main agent's last message names the needle |
+| Comprehension | `allocation-bug`, `report-total-bug`, `query-filter-bug` | The main agent's last message names the function with the planted bug |
 | Test scaffolding | `money-tests`, `slug-tests`, `backoff-tests` | The new test file has enough cases. It passes on the code and fails on a broken copy of it |
 | Config generation | `tsconfig`, `prettier-config`, `service-ports` | The file parses and has the required settings |
 | Multi-file edit | `rename-fmt-cents`, `console-to-logger`, `license-headers` | The change is complete, nothing else changed, the modules load and the tests pass |

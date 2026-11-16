@@ -1,7 +1,7 @@
 import type { CheckResult } from "../check-helpers.ts";
 import type { FixtureRepoName } from "../fixture-repos.ts";
 
-export type TaskCategory = "large-file-question" | "test-scaffolding" | "config-generation" | "multi-file-edit";
+export type TaskCategory = "large-file-question" | "comprehension" | "test-scaffolding" | "config-generation" | "multi-file-edit";
 
 export interface CheckContext {
   // The working copy after the session.
