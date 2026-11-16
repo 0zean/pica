@@ -630,7 +630,12 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
   - A second smoke run on Copilot Pro (2026-11-16) resolved the tiers to different models: reasoning `claude-haiku-4.5`, worker `gpt-6-luna`.
     - The large-file question worked: the gate denied `grep` on `db/schema.sql`, the main agent delegated to `bulk-reader` on the worker model, and reasoning input fell from 118k to 49k.
     - The write task did not delegate: under `balanced` the main agent still had `create`. The session service passes only `customAgents`. The profile's main-agent `excludedTools` and the delegation guide are not composed (the C-07 deferral). Until they are, the write tasks cannot show a saving, and the full run would miss the target for that reason, not because of the thresholds.
-  - The full run waits for that. `EVAL_KEEP=1`, `EVAL_PROFILES` and `EVAL_TASKS` keep a run's data or narrow it for inspection.
+  - A third smoke run on Pro (2026-11-16), after #79 wired the main agent's excluded tools and the guide:
+    - `money-tests` under `balanced`: the main agent no longer had `create`. It still did not delegate. It wrote the test file through `bash` (`cat > test/money.test.mjs`).
+    - `schema-column-owner` delegated to `bulk-reader` again.
+    - Result: 11% fewer reasoning-tier input tokens.
+    - Every main-agent call carries about 16k cached prompt tokens. So a task saves only when delegating keeps file contents out of the main context, and the main agent's `grep` and ranged reads already do that.
+  - The full run waits for a decision: route shell file writes under `balanced` (for example, deny a shell redirect into a write root, naming `code-writer`), or change the suite or the target. `EVAL_KEEP=1`, `EVAL_PROFILES` and `EVAL_TASKS` keep a run's data or narrow it for inspection.
 - Verify:
   - [x] Against FakeRuntime the harness produces exactly the expected report.
   - [x] Each task's success check passes on a reference solution and fails on an empty one.
