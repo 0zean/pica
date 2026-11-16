@@ -8,6 +8,8 @@ public actor EngineClient {
     public struct Configuration: Sendable {
         public var clientName = "Pica"
         public var clientVersion = "0.0.0"
+        /// The protocol version sent in `engine.hello`. Only tests set another one, to provoke a mismatch.
+        public var protocolVersion = ProtocolVersion.current
         public var requestTimeout: Duration = .seconds(30)
         /// Delay before each reconnect attempt after the first, which is immediate. The last delay repeats.
         public var reconnectDelays: [Duration] = [.milliseconds(100), .milliseconds(250), .milliseconds(500), .seconds(1), .seconds(2)]
@@ -127,7 +129,7 @@ public actor EngineClient {
             let hello = try await request(
                 Methods.EngineHello.self,
                 EngineHelloParams(
-                    protocolVersion: .current,
+                    protocolVersion: configuration.protocolVersion,
                     client: .init(name: configuration.clientName, version: configuration.clientVersion)))
             try await resubscribeAll()
             publish(.connected(hello))

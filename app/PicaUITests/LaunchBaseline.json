@@ -1,0 +1,5 @@
+{
+  "medianSeconds": 0.45,
+  "toleranceSeconds": 0.25,
+  "recorded": "2026-11-16, Apple silicon Mac, macOS 27.2, Debug build: samples 0.37-0.44 s, median 0.43 s"
+}

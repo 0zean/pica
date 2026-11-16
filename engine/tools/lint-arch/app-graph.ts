@@ -8,6 +8,8 @@ const allowedPackageDependencies: Readonly<Record<string, readonly string[]>> = 
   PicaProtocol: [],
   EngineClient: ["PicaProtocol"],
   DesignSystem: [],
+  // A-01: launch, engine supervision and the app-wide store; the same footing as a feature.
+  AppShell: ["EngineClient", "PicaProtocol", "DesignSystem"],
   Features: ["EngineClient", "PicaProtocol", "DesignSystem"],
 };
 

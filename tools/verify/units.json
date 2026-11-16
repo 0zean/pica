@@ -744,13 +744,16 @@
   ],
   "A-01": [
     {
-      "check": "Killing the engine shows a reconnecting state and recovers within 2 s."
+      "check": "Killing the engine shows a reconnecting state and recovers within 2 s.",
+      "run": "make engine-install && swift test --package-path app/Packages/AppShell --filter EngineRecoveryTests"
     },
     {
-      "check": "A protocol major mismatch shows a blocking error naming both versions."
+      "check": "A protocol major mismatch shows a blocking error naming both versions.",
+      "run": "make engine-install && swift test --package-path app/Packages/AppShell --filter ProtocolMismatchTests"
     },
     {
-      "check": "Cold launch to interactive window is under 1.0 s (performance test with baseline)."
+      "check": "Cold launch to interactive window is under 1.0 s (performance test with baseline).",
+      "run": "make app-ui-test-pica"
     }
   ],
   "A-02": [
@@ -774,7 +777,7 @@
     },
     {
       "check": "`performAccessibilityAudit` passes on the gallery.",
-      "run": "make app-ui-test"
+      "run": "make app-ui-test-gallery"
     },
     {
       "check": "Reduced-motion setting disables the spark animation (tested).",

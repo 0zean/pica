@@ -166,6 +166,8 @@ pica/
       PicaProtocol/             generated Codable types
       EngineClient/
       DesignSystem/
+      AppShell/                 launch, engine supervision, app-wide store (A-01)
+    PicaUITests/                launch performance test
     Gallery/                    component gallery app for UI tests
     GalleryUITests/
   spikes/                       throwaway Phase 0 scripts
@@ -769,9 +771,10 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 **A-01 · App shell and engine supervision** — E-05, S-05
 - Build: launch and supervise `picad`, handshake, restart with backoff, single instance.
 - Verify:
-  - [ ] Killing the engine shows a reconnecting state and recovers within 2 s.
-  - [ ] A protocol major mismatch shows a blocking error naming both versions.
-  - [ ] Cold launch to interactive window is under 1.0 s (performance test with baseline).
+  - [x] Killing the engine shows a reconnecting state and recovers within 2 s.
+  - [x] A protocol major mismatch shows a blocking error naming both versions.
+  - [x] Cold launch to interactive window is under 1.0 s (performance test with baseline).
+- Notes: `app/Packages/AppShell`, specified in [docs/app-shell.md](docs/app-shell.md). An engine already listening (the CLI's) is reused. Tests run `picad`'s production composition with a FakeRuntime (`engine/packages/server/tests/processes/fake-picad.ts`), so `make verify-app` now needs Node and the engine's packages. Measured on 2026-11-16: recovery about 0.43 s; cold launch median 0.43 s.
 
 **A-02 · EngineClient** — E-02
 - Build: actor with typed requests and event streams as `AsyncSequence`, resuming from the last `seq`.
@@ -1030,7 +1033,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | M-05 | MCP permissions | C-03, M-04 | done |
 | M-06 | Health and diagnostics | M-04 | done |
 | M-07 | Import from other agent platforms | M-01 | done |
-| A-01 | App shell and engine supervision | E-05, S-05 | todo |
+| A-01 | App shell and engine supervision | E-05, S-05 | doing (PR open) |
 | A-02 | EngineClient | E-02 | done |
 | A-03 | Design system | F-01 | done |
 | A-04 | Navigation shell | A-01, A-02, A-03 | todo |

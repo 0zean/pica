@@ -9,6 +9,7 @@ on:
       - "engine/packages/protocol/**"
       - "engine/tools/swift-codegen/**"
       - "engine/tools/protocol-schema/**"
+      - "engine/packages/server/tests/processes/fake-picad.ts"
       - "Makefile"
       - ".github/workflows/app.yml"
 
@@ -22,6 +23,15 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+      # AppShell's tests start `picad` with a FakeRuntime (A-01), so the engine's packages are installed.
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: engine/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          cache-dependency-path: engine/pnpm-lock.yaml
       - run: make -k verify-app
       - name: Upload snapshot failures
         if: failure()
