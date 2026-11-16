@@ -667,7 +667,17 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
     - Bigger inputs can't widen the gap. Reasoning input is about main-agent turns × the ~17k prompt prefix, and delegating adds turns: `balanced` took 8 main turns on `money-tests` against 6 under `off`.
     - Two of those turns were attempts the gates then denied: the whole `view`, then the heredoc.
     - Premium requests: each main call on `claude-haiku-4.5` counted 0.33, and each worker call on `gpt-6-luna` counted 1.0. So `balanced` used 11.3 premium requests on the two tasks, against 4.3 under `off`. On this plan, `auto` puts the cheaper model on the reasoning tier.
-    - On Copilot the 60% reasoning-input target measures something the runtime already limits. The full run waits for a decision on the target and on the tier models. `EVAL_KEEP=1`, `EVAL_PROFILES` and `EVAL_TASKS` keep a run's data or narrow it for inspection.
+    - On Copilot the 60% reasoning-input target measures something the runtime already limits. The full run waits for a decision on the target and on the tier models.
+    - Correction: that account bills by tokens (`getQuota`: `tokenBasedBilling: true`, no premium-request entitlement), so the `premiumRequests` on usage events aren't what it pays. #81 fixes the tier choice and runs the main agent on the reasoning tier's model.
+  - A sixth smoke run on Pro (2026-11-16) with #81: main agent on `gpt-5.6-luna`, workers on `gpt-6-luna`, 1 run. Both tasks passed in both profiles.
+
+    | Profile | Reasoning input | Main calls | All calls | Credits |
+    |---|---|---|---|---|
+    | `off` | 124,574 | 9 | 9 | 0.8665 |
+    | `balanced` | 126,534 | 9 | 22 | 1.1379 |
+
+    - Delegation no longer adds main turns. But the 13 worker calls add credits (+31%) and wall time (21 s against 60 s), and save the main agent nothing, because Copilot's `view` limit already keeps big files out of its context.
+    - The target is awaiting the owner's decision. `EVAL_KEEP=1`, `EVAL_PROFILES` and `EVAL_TASKS` keep a run's data or narrow it for inspection.
 - Verify:
   - [x] Against FakeRuntime the harness produces exactly the expected report.
   - [x] Each task's success check passes on a reference solution and fails on an empty one.
