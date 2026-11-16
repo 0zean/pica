@@ -1,5 +1,6 @@
 import type { Tier } from "@pica/protocol";
 import type { AgentLoader } from "../agents/port.ts";
+import { builtinTools } from "../agents/tool-catalog.ts";
 import type { TierResolution } from "../models/tiers.ts";
 import { err, ok } from "../result.ts";
 import type { Result } from "../result.ts";
@@ -15,6 +16,8 @@ export interface RuntimeNativeDelegatorDeps {
 
 // D-08: sub-agents are the runtime's `customAgents`, one per resolved agent definition. Each gets
 // exactly its definition's tools and its tier's model, and no `model` when the tier resolves to none.
+// The main agent loses the tools its routing profile hides (C-05) and gets the profile's
+// delegation guide; under `off` it gets neither.
 export function createRuntimeNativeDelegator(deps: RuntimeNativeDelegatorDeps): Delegator {
   return {
     async setup(request: DelegationRequest): Promise<Result<DelegationSetup, DelegationError>> {
@@ -47,7 +50,16 @@ export function createRuntimeNativeDelegator(deps: RuntimeNativeDelegatorDeps): 
           ...(model === null ? {} : { model }),
         });
       }
-      return ok({ mode: "runtime_native", agents, sessionOptions: { customAgents } });
+      const excludedTools = builtinTools.map((tool) => tool.name).filter((name) => !routing.main.tools.includes(name)).sort();
+      return ok({
+        mode: "runtime_native",
+        agents,
+        sessionOptions: {
+          customAgents,
+          ...(excludedTools.length === 0 ? {} : { excludedTools }),
+          ...(routing.delegationGuide === "" ? {} : { systemMessage: routing.delegationGuide }),
+        },
+      });
     },
   };
 }
