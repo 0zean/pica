@@ -3,6 +3,11 @@
   "version": 1,
   "runtime": "fake",
   "generatedAt": "2026-11-16T09:04:31.500Z",
+  "tierSettings": {
+    "reasoning": "model-r",
+    "worker": "auto"
+  },
+  "stopped": null,
   "profiles": [
     {
       "profile": "off",
@@ -1978,13 +1983,17 @@
     "candidate": "balanced",
     "baselineReasoningInput": 472500,
     "candidateReasoningInput": 85500,
-    "reasoningInputReduction": 0.819,
+    "reasoningInputChange": -0.819,
+    "baselineCredits": 126.45,
+    "candidateCredits": 30.525,
+    "creditsChange": -0.7586,
     "successDelta": -0.33,
     "tiersDistinct": true,
-    "target": {
-      "minReduction": 0.6,
+    "gate": {
+      "maxReasoningInputIncrease": 0.05,
+      "maxCreditsIncrease": 0.35,
       "maxSuccessDrop": 1
     },
-    "meetsTarget": true
+    "meetsGate": true
   }
 }

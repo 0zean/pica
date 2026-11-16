@@ -35,14 +35,18 @@ function summary(profiles: readonly ProfileResult[]): string {
   );
 }
 
+function signed(change: number | null): string {
+  return change === null ? "n/a (baseline is 0)" : `${change > 0 ? "+" : ""}${percent(change)}`;
+}
+
 function comparison(result: Comparison): string {
-  const reduction = result.reasoningInputReduction === null ? "n/a (no baseline input)" : `${percent(result.reasoningInputReduction)} fewer`;
   const lines = [
     `## ${result.candidate} against ${result.baseline}`,
     "",
-    `- Reasoning-tier input tokens: ${count(result.candidateReasoningInput)} against ${count(result.baselineReasoningInput)}, ${reduction} (target: at least ${percent(result.target.minReduction)} fewer).`,
-    `- Tasks succeeded: ${result.successDelta >= 0 ? "+" : ""}${String(result.successDelta)} (target: at most ${String(result.target.maxSuccessDrop)} fewer).`,
-    `- Target met: ${result.meetsTarget ? "yes" : "no"}.`,
+    `- Reasoning-tier input tokens: ${count(result.candidateReasoningInput)} against ${count(result.baselineReasoningInput)}, ${signed(result.reasoningInputChange)} (gate: at most ${percent(result.gate.maxReasoningInputIncrease)} more).`,
+    `- Credits: ${result.candidateCredits.toFixed(4)} against ${result.baselineCredits.toFixed(4)}, ${signed(result.creditsChange)} (gate: at most ${percent(result.gate.maxCreditsIncrease)} more).`,
+    `- Tasks succeeded: ${result.successDelta >= 0 ? "+" : ""}${String(result.successDelta)} (gate: at most ${String(result.gate.maxSuccessDrop)} fewer).`,
+    `- Gate met: ${result.meetsGate ? "yes" : "no"}.`,
   ];
   if (!result.tiersDistinct) {
     lines.push("- No worker-tier call ran on a model of its own, so delegation moves tokens between agents but cannot lower credits.");
@@ -84,7 +88,7 @@ export function renderMarkdown(report: EvalReport): string {
   const sections = [
     "# Pica eval report (C-10)",
     "",
-    `Runtime: ${report.runtime}. Generated ${report.generatedAt}. Each task ran ${runsLabel(report)} per profile; token, credit and time figures are means over runs, with the per-run range in brackets. "Reasoning input" counts fresh and cached input tokens of reasoning-tier calls; "gated" is the mean number of cost-rule decisions that were not allow.`,
+    `Runtime: ${report.runtime}. Generated ${report.generatedAt}. Tier settings: reasoning \`${report.tierSettings.reasoning}\`, worker \`${report.tierSettings.worker}\`.${report.stopped === null ? "" : ` **Stopped early: ${report.stopped}.**`} Each task ran ${runsLabel(report)} per profile; token, credit and time figures are means over runs, with the per-run range in brackets. "Reasoning input" counts fresh and cached input tokens of reasoning-tier calls; "gated" is the mean number of cost-rule decisions that were not allow.`,
     "",
     "## Summary",
     "",

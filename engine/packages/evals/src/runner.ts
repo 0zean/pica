@@ -9,7 +9,7 @@ import { fail } from "./check-helpers.ts";
 import type { CheckResult } from "./check-helpers.ts";
 import { isolatedGitEnv, materializeRepo } from "./fixture-repos.ts";
 import { buildReport, profileResult, taskMeasurement } from "./report.ts";
-import type { EvalReport, RoutingProfile, RunMeasurement, TierModels } from "./report.ts";
+import type { EvalReport, RoutingProfile, RunMeasurement, TierModels, TierSettings } from "./report.ts";
 import { EvalClient } from "./rpc-client.ts";
 import type { EvalTask } from "./tasks/index.ts";
 
@@ -43,6 +43,10 @@ export interface RunSuiteOptions {
   readonly taskTimeoutMs?: number;
   // Sessions per task and profile; the report gives their mean and spread. Defaults to 1.
   readonly runs?: number;
+  // Written to each engine's user config as `routing.tiers`; a tier left out stays `auto`.
+  readonly tierSettings?: { readonly reasoning?: string; readonly worker?: string };
+  // Stops the suite once the ledger's credits for all sessions so far pass this; the report says so.
+  readonly maxCredits?: number;
   readonly onRunDone?: (profile: RoutingProfile, task: EvalTask, run: number, measurement: RunMeasurement) => void;
 }
 
@@ -51,28 +55,42 @@ const defaultTaskTimeoutMs = 15 * 60_000;
 // C-10: runs every task `runs` times per profile, each run in a fresh engine with the production composition
 // (E-11), a fresh copy of its fixture repo, and its own Pica data directory, then measures the
 // session from the usage ledger (C-08).
+// The profiles take turns on each task run, so drift in the runtime or its models over a long run
+// lands on every profile alike.
 export async function runSuite(options: RunSuiteOptions): Promise<EvalReport> {
-  const results = [];
+  const tierSettings = { reasoning: options.tierSettings?.reasoning ?? "auto", worker: options.tierSettings?.worker ?? "auto" };
+  const byProfile = new Map(options.profiles.map((profile) => [profile, { tasks: [] as ReturnType<typeof taskMeasurement>[], reasoning: new Set<string>(), worker: new Set<string>() }]));
   let index = 0;
-  for (const profile of options.profiles) {
-    const measurements = [];
-    const reasoning = new Set<string>();
-    const worker = new Set<string>();
-    for (const task of options.tasks) {
-      const runs: RunMeasurement[] = [];
-      for (let run = 1; run <= (options.runs ?? 1); run += 1) {
-        const done = await runTask(options, { profile, task, run, index });
+  let spent = 0;
+  let stopped: string | null = null;
+  for (const task of options.tasks) {
+    const runs = new Map(options.profiles.map((profile) => [profile, [] as RunMeasurement[]]));
+    for (let run = 1; run <= (options.runs ?? 1); run += 1) {
+      for (const profile of options.profiles) {
+        const done = await runTask(options, tierSettings, { profile, task, run, index });
         index += 1;
-        for (const model of done.tiers.reasoning) reasoning.add(model);
-        for (const model of done.tiers.worker) worker.add(model);
-        runs.push(done.measurement);
+        spent += done.measurement.credits;
+        const into = byProfile.get(profile);
+        for (const model of done.tiers.reasoning) into?.reasoning.add(model);
+        for (const model of done.tiers.worker) into?.worker.add(model);
+        runs.get(profile)?.push(done.measurement);
         options.onRunDone?.(profile, task, run, done.measurement);
+        if (options.maxCredits !== undefined && spent > options.maxCredits) {
+          stopped = `the credit limit of ${String(options.maxCredits)} was passed after ${String(index)} sessions (${spent.toFixed(2)} credits), during ${task.id}`;
+        }
+        if (stopped !== null) break;
       }
-      measurements.push(taskMeasurement(task, runs));
+      if (stopped !== null) break;
     }
-    results.push(profileResult(profile, { reasoning: [...reasoning].sort(), worker: [...worker].sort() }, measurements));
+    for (const [profile, measured] of runs) {
+      if (measured.length > 0) byProfile.get(profile)?.tasks.push(taskMeasurement(task, measured));
+    }
+    if (stopped !== null) break;
   }
-  return buildReport(options.backend.name, new Date(options.now()).toISOString(), results);
+  const results = [...byProfile].map(([profile, collected]) =>
+    profileResult(profile, { reasoning: [...collected.reasoning].sort(), worker: [...collected.worker].sort() }, collected.tasks),
+  );
+  return buildReport({ runtime: options.backend.name, generatedAt: new Date(options.now()).toISOString(), tierSettings, stopped }, results);
 }
 
 interface TaskSlot {
@@ -82,12 +100,12 @@ interface TaskSlot {
   readonly index: number;
 }
 
-async function runTask(options: RunSuiteOptions, slot: TaskSlot): Promise<{ measurement: RunMeasurement; tiers: TierModels }> {
+async function runTask(options: RunSuiteOptions, tiers: TierSettings, slot: TaskSlot): Promise<{ measurement: RunMeasurement; tiers: TierModels }> {
   const dir = join(options.workRoot, slot.profile, slot.task.id, `run-${String(slot.run)}`);
   const home = join(dir, "home");
   materializeRepo(slot.task.repo, join(dir, "repo"));
   const run: TaskRun = { task: slot.task, profile: slot.profile, run: slot.run, workdir: realpathSync(join(dir, "repo")) };
-  writeUserConfig(home);
+  writeUserConfig(home, tiers);
   const runtime = options.backend.runtime(run);
   const composed = composeEngine({
     homeDir: home,
@@ -112,10 +130,11 @@ async function runTask(options: RunSuiteOptions, slot: TaskSlot): Promise<{ meas
 
 // Tool calls are allowed without asking, so a run never waits for a person; the cost gates still
 // apply, since they come before the permission mode (PLAN.md §5.3).
-function writeUserConfig(home: string): void {
+function writeUserConfig(home: string, tiers: TierSettings): void {
   const dataDir = picaDataDir(home);
   mkdirSync(dataDir, { recursive: true });
-  writeFileSync(join(dataDir, "config.jsonc"), `${JSON.stringify({ permissions: { mode: "auto" } }, null, 2)}\n`);
+  const config = { permissions: { mode: "auto" }, routing: { tiers } };
+  writeFileSync(join(dataDir, "config.jsonc"), `${JSON.stringify(config, null, 2)}\n`);
 }
 
 async function measureSession(options: RunSuiteOptions, run: TaskRun, client: EvalClient, store: Store): Promise<{ measurement: RunMeasurement; tiers: TierModels }> {

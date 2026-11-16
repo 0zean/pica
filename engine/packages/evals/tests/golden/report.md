@@ -1,6 +1,6 @@
 # Pica eval report (C-10)
 
-Runtime: fake. Generated 2026-11-16T09:04:31.500Z. Each task ran 3 times per profile; token, credit and time figures are means over runs, with the per-run range in brackets. "Reasoning input" counts fresh and cached input tokens of reasoning-tier calls; "gated" is the mean number of cost-rule decisions that were not allow.
+Runtime: fake. Generated 2026-11-16T09:04:31.500Z. Tier settings: reasoning `model-r`, worker `auto`. Each task ran 3 times per profile; token, credit and time figures are means over runs, with the per-run range in brackets. "Reasoning input" counts fresh and cached input tokens of reasoning-tier calls; "gated" is the mean number of cost-rule decisions that were not allow.
 
 ## Summary
 
@@ -11,9 +11,10 @@ Runtime: fake. Generated 2026-11-16T09:04:31.500Z. Each task ran 3 times per pro
 
 ## balanced against off
 
-- Reasoning-tier input tokens: 85,500 against 472,500, 81.9% fewer (target: at least 60.0% fewer).
-- Tasks succeeded: -0.33 (target: at most 1 fewer).
-- Target met: yes.
+- Reasoning-tier input tokens: 85,500 against 472,500, -81.9% (gate: at most 5.0% more).
+- Credits: 30.5250 against 126.4500, -75.9% (gate: at most 35.0% more).
+- Tasks succeeded: -0.33 (gate: at most 1 fewer).
+- Gate met: yes.
 
 ## Tasks
 

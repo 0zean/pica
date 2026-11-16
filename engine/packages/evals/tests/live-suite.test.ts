@@ -21,7 +21,7 @@ afterAll(() => {
 });
 
 describe.skipIf(!live)("C-10 live: balanced against off", () => {
-  it("balanced uses at least 60% fewer reasoning-tier input tokens, with at most one fewer task succeeding", { timeout: 4 * 60 * 60_000 }, async () => {
+  it("balanced passes the no-regression gate against off", { timeout: 4 * 60 * 60_000 }, async () => {
     const only = process.env["EVAL_TASKS"]?.split(",");
     const report = await runSuite({
       tasks: only === undefined ? evalSuite : evalSuite.filter((task) => only.includes(task.id)),
@@ -30,6 +30,10 @@ describe.skipIf(!live)("C-10 live: balanced against off", () => {
       workRoot,
       now: () => Date.now(),
       sessionCredits: 100,
+      // The owner's choice for the C-10 run (2026-11-16): the reasoning tier pinned to gpt-5.6-luna,
+      // the worker tier on auto, and a stop past about 80 credits. EVAL_REASONING overrides the pin.
+      tierSettings: { reasoning: process.env["EVAL_REASONING"] ?? "gpt-5.6-luna" },
+      maxCredits: Number(process.env["EVAL_MAX_CREDITS"] ?? "80"),
       runs: Number(process.env["EVAL_RUNS"] ?? "3"),
       onRunDone: (profile, task, run, measurement) => {
         console.log(`${profile} ${task.id} run ${String(run)}: ${measurement.succeeded ? "pass" : "FAIL"}, ${String(reasoningInput(measurement))} reasoning input, ${measurement.detail}`);
@@ -40,6 +44,7 @@ describe.skipIf(!live)("C-10 live: balanced against off", () => {
     writeFileSync(`${stem}.json`, `${JSON.stringify(report, null, 2)}\n`);
     writeFileSync(`${stem}.md`, renderMarkdown(report));
     console.log(renderMarkdown(report));
-    expect(report.comparison?.meetsTarget).toBe(true);
+    expect(report.stopped).toBeNull();
+    expect(report.comparison?.meetsGate).toBe(true);
   });
 });

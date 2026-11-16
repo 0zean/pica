@@ -91,11 +91,29 @@ describe("C-10 eval harness against FakeRuntime", () => {
       profiles: ["off", "balanced"],
       backend: fakeBackend,
       runs: 3,
+      tierSettings: { reasoning: "model-r" },
       workRoot,
       now: steppingNow(),
       managedPolicy: new ManagedPolicyLoader([]),
     });
     matchGolden("report.json", `${JSON.stringify(report, null, 2)}\n`);
     matchGolden("report.md", renderMarkdown(report));
+  });
+
+  it("stops once the credit limit is passed, and makes no comparison", { timeout: 60_000 }, async () => {
+    workRoot = realpathSync(mkdtempSync(join(tmpdir(), "pica-ev-")));
+    const report = await runSuite({
+      tasks: evalSuite.slice(0, 2),
+      profiles: ["off", "balanced"],
+      backend: fakeBackend,
+      runs: 2,
+      workRoot,
+      now: steppingNow(),
+      managedPolicy: new ManagedPolicyLoader([]),
+      maxCredits: 10,
+    });
+    expect(report.stopped).toContain("credit limit of 10");
+    expect(report.comparison).toBeNull();
+    expect(report.profiles.map((result) => result.tasks.length)).toEqual([1, 1]);
   });
 });

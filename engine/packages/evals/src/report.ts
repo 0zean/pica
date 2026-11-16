@@ -55,24 +55,33 @@ export interface ProfileResult {
   readonly tasks: readonly TaskMeasurement[];
 }
 
-// PLAN.md C-10: `balanced` uses at least 60% fewer reasoning-tier input tokens than `off`, with at
-// most one fewer task succeeding, both judged on means over runs. Input counts fresh and cached
-// tokens: both fill the context.
-export const savingsTarget = { minReduction: 0.6, maxSuccessDrop: 1 } as const;
+// PLAN.md C-10's no-regression gate (§3, 2026-11-16), judged on means over runs: `balanced` uses at
+// most 5% more reasoning-tier input and at most 35% more credits than `off`, with at most one fewer
+// task succeeding. Input counts fresh and cached tokens: both fill the context.
+export const regressionGate = { maxReasoningInputIncrease: 0.05, maxCreditsIncrease: 0.35, maxSuccessDrop: 1 } as const;
 
 export interface Comparison {
   readonly baseline: RoutingProfile;
   readonly candidate: RoutingProfile;
   readonly baselineReasoningInput: number;
   readonly candidateReasoningInput: number;
-  // 1 − candidate / baseline, to four places; null when the baseline used no reasoning input.
-  readonly reasoningInputReduction: number | null;
+  // candidate / baseline − 1, to four places (negative is a saving); null when the baseline is 0.
+  readonly reasoningInputChange: number | null;
+  readonly baselineCredits: number;
+  readonly candidateCredits: number;
+  readonly creditsChange: number | null;
   readonly successDelta: number;
   // False when no worker-tier call ran on a model of its own: as on a default-model-only plan (D-16),
   // tokens then move between agents but not between models, so credits cannot show a saving.
   readonly tiersDistinct: boolean;
-  readonly target: typeof savingsTarget;
-  readonly meetsTarget: boolean;
+  readonly gate: typeof regressionGate;
+  readonly meetsGate: boolean;
+}
+
+// The tier settings the eval ran with, as written to each engine's config (`auto` or a model id).
+export interface TierSettings {
+  readonly reasoning: string;
+  readonly worker: string;
 }
 
 export interface EvalReport {
@@ -80,6 +89,9 @@ export interface EvalReport {
   readonly version: 1;
   readonly runtime: string;
   readonly generatedAt: string;
+  readonly tierSettings: TierSettings;
+  // Why the run stopped before every task ran, such as the credit limit; null when it finished.
+  readonly stopped: string | null;
   readonly profiles: readonly ProfileResult[];
   readonly comparison: Comparison | null;
 }
@@ -138,7 +150,8 @@ export function reasoningInput(totals: TokenTotals): number {
 export function compareProfiles(baseline: ProfileResult, candidate: ProfileResult): Comparison {
   const baselineInput = reasoningInput(baseline.totals);
   const candidateInput = reasoningInput(candidate.totals);
-  const reduction = baselineInput === 0 ? null : Math.round((1 - candidateInput / baselineInput) * 10_000) / 10_000;
+  const inputChange = change(baselineInput, candidateInput);
+  const creditsChange = change(baseline.totals.credits, candidate.totals.credits);
   const successDelta = round(candidate.totals.succeeded - baseline.totals.succeeded, 2);
   const tiers = candidate.tiers;
   return {
@@ -146,23 +159,41 @@ export function compareProfiles(baseline: ProfileResult, candidate: ProfileResul
     candidate: candidate.profile,
     baselineReasoningInput: baselineInput,
     candidateReasoningInput: candidateInput,
-    reasoningInputReduction: reduction,
+    reasoningInputChange: inputChange,
+    baselineCredits: baseline.totals.credits,
+    candidateCredits: candidate.totals.credits,
+    creditsChange,
     successDelta,
     tiersDistinct: tiers.worker.length > 0 && tiers.worker.every((model) => !tiers.reasoning.includes(model)),
-    target: savingsTarget,
-    meetsTarget: reduction !== null && reduction >= savingsTarget.minReduction && successDelta >= -savingsTarget.maxSuccessDrop,
+    gate: regressionGate,
+    meetsGate:
+      inputChange !== null &&
+      creditsChange !== null &&
+      inputChange <= regressionGate.maxReasoningInputIncrease &&
+      creditsChange <= regressionGate.maxCreditsIncrease &&
+      successDelta >= -regressionGate.maxSuccessDrop,
   };
 }
 
-export function buildReport(runtime: string, generatedAt: string, profiles: readonly ProfileResult[]): EvalReport {
+function change(baseline: number, candidate: number): number | null {
+  return baseline === 0 ? null : round(candidate / baseline - 1, 4);
+}
+
+export interface ReportContext {
+  readonly runtime: string;
+  readonly generatedAt: string;
+  readonly tierSettings: TierSettings;
+  readonly stopped: string | null;
+}
+
+export function buildReport(context: ReportContext, profiles: readonly ProfileResult[]): EvalReport {
   const baseline = profiles.find((result) => result.profile === "off");
   const candidate = profiles.find((result) => result.profile === "balanced");
   return {
     suite: "C-10",
     version: 1,
-    runtime,
-    generatedAt,
+    ...context,
     profiles,
-    comparison: baseline !== undefined && candidate !== undefined ? compareProfiles(baseline, candidate) : null,
+    comparison: baseline !== undefined && candidate !== undefined && context.stopped === null ? compareProfiles(baseline, candidate) : null,
   };
 }
