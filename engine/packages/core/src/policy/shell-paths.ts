@@ -1,7 +1,8 @@
 import { joinPath, resolvePath } from "./paths.ts";
 
-// What a shell command touches: the directories it runs in, the files it writes by redirection or
-// `tee`, and the paths named in its arguments. A command is not parsed for what it does with an
+// What a shell command touches: the directories it runs in, the files it writes by redirection,
+// `tee`, `touch`, or as the destination of `cp`, `mv` and `install`, and the paths named in its
+// arguments. A command is not parsed for what it does with an
 // argument, so every path argument may be written, except for the read-only commands below.
 // `path` is absolute but not normalized, or `undefined` when it depends on something only the
 // shell knows (`$VAR`, `~`, `cd -`).
@@ -24,6 +25,8 @@ const redirectSuffixes = new Set([">", "|", "&"]);
 const deviceTargets = new Set(["/dev/null", "/dev/stdout", "/dev/stderr"]);
 const printOnly = new Set(["echo", "printf"]);
 const printsWholeFiles = new Set(["cat", "less", "more"]);
+// Programs whose last path argument is a file they write; `touch` writes every one.
+const copiesTo = new Set(["cp", "mv", "install"]);
 const readOnly = new Set(["cat", "head", "tail", "less", "more", "wc", "ls", "tree", "du", "stat", "file", "diff", "grep", "egrep", "fgrep", "rg", "find"]);
 const findWrites = new Set(["-delete", "-exec", "-execdir", "-ok", "-okdir", "-fprint", "-fprint0", "-fprintf", "-fls"]);
 // Programs whose `-C <dir>` makes them run in `<dir>`.
@@ -46,10 +49,12 @@ export function shellPaths(command: string, cwd: string): readonly ShellPath[] {
       const path: string | undefined = target === undefined || target.value === "-" ? undefined : located(target, current);
       found.push({ role: "working directory", raw: target?.value ?? "~", path });
       current = path === undefined ? undefined : resolvePath("/", path);
-    } else if (program?.value === "tee") {
+    } else if (program?.value === "tee" || program?.value === "touch") {
       for (const arg of args.filter((word) => !word.value.startsWith("-"))) {
         found.push({ role: "write target", raw: arg.value, path: located(arg, current) });
       }
+    } else if (program !== undefined && copiesTo.has(program.value)) {
+      found.push(...copyPaths(program.value, args, current));
     } else if (program !== undefined) {
       found.push(...argumentPaths(program.value, args, current));
     }
@@ -69,18 +74,28 @@ function argumentPaths(program: string, args: readonly Word[], cwd: string | und
   const role = isReadOnly(program, args) ? "read argument" : "path argument";
   const found: ShellPath[] = [];
   let base = cwd;
-  for (let index = 0; index < args.length; index += 1) {
-    const arg = args[index];
-    const next = args[index + 1];
-    if (arg?.value === "-C" && next !== undefined && directoryOption.has(program)) {
-      base = located(next, base);
-      found.push({ role: "working directory", raw: next.value, path: base });
-      index += 1;
-    } else if (arg !== undefined) {
+  let directoryNext = false;
+  for (const [index, arg] of args.entries()) {
+    if (directoryNext) {
+      base = located(arg, base);
+      found.push({ role: "working directory", raw: arg.value, path: base });
+      directoryNext = false;
+    } else if (arg.value === "-C" && index + 1 < args.length && directoryOption.has(program)) {
+      directoryNext = true;
+    } else {
       found.push(...pathsIn(arg, base, role));
     }
   }
   return found;
+}
+
+function copyPaths(program: string, args: readonly Word[], cwd: string | undefined): ShellPath[] {
+  const operands = args.filter((arg) => !arg.value.startsWith("-"));
+  const destination = operands.at(-1);
+  const sources = argumentPaths(program, operands.slice(0, -1), cwd);
+  return destination === undefined
+    ? sources
+    : [...sources, { role: "write target", raw: destination.value, path: located(destination, cwd) }];
 }
 
 function isReadOnly(program: string, args: readonly Word[]): boolean {
