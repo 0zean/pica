@@ -79,7 +79,10 @@ export interface SessionOptions {
   readonly workingDirectory: string;
   readonly model?: string;
   readonly customAgents?: readonly CustomAgentDefinition[];
+  // Built-in tools hidden from the main agent; sub-agents keep the tools their definitions list.
   readonly excludedTools?: readonly string[];
+  // Appended to the runtime's system prompt: the routing profile's delegation guide (C-05).
+  readonly systemMessage?: string;
   readonly tools?: readonly EngineTool[];
   readonly maxAiCredits?: number;
   readonly hooks?: RuntimeHooks;
