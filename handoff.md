@@ -1,7 +1,7 @@
-# Session Handoff — C-10, A-01 and A-04 landed: Milestone M2 met with `off` as the default, and the app has its navigation shell
+# Session Handoff — C-10, A-01, A-04 and A-05 landed: Milestone M2 met with `off` as the default, and the app has its navigation shell and session timeline
 
 ## Where it started
-The owner asked to review `PLAN.md` and the previous handoff, then run C-10 (eval harness) and A-01 (app shell and engine supervision) in parallel side sessions. C-10's live run showed the 60% target couldn't be met. Getting there took three engine follow-ups, a revised target (D-21) and a new default profile (D-22). Both units landed, then A-04 (navigation shell) ran in a third side session and landed too. A-05 is now running.
+The owner asked to review `PLAN.md` and the previous handoff, then run C-10 (eval harness) and A-01 (app shell and engine supervision) in parallel side sessions. C-10's live run showed the 60% target couldn't be met. Getting there took three engine follow-ups, a revised target (D-21) and a new default profile (D-22). Both units landed. A-04 (navigation shell) then ran in a third side session, which started A-05 (session timeline), and both landed.
 
 ## Decisions locked + what shipped
 - **https://github.com/0zean/pica/pull/79 (C-07 follow-up):**
@@ -53,6 +53,28 @@ The owner asked to review `PLAN.md` and the previous handoff, then run C-10 (eva
   - Cold launch median: 0.56 s (budget 1.0 s; the baseline is unchanged).
   - No protocol change and no new dependencies.
   - UI tests need macOS Automation Mode. The owner enabled it without authentication (`automationmodetool enable-automationmode-without-authentication`); `disable-automationmode-without-authentication` reverses it.
+- **https://github.com/0zean/pica/pull/86 (A-05, done):** new feature package `app/Packages/Timeline`. Spec: `docs/session-timeline.md`.
+  - The app target passes the timeline to AppShell's session column as a `SessionContent` closure, so AppShell doesn't depend on Timeline. A lint-arch rule enforces this.
+  - Data flows from `EngineClient.events(sessionId:afterSeq:)` to the `@Observable` `TimelineStore` to the view. Events are read off the main actor and applied in batches, and each row is observable, so a streaming delta redraws only its row.
+  - Rows:
+    - streaming Markdown for assistant text
+    - tool calls as compact rows that expand on click
+    - collapsed sub-agent groups that take over the row of the `task` call that started them
+    - inline rows for policy decisions other than allow, and for approvals
+    - notices for budget, abort, error and unknown events
+    - a header chip for context, tokens and credits
+  - The list is a `ScrollView` over a `LazyVStack`. It follows new rows only while the user is at the bottom.
+  - New dependency: `swift-markdown` 0.9.0, pinned exactly (it brings in `swift-cmark`). `Package.resolved` is committed.
+  - Measured:
+    - A 10,025-event session opens in a median of 0.21–0.22 s (budget 300 ms).
+    - The scroll hitch ratio is 0.0–0.3% (budget 1%).
+    - Pica measures both itself through `TimelineMetrics`, which is on only in UI tests.
+  - Also changed:
+    - `EngineClient.LineSplitter` now uses `memchr`; a 10k-event replay fell from 0.69 s to 0.20 s.
+    - `fake-picad` takes `PICA_TEST_SCENARIO`; scenarios are in `fake-picad-scenarios.ts`.
+    - The snapshot helper moved to a new `DesignSystemTestSupport` product.
+  - Findings: SwiftUI `List` stalled about 50 ms mid-scroll, and `.textSelection(.enabled)` on rows pushed the hitch ratio to 10%. Rows are no longer selectable; messages have a Copy menu.
+  - Snapshot references are kept per macOS major version. CI runs macOS 26 and this Mac runs 27, so the macOS 26 references came from CI's `snapshot-failures` artifact (`b753f89`), as in A-03.
 - **https://github.com/0zean/pica/pull/82:** `secret-leak-fuzz.test.ts` (M-03) now has a 60 s timeout and `seed: 3011`. It had timed out on CI at 5.45 s against the default 5 s limit.
 - **Landing:** this session merged the PRs with `gh pr checks <n> --watch --fail-fast && gh pr merge <n> --merge --match-head-commit <sha>`, each time after the owner said to.
   - For #77 and #78, GitHub reported conflicts that a local `git merge origin/main` resolved cleanly. Merging `main` into the branch and pushing cleared it.
@@ -60,7 +82,9 @@ The owner asked to review `PLAN.md` and the previous handoff, then run C-10 (eva
 
 ## Key files for next session
 - `PLAN.md`: D-21 and D-22 in §3, the C-10 notes, C-11, M2, and the §12 unit index.
-- `docs/navigation-shell.md` — A-04's design. A-05 fills its session column.
+- `docs/navigation-shell.md` — A-04's design.
+- `docs/session-timeline.md` — A-05's design, which A-06 (composer) and A-07 (approvals) build on.
+- `app/Packages/Timeline/` — `TimelineStore` and the row views.
 - `docs/evals/2026-11-16-c10-live.md` — the live numbers C-11 has to beat.
 - `docs/evals/README.md` — the eval suite, sizing and how to run it.
 - `docs/app-shell.md` — A-01's supervision design, which A-04 and H-05 build on.
@@ -69,7 +93,7 @@ The owner asked to review `PLAN.md` and the previous handoff, then run C-10 (eva
 - Memory files touched: none.
 
 ## Running state
-- Side session **A-05: Session timeline** (`local_fa55331d-235c-4f28-b264-735702b74e5a`) is working in its own worktree. The A-04 session (`local_94845724-b76b-4ed9-859d-2b3edbcd9703`) started it, and its reports go there first.
+- Side sessions: none working. The A-04 session (`local_94845724-b76b-4ed9-859d-2b3edbcd9703`) and the A-05 session it started (`local_fa55331d-235c-4f28-b264-735702b74e5a`) are idle, with their PRs merged.
 - Background processes: none.
 - Dev servers / ports: none. No `picad` is running.
 - Worktrees and branches:
@@ -82,8 +106,8 @@ The owner asked to review `PLAN.md` and the previous handoff, then run C-10 (eva
     - `dev/c-07-main-agent-routing`, `dev/c-04-shell-write-gate`, `dev/c-01-auto-tiers`
     - `dev/m-03-fuzz-timeout`
     - the older `dev/*` branches listed in the previous handoff
-    - Also merged: `dev/a-04-navigation-shell-d98293` and `dev/a-04-mark-done`.
-- This handoff is on `dev/handoff-4`, cut from `main` at `ff6c73f`.
+    - Also merged: `dev/a-04-navigation-shell-d98293`, `dev/a-04-mark-done`, `dev/a-05-session-timeline-1e04db` and `dev/handoff-4`.
+- This update is on `dev/a-05-done`, cut from `main` at `fd0abcd`.
 - Live eval runs wrote to the owner's real Pica data directory under `~/Library/Application Support/Pica/`.
 
 ## Verification — how to confirm things still work
@@ -91,7 +115,9 @@ The owner asked to review `PLAN.md` and the previous handoff, then run C-10 (eva
 - `make verify UNIT=C-10` passes its deterministic checks. The live check is skipped unless `PICA_LIVE=1`.
 - `make verify UNIT=A-01` covers recovery, the protocol mismatch and cold launch. The cold-launch test also runs as `make app-ui-test-pica`.
 - `make verify UNIT=A-04` passes 3/3 (`NavigationShellUITests` and `NavigationStoreTests`). It needs Automation Mode.
-- `make verify-app` passed on #78's CI, and the full `make verify` passed locally on #83.
+- `make verify UNIT=A-05` covers the per-event snapshots, the 10k-event open, the hitch ratio and streaming while scrolled up.
+- `make verify-app` passed on CI for #78 and for #86 once the macOS 26 references were in. The full `make verify` passed locally on #83 and #86.
+- New snapshot tests fail on CI's first run until macOS 26 references are committed from the `snapshot-failures` artifact. To record locally, run `PICA_RECORD_SNAPSHOTS=1` on the matching macOS major.
 - The live eval costs credits, about 70 on Copilot Pro for the full 3-run suite. Ask the owner first. The command is in `docs/evals/README.md`.
 
 ## Deferred + open questions
@@ -122,4 +148,4 @@ The owner asked to review `PLAN.md` and the previous handoff, then run C-10 (eva
   - Should the merged `dev/*` branches and the stale worktrees be deleted?
 
 ## Pick up here
-Follow A-05 (session timeline) in its side session through to merge. A-06 and A-07 depend on it. C-11 is the open cost-router unit.
+A-06 (composer) and A-07 (approvals) are unblocked now that A-05 is done; neither depends on the other. C-11 is the open cost-router unit.
