@@ -1131,7 +1131,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | A-01 | App shell and engine supervision | E-05, S-05 | done |
 | A-02 | EngineClient | E-02 | done |
 | A-03 | Design system | F-01 | done |
-| A-04 | Navigation shell | A-01, A-02, A-03 | doing (PR open) |
+| A-04 | Navigation shell | A-01, A-02, A-03 | done |
 | A-05 | Session timeline | A-04 | todo |
 | A-06 | Composer | A-05 | todo |
 | A-07 | Approvals | A-05 | todo |
