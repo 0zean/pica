@@ -29,6 +29,31 @@ final class ComposerUITests: XCTestCase {
         fixture.quit()
     }
 
+    /// A-09 serves `files.quickOpen` and `files.list`, so files and skills complete too.
+    @MainActor
+    func testFilesAndSkillsComplete() throws {
+        let fixture = try ComposerFixture(files: [
+            "src/main.swift": "print(1)\n",
+            "docs/domain.md": "# Domain\n",
+            ".github/skills/review/SKILL.md": "# Review\n",
+        ])
+        defer { fixture.remove() }
+        let input = fixture.focusInput()
+        input.typeText("open @mainsw")
+        let file = fixture.app.descendants(matching: .any)["pica.composer.completion.file.atlas:src/main.swift"]
+        XCTAssertTrue(file.waitForExistence(timeout: 5), "typing @mainsw did not offer atlas:src/main.swift")
+        input.typeKey(.return, modifierFlags: [])
+        XCTAssertEqual(input.value as? String, "open @atlas:src/main.swift ")
+
+        // A skill starts a line; clear the text first.
+        input.typeKey("a", modifierFlags: .command)
+        input.typeKey(.delete, modifierFlags: [])
+        input.typeText("/rev")
+        let skill = fixture.app.descendants(matching: .any)["pica.composer.completion.skill.review"]
+        XCTAssertTrue(skill.waitForExistence(timeout: 5), "typing /rev did not offer the review skill")
+        fixture.quit()
+    }
+
     @MainActor
     func testCommandReturnSends() throws {
         let fixture = try ComposerFixture()
@@ -129,10 +154,10 @@ private final class ComposerFixture {
     let app: XCUIApplication
     let session: Session
 
-    init(scenario: String = "composer", prompt: String? = nil) throws {
+    init(scenario: String = "composer", prompt: String? = nil, files: [String: String] = [:]) throws {
         pica = try PicaUnderTest(scenario: scenario)
         app = pica.launch()
-        let path = try pica.makeRepository("atlas")
+        let path = try pica.makeRepository("atlas", files: files)
         session = try pica.withEngine { engine in
             let workspace = try await engine.createWorkspace("Atlas")
             let repo = try await engine.addRepo(at: path, to: workspace)

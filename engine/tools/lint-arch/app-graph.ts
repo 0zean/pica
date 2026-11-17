@@ -15,6 +15,8 @@ const allowedPackageDependencies: Readonly<Record<string, readonly string[]>> = 
   Timeline: ["EngineClient", "PicaProtocol", "DesignSystem"],
   // A-06: the composer under the timeline; a feature package of its own, so it does not depend on Timeline.
   Composer: ["EngineClient", "PicaProtocol", "DesignSystem"],
+  // A-09: the file tree, quick open and the read-only viewer; a feature package of its own.
+  Files: ["EngineClient", "PicaProtocol", "DesignSystem"],
   // A-08: the review of a session's changes; a feature package, shown by the app target in the session column.
   Review: ["EngineClient", "PicaProtocol", "DesignSystem"],
   // A-14: Settings, the ⌘K palette and the action registry; the app target runs the actions.

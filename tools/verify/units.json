@@ -882,10 +882,16 @@
   ],
   "A-09": [
     {
-      "check": "Fuzzy ranking table tests."
+      "check": "Fuzzy ranking table tests.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/files/ranking.test.ts packages/core/tests/files/service.test.ts"
     },
     {
-      "check": "A query over a 100,000-file index returns in under 50 ms."
+      "check": "A query over a 100,000-file index returns in under 50 ms.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/files/benchmark.test.ts packages/server/tests/files/quick-open-benchmark.test.ts"
+    },
+    {
+      "check": "UI tests: the file tree opens a file in the viewer and the external editor; ⌘P finds files across the workspace's repos; the composer completes files and skills.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/files/files.test.ts && cd .. && swift test --package-path app/Packages/Files && make app-ui-test-pica UI_TEST=FilesUITests && make app-ui-test-pica UI_TEST=ComposerUITests/testFilesAndSkillsComplete"
     }
   ],
   "A-10": [

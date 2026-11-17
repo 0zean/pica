@@ -71,24 +71,3 @@ private struct SelectedItem: View {
         }
     }
 }
-
-/// The toggleable trailing column. Changes, Files, Terminal, Usage and Context arrive with their own units.
-struct InspectorColumn: View {
-    var body: some View {
-        VStack(spacing: Spacing.small) {
-            Text("Inspector")
-                .font(Typography.headline)
-                .foregroundStyle(Palette.textPrimary)
-                .accessibilityAddTraits(.isHeader)
-            Text("Changes, files, terminal, usage and context appear here.")
-                .font(Typography.callout)
-                .foregroundStyle(Palette.textSecondary)
-                .multilineTextAlignment(.center)
-        }
-        .padding(Spacing.large)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Palette.background)
-        .accessibilityElement(children: .contain)
-        .accessibilityIdentifier("pica.inspector")
-    }
-}

@@ -31,6 +31,8 @@ final class PicaUnderTest {
     let timelineMetricsPath: String
     /// Where Pica writes `ComposerMetrics`' report.
     let composerMetricsPath: String
+    /// Where Pica appends the files it would open in the external editor (A-09).
+    let editorLogPath: String
     /// Where Pica writes `ReviewMetrics`' reports.
     let reviewMetricsPath: String
     private let scrollScript: Bool
@@ -50,6 +52,7 @@ final class PicaUnderTest {
         socketPath = home.appending(path: "picad.sock").path
         timelineMetricsPath = home.appending(path: "timeline-metrics.json").path
         composerMetricsPath = home.appending(path: "composer-metrics.json").path
+        editorLogPath = home.appending(path: "external-editor.log").path
         reviewMetricsPath = home.appending(path: "review-metrics.json").path
         XCTAssertLessThan(socketPath.utf8.count, 104, "\(socketPath) is longer than sun_path allows")
         if let managedPolicy {
@@ -74,6 +77,8 @@ final class PicaUnderTest {
             "PICA_REVIEW_METRICS_PATH": reviewMetricsPath,
             // A-07: no system notifications, so no test meets the permission prompt.
             "PICA_NOTIFICATIONS": "off",
+            // A-09: files to open in the external editor are logged here instead.
+            "PICA_EXTERNAL_EDITOR_LOG": editorLogPath,
         ]
         if scrollScript {
             environment["PICA_TIMELINE_SCROLL_SCRIPT"] = "1"
@@ -124,9 +129,9 @@ final class PicaUnderTest {
         return try outcome.get()
     }
 
-    /// An empty git repository with an `origin`, which `repo.addPath` accepts. The runner cannot run git, so the
-    /// few files git needs are written by hand.
-    func makeRepository(_ repoName: String) throws -> URL {
+    /// A git repository with an `origin`, which `repo.addPath` accepts, holding `files` (path to content) untracked.
+    /// The runner cannot run git, so the few files git needs are written by hand.
+    func makeRepository(_ repoName: String, files: [String: String] = [:]) throws -> URL {
         let root = home.appending(path: "repos/\(repoName)")
         let git = root.appending(path: ".git")
         for directory in ["objects", "refs/heads"] {
@@ -135,6 +140,11 @@ final class PicaUnderTest {
         try Data("ref: refs/heads/main\n".utf8).write(to: git.appending(path: "HEAD"))
         let config = "[core]\n\trepositoryformatversion = 0\n\tbare = false\n[remote \"origin\"]\n\turl = https://git.example.com/acme/\(repoName).git\n"
         try Data(config.utf8).write(to: git.appending(path: "config"))
+        for (path, content) in files {
+            let file = root.appending(path: path)
+            try FileManager.default.createDirectory(at: file.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try Data(content.utf8).write(to: file)
+        }
         return root
     }
 

@@ -25,6 +25,7 @@ import type {
   Delegator,
   EventLog,
   FanOutInfo,
+  FilesService,
   GitHubHost,
   McpHealthMonitor,
   McpImportService,
@@ -50,6 +51,7 @@ import { registerConfigHandlers } from "./config-handlers.ts";
 import type { EngineConfigAccess } from "./config-handlers.ts";
 import { registerEngineHandlers } from "./engine-handlers.ts";
 import { registerFanOutHandlers, toFanOutDto } from "./fanout-handlers.ts";
+import { registerFilesHandlers } from "./files-handlers.ts";
 import { registerGitHandlers } from "./git-handlers.ts";
 import type { EngineReviewOptions } from "./git-handlers.ts";
 import { registerMcpHealthHandlers, registerMcpPresetHandlers } from "./mcp-handlers.ts";
@@ -119,6 +121,8 @@ export interface EngineOptions {
   // M-07: answers `mcp.importCandidates` and `mcp.import`. Repo ids resolve through `workspaces`
   // unless `repoRoot` is given.
   readonly mcpImport?: EngineMcpImportOptions;
+  // A-09: answers `files.list`, `files.read` and `files.quickOpen`.
+  readonly files?: FilesService;
   // A-08: answers `git.*` and `github.createPullRequest` for the review.
   readonly review?: EngineReviewOptions;
 }
@@ -187,6 +191,9 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
   }
   if (options.repos !== undefined) {
     registerRepoHandlers(router, options.repos);
+  }
+  if (options.files !== undefined) {
+    registerFilesHandlers(router, options.files);
   }
   if (options.review !== undefined) {
     registerGitHandlers(router, options.review);

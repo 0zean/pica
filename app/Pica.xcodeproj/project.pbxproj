@@ -13,6 +13,7 @@
 		A10000000000000000000024 /* AppShell in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000034 /* AppShell */; };
 		A10000000000000000000025 /* Timeline in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000035 /* Timeline */; };
 		A1000000000000000000C001 /* Composer in Frameworks */ = {isa = PBXBuildFile; productRef = A1000000000000000000C002 /* Composer */; };
+		A1000000000000000000F001 /* Files in Frameworks */ = {isa = PBXBuildFile; productRef = A1000000000000000000F002 /* Files */; };
 		A1000000000000000000A801 /* Review in Frameworks */ = {isa = PBXBuildFile; productRef = A1000000000000000000A802 /* Review */; };
 		A10000000000000000A14001 /* PicaSettings in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000A14002 /* PicaSettings */; };
 		A10000000000000000000121 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000131 /* DesignSystem */; };
@@ -80,6 +81,7 @@
 				A10000000000000000000024 /* AppShell in Frameworks */,
 				A10000000000000000000025 /* Timeline in Frameworks */,
 				A1000000000000000000C001 /* Composer in Frameworks */,
+				A1000000000000000000F001 /* Files in Frameworks */,
 				A1000000000000000000A801 /* Review in Frameworks */,
 				A10000000000000000A14001 /* PicaSettings in Frameworks */,
 			);
@@ -162,6 +164,7 @@
 				A10000000000000000000034 /* AppShell */,
 				A10000000000000000000035 /* Timeline */,
 				A1000000000000000000C002 /* Composer */,
+				A1000000000000000000F002 /* Files */,
 				A1000000000000000000A802 /* Review */,
 				A10000000000000000A14002 /* PicaSettings */,
 			);
@@ -282,6 +285,7 @@
 				A10000000000000000000064 /* XCLocalSwiftPackageReference "Packages/AppShell" */,
 				A10000000000000000000065 /* XCLocalSwiftPackageReference "Packages/Timeline" */,
 				A1000000000000000000C003 /* XCLocalSwiftPackageReference "Packages/Composer" */,
+				A1000000000000000000F003 /* XCLocalSwiftPackageReference "Packages/Files" */,
 				A1000000000000000000A803 /* XCLocalSwiftPackageReference "Packages/Review" */,
 				A10000000000000000A14003 /* XCLocalSwiftPackageReference "Packages/PicaSettings" */,
 			);
@@ -628,6 +632,10 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/Composer;
 		};
+		A1000000000000000000F003 /* XCLocalSwiftPackageReference "Packages/Files" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/Files;
+		};
 		A1000000000000000000A803 /* XCLocalSwiftPackageReference "Packages/Review" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/Review;
@@ -662,6 +670,10 @@
 		A1000000000000000000C002 /* Composer */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Composer;
+		};
+		A1000000000000000000F002 /* Files */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Files;
 		};
 		A1000000000000000000A802 /* Review */ = {
 			isa = XCSwiftPackageProductDependency;
