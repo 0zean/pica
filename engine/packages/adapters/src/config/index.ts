@@ -27,3 +27,5 @@ export {
   managedPreferencesPaths,
 } from "./managed-policy-paths.ts";
 export { appendPermissionRule, type PermissionRuleWrite } from "./permission-rule-writer.ts";
+export { setConfigValue } from "./config-value-writer.ts";
+export type { ConfigFileWrite } from "./config-file-edit.ts";

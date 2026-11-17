@@ -101,12 +101,20 @@ const UserHooks = z.strictObject({
   beforeCommit: z.array(UserHook).default([]).describe("A hook that exits non-zero blocks the commit"),
 });
 
+// A-14: the app's shortcuts, by action id (docs/settings.md). An action not listed keeps its
+// default; an empty string leaves it without one. The app validates ids and shortcuts.
+const Keybindings = z.record(
+  z.string().regex(/^[a-z][A-Za-z0-9]*$/).describe("An action id from the app's action registry"),
+  z.string().describe('Modifiers and a key joined by "+", e.g. "cmd+shift+k"; empty for no shortcut'),
+);
+
 export const PicaConfig = z.strictObject({
   $schema: z.string().optional(),
   routing: Routing.prefault({}),
   budget: Budget.prefault({}),
   permissions: Permissions.prefault({}),
   hooks: UserHooks.prefault({}),
+  keybindings: Keybindings.default({}),
 });
 
 export type PicaConfig = z.output<typeof PicaConfig>;
