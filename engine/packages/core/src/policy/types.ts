@@ -100,6 +100,7 @@ export type RuleId =
   | "safety.shell-outside-write-roots"
   | "cost.large-read"
   | "cost.shell-write"
+  | "cost.delegation-limit"
   | "cost.oversized-output"
   | `permission.mcp-tool:${string}`
   | "permission.mcp-read-only"

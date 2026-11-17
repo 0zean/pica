@@ -1,0 +1,2003 @@
+{
+  "suite": "C-10",
+  "version": 1,
+  "runtime": "copilot",
+  "generatedAt": "2026-11-17T05:22:44.851Z",
+  "tierSettings": {
+    "reasoning": "gpt-5.6-luna",
+    "worker": "auto"
+  },
+  "stopped": null,
+  "profiles": [
+    {
+      "profile": "off",
+      "tiers": {
+        "reasoning": [
+          "gpt-5.6-luna"
+        ],
+        "worker": [
+          "copilot-search-a"
+        ]
+      },
+      "totals": {
+        "tasks": 15,
+        "succeeded": 15,
+        "reasoningInputTokens": 131893,
+        "reasoningCachedInputTokens": 933260,
+        "reasoningOutputTokens": 12215,
+        "workerInputTokens": 3638,
+        "workerCachedInputTokens": 5727,
+        "workerOutputTokens": 271,
+        "credits": 6.628640665,
+        "wallTimeMs": 206329
+      },
+      "tasks": [
+        {
+          "taskId": "schema-column-owner",
+          "category": "large-file-question",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 8050,
+          "reasoningCachedInputTokens": 31722,
+          "reasoningOutputTokens": 154,
+          "workerInputTokens": 0,
+          "workerCachedInputTokens": 0,
+          "workerOutputTokens": 0,
+          "credits": 0.283081333,
+          "wallTimeMs": 5941,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 39767,
+            "max": 39779
+          },
+          "creditsSpread": {
+            "min": 0.219956,
+            "max": 0.408856
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "the answer names payout_reconciliations",
+              "costDecisions": 0,
+              "reasoningInputTokens": 13527,
+              "reasoningCachedInputTokens": 26243,
+              "reasoningOutputTokens": 152,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.408856,
+              "wallTimeMs": 6705
+            },
+            {
+              "succeeded": true,
+              "detail": "the answer names payout_reconciliations",
+              "costDecisions": 0,
+              "reasoningInputTokens": 5313,
+              "reasoningCachedInputTokens": 34466,
+              "reasoningOutputTokens": 156,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.220432,
+              "wallTimeMs": 5461
+            },
+            {
+              "succeeded": true,
+              "detail": "the answer names payout_reconciliations",
+              "costDecisions": 0,
+              "reasoningInputTokens": 5309,
+              "reasoningCachedInputTokens": 34458,
+              "reasoningOutputTokens": 153,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.219956,
+              "wallTimeMs": 5657
+            }
+          ]
+        },
+        {
+          "taskId": "settlement-log-error",
+          "category": "large-file-question",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 5203,
+          "reasoningCachedInputTokens": 30113,
+          "reasoningOutputTokens": 149,
+          "workerInputTokens": 0,
+          "workerCachedInputTokens": 0,
+          "workerOutputTokens": 0,
+          "credits": 0.208133333,
+          "wallTimeMs": 5249,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 26299,
+            "max": 39826
+          },
+          "creditsSpread": {
+            "min": 0.174993,
+            "max": 0.224718
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "the answer names req-9c41e07d",
+              "costDecisions": 0,
+              "reasoningInputTokens": 5296,
+              "reasoningCachedInputTokens": 34527,
+              "reasoningOutputTokens": 194,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.224689,
+              "wallTimeMs": 5893
+            },
+            {
+              "succeeded": true,
+              "detail": "the answer names req-9c41e07d",
+              "costDecisions": 0,
+              "reasoningInputTokens": 5015,
+              "reasoningCachedInputTokens": 21284,
+              "reasoningOutputTokens": 59,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.174993,
+              "wallTimeMs": 4319
+            },
+            {
+              "succeeded": true,
+              "detail": "the answer names req-9c41e07d",
+              "costDecisions": 0,
+              "reasoningInputTokens": 5297,
+              "reasoningCachedInputTokens": 34529,
+              "reasoningOutputTokens": 194,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.224718,
+              "wallTimeMs": 5535
+            }
+          ]
+        },
+        {
+          "taskId": "error-code-value",
+          "category": "large-file-question",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 5159,
+          "reasoningCachedInputTokens": 30098,
+          "reasoningOutputTokens": 148,
+          "workerInputTokens": 0,
+          "workerCachedInputTokens": 0,
+          "workerOutputTokens": 0,
+          "credits": 0.206898667,
+          "wallTimeMs": 4745,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 26255,
+            "max": 39763
+          },
+          "creditsSpread": {
+            "min": 0.17446,
+            "max": 0.223294
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "the answer names 47213",
+              "costDecisions": 0,
+              "reasoningInputTokens": 5251,
+              "reasoningCachedInputTokens": 34512,
+              "reasoningOutputTokens": 192,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.223294,
+              "wallTimeMs": 5188
+            },
+            {
+              "succeeded": true,
+              "detail": "the answer names 47213",
+              "costDecisions": 0,
+              "reasoningInputTokens": 5247,
+              "reasoningCachedInputTokens": 34506,
+              "reasoningOutputTokens": 190,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.222942,
+              "wallTimeMs": 5880
+            },
+            {
+              "succeeded": true,
+              "detail": "the answer names 47213",
+              "costDecisions": 0,
+              "reasoningInputTokens": 4980,
+              "reasoningCachedInputTokens": 21275,
+              "reasoningOutputTokens": 62,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.17446,
+              "wallTimeMs": 3166
+            }
+          ]
+        },
+        {
+          "taskId": "allocation-bug",
+          "category": "comprehension",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 14995,
+          "reasoningCachedInputTokens": 57389,
+          "reasoningOutputTokens": 434,
+          "workerInputTokens": 0,
+          "workerCachedInputTokens": 0,
+          "workerOutputTokens": 0,
+          "credits": 0.541641333,
+          "wallTimeMs": 10484,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 54824,
+            "max": 82364
+          },
+          "creditsSpread": {
+            "min": 0.471145,
+            "max": 0.578242
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "the answer names allocateSEK",
+              "costDecisions": 0,
+              "reasoningInputTokens": 14394,
+              "reasoningCachedInputTokens": 40430,
+              "reasoningOutputTokens": 254,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.471145,
+              "wallTimeMs": 7046
+            },
+            {
+              "succeeded": true,
+              "detail": "the answer names allocateSEK",
+              "costDecisions": 0,
+              "reasoningInputTokens": 14228,
+              "reasoningCachedInputTokens": 68136,
+              "reasoningOutputTokens": 697,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.575537,
+              "wallTimeMs": 13936
+            },
+            {
+              "succeeded": true,
+              "detail": "the answer names allocateSEK",
+              "costDecisions": 0,
+              "reasoningInputTokens": 16364,
+              "reasoningCachedInputTokens": 63601,
+              "reasoningOutputTokens": 350,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.578242,
+              "wallTimeMs": 10470
+            }
+          ]
+        },
+        {
+          "taskId": "report-total-bug",
+          "category": "comprehension",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 13694,
+          "reasoningCachedInputTokens": 55051,
+          "reasoningOutputTokens": 721,
+          "workerInputTokens": 0,
+          "workerCachedInputTokens": 0,
+          "workerOutputTokens": 0,
+          "credits": 0.538904333,
+          "wallTimeMs": 13674,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 44392,
+            "max": 87999
+          },
+          "creditsSpread": {
+            "min": 0.343728,
+            "max": 0.640807
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "the answer names reservesSummary",
+              "costDecisions": 0,
+              "reasoningInputTokens": 16330,
+              "reasoningCachedInputTokens": 57514,
+              "reasoningOutputTokens": 908,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.632178,
+              "wallTimeMs": 12637
+            },
+            {
+              "succeeded": true,
+              "detail": "the answer names reservesSummary",
+              "costDecisions": 0,
+              "reasoningInputTokens": 8963,
+              "reasoningCachedInputTokens": 35429,
+              "reasoningOutputTokens": 407,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.343728,
+              "wallTimeMs": 13229
+            },
+            {
+              "succeeded": true,
+              "detail": "the answer names reservesSummary",
+              "costDecisions": 0,
+              "reasoningInputTokens": 15788,
+              "reasoningCachedInputTokens": 72211,
+              "reasoningOutputTokens": 848,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.640807,
+              "wallTimeMs": 15157
+            }
+          ]
+        },
+        {
+          "taskId": "query-filter-bug",
+          "category": "comprehension",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 7904,
+          "reasoningCachedInputTokens": 53781,
+          "reasoningOutputTokens": 368,
+          "workerInputTokens": 3638,
+          "workerCachedInputTokens": 5727,
+          "workerOutputTokens": 271,
+          "credits": 0.349296333,
+          "wallTimeMs": 11390,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 42918,
+            "max": 72333
+          },
+          "creditsSpread": {
+            "min": 0.312733,
+            "max": 0.380382
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "the answer names terminalsQuery",
+              "costDecisions": 0,
+              "reasoningInputTokens": 8337,
+              "reasoningCachedInputTokens": 63996,
+              "reasoningOutputTokens": 367,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.380382,
+              "wallTimeMs": 10214
+            },
+            {
+              "succeeded": true,
+              "detail": "the answer names terminalsQuery",
+              "costDecisions": 0,
+              "reasoningInputTokens": 7381,
+              "reasoningCachedInputTokens": 62422,
+              "reasoningOutputTokens": 379,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.354774,
+              "wallTimeMs": 11096
+            },
+            {
+              "succeeded": true,
+              "detail": "the answer names terminalsQuery",
+              "costDecisions": 0,
+              "reasoningInputTokens": 7994,
+              "reasoningCachedInputTokens": 34924,
+              "reasoningOutputTokens": 359,
+              "workerInputTokens": 10914,
+              "workerCachedInputTokens": 17181,
+              "workerOutputTokens": 814,
+              "credits": 0.312733,
+              "wallTimeMs": 12859
+            }
+          ]
+        },
+        {
+          "taskId": "money-tests",
+          "category": "test-scaffolding",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 8047,
+          "reasoningCachedInputTokens": 80780,
+          "reasoningOutputTokens": 1051,
+          "workerInputTokens": 0,
+          "workerCachedInputTokens": 0,
+          "workerOutputTokens": 0,
+          "credits": 0.488813333,
+          "wallTimeMs": 18046,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 86609,
+            "max": 92338
+          },
+          "creditsSpread": {
+            "min": 0.466594,
+            "max": 0.524994
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "test/money.test.mjs has at least 4 cases, passes, and fails on a broken src/money.mjs",
+              "costDecisions": 0,
+              "reasoningInputTokens": 7468,
+              "reasoningCachedInputTokens": 79141,
+              "reasoningOutputTokens": 1083,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.474852,
+              "wallTimeMs": 22137
+            },
+            {
+              "succeeded": true,
+              "detail": "test/money.test.mjs has at least 4 cases, passes, and fails on a broken src/money.mjs",
+              "costDecisions": 0,
+              "reasoningInputTokens": 8936,
+              "reasoningCachedInputTokens": 83402,
+              "reasoningOutputTokens": 1124,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.524994,
+              "wallTimeMs": 18354
+            },
+            {
+              "succeeded": true,
+              "detail": "test/money.test.mjs has at least 4 cases, passes, and fails on a broken src/money.mjs",
+              "costDecisions": 0,
+              "reasoningInputTokens": 7738,
+              "reasoningCachedInputTokens": 79797,
+              "reasoningOutputTokens": 947,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.466594,
+              "wallTimeMs": 13648
+            }
+          ]
+        },
+        {
+          "taskId": "slug-tests",
+          "category": "test-scaffolding",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 7648,
+          "reasoningCachedInputTokens": 90322,
+          "reasoningOutputTokens": 1054,
+          "workerInputTokens": 0,
+          "workerCachedInputTokens": 0,
+          "workerOutputTokens": 0,
+          "credits": 0.498176333,
+          "wallTimeMs": 18091,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 86749,
+            "max": 103635
+          },
+          "creditsSpread": {
+            "min": 0.456517,
+            "max": 0.525692
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "test/slug.test.mjs has at least 3 cases, passes, and fails on a broken src/slug.mjs",
+              "costDecisions": 0,
+              "reasoningInputTokens": 7363,
+              "reasoningCachedInputTokens": 79386,
+              "reasoningOutputTokens": 948,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.456517,
+              "wallTimeMs": 16214
+            },
+            {
+              "succeeded": true,
+              "detail": "test/slug.test.mjs has at least 3 cases, passes, and fails on a broken src/slug.mjs",
+              "costDecisions": 0,
+              "reasoningInputTokens": 7849,
+              "reasoningCachedInputTokens": 95786,
+              "reasoningOutputTokens": 1150,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.525692,
+              "wallTimeMs": 18261
+            },
+            {
+              "succeeded": true,
+              "detail": "test/slug.test.mjs has at least 3 cases, passes, and fails on a broken src/slug.mjs",
+              "costDecisions": 0,
+              "reasoningInputTokens": 7731,
+              "reasoningCachedInputTokens": 95795,
+              "reasoningOutputTokens": 1063,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.51232,
+              "wallTimeMs": 19798
+            }
+          ]
+        },
+        {
+          "taskId": "backoff-tests",
+          "category": "test-scaffolding",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 7166,
+          "reasoningCachedInputTokens": 74188,
+          "reasoningOutputTokens": 910,
+          "workerInputTokens": 0,
+          "workerCachedInputTokens": 0,
+          "workerOutputTokens": 0,
+          "credits": 0.436681667,
+          "wallTimeMs": 14767,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 72067,
+            "max": 86142
+          },
+          "creditsSpread": {
+            "min": 0.405261,
+            "max": 0.461654
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "test/retry.test.mjs has at least 3 cases, passes, and fails on a broken src/retry.mjs",
+              "costDecisions": 0,
+              "reasoningInputTokens": 7180,
+              "reasoningCachedInputTokens": 78962,
+              "reasoningOutputTokens": 1036,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.461654,
+              "wallTimeMs": 14460
+            },
+            {
+              "succeeded": true,
+              "detail": "test/retry.test.mjs has at least 3 cases, passes, and fails on a broken src/retry.mjs",
+              "costDecisions": 0,
+              "reasoningInputTokens": 7104,
+              "reasoningCachedInputTokens": 78750,
+              "reasoningOutputTokens": 901,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.44313,
+              "wallTimeMs": 16269
+            },
+            {
+              "succeeded": true,
+              "detail": "test/retry.test.mjs has at least 3 cases, passes, and fails on a broken src/retry.mjs",
+              "costDecisions": 0,
+              "reasoningInputTokens": 7214,
+              "reasoningCachedInputTokens": 64853,
+              "reasoningOutputTokens": 794,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.405261,
+              "wallTimeMs": 13573
+            }
+          ]
+        },
+        {
+          "taskId": "tsconfig",
+          "category": "config-generation",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 5597,
+          "reasoningCachedInputTokens": 48260,
+          "reasoningOutputTokens": 325,
+          "workerInputTokens": 0,
+          "workerCachedInputTokens": 0,
+          "workerOutputTokens": 0,
+          "credits": 0.275392667,
+          "wallTimeMs": 8464,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 53543,
+            "max": 54409
+          },
+          "creditsSpread": {
+            "min": 0.269523,
+            "max": 0.283668
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "tsconfig.json has the required options and includes src",
+              "costDecisions": 0,
+              "reasoningInputTokens": 5479,
+              "reasoningCachedInputTokens": 48064,
+              "reasoningOutputTokens": 304,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.269523,
+              "wallTimeMs": 9042
+            },
+            {
+              "succeeded": true,
+              "detail": "tsconfig.json has the required options and includes src",
+              "costDecisions": 0,
+              "reasoningInputTokens": 5503,
+              "reasoningCachedInputTokens": 48116,
+              "reasoningOutputTokens": 327,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.272987,
+              "wallTimeMs": 8117
+            },
+            {
+              "succeeded": true,
+              "detail": "tsconfig.json has the required options and includes src",
+              "costDecisions": 0,
+              "reasoningInputTokens": 5810,
+              "reasoningCachedInputTokens": 48599,
+              "reasoningOutputTokens": 344,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.283668,
+              "wallTimeMs": 8233
+            }
+          ]
+        },
+        {
+          "taskId": "prettier-config",
+          "category": "config-generation",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 5724,
+          "reasoningCachedInputTokens": 48410,
+          "reasoningOutputTokens": 457,
+          "workerInputTokens": 0,
+          "workerCachedInputTokens": 0,
+          "workerOutputTokens": 0,
+          "credits": 0.294747667,
+          "wallTimeMs": 11064,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 53972,
+            "max": 54431
+          },
+          "creditsSpread": {
+            "min": 0.285841,
+            "max": 0.300843
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": ".prettierrc.json matches the code style",
+              "costDecisions": 0,
+              "reasoningInputTokens": 5695,
+              "reasoningCachedInputTokens": 48304,
+              "reasoningOutputTokens": 516,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.300843,
+              "wallTimeMs": 10844
+            },
+            {
+              "succeeded": true,
+              "detail": ".prettierrc.json matches the code style",
+              "costDecisions": 0,
+              "reasoningInputTokens": 5685,
+              "reasoningCachedInputTokens": 48287,
+              "reasoningOutputTokens": 491,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.297559,
+              "wallTimeMs": 11486
+            },
+            {
+              "succeeded": true,
+              "detail": ".prettierrc.json matches the code style",
+              "costDecisions": 0,
+              "reasoningInputTokens": 5793,
+              "reasoningCachedInputTokens": 48638,
+              "reasoningOutputTokens": 365,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.285841,
+              "wallTimeMs": 10862
+            }
+          ]
+        },
+        {
+          "taskId": "service-ports",
+          "category": "config-generation",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 8767,
+          "reasoningCachedInputTokens": 107673,
+          "reasoningOutputTokens": 1464,
+          "workerInputTokens": 0,
+          "workerCachedInputTokens": 0,
+          "workerOutputTokens": 0,
+          "credits": 0.610077667,
+          "wallTimeMs": 24047,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 105106,
+            "max": 133404
+          },
+          "creditsSpread": {
+            "min": 0.570015,
+            "max": 0.632717
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "config/ports.json maps every service to its port",
+              "costDecisions": 0,
+              "reasoningInputTokens": 8516,
+              "reasoningCachedInputTokens": 96590,
+              "reasoningOutputTokens": 1367,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.570015,
+              "wallTimeMs": 21427
+            },
+            {
+              "succeeded": true,
+              "detail": "config/ports.json maps every service to its port",
+              "costDecisions": 0,
+              "reasoningInputTokens": 9476,
+              "reasoningCachedInputTokens": 101333,
+              "reasoningOutputTokens": 1567,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.627501,
+              "wallTimeMs": 23598
+            },
+            {
+              "succeeded": true,
+              "detail": "config/ports.json maps every service to its port",
+              "costDecisions": 0,
+              "reasoningInputTokens": 8308,
+              "reasoningCachedInputTokens": 125096,
+              "reasoningOutputTokens": 1458,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.632717,
+              "wallTimeMs": 27115
+            }
+          ]
+        },
+        {
+          "taskId": "rename-fmt-cents",
+          "category": "multi-file-edit",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 10376,
+          "reasoningCachedInputTokens": 60150,
+          "reasoningOutputTokens": 629,
+          "workerInputTokens": 0,
+          "workerCachedInputTokens": 0,
+          "workerOutputTokens": 0,
+          "credits": 0.455123333,
+          "wallTimeMs": 13481,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 64672,
+            "max": 78667
+          },
+          "creditsSpread": {
+            "min": 0.442424,
+            "max": 0.473266
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "fmtCents is renamed to formatCents everywhere, every module loads, and the tests pass",
+              "costDecisions": 0,
+              "reasoningInputTokens": 9307,
+              "reasoningCachedInputTokens": 69360,
+              "reasoningOutputTokens": 653,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.44968,
+              "wallTimeMs": 14062
+            },
+            {
+              "succeeded": true,
+              "detail": "fmtCents is renamed to formatCents everywhere, every module loads, and the tests pass",
+              "costDecisions": 0,
+              "reasoningInputTokens": 10140,
+              "reasoningCachedInputTokens": 54532,
+              "reasoningOutputTokens": 666,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.442424,
+              "wallTimeMs": 13613
+            },
+            {
+              "succeeded": true,
+              "detail": "fmtCents is renamed to formatCents everywhere, every module loads, and the tests pass",
+              "costDecisions": 0,
+              "reasoningInputTokens": 11682,
+              "reasoningCachedInputTokens": 56558,
+              "reasoningOutputTokens": 568,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.473266,
+              "wallTimeMs": 12769
+            }
+          ]
+        },
+        {
+          "taskId": "console-to-logger",
+          "category": "multi-file-edit",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 14877,
+          "reasoningCachedInputTokens": 108382,
+          "reasoningOutputTokens": 3415,
+          "workerInputTokens": 0,
+          "workerCachedInputTokens": 0,
+          "workerOutputTokens": 0,
+          "credits": 0.998346333,
+          "wallTimeMs": 31899,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 86492,
+            "max": 174679
+          },
+          "creditsSpread": {
+            "min": 0.583592,
+            "max": 1.72126
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "console.log is replaced by logger.info, every module loads, and the tests pass",
+              "costDecisions": 0,
+              "reasoningInputTokens": 12101,
+              "reasoningCachedInputTokens": 74391,
+              "reasoningOutputTokens": 1103,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.583592,
+              "wallTimeMs": 17060
+            },
+            {
+              "succeeded": true,
+              "detail": "console.log is replaced by logger.info, every module loads, and the tests pass",
+              "costDecisions": 0,
+              "reasoningInputTokens": 19714,
+              "reasoningCachedInputTokens": 154965,
+              "reasoningOutputTokens": 7655,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 1.72126,
+              "wallTimeMs": 57568
+            },
+            {
+              "succeeded": true,
+              "detail": "console.log is replaced by logger.info, every module loads, and the tests pass",
+              "costDecisions": 0,
+              "reasoningInputTokens": 12815,
+              "reasoningCachedInputTokens": 95791,
+              "reasoningOutputTokens": 1486,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.690187,
+              "wallTimeMs": 21070
+            }
+          ]
+        },
+        {
+          "taskId": "license-headers",
+          "category": "multi-file-edit",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 8686,
+          "reasoningCachedInputTokens": 56941,
+          "reasoningOutputTokens": 936,
+          "workerInputTokens": 0,
+          "workerCachedInputTokens": 0,
+          "workerOutputTokens": 0,
+          "credits": 0.443326333,
+          "wallTimeMs": 14987,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 56139,
+            "max": 79735
+          },
+          "creditsSpread": {
+            "min": 0.349767,
+            "max": 0.50802
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "every module starts with the license line and is otherwise unchanged",
+              "costDecisions": 0,
+              "reasoningInputTokens": 9640,
+              "reasoningCachedInputTokens": 51366,
+              "reasoningOutputTokens": 1071,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.472192,
+              "wallTimeMs": 15402
+            },
+            {
+              "succeeded": true,
+              "detail": "every module starts with the license line and is otherwise unchanged",
+              "costDecisions": 0,
+              "reasoningInputTokens": 9695,
+              "reasoningCachedInputTokens": 70040,
+              "reasoningOutputTokens": 1047,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.50802,
+              "wallTimeMs": 17198
+            },
+            {
+              "succeeded": true,
+              "detail": "every module starts with the license line and is otherwise unchanged",
+              "costDecisions": 0,
+              "reasoningInputTokens": 6723,
+              "reasoningCachedInputTokens": 49416,
+              "reasoningOutputTokens": 691,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.349767,
+              "wallTimeMs": 12361
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "profile": "balanced",
+      "tiers": {
+        "reasoning": [
+          "gpt-5.6-luna"
+        ],
+        "worker": [
+          "claude-haiku-5.5",
+          "copilot-search-a",
+          "gpt-5.6-luna"
+        ]
+      },
+      "totals": {
+        "tasks": 15,
+        "succeeded": 15,
+        "reasoningInputTokens": 134990,
+        "reasoningCachedInputTokens": 1019693,
+        "reasoningOutputTokens": 11541,
+        "workerInputTokens": 70613,
+        "workerCachedInputTokens": 164133,
+        "workerOutputTokens": 16313,
+        "credits": 8.423142167,
+        "wallTimeMs": 289685
+      },
+      "tasks": [
+        {
+          "taskId": "schema-column-owner",
+          "category": "large-file-question",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 8371,
+          "reasoningCachedInputTokens": 31991,
+          "reasoningOutputTokens": 153,
+          "workerInputTokens": 9935,
+          "workerCachedInputTokens": 8592,
+          "workerOutputTokens": 703,
+          "credits": 0.4588765,
+          "wallTimeMs": 9910,
+          "costDecisions": 1,
+          "reasoningInputSpread": {
+            "min": 40316,
+            "max": 40398
+          },
+          "creditsSpread": {
+            "min": 0.380527,
+            "max": 0.6032035
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "the answer names payout_reconciliations",
+              "costDecisions": 1,
+              "reasoningInputTokens": 13689,
+              "reasoningCachedInputTokens": 26682,
+              "reasoningOutputTokens": 155,
+              "workerInputTokens": 11863,
+              "workerCachedInputTokens": 6662,
+              "workerOutputTokens": 695,
+              "credits": 0.6032035,
+              "wallTimeMs": 9519
+            },
+            {
+              "succeeded": true,
+              "detail": "the answer names payout_reconciliations",
+              "costDecisions": 1,
+              "reasoningInputTokens": 5674,
+              "reasoningCachedInputTokens": 34642,
+              "reasoningOutputTokens": 152,
+              "workerInputTokens": 8974,
+              "workerCachedInputTokens": 9563,
+              "workerOutputTokens": 602,
+              "credits": 0.380527,
+              "wallTimeMs": 9795
+            },
+            {
+              "succeeded": true,
+              "detail": "the answer names payout_reconciliations",
+              "costDecisions": 1,
+              "reasoningInputTokens": 5749,
+              "reasoningCachedInputTokens": 34649,
+              "reasoningOutputTokens": 153,
+              "workerInputTokens": 8968,
+              "workerCachedInputTokens": 9551,
+              "workerOutputTokens": 811,
+              "credits": 0.392899,
+              "wallTimeMs": 10415
+            }
+          ]
+        },
+        {
+          "taskId": "settlement-log-error",
+          "category": "large-file-question",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 5875,
+          "reasoningCachedInputTokens": 43910,
+          "reasoningOutputTokens": 239,
+          "workerInputTokens": 829,
+          "workerCachedInputTokens": 6224,
+          "workerOutputTokens": 314,
+          "credits": 0.295160333,
+          "wallTimeMs": 9209,
+          "costDecisions": 1,
+          "reasoningInputSpread": {
+            "min": 40483,
+            "max": 68335
+          },
+          "creditsSpread": {
+            "min": 0.2639445,
+            "max": 0.348315
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "the answer names req-9c41e07d",
+              "costDecisions": 1,
+              "reasoningInputTokens": 5743,
+              "reasoningCachedInputTokens": 34740,
+              "reasoningOutputTokens": 185,
+              "workerInputTokens": 827,
+              "workerCachedInputTokens": 6222,
+              "workerOutputTokens": 252,
+              "credits": 0.2639445,
+              "wallTimeMs": 8706
+            },
+            {
+              "succeeded": true,
+              "detail": "the answer names req-9c41e07d",
+              "costDecisions": 1,
+              "reasoningInputTokens": 6085,
+              "reasoningCachedInputTokens": 62250,
+              "reasoningOutputTokens": 347,
+              "workerInputTokens": 830,
+              "workerCachedInputTokens": 6225,
+              "workerOutputTokens": 279,
+              "credits": 0.348315,
+              "wallTimeMs": 10424
+            },
+            {
+              "succeeded": true,
+              "detail": "the answer names req-9c41e07d",
+              "costDecisions": 1,
+              "reasoningInputTokens": 5797,
+              "reasoningCachedInputTokens": 34740,
+              "reasoningOutputTokens": 185,
+              "workerInputTokens": 829,
+              "workerCachedInputTokens": 6224,
+              "workerOutputTokens": 410,
+              "credits": 0.2732215,
+              "wallTimeMs": 8497
+            }
+          ]
+        },
+        {
+          "taskId": "error-code-value",
+          "category": "large-file-question",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 5698,
+          "reasoningCachedInputTokens": 34643,
+          "reasoningOutputTokens": 148,
+          "workerInputTokens": 785,
+          "workerCachedInputTokens": 6220,
+          "workerOutputTokens": 355,
+          "credits": 0.262785167,
+          "wallTimeMs": 8382,
+          "costDecisions": 1,
+          "reasoningInputSpread": {
+            "min": 40330,
+            "max": 40348
+          },
+          "creditsSpread": {
+            "min": 0.2623835,
+            "max": 0.2630825
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "the answer names 47213",
+              "costDecisions": 1,
+              "reasoningInputTokens": 5697,
+              "reasoningCachedInputTokens": 34633,
+              "reasoningOutputTokens": 144,
+              "workerInputTokens": 785,
+              "workerCachedInputTokens": 6220,
+              "workerOutputTokens": 357,
+              "credits": 0.2623835,
+              "wallTimeMs": 7162
+            },
+            {
+              "succeeded": true,
+              "detail": "the answer names 47213",
+              "costDecisions": 1,
+              "reasoningInputTokens": 5699,
+              "reasoningCachedInputTokens": 34646,
+              "reasoningOutputTokens": 148,
+              "workerInputTokens": 785,
+              "workerCachedInputTokens": 6220,
+              "workerOutputTokens": 356,
+              "credits": 0.2628895,
+              "wallTimeMs": 8793
+            },
+            {
+              "succeeded": true,
+              "detail": "the answer names 47213",
+              "costDecisions": 1,
+              "reasoningInputTokens": 5698,
+              "reasoningCachedInputTokens": 34650,
+              "reasoningOutputTokens": 151,
+              "workerInputTokens": 785,
+              "workerCachedInputTokens": 6220,
+              "workerOutputTokens": 353,
+              "credits": 0.2630825,
+              "wallTimeMs": 9191
+            }
+          ]
+        },
+        {
+          "taskId": "allocation-bug",
+          "category": "comprehension",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 8732,
+          "reasoningCachedInputTokens": 36565,
+          "reasoningOutputTokens": 247,
+          "workerInputTokens": 15458,
+          "workerCachedInputTokens": 28916,
+          "workerOutputTokens": 1605,
+          "credits": 0.4546045,
+          "wallTimeMs": 14767,
+          "costDecisions": 1,
+          "reasoningInputSpread": {
+            "min": 40622,
+            "max": 54603
+          },
+          "creditsSpread": {
+            "min": 0.4303305,
+            "max": 0.486439
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "the answer names allocateSEK",
+              "costDecisions": 1,
+              "reasoningInputTokens": 5970,
+              "reasoningCachedInputTokens": 34694,
+              "reasoningOutputTokens": 175,
+              "workerInputTokens": 8538,
+              "workerCachedInputTokens": 16431,
+              "workerOutputTokens": 1703,
+              "credits": 0.447044,
+              "wallTimeMs": 15265
+            },
+            {
+              "succeeded": true,
+              "detail": "the answer names allocateSEK",
+              "costDecisions": 1,
+              "reasoningInputTokens": 14306,
+              "reasoningCachedInputTokens": 40297,
+              "reasoningOutputTokens": 402,
+              "workerInputTokens": 30499,
+              "workerCachedInputTokens": 54389,
+              "workerOutputTokens": 1379,
+              "credits": 0.486439,
+              "wallTimeMs": 13213
+            },
+            {
+              "succeeded": true,
+              "detail": "the answer names allocateSEK",
+              "costDecisions": 1,
+              "reasoningInputTokens": 5919,
+              "reasoningCachedInputTokens": 34703,
+              "reasoningOutputTokens": 163,
+              "workerInputTokens": 7337,
+              "workerCachedInputTokens": 15927,
+              "workerOutputTokens": 1733,
+              "credits": 0.4303305,
+              "wallTimeMs": 15823
+            }
+          ]
+        },
+        {
+          "taskId": "report-total-bug",
+          "category": "comprehension",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 13387,
+          "reasoningCachedInputTokens": 70568,
+          "reasoningOutputTokens": 632,
+          "workerInputTokens": 0,
+          "workerCachedInputTokens": 0,
+          "workerOutputTokens": 0,
+          "credits": 0.551567,
+          "wallTimeMs": 15162,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 70310,
+            "max": 98667
+          },
+          "creditsSpread": {
+            "min": 0.511698,
+            "max": 0.580459
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "the answer names reservesSummary",
+              "costDecisions": 0,
+              "reasoningInputTokens": 14888,
+              "reasoningCachedInputTokens": 55422,
+              "reasoningOutputTokens": 663,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.562544,
+              "wallTimeMs": 11679
+            },
+            {
+              "succeeded": true,
+              "detail": "the answer names reservesSummary",
+              "costDecisions": 0,
+              "reasoningInputTokens": 11887,
+              "reasoningCachedInputTokens": 70999,
+              "reasoningOutputTokens": 605,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.511698,
+              "wallTimeMs": 14502
+            },
+            {
+              "succeeded": true,
+              "detail": "the answer names reservesSummary",
+              "costDecisions": 0,
+              "reasoningInputTokens": 13385,
+              "reasoningCachedInputTokens": 85282,
+              "reasoningOutputTokens": 628,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.580459,
+              "wallTimeMs": 19305
+            }
+          ]
+        },
+        {
+          "taskId": "query-filter-bug",
+          "category": "comprehension",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 10865,
+          "reasoningCachedInputTokens": 48274,
+          "reasoningOutputTokens": 279,
+          "workerInputTokens": 7919,
+          "workerCachedInputTokens": 13459,
+          "workerOutputTokens": 1025,
+          "credits": 0.401549667,
+          "wallTimeMs": 11030,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 50112,
+            "max": 67271
+          },
+          "creditsSpread": {
+            "min": 0.36557,
+            "max": 0.426183
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "the answer names terminalsQuery",
+              "costDecisions": 0,
+              "reasoningInputTokens": 11107,
+              "reasoningCachedInputTokens": 56164,
+              "reasoningOutputTokens": 302,
+              "workerInputTokens": 11957,
+              "workerCachedInputTokens": 17328,
+              "workerOutputTokens": 1824,
+              "credits": 0.426183,
+              "wallTimeMs": 13139
+            },
+            {
+              "succeeded": true,
+              "detail": "the answer names terminalsQuery",
+              "costDecisions": 0,
+              "reasoningInputTokens": 10537,
+              "reasoningCachedInputTokens": 39575,
+              "reasoningOutputTokens": 192,
+              "workerInputTokens": 11799,
+              "workerCachedInputTokens": 23050,
+              "workerOutputTokens": 1252,
+              "credits": 0.36557,
+              "wallTimeMs": 10870
+            },
+            {
+              "succeeded": true,
+              "detail": "the answer names terminalsQuery",
+              "costDecisions": 0,
+              "reasoningInputTokens": 10950,
+              "reasoningCachedInputTokens": 49083,
+              "reasoningOutputTokens": 342,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.412896,
+              "wallTimeMs": 9082
+            }
+          ]
+        },
+        {
+          "taskId": "money-tests",
+          "category": "test-scaffolding",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 8719,
+          "reasoningCachedInputTokens": 71853,
+          "reasoningOutputTokens": 1138,
+          "workerInputTokens": 4183,
+          "workerCachedInputTokens": 16331,
+          "workerOutputTokens": 1833,
+          "credits": 0.657495,
+          "wallTimeMs": 25742,
+          "costDecisions": 1,
+          "reasoningInputSpread": {
+            "min": 75166,
+            "max": 90679
+          },
+          "creditsSpread": {
+            "min": 0.6330695,
+            "max": 0.675162
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "test/money.test.mjs has at least 4 cases, passes, and fails on a broken src/money.mjs",
+              "costDecisions": 1,
+              "reasoningInputTokens": 8822,
+              "reasoningCachedInputTokens": 81857,
+              "reasoningOutputTokens": 1219,
+              "workerInputTokens": 5541,
+              "workerCachedInputTokens": 4778,
+              "workerOutputTokens": 580,
+              "credits": 0.6330695,
+              "wallTimeMs": 21365
+            },
+            {
+              "succeeded": true,
+              "detail": "test/money.test.mjs has at least 4 cases, passes, and fails on a broken src/money.mjs",
+              "costDecisions": 1,
+              "reasoningInputTokens": 8434,
+              "reasoningCachedInputTokens": 66732,
+              "reasoningOutputTokens": 1001,
+              "workerInputTokens": 3803,
+              "workerCachedInputTokens": 26052,
+              "workerOutputTokens": 2556,
+              "credits": 0.6642535,
+              "wallTimeMs": 28029
+            },
+            {
+              "succeeded": true,
+              "detail": "test/money.test.mjs has at least 4 cases, passes, and fails on a broken src/money.mjs",
+              "costDecisions": 1,
+              "reasoningInputTokens": 8902,
+              "reasoningCachedInputTokens": 66970,
+              "reasoningOutputTokens": 1195,
+              "workerInputTokens": 3204,
+              "workerCachedInputTokens": 18162,
+              "workerOutputTokens": 2364,
+              "credits": 0.675162,
+              "wallTimeMs": 27831
+            }
+          ]
+        },
+        {
+          "taskId": "slug-tests",
+          "category": "test-scaffolding",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 8008,
+          "reasoningCachedInputTokens": 85378,
+          "reasoningOutputTokens": 1042,
+          "workerInputTokens": 3779,
+          "workerCachedInputTokens": 18834,
+          "workerOutputTokens": 1513,
+          "credits": 0.636662667,
+          "wallTimeMs": 26668,
+          "costDecisions": 1.33,
+          "reasoningInputSpread": {
+            "min": 86471,
+            "max": 104477
+          },
+          "creditsSpread": {
+            "min": 0.5398165,
+            "max": 0.728291
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "test/slug.test.mjs has at least 3 cases, passes, and fails on a broken src/slug.mjs",
+              "costDecisions": 2,
+              "reasoningInputTokens": 8424,
+              "reasoningCachedInputTokens": 96053,
+              "reasoningOutputTokens": 1135,
+              "workerInputTokens": 4804,
+              "workerCachedInputTokens": 23720,
+              "workerOutputTokens": 2140,
+              "credits": 0.728291,
+              "wallTimeMs": 29618
+            },
+            {
+              "succeeded": true,
+              "detail": "test/slug.test.mjs has at least 3 cases, passes, and fails on a broken src/slug.mjs",
+              "costDecisions": 1,
+              "reasoningInputTokens": 8112,
+              "reasoningCachedInputTokens": 81097,
+              "reasoningOutputTokens": 1095,
+              "workerInputTokens": 1217,
+              "workerCachedInputTokens": 8475,
+              "workerOutputTokens": 405,
+              "credits": 0.5398165,
+              "wallTimeMs": 20056
+            },
+            {
+              "succeeded": true,
+              "detail": "test/slug.test.mjs has at least 3 cases, passes, and fails on a broken src/slug.mjs",
+              "costDecisions": 1,
+              "reasoningInputTokens": 7488,
+              "reasoningCachedInputTokens": 78983,
+              "reasoningOutputTokens": 897,
+              "workerInputTokens": 5315,
+              "workerCachedInputTokens": 24307,
+              "workerOutputTokens": 1994,
+              "credits": 0.6418805,
+              "wallTimeMs": 30330
+            }
+          ]
+        },
+        {
+          "taskId": "backoff-tests",
+          "category": "test-scaffolding",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 8220,
+          "reasoningCachedInputTokens": 100399,
+          "reasoningOutputTokens": 1194,
+          "workerInputTokens": 2860,
+          "workerCachedInputTokens": 13843,
+          "workerOutputTokens": 1365,
+          "credits": 0.666532,
+          "wallTimeMs": 27227,
+          "costDecisions": 1.33,
+          "reasoningInputSpread": {
+            "min": 103103,
+            "max": 118067
+          },
+          "creditsSpread": {
+            "min": 0.58534,
+            "max": 0.7527945
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "test/retry.test.mjs has at least 3 cases, passes, and fails on a broken src/retry.mjs",
+              "costDecisions": 1,
+              "reasoningInputTokens": 7995,
+              "reasoningCachedInputTokens": 95108,
+              "reasoningOutputTokens": 1149,
+              "workerInputTokens": 3475,
+              "workerCachedInputTokens": 14858,
+              "workerOutputTokens": 1523,
+              "credits": 0.6614615,
+              "wallTimeMs": 27386
+            },
+            {
+              "succeeded": true,
+              "detail": "test/retry.test.mjs has at least 3 cases, passes, and fails on a broken src/retry.mjs",
+              "costDecisions": 2,
+              "reasoningInputTokens": 8237,
+              "reasoningCachedInputTokens": 109830,
+              "reasoningOutputTokens": 1305,
+              "workerInputTokens": 3807,
+              "workerCachedInputTokens": 18157,
+              "workerOutputTokens": 2121,
+              "credits": 0.7527945,
+              "wallTimeMs": 32843
+            },
+            {
+              "succeeded": true,
+              "detail": "test/retry.test.mjs has at least 3 cases, passes, and fails on a broken src/retry.mjs",
+              "costDecisions": 1,
+              "reasoningInputTokens": 8428,
+              "reasoningCachedInputTokens": 96260,
+              "reasoningOutputTokens": 1128,
+              "workerInputTokens": 1298,
+              "workerCachedInputTokens": 8515,
+              "workerOutputTokens": 451,
+              "credits": 0.58534,
+              "wallTimeMs": 21452
+            }
+          ]
+        },
+        {
+          "taskId": "tsconfig",
+          "category": "config-generation",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 6140,
+          "reasoningCachedInputTokens": 48568,
+          "reasoningOutputTokens": 489,
+          "workerInputTokens": 1159,
+          "workerCachedInputTokens": 10037,
+          "workerOutputTokens": 390,
+          "credits": 0.352731667,
+          "wallTimeMs": 13593,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 54578,
+            "max": 54886
+          },
+          "creditsSpread": {
+            "min": 0.3381115,
+            "max": 0.3625215
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "tsconfig.json has the required options and includes src",
+              "costDecisions": 0,
+              "reasoningInputTokens": 6219,
+              "reasoningCachedInputTokens": 48667,
+              "reasoningOutputTokens": 518,
+              "workerInputTokens": 1086,
+              "workerCachedInputTokens": 8453,
+              "workerOutputTokens": 421,
+              "credits": 0.357562,
+              "wallTimeMs": 12017
+            },
+            {
+              "succeeded": true,
+              "detail": "tsconfig.json has the required options and includes src",
+              "costDecisions": 0,
+              "reasoningInputTokens": 6125,
+              "reasoningCachedInputTokens": 48536,
+              "reasoningOutputTokens": 493,
+              "workerInputTokens": 1375,
+              "workerCachedInputTokens": 13277,
+              "workerOutputTokens": 468,
+              "credits": 0.3625215,
+              "wallTimeMs": 15963
+            },
+            {
+              "succeeded": true,
+              "detail": "tsconfig.json has the required options and includes src",
+              "costDecisions": 0,
+              "reasoningInputTokens": 6077,
+              "reasoningCachedInputTokens": 48501,
+              "reasoningOutputTokens": 455,
+              "workerInputTokens": 1015,
+              "workerCachedInputTokens": 8382,
+              "workerOutputTokens": 280,
+              "credits": 0.3381115,
+              "wallTimeMs": 12798
+            }
+          ]
+        },
+        {
+          "taskId": "prettier-config",
+          "category": "config-generation",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 7094,
+          "reasoningCachedInputTokens": 64346,
+          "reasoningOutputTokens": 764,
+          "workerInputTokens": 993,
+          "workerCachedInputTokens": 8387,
+          "workerOutputTokens": 607,
+          "credits": 0.448335,
+          "wallTimeMs": 17505,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 55658,
+            "max": 84144
+          },
+          "creditsSpread": {
+            "min": 0.388136,
+            "max": 0.481161
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": ".prettierrc.json matches the code style",
+              "costDecisions": 0,
+              "reasoningInputTokens": 6714,
+              "reasoningCachedInputTokens": 77430,
+              "reasoningOutputTokens": 852,
+              "workerInputTokens": 950,
+              "workerCachedInputTokens": 8348,
+              "workerOutputTokens": 621,
+              "credits": 0.475708,
+              "wallTimeMs": 20716
+            },
+            {
+              "succeeded": true,
+              "detail": ".prettierrc.json matches the code style",
+              "costDecisions": 0,
+              "reasoningInputTokens": 8095,
+              "reasoningCachedInputTokens": 66423,
+              "reasoningOutputTokens": 914,
+              "workerInputTokens": 1024,
+              "workerCachedInputTokens": 8410,
+              "workerOutputTokens": 311,
+              "credits": 0.481161,
+              "wallTimeMs": 16625
+            },
+            {
+              "succeeded": true,
+              "detail": ".prettierrc.json matches the code style",
+              "costDecisions": 0,
+              "reasoningInputTokens": 6474,
+              "reasoningCachedInputTokens": 49184,
+              "reasoningOutputTokens": 525,
+              "workerInputTokens": 1004,
+              "workerCachedInputTokens": 8403,
+              "workerOutputTokens": 889,
+              "credits": 0.388136,
+              "wallTimeMs": 15173
+            }
+          ]
+        },
+        {
+          "taskId": "service-ports",
+          "category": "config-generation",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 8243,
+          "reasoningCachedInputTokens": 95175,
+          "reasoningOutputTokens": 1458,
+          "workerInputTokens": 13340,
+          "workerCachedInputTokens": 18723,
+          "workerOutputTokens": 4258,
+          "credits": 0.968526833,
+          "wallTimeMs": 38850,
+          "costDecisions": 1,
+          "reasoningInputSpread": {
+            "min": 86943,
+            "max": 135136
+          },
+          "creditsSpread": {
+            "min": 0.770917,
+            "max": 1.1778775
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "config/ports.json maps every service to its port",
+              "costDecisions": 1,
+              "reasoningInputTokens": 7743,
+              "reasoningCachedInputTokens": 79200,
+              "reasoningOutputTokens": 1350,
+              "workerInputTokens": 5842,
+              "workerCachedInputTokens": 18722,
+              "workerOutputTokens": 3327,
+              "credits": 0.770917,
+              "wallTimeMs": 32605
+            },
+            {
+              "succeeded": true,
+              "detail": "config/ports.json maps every service to its port",
+              "costDecisions": 1,
+              "reasoningInputTokens": 8451,
+              "reasoningCachedInputTokens": 126685,
+              "reasoningOutputTokens": 1608,
+              "workerInputTokens": 8772,
+              "workerCachedInputTokens": 18731,
+              "workerOutputTokens": 3440,
+              "credits": 0.956786,
+              "wallTimeMs": 41117
+            },
+            {
+              "succeeded": true,
+              "detail": "config/ports.json maps every service to its port",
+              "costDecisions": 1,
+              "reasoningInputTokens": 8535,
+              "reasoningCachedInputTokens": 79639,
+              "reasoningOutputTokens": 1415,
+              "workerInputTokens": 25405,
+              "workerCachedInputTokens": 18717,
+              "workerOutputTokens": 6006,
+              "credits": 1.1778775,
+              "wallTimeMs": 42829
+            }
+          ]
+        },
+        {
+          "taskId": "rename-fmt-cents",
+          "category": "multi-file-edit",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 11744,
+          "reasoningCachedInputTokens": 74275,
+          "reasoningOutputTokens": 724,
+          "workerInputTokens": 0,
+          "workerCachedInputTokens": 0,
+          "workerOutputTokens": 0,
+          "credits": 0.528922667,
+          "wallTimeMs": 13851,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 83112,
+            "max": 87907
+          },
+          "creditsSpread": {
+            "min": 0.47671,
+            "max": 0.562627
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "fmtCents is renamed to formatCents everywhere, every module loads, and the tests pass",
+              "costDecisions": 0,
+              "reasoningInputTokens": 10367,
+              "reasoningCachedInputTokens": 72745,
+              "reasoningOutputTokens": 601,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.47671,
+              "wallTimeMs": 10387
+            },
+            {
+              "succeeded": true,
+              "detail": "fmtCents is renamed to formatCents everywhere, every module loads, and the tests pass",
+              "costDecisions": 0,
+              "reasoningInputTokens": 12250,
+              "reasoningCachedInputTokens": 74788,
+              "reasoningOutputTokens": 764,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.547431,
+              "wallTimeMs": 16726
+            },
+            {
+              "succeeded": true,
+              "detail": "fmtCents is renamed to formatCents everywhere, every module loads, and the tests pass",
+              "costDecisions": 0,
+              "reasoningInputTokens": 12616,
+              "reasoningCachedInputTokens": 75291,
+              "reasoningOutputTokens": 806,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.562627,
+              "wallTimeMs": 14440
+            }
+          ]
+        },
+        {
+          "taskId": "console-to-logger",
+          "category": "multi-file-edit",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 15368,
+          "reasoningCachedInputTokens": 163988,
+          "reasoningOutputTokens": 2211,
+          "workerInputTokens": 0,
+          "workerCachedInputTokens": 0,
+          "workerOutputTokens": 0,
+          "credits": 0.977360333,
+          "wallTimeMs": 32644,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 107530,
+            "max": 235476
+          },
+          "creditsSpread": {
+            "min": 0.731354,
+            "max": 1.165658
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "console.log is replaced by logger.info, every module loads, and the tests pass",
+              "costDecisions": 0,
+              "reasoningInputTokens": 17857,
+              "reasoningCachedInputTokens": 217619,
+              "reasoningOutputTokens": 2368,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 1.165658,
+              "wallTimeMs": 36766
+            },
+            {
+              "succeeded": true,
+              "detail": "console.log is replaced by logger.info, every module loads, and the tests pass",
+              "costDecisions": 0,
+              "reasoningInputTokens": 15359,
+              "reasoningCachedInputTokens": 179702,
+              "reasoningOutputTokens": 2432,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 1.035069,
+              "wallTimeMs": 34416
+            },
+            {
+              "succeeded": true,
+              "detail": "console.log is replaced by logger.info, every module loads, and the tests pass",
+              "costDecisions": 0,
+              "reasoningInputTokens": 12888,
+              "reasoningCachedInputTokens": 94642,
+              "reasoningOutputTokens": 1833,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.731354,
+              "wallTimeMs": 26749
+            }
+          ]
+        },
+        {
+          "taskId": "license-headers",
+          "category": "multi-file-edit",
+          "successes": 3,
+          "runCount": 3,
+          "reasoningInputTokens": 8526,
+          "reasoningCachedInputTokens": 49760,
+          "reasoningOutputTokens": 823,
+          "workerInputTokens": 9373,
+          "workerCachedInputTokens": 14567,
+          "workerOutputTokens": 2345,
+          "credits": 0.762032833,
+          "wallTimeMs": 25145,
+          "costDecisions": 8,
+          "reasoningInputSpread": {
+            "min": 44611,
+            "max": 71427
+          },
+          "creditsSpread": {
+            "min": 0.357284,
+            "max": 1.4873695
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "every module starts with the license line and is otherwise unchanged",
+              "costDecisions": 0,
+              "reasoningInputTokens": 8561,
+              "reasoningCachedInputTokens": 50260,
+              "reasoningOutputTokens": 1058,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.441445,
+              "wallTimeMs": 15631
+            },
+            {
+              "succeeded": true,
+              "detail": "every module starts with the license line and is otherwise unchanged",
+              "costDecisions": 0,
+              "reasoningInputTokens": 9669,
+              "reasoningCachedInputTokens": 34942,
+              "reasoningOutputTokens": 381,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.357284,
+              "wallTimeMs": 9279
+            },
+            {
+              "succeeded": true,
+              "detail": "every module starts with the license line and is otherwise unchanged",
+              "costDecisions": 24,
+              "reasoningInputTokens": 7349,
+              "reasoningCachedInputTokens": 64078,
+              "reasoningOutputTokens": 1029,
+              "workerInputTokens": 28118,
+              "workerCachedInputTokens": 43702,
+              "workerOutputTokens": 7035,
+              "credits": 1.4873695,
+              "wallTimeMs": 50526
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "comparison": {
+    "baseline": "off",
+    "candidate": "balanced",
+    "baselineReasoningInput": 1065153,
+    "candidateReasoningInput": 1154683,
+    "reasoningInputChange": 0.0841,
+    "baselineCredits": 6.628640665,
+    "candidateCredits": 8.423142167,
+    "creditsChange": 0.2707,
+    "successDelta": 0,
+    "tiersDistinct": false,
+    "gate": {
+      "maxReasoningInputIncrease": 0.05,
+      "maxCreditsIncrease": 0.35,
+      "maxSuccessDrop": 1
+    },
+    "meetsGate": false
+  }
+}

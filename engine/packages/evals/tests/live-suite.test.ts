@@ -9,7 +9,8 @@ import type { RoutingProfile } from "../src/index.ts";
 // Copilot, through the production composition. Each task gets its own Pica data directory under a
 // scratch directory, so the signed-in user's Pica data is untouched; it does spend Copilot quota.
 // The report is written to docs/evals/ for committing. EVAL_TASKS=id,id runs a subset, EVAL_PROFILES=a,b
-// other profiles, and EVAL_RUNS=n sets the runs per task (3 by default).
+// other profiles, and EVAL_RUNS=n sets the runs per task (3 by default). EVAL_REPORT_NAME names the
+// report files (`<date>-<name>.json` and `.md`; `c10-live` by default).
 const live = process.env["PICA_LIVE"] === "1";
 const docsDir = join(import.meta.dirname, "..", "..", "..", "..", "docs", "evals");
 const workRoot = realpathSync(mkdtempSync(join(tmpdir(), "pica-ev-")));
@@ -40,7 +41,7 @@ describe.skipIf(!live)("C-10 live: balanced against off", () => {
       },
     });
     mkdirSync(docsDir, { recursive: true });
-    const stem = join(docsDir, `${report.generatedAt.slice(0, 10)}-c10-live`);
+    const stem = join(docsDir, `${report.generatedAt.slice(0, 10)}-${process.env["EVAL_REPORT_NAME"] ?? "c10-live"}`);
     writeFileSync(`${stem}.json`, `${JSON.stringify(report, null, 2)}\n`);
     writeFileSync(`${stem}.md`, renderMarkdown(report));
     console.log(renderMarkdown(report));
