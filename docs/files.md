@@ -62,9 +62,14 @@ remembers which paths the last query matched, and a query that extends it (the n
 PLAN.md §9: quick open over 100,000 files answers in under 50 ms per keystroke. Two tests type five queries (94
 keystrokes) over a synthetic 100,000-path monorepo listing (`core/tests/files/large-index.ts`):
 
-- `core/tests/files/benchmark.test.ts` times the ranker, each keystroke the median of three typings.
+- `core/tests/files/benchmark.test.ts` times the ranker.
 - `server/tests/files/quick-open-benchmark.test.ts` times `files.quickOpen` over the socket, request to reply, with
   the files split across two repos.
+
+Both type everything once to warm up, then three more times; a keystroke's time is the median of its three. The 50 ms
+budget is asserted locally (`make verify UNIT=A-09`, the gate per PLAN.md §8.1). CI's shared Linux runners measured
+2.4× slower on the same code (53 ms against 22 ms, 2026-11-17), so with `CI=true` the tests assert three times the
+budget, a regression guard rather than the budget.
 
 Measured on 2026-11-17 (Apple silicon, Node 22): slowest keystroke 20–22 ms (two- and three-letter prefixes, which
 match most paths), median 0.5 ms over the socket.

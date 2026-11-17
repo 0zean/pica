@@ -2,12 +2,11 @@ import { createFilesService, err, filesError, ok } from "@pica/core";
 import type { Repo } from "@pica/core";
 import { describe, expect, it } from "vitest";
 import { silentLogger, startEngine } from "../../src/index.ts";
-import { largeIndex, typedQueries } from "../../../core/tests/files/large-index.ts";
+import { keystrokeLimitMs, largeIndex, slowest, timeKeystrokes } from "../../../core/tests/files/large-index.ts";
 import { makeSocketDir, TestClient } from "../helpers.ts";
 
 // PLAN.md §9: quick open over 100,000 files answers in under 50 ms per keystroke, measured as a
 // client sees it: each keystroke is one `files.quickOpen` over the socket, from request to reply.
-const budgetMs = 50;
 
 describe("files.quickOpen over a 100,000-file workspace", () => {
   it("answers every keystroke in under 50 ms", async () => {
@@ -42,23 +41,17 @@ describe("files.quickOpen over a 100,000-file workspace", () => {
     try {
       // Opening quick open lists the repos (an empty query), as the app does.
       await client.request("files.quickOpen", { workspaceId: "w1", query: "", limit: 50 });
-      const timings: { readonly query: string; readonly ms: number }[] = [];
-      for (const typed of typedQueries) {
-        for (let length = 1; length <= typed.length; length += 1) {
-          const query = typed.slice(0, length);
-          const started = performance.now();
-          const response = await client.request("files.quickOpen", { workspaceId: "w1", query, limit: 50 });
-          timings.push({ query, ms: performance.now() - started });
-          expect("result" in response).toBe(true);
-        }
-      }
-      const slowest = timings.reduce((worst, timing) => (timing.ms > worst.ms ? timing : worst));
+      const timings = await timeKeystrokes(() => async (query) => {
+        const response = await client.request("files.quickOpen", { workspaceId: "w1", query, limit: 50 });
+        expect("result" in response).toBe(true);
+      });
+      const worst = slowest(timings);
       const sorted = timings.map((timing) => timing.ms).sort((a, b) => a - b);
       console.log(
         `files.quickOpen over 100,000 files: median ${(sorted[Math.floor(sorted.length / 2)] ?? 0).toFixed(1)} ms, ` +
-          `slowest ${slowest.ms.toFixed(1)} ms for "${slowest.query}" over ${String(timings.length)} keystrokes`,
+          `slowest ${worst.ms.toFixed(1)} ms for "${worst.query}" over ${String(timings.length)} keystrokes`,
       );
-      expect(slowest.ms).toBeLessThan(budgetMs);
+      expect(worst.ms).toBeLessThan(keystrokeLimitMs());
     } finally {
       client.close();
       await engine.close();

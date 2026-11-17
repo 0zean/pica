@@ -26,3 +26,55 @@ export function largeIndex(count: number): readonly string[] {
 
 // What a user types: each prefix of these queries is one keystroke.
 export const typedQueries = ["sessiontimelinerow", "engine/server/handlers/config", "btn12", "composer picker", "app/core/views/button-list3"];
+
+// PLAN.md §9's budget for one keystroke. Locally (`make verify UNIT=A-09`, the gate per PLAN.md §8.1)
+// it is asserted as is. CI's shared Linux runners measured 2.4x slower than a developer Mac on the same
+// code (2026-11-17: 53 ms against 22 ms), so on CI the tests only catch a regression past three times it.
+export const keystrokeBudgetMs = 50;
+export const ciSlowdown = 3;
+
+export function keystrokeLimitMs(env: Readonly<Record<string, string | undefined>> = process.env): number {
+  return env["CI"] === "true" ? keystrokeBudgetMs * ciSlowdown : keystrokeBudgetMs;
+}
+
+export interface KeystrokeTiming {
+  readonly query: string;
+  readonly ms: number;
+}
+
+// Types every prefix of `typedQueries` with `search`, three times over (after a warm-up typing that is
+// not counted); a keystroke's time is the median of its three, so one garbage collection or a busy
+// moment on the machine does not decide the result.
+export async function timeKeystrokes(
+  startTyping: () => (query: string) => unknown,
+): Promise<readonly KeystrokeTiming[]> {
+  await typeAll(startTyping());
+  const runs: (readonly KeystrokeTiming[])[] = [];
+  for (let run = 0; run < 3; run += 1) runs.push(await typeAll(startTyping()));
+  return (runs[0] ?? []).map((timing, index) => ({
+    query: timing.query,
+    ms: median(runs.map((typed) => typed[index]?.ms ?? Number.POSITIVE_INFINITY)),
+  }));
+}
+
+async function typeAll(search: (query: string) => unknown): Promise<readonly KeystrokeTiming[]> {
+  const timings: KeystrokeTiming[] = [];
+  for (const typed of typedQueries) {
+    for (let length = 1; length <= typed.length; length += 1) {
+      const query = typed.slice(0, length);
+      const started = performance.now();
+      await search(query);
+      timings.push({ query, ms: performance.now() - started });
+    }
+  }
+  return timings;
+}
+
+function median(values: readonly number[]): number {
+  const sorted = [...values].sort((a, b) => a - b);
+  return sorted[Math.floor(sorted.length / 2)] ?? Number.POSITIVE_INFINITY;
+}
+
+export function slowest(timings: readonly KeystrokeTiming[]): KeystrokeTiming {
+  return timings.reduce((worst, timing) => (timing.ms > worst.ms ? timing : worst));
+}
