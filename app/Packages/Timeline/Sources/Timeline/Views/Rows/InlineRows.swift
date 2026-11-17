@@ -46,58 +46,6 @@ struct PolicyRow: View {
     }
 }
 
-/// An approval request inline in the timeline; A-07 adds the choices.
-struct ApprovalRow: View {
-    let item: ApprovalItem
-
-    var body: some View {
-        let shape = RoundedRectangle(cornerRadius: Radius.large, style: .continuous)
-        HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
-            Image(systemName: icon)
-                .foregroundStyle(item.choice == nil ? Palette.warning : Palette.textSecondary)
-                .accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: Spacing.xxSmall) {
-                Text(item.summary)
-                    .font(Typography.body)
-                    .foregroundStyle(Palette.textPrimary)
-                    .fixedSize(horizontal: false, vertical: true)
-                Text(status)
-                    .font(Typography.caption.weight(.medium))
-                    .foregroundStyle(statusColor)
-            }
-            Spacer(minLength: 0)
-        }
-        .padding(Spacing.medium)
-        .background(shape.fill(Palette.surface))
-        .overlay(shape.strokeBorder(item.choice == nil ? Palette.warning : Palette.border, lineWidth: 1))
-        .accessibilityElement(children: .combine)
-    }
-
-    private var icon: String {
-        switch item.kind {
-        case .toolCall: "hand.raised"
-        case .budget: "creditcard"
-        }
-    }
-
-    private var status: String {
-        switch item.choice {
-        case nil: "Waiting for your approval"
-        case .allowOnce: "Allowed once"
-        case .allowAlways: "Always allowed"
-        case .deny: "Denied"
-        }
-    }
-
-    private var statusColor: PicaColor {
-        switch item.choice {
-        case nil: Palette.warning
-        case .allowOnce, .allowAlways: Palette.success
-        case .deny: Palette.danger
-        }
-    }
-}
-
 struct NoticeRow: View {
     @Bindable var item: NoticeItem
 

@@ -30,6 +30,7 @@ import type {
   McpImportService,
   McpSecretRedactor,
   OutputGuardDeps,
+  PermissionRules,
   ReadGateDeps,
   RepoRegistry,
   RuntimeHooks,
@@ -91,6 +92,8 @@ export interface EngineSessionOptions {
   readonly defaultProfile?: (workspaceId: string) => SessionRoutingProfile;
   // A-06: answers `agents.list`, `models.list` and `models.tiers`.
   readonly catalog?: EngineCatalogOptions;
+  // A-07: `permissions.tools` answer permission prompts; "always allow" appends one.
+  readonly permissionRules?: PermissionRules;
 }
 
 export interface EngineOptions {
@@ -221,6 +224,7 @@ function startSessions(
     ...(options.budget === undefined ? {} : { budget: options.budget }),
     ...(options.delegator === undefined ? {} : { delegator: options.delegator }),
     ...(options.defaultProfile === undefined ? {} : { defaultProfile: options.defaultProfile }),
+    ...(options.permissionRules === undefined ? {} : { permissionRules: options.permissionRules }),
     ...sessionHooks(options, eventLog, clock),
     ...lifecycleHooks(options.userHooks, log),
   });

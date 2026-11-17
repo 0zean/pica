@@ -3,6 +3,7 @@ import { mkdirSync } from "node:fs";
 import { join } from "node:path";
 import {
   CopilotRuntime,
+  appendPermissionRule,
   builtinAgentsDir,
   createJsonlAuditStore,
   createMcpImportFiles,
@@ -13,6 +14,7 @@ import {
   realPath,
   sha256Hex,
   userAgentsDir,
+  userConfigPath,
 } from "@pica/adapters";
 import {
   agentTier,
@@ -176,6 +178,11 @@ function sessionOptions(deps: SessionComposition): EngineSessionOptions {
     newSessionId: randomUUID,
     defaultProfile: (workspaceId) => defaultProfileFor(store, config, workspaceId),
     catalog: { catalog, agents: () => loadedAgents.value, tiers, models },
+    // A-07: rules are read from the config as last loaded, so a written rule applies on the next prompt.
+    permissionRules: {
+      current: () => config.current().permissions.tools ?? [],
+      add: (rule) => appendPermissionRule(userConfigPath(deps.homeDir), rule),
+    },
   };
 }
 

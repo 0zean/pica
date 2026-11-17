@@ -102,8 +102,34 @@ function composerTurns(): Turn[] {
   ];
 }
 
+/** A shell call the runtime's own permission flow asks about, as Copilot asks the host (A-07). */
+function askingShell(command: string): ToolCallStep {
+  return {
+    type: "toolCall",
+    name: "bash",
+    arguments: { command, description: `Run ${command}` },
+    result: "ok",
+    success: true,
+    hangs: false,
+    asks: `bash wants to run ${command}`,
+  };
+}
+
+/**
+ * The A-07 approvals scenario: the first four turns run `npm test` and the fifth `npm run lint`, each asking
+ * first. The UI test allows the first once, denies the second and always allows the third, so the fourth runs
+ * without asking and the fifth, a different command, asks again.
+ */
+function approvalTurns(): Turn[] {
+  const turn = (command: string, index: number): Turn => ({
+    steps: [streamedText(`Running \`${command}\` (${String(index)}).`, 2), askingShell(command), streamedText("Done.", 1)],
+  });
+  return [...[1, 2, 3, 4].map((index) => turn("npm test", index)), turn("npm run lint", 5)];
+}
+
 export const fakePicadScenarios: Record<string, Scenario> = {
   empty: scenario([]),
   timeline: scenario(timelineTurns()),
   composer: scenario(composerTurns()),
+  approvals: scenario(approvalTurns()),
 };

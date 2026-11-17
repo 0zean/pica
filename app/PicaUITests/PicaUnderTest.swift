@@ -49,6 +49,8 @@ final class PicaUnderTest {
             "PICA_TEST_SCENARIO": scenario,
             "PICA_TIMELINE_METRICS_PATH": timelineMetricsPath,
             "PICA_COMPOSER_METRICS_PATH": composerMetricsPath,
+            // A-07: no system notifications, so no test meets the permission prompt.
+            "PICA_NOTIFICATIONS": "off",
         ]
         if scrollScript {
             environment["PICA_TIMELINE_SCROLL_SCRIPT"] = "1"

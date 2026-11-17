@@ -22,3 +22,5 @@ export type { SessionArtifactError, SessionArtifacts } from "./artifacts.ts";
 export { createOutputGuard, withOutputGuard } from "./post-tool-use.ts";
 export type { OutputGuardDeps, PostToolUseHook } from "./post-tool-use.ts";
 export { truncateHeadTail, utf8ByteLength } from "./truncate-output.ts";
+export { describeRule, matchingRule, requestSubject, ruleFor, sameRule } from "./permission-rules.ts";
+export type { PermissionRules } from "./permission-rules.ts";

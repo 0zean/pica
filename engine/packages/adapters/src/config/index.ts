@@ -26,3 +26,4 @@ export {
   managedPreferencesDomain,
   managedPreferencesPaths,
 } from "./managed-policy-paths.ts";
+export { appendPermissionRule, type PermissionRuleWrite } from "./permission-rule-writer.ts";

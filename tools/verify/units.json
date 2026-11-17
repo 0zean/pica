@@ -850,10 +850,12 @@
   ],
   "A-07": [
     {
-      "check": "UI test over a FakeRuntime scenario resolves each choice correctly."
+      "check": "UI test over a FakeRuntime scenario resolves each choice correctly.",
+      "run": "make engine-install && swift test --package-path app/Packages/Timeline --filter ApprovalTests && swift test --package-path app/Packages/AppShell --filter ApprovalNotifierTests && make app-ui-test-pica UI_TEST=ApprovalsUITests"
     },
     {
-      "check": "\"Always allow\" writes a permission rule to config and suppresses the next identical request."
+      "check": "\"Always allow\" writes a permission rule to config and suppresses the next identical request.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/composition/approvals.test.ts packages/core/tests/sessions/permission-rules.test.ts packages/adapters/tests/config/permission-rule-writer.test.ts"
     }
   ],
   "A-08": [

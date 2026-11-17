@@ -52,12 +52,31 @@ const McpToolPermissionRule = z.strictObject({
   permission: McpToolPermission,
 });
 
+export const ToolRulePermission = z.enum(["allow", "deny"]);
+
+// A-07: answers the runtime's permission prompts without asking (docs/approvals.md). "Always
+// allow" on an approval appends one. A rule never overrides a policy deny: denied calls are not
+// prompted for.
+const ToolPermissionRule = z.strictObject({
+  tool: z.string().min(1).describe("The tool name, as the approval names it"),
+  match: z
+    .string()
+    .min(1)
+    .optional()
+    .describe("The call's command, path or url argument, exactly; omit to match every call of the tool"),
+  permission: ToolRulePermission,
+});
+
 const Permissions = z.strictObject({
   mode: PermissionMode.default("ask"),
   mcpTools: z
     .array(McpToolPermissionRule)
     .optional()
     .describe("Per-tool MCP permissions; an exact tool beats server/*. Overrides mode and the write-class default"),
+  tools: z
+    .array(ToolPermissionRule)
+    .optional()
+    .describe("Answers to permission prompts; a rule with match beats one without, and deny beats allow"),
 });
 
 // X-03: shell commands the engine runs on Pica events (docs/user-hooks.md).
@@ -84,6 +103,7 @@ export const PicaConfig = z.strictObject({
 export type PicaConfig = z.output<typeof PicaConfig>;
 export type McpToolPermission = z.output<typeof McpToolPermission>;
 export type UserHook = z.output<typeof UserHook>;
+export type ToolPermissionRule = z.output<typeof ToolPermissionRule>;
 export type UserHookEvent = keyof PicaConfig["hooks"];
 
 export function buildConfigJsonSchema(): Record<string, unknown> {
