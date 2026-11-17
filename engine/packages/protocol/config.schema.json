@@ -298,6 +298,19 @@
         }
       },
       "additionalProperties": false
+    },
+    "keybindings": {
+      "default": {},
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[a-z][A-Za-z0-9]*$",
+        "description": "An action id from the app's action registry"
+      },
+      "additionalProperties": {
+        "type": "string",
+        "description": "Modifiers and a key joined by \"+\", e.g. \"cmd+shift+k\"; empty for no shortcut"
+      }
     }
   },
   "additionalProperties": false,

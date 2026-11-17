@@ -15,6 +15,8 @@ const allowedPackageDependencies: Readonly<Record<string, readonly string[]>> = 
   Timeline: ["EngineClient", "PicaProtocol", "DesignSystem"],
   // A-06: the composer under the timeline; a feature package of its own, so it does not depend on Timeline.
   Composer: ["EngineClient", "PicaProtocol", "DesignSystem"],
+  // A-14: Settings, the ⌘K palette and the action registry; the app target runs the actions.
+  PicaSettings: ["EngineClient", "PicaProtocol", "DesignSystem"],
 };
 
 const featuresPackage = "Features";

@@ -32,11 +32,14 @@ final class PicaUnderTest {
     /// Where Pica writes `ComposerMetrics`' report.
     let composerMetricsPath: String
     private let scrollScript: Bool
+    /// A-14: a managed policy (docs/managed-policy.md) `fake-picad` loads as if root owned it.
+    private let managedPolicy: String?
     private let node: String
 
-    init(scenario: String = "empty", scrollScript: Bool = false) throws {
+    init(scenario: String = "empty", scrollScript: Bool = false, managedPolicy: String? = nil) throws {
         self.scenario = scenario
         self.scrollScript = scrollScript
+        self.managedPolicy = managedPolicy
         // `make app-ui-test` passes this as TEST_RUNNER_PICA_NODE.
         node = try XCTUnwrap(ProcessInfo.processInfo.environment["PICA_NODE"], "set PICA_NODE to a Node 22 executable")
         name = "pica-ui-\(UUID().uuidString.prefix(8))"
@@ -46,7 +49,15 @@ final class PicaUnderTest {
         timelineMetricsPath = home.appending(path: "timeline-metrics.json").path
         composerMetricsPath = home.appending(path: "composer-metrics.json").path
         XCTAssertLessThan(socketPath.utf8.count, 104, "\(socketPath) is longer than sun_path allows")
+        if let managedPolicy {
+            try Data(managedPolicy.utf8).write(to: policyFile)
+        }
     }
+
+    var policyFile: URL { home.appending(path: "policy.jsonc") }
+
+    /// The user layer `config.set` writes.
+    var configFile: URL { home.appending(path: "Library/Application Support/Pica/config.jsonc") }
 
     var environment: [String: String] {
         var environment = [
@@ -62,6 +73,9 @@ final class PicaUnderTest {
         ]
         if scrollScript {
             environment["PICA_TIMELINE_SCROLL_SCRIPT"] = "1"
+        }
+        if managedPolicy != nil {
+            environment["PICA_TEST_MANAGED_POLICY"] = policyFile.path
         }
         return environment
     }
