@@ -631,6 +631,7 @@
 		A1000000000000000000F003 /* XCLocalSwiftPackageReference "Packages/Files" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/Files;
+		};
 		A10000000000000000A14003 /* XCLocalSwiftPackageReference "Packages/PicaSettings" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/PicaSettings;
@@ -665,6 +666,7 @@
 		A1000000000000000000F002 /* Files */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Files;
+		};
 		A10000000000000000A14002 /* PicaSettings */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = PicaSettings;
