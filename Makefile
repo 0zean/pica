@@ -56,19 +56,36 @@ app-build:
 
 # UI tests need macOS automation mode and run only locally, not in CI. Run
 # `automationmodetool enable-automationmode-without-authentication` once, or approve the prompt.
+#
+# UI tests build into a stage outside ~/Documents (tools/ui-tests/stage-engine.sh), so neither a rebuilt, ad-hoc-signed
+# Pica nor its test runner needs a Documents grant. Result bundles stay in app/.derived. Worktrees share bundle IDs, so
+# each run registers its own build with Launch Services first; runs from two checkouts still must not overlap.
+UI_TEST_DERIVED = $(shell tools/ui-tests/stage-engine.sh --dir)/derived
+LSREGISTER := /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
+UI_TEST_DESTINATION = -destination 'platform=macOS,arch=$(shell uname -m)'
+
 app-ui-test: app-ui-test-gallery app-ui-test-pica
 
 app-ui-test-gallery:
-	rm -rf app/.derived/ui-tests.xcresult
-	xcodebuild -project app/Pica.xcodeproj -scheme PicaGallery -destination 'platform=macOS,arch=$(shell uname -m)' \
-		-derivedDataPath app/.derived -resultBundlePath app/.derived/ui-tests.xcresult test
+	rm -rf app/.derived/ui-tests.xcresult && mkdir -p app/.derived
+	xcodebuild -project app/Pica.xcodeproj -scheme PicaGallery $(UI_TEST_DESTINATION) \
+		-derivedDataPath "$(UI_TEST_DERIVED)" -quiet build-for-testing
+	$(LSREGISTER) -f "$(UI_TEST_DERIVED)/Build/Products/Debug/PicaGallery.app"
+	xcodebuild -project app/Pica.xcodeproj -scheme PicaGallery $(UI_TEST_DESTINATION) \
+		-derivedDataPath "$(UI_TEST_DERIVED)" -resultBundlePath app/.derived/ui-tests.xcresult test-without-building
 
 # Pica's UI tests (A-01 launch performance, A-04 navigation) run Pica against `picad` with a FakeRuntime. Variables
-# prefixed TEST_RUNNER_ reach the (sandboxed) test runner, which hands Pica the Node to start the engine with.
-# UI_TEST=<Class>[/<method>] runs only those tests.
+# prefixed TEST_RUNNER_ reach the (sandboxed) test runner, which hands Pica the Node to start the engine with and the
+# engine to start: a copy of engine/ in the stage, since Node reading a checkout under ~/Documents counts as Pica's
+# access. UI_TEST=<Class>[/<method>] runs only those tests.
 app-ui-test-pica: engine-install
-	rm -rf app/.derived/pica-ui-tests.xcresult
-	TEST_RUNNER_PICA_NODE="$$(command -v node)" xcodebuild -project app/Pica.xcodeproj -scheme Pica \
-		-destination 'platform=macOS,arch=$(shell uname -m)' \
+	rm -rf app/.derived/pica-ui-tests.xcresult && mkdir -p app/.derived
+	xcodebuild -project app/Pica.xcodeproj -scheme Pica $(UI_TEST_DESTINATION) \
+		-derivedDataPath "$(UI_TEST_DERIVED)" -quiet build-for-testing
+	$(LSREGISTER) -f "$(UI_TEST_DERIVED)/Build/Products/Debug/Pica.app"
+	engine="$$(tools/ui-tests/stage-engine.sh)" && \
+	TEST_RUNNER_PICA_NODE="$$(command -v node)" TEST_RUNNER_PICA_UI_TEST_ENGINE="$$engine" \
+		TEST_RUNNER_PICA_LAUNCH_BASELINE="$$(dirname "$$engine")/LaunchBaseline.json" \
+		xcodebuild -project app/Pica.xcodeproj -scheme Pica $(UI_TEST_DESTINATION) \
 		$(if $(UI_TEST),-only-testing:PicaUITests/$(UI_TEST)) \
-		-derivedDataPath app/.derived -resultBundlePath app/.derived/pica-ui-tests.xcresult test
+		-derivedDataPath "$(UI_TEST_DERIVED)" -resultBundlePath app/.derived/pica-ui-tests.xcresult test-without-building
