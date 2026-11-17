@@ -725,10 +725,24 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
   - The delegation guide puts the rules first, then the agents. It now says that a whole read of a large file and a search printing its lines are denied, that shell writes are denied (listing the forms), that the main agent edits existing files itself, with one `sed -i` or script for a change across many files, and that `code-writer` needs the full content or exact edits in the prompt. The C-10 run sent its costliest work, the multi-file edits, to `code-writer` because the old guide said to.
   - The `cost.large-read` and `cost.shell-write` reasons now name the next call: a `view_range` of at most `rangeExemptLines` lines or the `task` tool with `bulk-reader`, and `code-writer` with the path and full content, without retrying in another form.
   - FakeSession passes `agentType` on a sub-agent's hook input, as Copilot does (S-02).
+  - The guide tells the main agent to `mkdir -p` a missing directory before delegating a new file there, since `code-writer` cannot create directories. Without it the probe's new-file tasks failed one `create` and delegated twice.
+- Live result (2026-11-17, `docs/evals/2026-11-17-c11-live.md`; probe on 5 tasks: `2026-11-17-c11-probe.md`): **the gate is not met.**
+  - Setup: same as C-10. Copilot Pro, reasoning pinned to `gpt-5.6-luna`, worker `auto`, 3 runs of 15 tasks per profile, 90 sessions, about 45 credits.
+  - All 15 tasks passed in both profiles (gate met).
+  - Credits: +27.1% (8.42 against 6.63 per suite run; gate at most 35%, met). In C-10 it was +179%.
+  - Reasoning-tier input: +8.4% (1,154,683 against 1,065,153; gate at most 5%, **not met**). It is about 36k over the limit.
+  - Where the extra reasoning input is (per task, mean of 3): `console-to-logger` +56k, `backoff-tests` +27k, `prettier-config` +17k, `rename-fmt-cents` +15k, `report-total-bug` +15k, `settlement-log-error` +14k; `allocation-bug` −27k, `service-ports` −13k and four others below `off`. `console-to-logger`'s runs ranged 108k–235k under `balanced` and 86k–175k under `off`, so one task's noise is larger than the whole 5% margin (53k).
+  - No `cost.shell-write` denial fired in 45 `balanced` runs (C-10 had them), and `cost.large-read` fired about once per large-file task, as intended.
+  - `code-writer` ran 19 delegations, mostly new files with their content in the prompt. One `license-headers` run hit the 12-call limit after 12 `view` calls and kept calling `view` through 24 denials before replying. The deny doesn't stop a worker that ignores it.
+  - **How the main agent edits under `balanced`, and the C-04 gap.** The main agent used `sed -i` or a script that writes files in 8 of 45 `balanced` runs (13 commands), against 6 of 45 under `off` (6 commands). Those are the forms `cost.shell-write` does not classify. `rename-fmt-cents` and `console-to-logger` used them in every `balanced` run and delegated nothing, and their credits matched `off` (0.53 against 0.46, 0.98 against 1.00). In C-10 the same two tasks went to `code-writer` and cost 8.9 credits against 1.2. The credit margin left is 0.52 per suite run, so **the credit pass depends on that gap**: if the gate classified `sed -i` and interpreter writes, those edits would go back to `code-writer`. In 90 runs the main agent never called `edit`; under `off` it edited only with `apply_patch`, which `balanced` hides because a patch can add files. So with this model, `balanced` leaves the main agent no edit tool it uses, and `sed -i` is its route for in-place edits. The guide's "use `edit`" points at a tool the model doesn't reach for.
+  - What's left:
+    - Give the main agent an in-place edit route it uses under `balanced`: allow `apply_patch` and deny only a patch that adds a file (`*** Add File`), in place of hiding the tool. Then decide whether `sed -i` and interpreter writes should be classified too.
+    - Make `code-writer` stop on a `cost.delegation-limit` denial, or end the delegation from the engine after the first one.
+    - The 5% reasoning-input gate is within one task's run-to-run spread on this suite. Either run more than 3 runs or set the margin from the spread of `off` against itself, and record which in D-21.
 - Verify:
   - [x] Under `balanced` and `strict`, a `code-writer` delegation's tool calls past `routing.delegation.codeWriter` are denied with a reason telling it to stop and report; each delegation is counted apart, and `off`, the main agent and other agents are not limited.
   - [x] The delegation guide states the read and shell-write rules before the agent list, and the deny reasons name the next call to make.
-  - [ ] **(live)** On the C-10 suite, on the mean of 3 runs, `balanced` passes the D-21 gate against `off`. The report is committed to `docs/evals/`.
+  - [ ] **(live)** On the C-10 suite, on the mean of 3 runs, `balanced` passes the D-21 gate against `off`. The report is committed to `docs/evals/`. *Not met 2026-11-17: credits +27.1% and tasks equal pass, reasoning-tier input +8.4% fails. See the live result above.*
   - [ ] If it passes, the owner decides whether `balanced` becomes the default again (D-22).
 
 **Milestone M2 — measured cost routing:** the C-10 live report exists and passes the no-regression gate (D-21), or the gap is explained and the routing is changed. **Met 2026-11-16:** the report exists and fails the gate. The gap is explained under C-10, and the routing changed: `off` is the default (D-22), and C-11 is to make `balanced` pass the gate.
@@ -1119,7 +1133,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | C-08 | Usage ledger | E-07, C-01 | done |
 | C-09 | Budgets | C-08 | done |
 | C-10 | Eval harness | C-04, C-05, C-06, C-07, C-08 | done |
-| C-11 | Make `balanced` pass the gate | C-10 | todo |
+| C-11 | Make `balanced` pass the gate | C-10 | todo (built; live gate not met 2026-11-17) |
 | R-01 | Git service | F-01 | done |
 | R-02 | Worktrees | R-01 | done |
 | R-03 | Repo registry | E-03, R-01 | done |

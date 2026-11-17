@@ -108,3 +108,10 @@ credits. When no worker-tier call ran on a model of its own, the report says so.
   reasoning pinned to `gpt-5.6-luna`, 3 runs per task, 90 sessions, 70.9 credits. All tasks passed in both
   profiles. `balanced` used 11.3% more reasoning-tier input and 179% more credits than `off`, so it fails
   the D-21 gate. Most of the extra cost is `code-writer`: 199 calls producing 381k output tokens.
+- [`2026-11-17-c11-probe.md`](2026-11-17-c11-probe.md), with the [JSON](2026-11-17-c11-probe.json): the C-11
+  probe, `balanced` only, 5 tasks, 1 run, 3.9 credits. All 5 passed.
+- [`2026-11-17-c11-live.md`](2026-11-17-c11-live.md), with the [JSON](2026-11-17-c11-live.json): C-11, same
+  setup as C-10, 90 sessions, about 45 credits. All tasks passed in both profiles. `balanced` used 27.1% more
+  credits and 8.4% more reasoning-tier input than `off`, so it still fails the D-21 gate on reasoning input.
+  The credit result depends on the main agent editing with `sed -i` and scripts, which the C-04 shell-write
+  gate does not classify (PLAN.md, C-11).
