@@ -68,10 +68,10 @@ The owner asked to review `PLAN.md` and the previous handoff, then run A-06 (com
 - `make verify UNIT=A-06` passes locally, with all three checks.
 - `make verify UNIT=C-10` and `make verify UNIT=C-11` pass their deterministic checks. The live checks are skipped unless `PICA_LIVE=1`.
 - **Running UI tests locally:**
-  - **Documents access:** the worktrees are under `~/Documents`, and Debug builds are signed ad hoc. So every rebuilt Pica raises the macOS "access files in your Documents folder" prompt, and the owner must click Allow before its UI tests can start the engine.
+  - **Documents access:** no longer needed (Q-08). `make app-ui-test-*` build into, and run the engine from, a stage under `~/Library/Caches/dev.pica.ui-tests/`, so a rebuilt Pica raises no "access files in your Documents folder" prompt. Running PicaUITests from Xcode with derived data and the engine under `~/Documents` still asks.
   - **Display:** the Mac's display must be awake and unlocked. Otherwise XCUITest stalls at its first window query, and `screencapture` fails.
   - **One run at a time:** two sessions' UI runs kill each other's Pica. Run them under one `lockf` lock.
-  - **Register first:** worktrees share a bundle ID, so XCUITest may launch another worktree's app. Run `lsregister -f` on your own `Pica.app` before each run.
+  - **Register first:** worktrees share a bundle ID, so XCUITest may launch another worktree's app. `make app-ui-test-*` now run `lsregister -f` on their own build before testing.
 - **Snapshots:** #88 changed `event-approval.requested` and `event-budget.exhausted`, and added `approval-pending-{light,dark}`. Their macOS 26 references came from CI's `snapshot-failures` artifact, and `verify-app` passed on #88.
 
 ## Deferred + open questions
@@ -89,7 +89,6 @@ The owner asked to review `PLAN.md` and the previous handoff, then run A-06 (com
   - E-11's "not composed yet" list.
   - The C-07 `child_session` delegator, M-07's Codex import and M-02's GHE endpoint.
 - **Open:**
-  - Should UI tests stop depending on a Documents grant, for example with worktrees outside `~/Documents` or a stable signing identity?
   - The product's `auto` tier choice and its price weighting.
   - Whether `smol-toml` may be added.
   - Whether Auto-fix and the merge step should be allowed in this repo's permission settings.

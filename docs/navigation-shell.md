@@ -54,7 +54,11 @@ waiting and failed sessions. A repo appears under every workspace that includes 
 
 The UI tests launch Pica against `fake-picad.ts` with a data directory per test. The runner is sandboxed and may only
 connect to sockets in its own container, so the socket is in the runner's temporary directory (it must stay under
-sun_path's 104 bytes; `PicaUnderTest` asserts it). The sidebar's width lives in the app's real defaults domain, so the
+sun_path's 104 bytes; `PicaUnderTest` asserts it). `make app-ui-test-pica` builds into
+`~/Library/Caches/dev.pica.ui-tests/<checkout hash>/derived` and copies `engine/` next to it, passed as
+`TEST_RUNNER_PICA_UI_TEST_ENGINE`: Node runs as Pica's child and the runner reads the Pica.app it launches, so either
+under `~/Documents` would make macOS ask each rebuilt, ad-hoc-signed Pica or runner for the Documents folder.
+The sidebar's width lives in the app's real defaults domain, so the
 UI tests change it for the developer's own copy of Pica too, as the window frame already did. The test creates workspaces, repos and sessions through its own
 `EngineClient`, from a synchronous test: an async XCTest whose XCUITest call fails can hang in its tear-down. It cannot
 run git, so it writes the few files of an empty repository with an `origin` by hand.
