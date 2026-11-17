@@ -1167,7 +1167,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | A-03 | Design system | F-01 | done |
 | A-04 | Navigation shell | A-01, A-02, A-03 | done |
 | A-05 | Session timeline | A-04 | done |
-| A-06 | Composer | A-05 | doing (PR open) |
+| A-06 | Composer | A-05 | done |
 | A-07 | Approvals | A-05 | done |
 | A-08 | Review | A-04, R-01 | todo |
 | A-09 | Files and quick open | A-04, R-08 | todo |
