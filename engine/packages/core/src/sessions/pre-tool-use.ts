@@ -12,6 +12,7 @@ import { resolvePath } from "../policy/paths.ts";
 import type { PreToolUseDecision, RuntimeHooks, ToolUseInput } from "../runtime/index.ts";
 import { withRealPaths, type RealPathResolver } from "../sandbox/index.ts";
 import type { Session, Store } from "../store/index.ts";
+import { createDelegationLimiter, type DelegationLimiter } from "./delegation-limits.ts";
 import { isRoutingProfile } from "./info.ts";
 import { readRequests, shellCommand, type ReadRequest } from "./read-requests.ts";
 
@@ -33,13 +34,18 @@ export interface ReadGateDeps {
 
 // PLAN.md §5.3 large-read gate. Only the reads a call makes are decided here: `view`, content
 // searches, and whole-file prints in shell commands. A shell command is also checked by the
-// shell-write cost gate (`cost.shell-write`). Every other call is allowed.
+// shell-write cost gate (`cost.shell-write`), and a sub-agent's call by its delegation's limits
+// (`cost.delegation-limit`, C-11). Every other call is allowed.
 export function createReadGate(deps: ReadGateDeps): (sessionId: string) => RuntimeHooks {
-  return (sessionId) => ({ onPreToolUse: (input) => gateRead(deps, sessionId, input) });
+  return (sessionId) => {
+    const limiter = createDelegationLimiter();
+    return { onPreToolUse: (input) => gateRead(deps, sessionId, limiter, input) };
+  };
 }
 
-async function gateRead(deps: ReadGateDeps, sessionId: string, input: ToolUseInput): Promise<PreToolUseDecision> {
-  if (!readingKinds.has(toolKind(input.toolName) ?? "other")) {
+async function gateRead(deps: ReadGateDeps, sessionId: string, limiter: DelegationLimiter, input: ToolUseInput): Promise<PreToolUseDecision> {
+  const reads = readingKinds.has(toolKind(input.toolName) ?? "other");
+  if (!reads && input.agentId === undefined) {
     return { decision: "allow" };
   }
   const session = deps.sessions.get(sessionId);
@@ -47,6 +53,14 @@ async function gateRead(deps: ReadGateDeps, sessionId: string, input: ToolUseInp
     return { decision: "deny", reason: `session ${sessionId} is unknown to the engine` };
   }
   const context = policyContext(deps, session.value);
+  const limited = limiter.check(input, { id: input.toolCallId, tool: input.toolName, agent: callingAgent(input), target: { kind: "other" } }, context);
+  if (limited !== undefined) {
+    deps.onDecision?.(sessionId, limited);
+    return { decision: "deny", reason: limited.reason };
+  }
+  if (!reads) {
+    return { decision: "allow" };
+  }
   const shellWrite = await decideShellWrite(deps, context, input);
   if (shellWrite !== undefined) {
     deps.onDecision?.(sessionId, shellWrite);

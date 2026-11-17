@@ -28,9 +28,18 @@ const OutputDelegation = z.strictObject({
   maxBytes: ByteCount.default(16384),
 });
 
+// C-11: what one delegation to code-writer may spend. Past a limit its tool calls are denied with
+// a reason that tells it to stop and report, so a worker that explores or rewrites file after file
+// ends instead of running up output tokens.
+const CodeWriterDelegation = z.strictObject({
+  maxToolCalls: z.number().int().positive().default(12).describe("Tool calls one delegation to code-writer may make"),
+  maxWriteBytes: ByteCount.default(32768).describe("Bytes of file content one delegation to code-writer may write"),
+});
+
 const Delegation = z.strictObject({
   read: ReadDelegation.prefault({}),
   output: OutputDelegation.prefault({}),
+  codeWriter: CodeWriterDelegation.prefault({}),
 });
 
 const Routing = z.strictObject({

@@ -9,19 +9,20 @@ export function delegationGuide(profile: RoutingProfileName, agents: readonly Ag
   }
   const sorted = [...agents].sort((a, b) => compareNames(a.name, b.name));
   const has = (name: string): boolean => sorted.some((agent) => agent.name === name);
+  // The rules come first: a call the gates deny still costs a main-agent turn (C-11).
   const lines = [
     "# Delegation",
     "",
     "You are the main agent and run on the reasoning tier. Sub-agents run on the cheaper worker tier.",
-    "Hand them work that does not need your judgment, and keep planning, decisions and review for yourself.",
-    "",
-    "## Sub-agents",
-    "",
-    ...(sorted.length === 0 ? ["None are available in this session."] : sorted.map(agentLine)),
+    "Every call you make costs a turn on the reasoning tier, and a call the rules below deny is a wasted turn.",
     "",
     "## Rules",
     "",
     ...rules(profile, has),
+    "",
+    "## Sub-agents",
+    "",
+    ...(sorted.length === 0 ? ["None are available in this session."] : sorted.map(agentLine)),
   ];
   return `${lines.join("\n")}\n`;
 }
@@ -34,7 +35,8 @@ function rules(profile: Exclude<RoutingProfileName, "off">, has: (name: string) 
   const lines: string[] = [];
   if (has("bulk-reader")) {
     lines.push(
-      "- Reads of large files are denied. Ask `bulk-reader` a specific question about the file, or read a line range.",
+      "- A whole read of a large file (tens of KB or more) is denied, and so is a search that prints its matching lines. " +
+        "Read a range of a few hundred lines with `view` and `view_range`, or ask `bulk-reader` one specific question about the file.",
       "- Large tool output is truncated and saved to a file. Ask `bulk-reader` about that file instead of reading it whole.",
     );
   }
@@ -42,22 +44,36 @@ function rules(profile: Exclude<RoutingProfileName, "off">, has: (name: string) 
     lines.push("- To find where something lives across the workspace's repositories, ask `repo-scout`.");
   }
   lines.push(...writeRules(profile, has("code-writer")));
-  lines.push("- Shell commands that write files into the repository (redirects, `tee`, `cp`) are denied as well.");
   return lines;
 }
 
 function writeRules(profile: Exclude<RoutingProfileName, "off">, hasCodeWriter: boolean): string[] {
-  if (profile === "strict") {
-    return hasCodeWriter
-      ? ["- You have no tools that write files. Send every change to `code-writer` as a precise spec, then review what it reports."]
-      : ["- You have no tools that write files."];
-  }
-  return hasCodeWriter
+  const shell =
+    "- A shell command that writes a file into the repository (a redirect, a heredoc, `tee`, `touch`, or a `cp`, `mv` or `install` destination) is denied. Do not try it.";
+  const spec = hasCodeWriter
     ? [
-        "- You have no tool that creates files. Ask `code-writer` to create new files from a precise spec.",
-        "- Make small edits to existing files yourself; send mechanical or repetitive edits to `code-writer`.",
+        "- Give `code-writer` everything in the prompt: each file's path and its full content, or the exact edits. " +
+          "It does not explore the repository or run anything, and it stops after a few tool calls. Run the tests or checks yourself afterwards.",
       ]
-    : ["- You have no tool that creates files."];
+    : [];
+  if (profile === "strict") {
+    return [
+      hasCodeWriter
+        ? "- You have no tools that write files. Send every change to `code-writer` as a precise spec, then check what it reports."
+        : "- You have no tools that write files.",
+      shell,
+      ...spec,
+    ];
+  }
+  return [
+    hasCodeWriter
+      ? "- You have no tool that creates files. To create a file, ask `code-writer`."
+      : "- You have no tool that creates files.",
+    shell,
+    "- Edit existing files yourself: `edit` for a few changes, or one `sed -i` command or script for the same change across many files." +
+      (hasCodeWriter ? " That costs less than delegating it." : ""),
+    ...spec,
+  ];
 }
 
 export function compareNames(a: string, b: string): number {

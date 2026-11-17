@@ -69,6 +69,11 @@ function agentField(agentId: string | undefined): { agentId?: string } {
   return agentId === undefined ? {} : { agentId };
 }
 
+// Copilot's hooks name a sub-agent's call by `agentType` as well as `agentId` (S-02).
+function hookAgentFields(agentId: string | undefined, agentType: string | undefined): { agentId?: string; agentType?: string } {
+  return agentId === undefined ? {} : { agentId, ...(agentType === undefined ? {} : { agentType }) };
+}
+
 function failure(code: RuntimeError["code"], message: string): { readonly ok: false; readonly error: RuntimeError } {
   return err({ code, message });
 }
@@ -325,7 +330,7 @@ export class FakeSession implements RuntimeSession {
       toolCallId: this.#context.ids("tool"),
       toolName: step.name,
       arguments: step.arguments,
-      ...agentField(agentId),
+      ...hookAgentFields(agentId, agentId === undefined ? undefined : this.#agentNames.get(agentId)),
     };
     const complete = (success: boolean, result: ToolResult): void => {
       this.emit("tool.execution_complete", { toolCallId: input.toolCallId, success, result, ...agentField(agentId) });

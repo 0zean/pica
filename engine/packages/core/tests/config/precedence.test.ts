@@ -100,7 +100,11 @@ describe("config precedence", () => {
       routing: {
         profile: "off",
         tiers: { reasoning: "auto", worker: "auto" },
-        delegation: { read: { minBytes: 32768, rangeExemptLines: 400, exclude: [] }, output: { maxBytes: 16384 } },
+        delegation: {
+          read: { minBytes: 32768, rangeExemptLines: 400, exclude: [] },
+          output: { maxBytes: 16384 },
+          codeWriter: { maxToolCalls: 12, maxWriteBytes: 32768 },
+        },
       },
       budget: { sessionCredits: 300, workspaceDailyCredits: 3000 },
       permissions: { mode: "ask" },

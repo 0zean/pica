@@ -222,7 +222,8 @@ Precedence, lowest to highest: built-in defaults → user (`~/Library/Applicatio
     "tiers": { "reasoning": "auto", "worker": "auto" },
     "delegation": {
       "read":   { "minBytes": 32768, "rangeExemptLines": 400 },
-      "output": { "maxBytes": 16384 }
+      "output": { "maxBytes": 16384 },
+      "codeWriter": { "maxToolCalls": 12, "maxWriteBytes": 32768 }
     }
   },
   "budget": { "sessionCredits": 300, "workspaceDailyCredits": 3000 },
@@ -718,7 +719,15 @@ Throwaway code in `spikes/`. Each spike is a script that exits 0 only when its a
   - Cap `code-writer`'s calls and output per delegation, and tighten its prompt so it applies a precise spec without exploring. In the C-10 live run it made 199 calls producing 381k output tokens, 29.7 of `balanced`'s 52.2 credits.
   - Cut the main agent's denied attempts. A whole-file `view` or a shell write that the gate then denies still costs a main-agent turn.
   - Rerun the C-10 suite with the same pin and 3 runs.
+- Built (2026-11-16):
+  - `routing.delegation.codeWriter` (`maxToolCalls` 12, `maxWriteBytes` 32768) limits one `code-writer` delegation under `balanced` and `strict`. The read gate's `onPreToolUse` counts each delegation by its `agentId`. A write's serialized arguments count as its bytes, since they are the worker's output tokens. Past either limit, every further call is denied (`cost.delegation-limit`) with a reason telling the sub-agent to stop and report what is left. The SDK has no per-agent turn or output cap, so the engine enforces it.
+  - `code-writer`'s prompt: apply the spec as written, don't explore, read only the ranges the spec names, don't run or review, create a file whose content is given in one call, reply in at most five lines. Its description tells the main agent to give each file's path and full content.
+  - The delegation guide puts the rules first, then the agents. It now says that a whole read of a large file and a search printing its lines are denied, that shell writes are denied (listing the forms), that the main agent edits existing files itself, with one `sed -i` or script for a change across many files, and that `code-writer` needs the full content or exact edits in the prompt. The C-10 run sent its costliest work, the multi-file edits, to `code-writer` because the old guide said to.
+  - The `cost.large-read` and `cost.shell-write` reasons now name the next call: a `view_range` of at most `rangeExemptLines` lines or the `task` tool with `bulk-reader`, and `code-writer` with the path and full content, without retrying in another form.
+  - FakeSession passes `agentType` on a sub-agent's hook input, as Copilot does (S-02).
 - Verify:
+  - [x] Under `balanced` and `strict`, a `code-writer` delegation's tool calls past `routing.delegation.codeWriter` are denied with a reason telling it to stop and report; each delegation is counted apart, and `off`, the main agent and other agents are not limited.
+  - [x] The delegation guide states the read and shell-write rules before the agent list, and the deny reasons name the next call to make.
   - [ ] **(live)** On the C-10 suite, on the mean of 3 runs, `balanced` passes the D-21 gate against `off`. The report is committed to `docs/evals/`.
   - [ ] If it passes, the owner decides whether `balanced` becomes the default again (D-22).
 

@@ -499,6 +499,14 @@
   ],
   "C-11": [
     {
+      "check": "Under `balanced` and `strict`, a `code-writer` delegation's tool calls past `routing.delegation.codeWriter` (12 calls, 32 KB of writes by default) are denied with a reason telling it to stop and report; each delegation is counted apart, and `off`, the main agent and other agents are not limited.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/sessions/delegation-limits.test.ts && pnpm exec vitest run packages/adapters/tests/sessions/read-gate.test.ts -t 'stops a code-writer delegation'"
+    },
+    {
+      "check": "The delegation guide states the read and shell-write rules before the agent list, and the deny reasons name the next call to make.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/routing/delegation-guide.test.ts packages/adapters/tests/agents/builtin-prompts.test.ts packages/core/tests/sessions/pre-tool-use.test.ts"
+    },
+    {
       "check": "On the C-10 suite, on the mean of 3 runs, `balanced` passes the D-21 gate against `off`. The report is committed to `docs/evals/`.",
       "live": true,
       "run": "make engine-install && cd engine && PICA_LIVE=1 pnpm exec vitest run packages/evals/tests/live-suite.test.ts"
