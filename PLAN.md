@@ -949,9 +949,10 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 **A-08 · Review** — A-04, R-01
 - Build: changed-file list, unified and split diff with syntax highlighting, stage and discard by hunk, commit, push, open pull request.
 - Verify:
-  - [ ] Diff snapshot tests against fixtures, including renames and binary files.
-  - [ ] UI test: stage a hunk, commit, and confirm the commit in a temporary repo.
-  - [ ] A 5,000-line diff renders in under 200 ms.
+  - [x] Diff snapshot tests against fixtures, including renames and binary files.
+  - [x] UI test: stage a hunk, commit, and confirm the commit in a temporary repo.
+  - [x] A 5,000-line diff renders in under 200 ms.
+- Notes: `app/Packages/Review`, specified in [docs/review.md](docs/review.md). A feature package (lint-arch rule added); the app target shows it in the session column in place of the conversation, switched by the toolbar's Review Changes (⇧⌘R), since a diff needs more width than the inspector has. The engine now serves `git.*` in the production composition (`git-handlers.ts`), checking each call against the session's roots: until R-10 a session's worktree of a repo is the repo's checkout, and only write roots may be changed. Stage, unstage and discard by hunk build a patch of the chosen hunks (`hunkPatch`, core) for `git apply`; only modified text files split into hunks. The unstaged diff includes untracked files. Protocol: new `github.createPullRequest` (from the pushed current branch, base defaulting to the repo's default branch, signed in with the GitHub CLI's token on github.com). The highlighter is a small lexer per language family (keywords, strings, comments, numbers), no dependency; lines are colored when drawn, and the syntax state that crosses lines is worked out on demand, since lexing every line of a 5,000-line diff up front took 130 ms in a Debug build. The snapshot fixtures are the engine's `git.diff` answers for R-01's fixture repo, and `git-rpc.test.ts` checks they still match. `fake-picad` has a `review` scenario. Measured on 2026-11-17 (Debug build, Apple silicon): building a 5,000-line diff's rows 4 ms; click to first frame of that diff 39–50 ms over two runs (medians 50 and 39 ms; budget 200 ms).
 
 **A-09 · Files and quick open** — A-04, R-08
 - Build: file tree, ⌘P across workspace repos, read-only viewer, open in external editor.
@@ -1171,7 +1172,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | A-05 | Session timeline | A-04 | done |
 | A-06 | Composer | A-05 | done |
 | A-07 | Approvals | A-05 | done |
-| A-08 | Review | A-04, R-01 | todo |
+| A-08 | Review | A-04, R-01 | done |
 | A-09 | Files and quick open | A-04, R-08 | todo |
 | A-10 | Terminal | A-04, R-02 | todo |
 | A-11 | Usage and cost | A-05, C-08, C-09 | todo |

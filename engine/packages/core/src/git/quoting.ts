@@ -43,3 +43,36 @@ export function unquotePath(text: string): string | undefined {
   }
   return new TextDecoder().decode(new Uint8Array(bytes));
 }
+
+const quotedEscapes: Readonly<Record<number, string>> = {
+  0x07: "\\a",
+  0x08: "\\b",
+  0x09: "\\t",
+  0x0a: "\\n",
+  0x0b: "\\v",
+  0x0c: "\\f",
+  0x0d: "\\r",
+  0x22: '\\"',
+  0x5c: "\\\\",
+};
+
+// Quotes a path the way git does when it holds a control character, a quote, a backslash or a non-ASCII
+// byte; other paths are returned as they are.
+export function quotePath(path: string): string {
+  const bytes = new TextEncoder().encode(path);
+  if (bytes.every((byte) => byte >= 0x20 && byte < 0x7f && byte !== 0x22 && byte !== 0x5c)) {
+    return path;
+  }
+  let quoted = '"';
+  for (const byte of bytes) {
+    const escape = quotedEscapes[byte];
+    if (escape !== undefined) {
+      quoted += escape;
+    } else if (byte < 0x20 || byte >= 0x7f) {
+      quoted += `\\${byte.toString(8).padStart(3, "0")}`;
+    } else {
+      quoted += String.fromCharCode(byte);
+    }
+  }
+  return `${quoted}"`;
+}

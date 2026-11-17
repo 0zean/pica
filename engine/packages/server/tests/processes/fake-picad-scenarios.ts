@@ -127,9 +127,18 @@ function approvalTurns(): Turn[] {
   return [...[1, 2, 3, 4].map((index) => turn("npm test", index)), turn("npm run lint", 5)];
 }
 
+/**
+ * The A-08 review scenario: one turn that reports editing `story.txt`. The FakeRuntime changes no files, so the UI
+ * test edits the file itself before sending, and the review refreshes when the turn ends.
+ */
+function reviewTurns(): Turn[] {
+  return [{ steps: [streamedText("Renaming two lines of the story.", 2), toolCall("edit", "story.txt", "edited"), usage(200, 40)] }];
+}
+
 export const fakePicadScenarios: Record<string, Scenario> = {
   empty: scenario([]),
   timeline: scenario(timelineTurns()),
   composer: scenario(composerTurns()),
   approvals: scenario(approvalTurns()),
+  review: scenario(reviewTurns()),
 };

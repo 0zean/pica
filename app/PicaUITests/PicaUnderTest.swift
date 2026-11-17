@@ -31,6 +31,8 @@ final class PicaUnderTest {
     let timelineMetricsPath: String
     /// Where Pica writes `ComposerMetrics`' report.
     let composerMetricsPath: String
+    /// Where Pica writes `ReviewMetrics`' reports.
+    let reviewMetricsPath: String
     private let scrollScript: Bool
     /// A-14: a managed policy (docs/managed-policy.md) `fake-picad` loads as if root owned it.
     private let managedPolicy: String?
@@ -48,6 +50,7 @@ final class PicaUnderTest {
         socketPath = home.appending(path: "picad.sock").path
         timelineMetricsPath = home.appending(path: "timeline-metrics.json").path
         composerMetricsPath = home.appending(path: "composer-metrics.json").path
+        reviewMetricsPath = home.appending(path: "review-metrics.json").path
         XCTAssertLessThan(socketPath.utf8.count, 104, "\(socketPath) is longer than sun_path allows")
         if let managedPolicy {
             try Data(managedPolicy.utf8).write(to: policyFile)
@@ -68,6 +71,7 @@ final class PicaUnderTest {
             "PICA_TEST_SCENARIO": scenario,
             "PICA_TIMELINE_METRICS_PATH": timelineMetricsPath,
             "PICA_COMPOSER_METRICS_PATH": composerMetricsPath,
+            "PICA_REVIEW_METRICS_PATH": reviewMetricsPath,
             // A-07: no system notifications, so no test meets the permission prompt.
             "PICA_NOTIFICATIONS": "off",
         ]

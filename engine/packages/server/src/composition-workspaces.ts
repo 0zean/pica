@@ -3,6 +3,7 @@ import { join } from "node:path";
 import {
   createGhCliCredentialProvider,
   createGitCliService,
+  createGitHubPullRequestClient,
   createGitHubRestClient,
   createGitHubTokenVerifier,
   createGitRepoRegistryOps,
@@ -19,6 +20,7 @@ import {
   resolveGitHubHost,
 } from "@pica/core";
 import type { DiscoveryResult, GitHubRestClient, RepoRegistry, Store, WorkspaceService } from "@pica/core";
+import type { EngineReviewOptions } from "./git-handlers.ts";
 
 export interface WorkspaceComposition {
   readonly store: Store;
@@ -60,4 +62,28 @@ export function workspaceOptions(deps: WorkspaceComposition): {
     clock: () => new Date().toISOString(),
   });
   return { workspaces, repos };
+}
+
+// A-08: the review over the same git service, opening pull requests with the GitHub CLI's token.
+export function reviewOptions(deps: Pick<WorkspaceComposition, "store" | "env">): EngineReviewOptions {
+  const { env } = deps;
+  const githubHost = resolveGitHubHost({ host: "github.com" });
+  const providers = [createGhCliCredentialProvider({ run: spawnGitHubCommand(env) })];
+  const verifier = createGitHubTokenVerifier();
+  return {
+    store: deps.store,
+    git: createGitCliService({ env }),
+    githubHost,
+    pullRequests: async () => {
+      const credential = await resolveGitHubCredential(providers, verifier, {
+        host: githubHost,
+        scopes: ["repo"],
+        interactive: false,
+      });
+      if (!credential.ok) return err(credential.error);
+      return ok(
+        createGitHubPullRequestClient({ host: githubHost, provider: credential.value.provider, token: credential.value.token }),
+      );
+    },
+  };
 }
