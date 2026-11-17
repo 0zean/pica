@@ -11,6 +11,14 @@ import XCTest
 final class PicaUnderTest {
     static let repository = URL(filePath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
         .deletingLastPathComponent()
+    /// The `fake-picad.ts` Pica starts. `make app-ui-test-pica` passes a copy of `engine/` outside ~/Documents as
+    /// TEST_RUNNER_PICA_UI_TEST_ENGINE (`tools/ui-tests/stage-engine.sh`): Node runs as Pica's child, so reading a
+    /// checkout under ~/Documents would make macOS ask each rebuilt Pica for the Documents folder.
+    static var fakePicad: URL {
+        let engine = ProcessInfo.processInfo.environment["PICA_UI_TEST_ENGINE"].map { URL(filePath: $0) }
+            ?? repository.appending(path: "engine")
+        return engine.appending(path: "packages/server/tests/processes/fake-picad.ts")
+    }
 
     let name: String
     /// In the runner's own temporary directory, because the runner is sandboxed and Pica must be able to write there.
@@ -46,7 +54,7 @@ final class PicaUnderTest {
     var environment: [String: String] {
         var environment = [
             "PICA_NODE": node,
-            "PICA_ENGINE_ENTRY": Self.repository.appending(path: "engine/packages/server/tests/processes/fake-picad.ts").path,
+            "PICA_ENGINE_ENTRY": Self.fakePicad.path,
             "PICA_TEST_HOME": home.path,
             "PICA_SOCKET": socketPath,
             "PICA_TEST_SCENARIO": scenario,

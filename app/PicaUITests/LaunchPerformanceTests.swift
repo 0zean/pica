@@ -20,16 +20,17 @@ final class LaunchPerformanceTests: XCTestCase {
     func testColdLaunchToInteractiveWindowIsUnderBudgetAndBaseline() throws {
         // `make app-ui-test` passes these as TEST_RUNNER_PICA_NODE.
         let node = try XCTUnwrap(ProcessInfo.processInfo.environment["PICA_NODE"], "set PICA_NODE to a Node 22 executable")
-        let entry = Self.repository.appending(path: "engine/packages/server/tests/processes/fake-picad.ts")
+        let entry = PicaUnderTest.fakePicad
         var samples: [Double] = []
         for run in 0..<Self.runs {
             samples.append(try launchOnce(node: node, entry: entry, waitForEngine: run == 0))
         }
         samples.sort()
         let median = samples[samples.count / 2]
-        let baseline = try JSONDecoder().decode(
-            Baseline.self,
-            from: Data(contentsOf: Self.repository.appending(path: "app/PicaUITests/LaunchBaseline.json")))
+        // `make app-ui-test-pica` passes a copy outside ~/Documents, which the runner may read without a grant.
+        let baselineFile = ProcessInfo.processInfo.environment["PICA_LAUNCH_BASELINE"].map { URL(filePath: $0) }
+            ?? Self.repository.appending(path: "app/PicaUITests/LaunchBaseline.json")
+        let baseline = try JSONDecoder().decode(Baseline.self, from: Data(contentsOf: baselineFile))
         let report = XCTAttachment(string: "launch to interactive (s): \(samples), median \(median), baseline \(baseline.medianSeconds)")
         report.lifetime = .keepAlways
         add(report)
