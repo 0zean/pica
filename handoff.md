@@ -1,151 +1,99 @@
-# Session Handoff — C-10, A-01, A-04 and A-05 landed: Milestone M2 met with `off` as the default, and the app has its navigation shell and session timeline
+# Session Handoff — A-06, A-07 and C-11 landed: the app has a composer and actionable approvals; `balanced` now passes the credit gate but not the reasoning-input gate
 
 ## Where it started
-The owner asked to review `PLAN.md` and the previous handoff, then run C-10 (eval harness) and A-01 (app shell and engine supervision) in parallel side sessions. C-10's live run showed the 60% target couldn't be met. Getting there took three engine follow-ups, a revised target (D-21) and a new default profile (D-22). Both units landed. A-04 (navigation shell) then ran in a third side session, which started A-05 (session timeline), and both landed.
+The owner asked to review `PLAN.md` and the previous handoff, then run A-06 (composer), A-07 (approvals) and C-11 (make `balanced` pass the D-21 gate) in parallel side sessions. All three opened PRs. The owner approved C-11's live run in its own session, then asked for the PRs to be merged and this handoff updated.
 
 ## Decisions locked + what shipped
-- **https://github.com/0zean/pica/pull/79 (C-07 follow-up):**
-  - The routing profile's main-agent `excludedTools` and the delegation guide now reach the runtime.
-  - `balanced` removes `create` and `apply_patch`; `strict` also removes `edit`; `off` removes nothing.
-- **https://github.com/0zean/pica/pull/80 (C-04 follow-up):** under `balanced` and `strict`, a main-agent shell command that writes into the repo is denied, with a message naming `code-writer`.
-  - Covered: redirects, heredocs, `tee`, `touch`, and the destination of `cp`, `mv` and `install`.
-  - Still allowed: `node -e` and `python -c`, `sed -i`, and targets it can't resolve. These limits are listed under C-04.
-  - The session's `onPreToolUse` read gate now applies this one rule to shell calls.
-  - It also fixed the C-03 100% coverage check, which was already failing on `main`.
-- **https://github.com/0zean/pica/pull/81 (C-01/C-05 follow-up):**
-  - The `auto` rule now puts a model that supports reasoning effort on the reasoning tier, ahead of price. The worker tier takes the cheapest model.
-  - The main session is now created with the reasoning tier's model. Before, Copilot's default (`claude-haiku-4.5`) ran the main agent whatever the tier said.
-  - It landed through #77, which contained its head commit.
-- **https://github.com/0zean/pica/pull/77 (C-10, done):**
-  - 15 tasks over `fixtures/evals/`, including three "find the planted bug" comprehension tasks, each with a programmatic success check.
-  - The runner takes a run count (3 by default for live runs); the report gives means and ranges.
-  - FakeRuntime golden report. Docs in `docs/evals/README.md`.
-  - Live report: `docs/evals/2026-11-16-c10-live.md` and `.json`. It ran on Copilot Pro, 90 sessions, with the reasoning tier pinned to `gpt-5.6-luna` and the worker tier on `auto` (`claude-haiku-5.5`). It cost 70.9 credits.
-    - `balanced` against `off`: 15/15 tasks in both, +11.3% reasoning-tier input, +179% credits.
-    - `code-writer` was 29.7 of the 52.2 credits `balanced` spent.
-- **D-21 (`PLAN.md` §3):** the 60% target is replaced by a no-regression gate.
-  - On the mean of 3 runs, `balanced` may use at most 5% more reasoning-tier input and at most 35% more credits, with at most one fewer task succeeding.
-  - Why: Copilot's own `view` refuses whole reads of large files, and the main agent searches, reads ranges or writes scripts in every profile.
-  - The eval-only model pin lives in the eval config, not in the product's `auto` rule.
-- **D-22 (`PLAN.md` §3):** the default routing profile is `off`; `balanced` and `strict` are opt-ins.
-  - Milestone M2, renamed "measured cost routing", was met on 2026-11-16 by the "gap explained and routing changed" branch.
-  - §4.6 thresholds unchanged: no value would have made `balanced` cheaper.
-- **New unit C-11, `todo`:** make `balanced` pass the D-21 gate, mainly by capping `code-writer`'s calls and output and tightening its prompt, then rerun the eval.
-- **https://github.com/0zean/pica/pull/78 (A-01, done):** new package `app/Packages/AppShell`. Spec: `docs/app-shell.md`.
-  - `EngineSupervisor` starts `picad`, either the bundled layout or `PICA_ENGINE_ENTRY`/`PICA_NODE`. It waits for the ready line and connects `EngineClient`. Failed starts back off at 250 ms, 500 ms, 1 s, then 2 s, and after 3 failures in a row it offers Try Again. It reuses an engine that is already listening.
-  - A `picad` that exits before ready shows its exit code, its last log line and the `picad.log` path.
-  - A protocol major mismatch shows a blocking panel naming both versions.
-  - `SingleInstanceLock` is a `flock` on `app.lock`.
-  - Measured: recovery after SIGKILL takes about 0.43 s (limit 2 s); the median cold launch is 0.43 s (budget 1.0 s, baseline in `LaunchBaseline.json`).
-  - Makefile: `app-ui-test` is split into `app-ui-test-gallery` and `app-ui-test-pica`. `.github/workflows/app.yml` now installs Node and pnpm.
-- **https://github.com/0zean/pica/pull/83 (A-04, done; marked in the index by https://github.com/0zean/pica/pull/84):** spec in `docs/navigation-shell.md`.
-  - `NavigationStore` (`app/Packages/AppShell/.../Navigation`) is an `@Observable` store fed only by `EngineClient`.
-    - On every connection it loads `workspace.list`, `repo.list` and `session.list`.
-    - It applies `workspace.changed` and `session.changed` as they arrive. A notification wins over an older reload answer.
-  - The window is a `NavigationSplitView`: a sidebar, a session column (a placeholder for A-05), and a toggleable `.inspector` placeholder.
-  - Sidebar: a disclosure row per workspace, holding its repos and then its sessions. Sessions in `awaiting_approval` or `failed` sort first.
-  - Keyboard:
-    - The sidebar has focus at launch. Arrow keys select and open rows; Left/Right collapse and expand.
-    - ⌘1–9 select sessions; ⌥⌘I toggles the inspector.
-  - Restoration: the selection, the inspector's width and visibility, and collapsed workspaces are saved in `window-state.json` next to the socket. AppKit autosaves the sidebar width in `dev.pica.Pica` defaults.
-  - UI tests run in a sandbox, so the socket lives in the runner's container. They create data through their own `EngineClient`, and `PicaUITests` now links `EngineClient`, `EngineClientTestSupport` and `PicaProtocol`.
-  - Run a subset with `make app-ui-test-pica UI_TEST=<Class>[/<method>]`.
-  - Cold launch median: 0.56 s (budget 1.0 s; the baseline is unchanged).
-  - No protocol change and no new dependencies.
-  - UI tests need macOS Automation Mode. The owner enabled it without authentication (`automationmodetool enable-automationmode-without-authentication`); `disable-automationmode-without-authentication` reverses it.
-- **https://github.com/0zean/pica/pull/86 (A-05, done):** new feature package `app/Packages/Timeline`. Spec: `docs/session-timeline.md`.
-  - The app target passes the timeline to AppShell's session column as a `SessionContent` closure, so AppShell doesn't depend on Timeline. A lint-arch rule enforces this.
-  - Data flows from `EngineClient.events(sessionId:afterSeq:)` to the `@Observable` `TimelineStore` to the view. Events are read off the main actor and applied in batches, and each row is observable, so a streaming delta redraws only its row.
-  - Rows:
-    - streaming Markdown for assistant text
-    - tool calls as compact rows that expand on click
-    - collapsed sub-agent groups that take over the row of the `task` call that started them
-    - inline rows for policy decisions other than allow, and for approvals
-    - notices for budget, abort, error and unknown events
-    - a header chip for context, tokens and credits
-  - The list is a `ScrollView` over a `LazyVStack`. It follows new rows only while the user is at the bottom.
-  - New dependency: `swift-markdown` 0.9.0, pinned exactly (it brings in `swift-cmark`). `Package.resolved` is committed.
-  - Measured:
-    - A 10,025-event session opens in a median of 0.21–0.22 s (budget 300 ms).
-    - The scroll hitch ratio is 0.0–0.3% (budget 1%).
-    - Pica measures both itself through `TimelineMetrics`, which is on only in UI tests.
-  - Also changed:
-    - `EngineClient.LineSplitter` now uses `memchr`; a 10k-event replay fell from 0.69 s to 0.20 s.
-    - `fake-picad` takes `PICA_TEST_SCENARIO`; scenarios are in `fake-picad-scenarios.ts`.
-    - The snapshot helper moved to a new `DesignSystemTestSupport` product.
-  - Findings: SwiftUI `List` stalled about 50 ms mid-scroll, and `.textSelection(.enabled)` on rows pushed the hitch ratio to 10%. Rows are no longer selectable; messages have a Copy menu.
-  - Snapshot references are kept per macOS major version. CI runs macOS 26 and this Mac runs 27, so the macOS 26 references came from CI's `snapshot-failures` artifact (`b753f89`), as in A-03.
-- **https://github.com/0zean/pica/pull/82:** `secret-leak-fuzz.test.ts` (M-03) now has a 60 s timeout and `seed: 3011`. It had timed out on CI at 5.45 s against the default 5 s limit.
-- **Landing:** this session merged the PRs with `gh pr checks <n> --watch --fail-fast && gh pr merge <n> --merge --match-head-commit <sha>`, each time after the owner said to.
-  - For #77 and #78, GitHub reported conflicts that a local `git merge origin/main` resolved cleanly. Merging `main` into the branch and pushing cleared it.
-  - Auto-fix was turned on for #78 by its session, and nowhere else.
+- **https://github.com/0zean/pica/pull/88 (A-07, done):** spec in `docs/approvals.md`.
+  - **Cards:** the A-05 approval row now has Allow Once / Always Allow / Deny, and Raise Budget / Stop for a budget approval. It names the call it is for. If the engine refuses a choice, the card stays pending and shows the reason.
+  - **Notifications:** `ApprovalNotifier` (AppShell) posts one `UserNotifications` notification when a session enters `awaiting_approval`, and withdraws it when the session moves on.
+    - Nothing is posted while Pica is frontmost.
+    - Permission is asked for on the first post. `PICA_NOTIFICATIONS=off` turns notifications off; the UI tests set it.
+  - **Engine and config:**
+    - New config key `permissions.tools: [{ tool, match?, permission }]`.
+    - `allow_always` appends a rule with `appendPermissionRule`. It edits the user's `config.jsonc` in place with `jsonc-parser`, keeping comments, and writes atomically.
+    - A prompt that matches a rule is answered at once and recorded as a `policy.decision` (`permission.rule`). A rule never overrides a policy deny.
+    - If the rule can't be written, the approval stays pending.
+  - **Testing:** FakeRuntime steps take `asks`. `fake-picad` has an `approvals` scenario.
+  - **Known limit:** production doesn't compose `permission.ask` or shell scope into `onPreToolUse` (E-11's list), so with Copilot, tool-call approvals may not reach the user yet. Budget approvals do.
+- **https://github.com/0zean/pica/pull/90 (C-11, built; live gate not met):**
+  - **Caps:** `routing.delegation.codeWriter` (`maxToolCalls` 12, `maxWriteBytes` 32768) caps one `code-writer` delegation. Calls past it are denied with `cost.delegation-limit`.
+  - **Prompts:** `code-writer`'s prompt is now "apply a precise spec, don't explore". The delegation guide puts the rules first, and says to run `mkdir -p` before delegating a new file. The `cost.large-read` and `cost.shell-write` deny reasons name the next call to make.
+  - **Report names:** `EVAL_REPORT_NAME` names a report's files.
+  - **Live result (`docs/evals/2026-11-17-c11-live.md`):** 3 runs × 15 tasks, same pin as C-10 (`gpt-5.6-luna` / `auto`), about 45 credits.
+    - Tasks: 15/15 against 15/15.
+    - Credits: **+27.1%** (C-10: +179%), within the 35% limit. The margin is 0.52 credits per suite run.
+    - Reasoning-tier input: **+8.4%** against the 5% limit, which fails. One task's input varies by more than the whole margin from run to run.
+  - **The credit pass depends on `sed -i`:** the main agent edited with `sed -i` or scripts in 8 of 45 `balanced` runs, and in 6 of 45 under `off`. `cost.shell-write` doesn't classify either. This model never calls `edit`, and `balanced` hides `apply_patch`.
+  - **D-23 (`PLAN.md` §3), tried and reverted:** keep `apply_patch` under `balanced` and deny patches that add a file. The probe (`docs/evals/2026-11-17-c11-patch-probe.md`) showed patches cost far more than `sed -i`: 4.67 against 0.53 credits on `rename-fmt-cents`. So `sed -i` stays unclassified, by design.
+  - **Default:** still `off` (D-22). The owner hasn't been asked to make `balanced` the default, and this run doesn't support it.
+- **https://github.com/0zean/pica/pull/89 (A-06, done; marked in the index by this handoff's PR):** spec in `docs/composer.md`.
+  - **Package:** new feature package `app/Packages/Composer`, wired in by the app target under the timeline in `SessionContent`. Neither AppShell nor Timeline depends on it.
+  - **Input:** an `NSTextView` that grows from one line to eight. Unsent text is kept per session.
+  - **Mentions:** `@` mentions repos, files and agents, and `/` runs skills. `MentionTokenizer` has table tests.
+  - **Keys:** ⌘↩ sends, or queues while a turn runs. ⇧⌘↩ steers and ⌘. stops.
+  - **Pickers:** the profile picker sets the workspace default. The tier picker is read-only, because `config.set` isn't served.
+  - **Engine:** the production composition now serves `agents.list`, `models.list` and `models.tiers` (`catalog-handlers.ts`). There is no protocol change.
+  - **Latency:** keystroke to glyph has a median of 12.9–13.3 ms and a p95 of 13.5–15.2 ms (budget 16 ms; the worst run had 0.8 ms to spare). It's measured inside Pica by `ComposerMetrics`.
+  - **Also changed:** `ScrollFollow` treats "at bottom" as within 9 points instead of 8.
+  - **Fix found while landing (`5359bcc`):** with the composer making the timeline shorter, a lazily built row that grew after being scrolled to was left partly below the viewport, and that hid A-07's Deny button. While following, the timeline now scrolls to the newest row again whenever the content grows. `ApprovalsUITests` now checks the newest card instead of counting cards.
+- **Landing:** #88, then #90, then #89, each merged with `gh pr merge <n> --merge --match-head-commit <sha>` after CI passed. #89 conflicted with #88 in five files; the A-06 session merged `main` in and kept both sides.
 
 ## Key files for next session
-- `PLAN.md`: D-21 and D-22 in §3, the C-10 notes, C-11, M2, and the §12 unit index.
-- `docs/navigation-shell.md` — A-04's design.
-- `docs/session-timeline.md` — A-05's design, which A-06 (composer) and A-07 (approvals) build on.
-- `app/Packages/Timeline/` — `TimelineStore` and the row views.
-- `docs/evals/2026-11-16-c10-live.md` — the live numbers C-11 has to beat.
-- `docs/evals/README.md` — the eval suite, sizing and how to run it.
-- `docs/app-shell.md` — A-01's supervision design, which A-04 and H-05 build on.
-- `app/Packages/AppShell/` — `EngineSupervisor`, `AppModel`, `RootView`, `SingleInstanceLock`.
-- `engine/packages/server/tests/processes/fake-picad.ts` — the production composition over FakeRuntime, used by the app's tests.
+- `PLAN.md`: C-11 and its notes, D-23 in §3, and the §12 index.
+- `docs/evals/2026-11-17-c11-live.md` and `docs/evals/2026-11-17-c11-patch-probe.md`.
+- `docs/approvals.md` and `docs/composer.md`.
+- `app/Packages/Composer/` and `app/Packages/Timeline/` (the approval cards). Also `app/Packages/AppShell/`, which holds `ApprovalNotifier`.
+- `engine/packages/server/src/catalog-handlers.ts` and the permission-rule writer, with `permission-rules.test.ts` and `permission-rule-writer.test.ts`.
+- `engine/packages/server/tests/processes/fake-picad-scenarios.ts`, which has the `approvals` and `composer` scenarios.
 - Memory files touched: none.
 
 ## Running state
-- Side sessions: none working. The A-04 session (`local_94845724-b76b-4ed9-859d-2b3edbcd9703`) and the A-05 session it started (`local_fa55331d-235c-4f28-b264-735702b74e5a`) are idle, with their PRs merged.
-- Background processes: none.
-- Dev servers / ports: none. No `picad` is running.
-- Worktrees and branches:
-  - The side sessions' worktrees still exist. They hold branches that are now merged and behind `origin`, because this session pushed merges from `main` to them:
-    - `.claude/worktrees/c-07-delegator-6533f3` on `dev/c-10-eval-harness-534aa3`
-    - `.claude/worktrees/m-07-mcp-import-f88fb7` on `dev/a-01-app-shell-32ca5d`
-    - `.claude/worktrees/m-02-mcp-presets-9608d0`, at a detached head
-  - Merged branches still exist on `origin`:
-    - `dev/c-10-eval-harness-534aa3`, `dev/a-01-app-shell-32ca5d`
-    - `dev/c-07-main-agent-routing`, `dev/c-04-shell-write-gate`, `dev/c-01-auto-tiers`
-    - `dev/m-03-fuzz-timeout`
-    - the older `dev/*` branches listed in the previous handoff
-    - Also merged: `dev/a-04-navigation-shell-d98293`, `dev/a-04-mark-done`, `dev/a-05-session-timeline-1e04db` and `dev/handoff-4`.
-- This update is on `dev/a-05-done`, cut from `main` at `fd0abcd`.
+- Side sessions:
+  - A-06 (`local_8917fbd7-2e24-47ba-b0f0-ca2506920958`), A-07 (`local_6460eaf1-331f-480c-a5ea-0c5786f6b102`) and C-11 (`local_9d287657-0dbe-4502-accd-aeb92cb9152c`) are idle, with their PRs merged.
+  - Auto-fix is on for #89 only.
+- Background processes, dev servers and ports: none.
+- Worktrees: the sessions reused older worktrees, so the folder names don't match the units.
+  - `.claude/worktrees/a-05-session-timeline-1e04db` is on `dev/a-06-composer-6baa81`.
+  - `.claude/worktrees/m-02-mcp-presets-9608d0` is on `dev/a-07-approvals-066d1e`.
+  - `.claude/worktrees/m-07-mcp-import-f88fb7` is on `dev/c-11-balanced-gate-44da10`.
+  - `.claude/worktrees/c-07-delegator-6533f3` is at a detached head.
+- All merged `dev/*` branches still exist on `origin`.
+- This update is on `dev/handoff-5`, cut from `main`.
 - Live eval runs wrote to the owner's real Pica data directory under `~/Library/Application Support/Pica/`.
 
 ## Verification — how to confirm things still work
-- `make verify-engine` passes on `main` (1863 tests, 6 skipped). CI passed on #77, #78 and #82.
-- `make verify UNIT=C-10` passes its deterministic checks. The live check is skipped unless `PICA_LIVE=1`.
-- `make verify UNIT=A-01` covers recovery, the protocol mismatch and cold launch. The cold-launch test also runs as `make app-ui-test-pica`.
-- `make verify UNIT=A-04` passes 3/3 (`NavigationShellUITests` and `NavigationStoreTests`). It needs Automation Mode.
-- `make verify UNIT=A-05` covers the per-event snapshots, the 10k-event open, the hitch ratio and streaming while scrolled up.
-- `make verify-app` passed on CI for #78 and for #86 once the macOS 26 references were in. The full `make verify` passed locally on #83 and #86.
-- New snapshot tests fail on CI's first run until macOS 26 references are committed from the `snapshot-failures` artifact. To record locally, run `PICA_RECORD_SNAPSHOTS=1` on the matching macOS major.
-- The live eval costs credits, about 70 on Copilot Pro for the full 3-run suite. Ask the owner first. The command is in `docs/evals/README.md`.
+- `make verify-engine` passes. CI passed on #88, #89 and #90.
+- `make verify UNIT=A-07` passed locally twice, and A-04's tests stay 3/3.
+- `make verify UNIT=A-06` passes locally, with all three checks.
+- `make verify UNIT=C-10` and `make verify UNIT=C-11` pass their deterministic checks. The live checks are skipped unless `PICA_LIVE=1`.
+- **Running UI tests locally:**
+  - **Documents access:** the worktrees are under `~/Documents`, and Debug builds are signed ad hoc. So every rebuilt Pica raises the macOS "access files in your Documents folder" prompt, and the owner must click Allow before its UI tests can start the engine.
+  - **Display:** the Mac's display must be awake and unlocked. Otherwise XCUITest stalls at its first window query, and `screencapture` fails.
+  - **One run at a time:** two sessions' UI runs kill each other's Pica. Run them under one `lockf` lock.
+  - **Register first:** worktrees share a bundle ID, so XCUITest may launch another worktree's app. Run `lsregister -f` on your own `Pica.app` before each run.
+- **Snapshots:** #88 changed `event-approval.requested` and `event-budget.exhausted`, and added `approval-pending-{light,dark}`. Their macOS 26 references came from CI's `snapshot-failures` artifact, and `verify-app` passed on #88.
 
 ## Deferred + open questions
-- **Deferred: C-11**, making `balanced` pass the gate. Recorded as `todo`, not started.
-- **Deferred from A-01:**
-  - No backoff for an engine that crashes repeatedly after connecting (H-05).
-  - H-06 must bundle `Helpers/node` and `Resources/engine/picad.mjs`. Until then, a plain Xcode run needs `PICA_ENGINE_ENTRY` and `PICA_NODE` set in the scheme.
-- **Deferred from A-04:**
-  - The engine broadcasts nothing for `workspace.delete`, `repo.addPath` or `repo.remove`. The sidebar catches up on the next `workspace.changed` or reconnect.
-  - When XCUITest kills Pica instead of quitting it, the engine it started is left running (H-05).
-  - UI tests change the sidebar width in the developer's real `dev.pica.Pica` defaults.
-  - The first launch after a rebuild can take more than 10 s while macOS checks the new binary. A-01's cold-launch test failed once on that, and passed on rerun.
-- **Deferred from C-04:** the shell-write gate doesn't catch interpreter one-liners, `sed -i` or targets it can't resolve.
-- **Deferred: E-11's "Not composed yet" list in `PLAN.md`:**
-  - Per-session workspace and repo config layers.
-  - The MCP registry, attachment and health monitor (M-01, M-04, M-06).
-  - User hooks (X-03), OTLP export (H-04), and the R-08 tools.
-  - Per-session worktrees (R-02).
-  - PAT and device-flow auth, and hosts other than github.com (R-04, D-20).
-- **Still deferred from before:**
-  - C-07: the `child_session` delegator and per-agent `mcpServers`.
-  - M-07: Codex import (needs TOML).
-  - M-02: the GHE.com and GHES Copilot MCP endpoint is not recorded.
+- **C-11 (still `todo`):**
+  - Make a `cost.delegation-limit` denial end the delegation. In one run `code-writer` kept calling `view` through 24 denials.
+  - Size the 5% reasoning-input margin against run-to-run noise: more runs, or a margin taken from `off` against itself.
+- **A-07:** compose the permission-mode rules (`permission.ask`, shell scope) into `onPreToolUse`, so Copilot tool-call approvals reach the user. This is a separate unit.
+- **A-06:**
+  - `files.quickOpen` and `files.list` need a search adapter (A-09). Until then there are no file or skill completions.
+  - `config.set` isn't served, so the tier picker is read-only.
+- **From before (see the previous handoff, in git history):**
+  - The H-05 crash backoff, and H-06 bundling.
+  - A-04's missing broadcasts.
+  - The C-04 gaps: interpreter one-liners and unresolved targets. `sed -i` is now unclassified by design (D-23).
+  - E-11's "not composed yet" list.
+  - The C-07 `child_session` delegator, M-07's Codex import and M-02's GHE endpoint.
 - **Open:**
-  - On this account `auto` picks `kimi-k3` for the reasoning tier, at about 8 credits a session. Should the product's tier choice weigh price more?
-  - May a TOML parser such as `smol-toml` be added for Codex import?
-  - Should Auto-fix and the merge step be allowed in this repo's Claude permission settings?
-  - Should the merged `dev/*` branches and the stale worktrees be deleted?
+  - Should UI tests stop depending on a Documents grant, for example with worktrees outside `~/Documents` or a stable signing identity?
+  - The product's `auto` tier choice and its price weighting.
+  - Whether `smol-toml` may be added.
+  - Whether Auto-fix and the merge step should be allowed in this repo's permission settings.
+  - Whether to delete the merged `dev/*` branches and the stale worktrees.
 
 ## Pick up here
-A-06 (composer) and A-07 (approvals) are unblocked now that A-05 is done; neither depends on the other. C-11 is the open cost-router unit.
+A-06 and A-07 are done. The rest of C-11 is the open cost-router work. The next app units are in the `PLAN.md` §12 index (A-08 needs R-01).
