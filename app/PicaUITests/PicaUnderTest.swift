@@ -21,12 +21,17 @@ final class PicaUnderTest {
     let scenario: String
     /// Where Pica writes `TimelineMetrics`' report.
     let timelineMetricsPath: String
+    /// Where Pica writes `ComposerMetrics`' report.
+    let composerMetricsPath: String
     private let scrollScript: Bool
+    private let typingScript: Int
     private let node: String
 
-    init(scenario: String = "empty", scrollScript: Bool = false) throws {
+    /// `typingScript` is how many characters the composer types itself once it has focus (A-06).
+    init(scenario: String = "empty", scrollScript: Bool = false, typingScript: Int = 0) throws {
         self.scenario = scenario
         self.scrollScript = scrollScript
+        self.typingScript = typingScript
         // `make app-ui-test` passes this as TEST_RUNNER_PICA_NODE.
         node = try XCTUnwrap(ProcessInfo.processInfo.environment["PICA_NODE"], "set PICA_NODE to a Node 22 executable")
         name = "pica-ui-\(UUID().uuidString.prefix(8))"
@@ -34,6 +39,7 @@ final class PicaUnderTest {
         try FileManager.default.createDirectory(at: home, withIntermediateDirectories: true)
         socketPath = home.appending(path: "picad.sock").path
         timelineMetricsPath = home.appending(path: "timeline-metrics.json").path
+        composerMetricsPath = home.appending(path: "composer-metrics.json").path
         XCTAssertLessThan(socketPath.utf8.count, 104, "\(socketPath) is longer than sun_path allows")
     }
 
@@ -45,9 +51,13 @@ final class PicaUnderTest {
             "PICA_SOCKET": socketPath,
             "PICA_TEST_SCENARIO": scenario,
             "PICA_TIMELINE_METRICS_PATH": timelineMetricsPath,
+            "PICA_COMPOSER_METRICS_PATH": composerMetricsPath,
         ]
         if scrollScript {
             environment["PICA_TIMELINE_SCROLL_SCRIPT"] = "1"
+        }
+        if typingScript > 0 {
+            environment["PICA_COMPOSER_TYPING_SCRIPT"] = String(typingScript)
         }
         return environment
     }

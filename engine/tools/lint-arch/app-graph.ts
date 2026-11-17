@@ -13,6 +13,8 @@ const allowedPackageDependencies: Readonly<Record<string, readonly string[]>> = 
   Features: ["EngineClient", "PicaProtocol", "DesignSystem"],
   // A-05: the session timeline, a feature large enough for its own package (PLAN.md §4.3).
   Timeline: ["EngineClient", "PicaProtocol", "DesignSystem"],
+  // A-06: the composer under the timeline; a feature package of its own, so it does not depend on Timeline.
+  Composer: ["EngineClient", "PicaProtocol", "DesignSystem"],
 };
 
 const featuresPackage = "Features";
