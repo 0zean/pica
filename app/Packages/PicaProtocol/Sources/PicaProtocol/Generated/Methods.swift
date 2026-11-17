@@ -153,6 +153,13 @@ public enum Methods {
         public static let direction = MethodDirection.client
     }
 
+    public enum GithubCreatePullRequest: PicaMethod {
+        public typealias Params = GithubCreatePullRequestParams
+        public typealias Result = GithubCreatePullRequestResult
+        public static let name = "github.createPullRequest"
+        public static let direction = MethodDirection.client
+    }
+
     public enum SessionCreate: PicaMethod {
         public typealias Params = SessionCreateParams
         public typealias Result = SessionCreateResult

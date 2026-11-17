@@ -10,7 +10,8 @@ export {
 } from "./diff.ts";
 export { type GitError, type GitErrorCode } from "./errors.ts";
 export { logArgs, parseLog, type Commit } from "./log.ts";
-export type { CommitOptions, DiffTarget, GitResult, GitService, LogOptions, PushOptions } from "./port.ts";
+export { hunkPatch, type HunkPatchDirection } from "./hunk-patch.ts";
+export type { ApplyOptions, CommitOptions, DiffTarget, GitResult, GitService, GitWorkingChanges, LogOptions, PushOptions } from "./port.ts";
 export { parsePush, type PushedRef, type PushOutcome, type PushResult } from "./push.ts";
 export {
   parseStatus,

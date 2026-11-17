@@ -48,6 +48,8 @@ import { registerCatalogHandlers } from "./catalog-handlers.ts";
 import type { EngineCatalogOptions } from "./catalog-handlers.ts";
 import { registerEngineHandlers } from "./engine-handlers.ts";
 import { registerFanOutHandlers, toFanOutDto } from "./fanout-handlers.ts";
+import { registerGitHandlers } from "./git-handlers.ts";
+import type { EngineReviewOptions } from "./git-handlers.ts";
 import { registerMcpHealthHandlers, registerMcpPresetHandlers } from "./mcp-handlers.ts";
 import { registerMcpImportHandlers } from "./mcp-import-handlers.ts";
 import { SocketListener } from "./listener.ts";
@@ -113,6 +115,8 @@ export interface EngineOptions {
   // M-07: answers `mcp.importCandidates` and `mcp.import`. Repo ids resolve through `workspaces`
   // unless `repoRoot` is given.
   readonly mcpImport?: EngineMcpImportOptions;
+  // A-08: answers `git.*` and `github.createPullRequest` for the review.
+  readonly review?: EngineReviewOptions;
 }
 
 export interface EngineMcpImportOptions {
@@ -176,6 +180,9 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
   }
   if (options.repos !== undefined) {
     registerRepoHandlers(router, options.repos);
+  }
+  if (options.review !== undefined) {
+    registerGitHandlers(router, options.review);
   }
   const listener = await SocketListener.start({
     socketPath: options.socketPath,

@@ -12,9 +12,11 @@ import {
   statusArgs,
   type CommitOptions,
   type DiffTarget,
+  type FileDiff,
   type GitError,
   type GitResult,
   type GitService,
+  type GitWorkingChanges,
   type LogOptions,
   type PushOptions,
   type PushResult,
@@ -27,7 +29,7 @@ export interface GitCliOptions {
   readonly env?: Readonly<Record<string, string | undefined>>;
 }
 
-export function createGitCliService(options: GitCliOptions = {}): GitService {
+export function createGitCliService(options: GitCliOptions = {}): GitService & GitWorkingChanges {
   const process: GitProcessOptions = {
     gitPath: options.gitPath ?? "git",
     env: options.env ?? globalThis.process.env,
@@ -64,6 +66,37 @@ export function createGitCliService(options: GitCliOptions = {}): GitService {
     async stage(repo, paths) {
       if (paths.length === 0) return invalidArgument("stage needs at least one path");
       return andThen(await git(repo, ["add", "--all", "--", ...paths]), () => ok(undefined));
+    },
+
+    async untrackedDiff(repo, path) {
+      return diffUntracked(process, repo, path);
+    },
+
+    async unstage(repo, paths) {
+      if (paths.length === 0) return invalidArgument("unstage needs at least one path");
+      // `reset` also works before the first commit, where `restore --staged` has no HEAD to restore from.
+      return andThen(await git(repo, ["reset", "--quiet", "--", ...paths]), () => ok(undefined));
+    },
+
+    async restore(repo, paths) {
+      if (paths.length === 0) return invalidArgument("restore needs at least one path");
+      return andThen(await git(repo, ["checkout", "--", ...paths]), () => ok(undefined));
+    },
+
+    async clean(repo, paths) {
+      if (paths.length === 0) return invalidArgument("clean needs at least one path");
+      return andThen(await git(repo, ["clean", "--force", "--quiet", "--", ...paths]), () => ok(undefined));
+    },
+
+    async apply(repo, patch, applyOptions) {
+      const args = [
+        "apply",
+        "--whitespace=nowarn",
+        ...(applyOptions.cached ? ["--cached"] : []),
+        ...(applyOptions.reverse ? ["--reverse"] : []),
+        "-",
+      ];
+      return andThen(await git(repo, args, patch), () => ok(undefined));
     },
 
     async commit(repo, commitOptions) {
@@ -119,6 +152,16 @@ function logCommand(options: LogOptions): Result<string[], GitError> {
     "--",
     ...(options.paths ?? []),
   ]);
+}
+
+// `git diff --no-index` exits with 1 when the files differ, which for a new file they always do.
+async function diffUntracked(process: GitProcessOptions, repo: string, path: string): GitResult<FileDiff[]> {
+  if (path === "" || path.startsWith("-")) return invalidArgument(`"${path}" is not a valid path`);
+  const args = ["diff", "--no-index", ...diffArgs, "--", "/dev/null", path];
+  const output = await runGit(process, repo, args);
+  if (!output.ok) return output;
+  if (output.value.exitCode !== 0 && output.value.exitCode !== 1) return err(failure(args, output.value));
+  return parseDiff(output.value.stdout);
 }
 
 async function commitChanges(

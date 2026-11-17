@@ -2479,6 +2479,84 @@ public struct GithubAuthStatusParams: Codable, Hashable, Sendable {
     }
 }
 
+public struct GithubCreatePullRequestParams: Codable, Hashable, Sendable {
+    public var sessionId: Id
+    public var repoId: Id
+    public var title: String
+    public var body: String
+    public var base: String?
+    public var draft: Bool?
+
+    public init(
+        sessionId: Id,
+        repoId: Id,
+        title: String,
+        body: String,
+        base: String? = nil,
+        draft: Bool? = nil
+    ) {
+        self.sessionId = sessionId
+        self.repoId = repoId
+        self.title = title
+        self.body = body
+        self.base = base
+        self.draft = draft
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case sessionId
+        case repoId
+        case title
+        case body
+        case base
+        case draft
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        sessionId = try container.decode(Id.self, forKey: .sessionId)
+        repoId = try container.decode(Id.self, forKey: .repoId)
+        title = try container.decode(String.self, forKey: .title)
+        body = try container.decode(String.self, forKey: .body)
+        base = try container.decodeIfPresent(String.self, forKey: .base)
+        draft = try container.decodeIfPresent(Bool.self, forKey: .draft)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(sessionId, forKey: .sessionId)
+        try container.encode(repoId, forKey: .repoId)
+        try container.encode(title, forKey: .title)
+        try container.encode(body, forKey: .body)
+        try container.encodeIfPresent(base, forKey: .base)
+        try container.encodeIfPresent(draft, forKey: .draft)
+    }
+}
+
+public struct GithubCreatePullRequestResult: Codable, Hashable, Sendable {
+    public var pullRequest: PullRequest
+
+    public init(
+        pullRequest: PullRequest
+    ) {
+        self.pullRequest = pullRequest
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case pullRequest
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        pullRequest = try container.decode(PullRequest.self, forKey: .pullRequest)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(pullRequest, forKey: .pullRequest)
+    }
+}
+
 public struct GithubListTeamReposParams: Codable, Hashable, Sendable {
     public var host: String
     public var org: String
@@ -4049,6 +4127,48 @@ public struct ProtocolVersion: Codable, Hashable, Sendable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(major, forKey: .major)
         try container.encode(minor, forKey: .minor)
+    }
+}
+
+public struct PullRequest: Codable, Hashable, Sendable {
+    public var number: Int
+    public var url: String
+    public var head: String
+    public var base: String
+
+    public init(
+        number: Int,
+        url: String,
+        head: String,
+        base: String
+    ) {
+        self.number = number
+        self.url = url
+        self.head = head
+        self.base = base
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case number
+        case url
+        case head
+        case base
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        number = try container.decode(Int.self, forKey: .number)
+        url = try container.decode(String.self, forKey: .url)
+        head = try container.decode(String.self, forKey: .head)
+        base = try container.decode(String.self, forKey: .base)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(number, forKey: .number)
+        try container.encode(url, forKey: .url)
+        try container.encode(head, forKey: .head)
+        try container.encode(base, forKey: .base)
     }
 }
 

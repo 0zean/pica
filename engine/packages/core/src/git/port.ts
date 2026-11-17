@@ -31,6 +31,12 @@ export interface PushOptions {
   readonly forceWithLease?: boolean;
 }
 
+export interface ApplyOptions {
+  // Apply to the index instead of the working tree.
+  readonly cached: boolean;
+  readonly reverse: boolean;
+}
+
 export type GitResult<T> = Promise<Result<T, GitError>>;
 
 // Every method takes the repository's working directory. Methods never throw.
@@ -42,4 +48,16 @@ export interface GitService {
   stage(repo: string, paths: readonly string[]): GitResult<undefined>;
   commit(repo: string, options: CommitOptions): GitResult<{ readonly hash: string }>;
   push(repo: string, options: PushOptions): GitResult<PushResult>;
+}
+
+// A-08: what the review needs beyond GitService to stage, unstage and discard by file or hunk.
+export interface GitWorkingChanges {
+  // A new file shown against nothing, which `diff` leaves out.
+  untrackedDiff(repo: string, path: string): GitResult<FileDiff[]>;
+  unstage(repo: string, paths: readonly string[]): GitResult<undefined>;
+  // Puts tracked paths back to their staged contents.
+  restore(repo: string, paths: readonly string[]): GitResult<undefined>;
+  // Deletes untracked paths.
+  clean(repo: string, paths: readonly string[]): GitResult<undefined>;
+  apply(repo: string, patch: string, options: ApplyOptions): GitResult<undefined>;
 }
