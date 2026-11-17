@@ -45,29 +45,40 @@ export interface KeystrokeTiming {
 // Types every prefix of `typedQueries` with `search`, three times over (after a warm-up typing that is
 // not counted); a keystroke's time is the median of its three, so one garbage collection or a busy
 // moment on the machine does not decide the result.
+// `wall` is elapsed time. `cpu` is this process's CPU time, which leaves out time spent waiting for a
+// CPU on a busy machine (CI runs test files in parallel); it fits work that never waits, like ranking.
+export type KeystrokeClock = "wall" | "cpu";
+
 export async function timeKeystrokes(
   startTyping: () => (query: string) => unknown,
+  clock: KeystrokeClock = "wall",
 ): Promise<readonly KeystrokeTiming[]> {
-  await typeAll(startTyping());
+  await typeAll(startTyping(), clock);
   const runs: (readonly KeystrokeTiming[])[] = [];
-  for (let run = 0; run < 3; run += 1) runs.push(await typeAll(startTyping()));
+  for (let run = 0; run < 3; run += 1) runs.push(await typeAll(startTyping(), clock));
   return (runs[0] ?? []).map((timing, index) => ({
     query: timing.query,
     ms: median(runs.map((typed) => typed[index]?.ms ?? Number.POSITIVE_INFINITY)),
   }));
 }
 
-async function typeAll(search: (query: string) => unknown): Promise<readonly KeystrokeTiming[]> {
+async function typeAll(search: (query: string) => unknown, clock: KeystrokeClock): Promise<readonly KeystrokeTiming[]> {
+  const now = clock === "wall" ? () => performance.now() : cpuMs;
   const timings: KeystrokeTiming[] = [];
   for (const typed of typedQueries) {
     for (let length = 1; length <= typed.length; length += 1) {
       const query = typed.slice(0, length);
-      const started = performance.now();
+      const started = now();
       await search(query);
-      timings.push({ query, ms: performance.now() - started });
+      timings.push({ query, ms: now() - started });
     }
   }
   return timings;
+}
+
+function cpuMs(): number {
+  const { user, system } = process.cpuUsage();
+  return (user + system) / 1000;
 }
 
 function median(values: readonly number[]): number {

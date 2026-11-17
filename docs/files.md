@@ -62,7 +62,8 @@ remembers which paths the last query matched, and a query that extends it (the n
 PLAN.md §9: quick open over 100,000 files answers in under 50 ms per keystroke. Two tests type five queries (94
 keystrokes) over a synthetic 100,000-path monorepo listing (`core/tests/files/large-index.ts`):
 
-- `core/tests/files/benchmark.test.ts` times the ranker.
+- `core/tests/files/benchmark.test.ts` times the ranker in process CPU time, so time spent waiting for a CPU while
+  other test files run in parallel is not counted.
 - `server/tests/files/quick-open-benchmark.test.ts` times `files.quickOpen` over the socket, request to reply, with
   the files split across two repos.
 
