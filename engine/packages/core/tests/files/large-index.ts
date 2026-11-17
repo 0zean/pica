@@ -32,6 +32,8 @@ export const typedQueries = ["sessiontimelinerow", "engine/server/handlers/confi
 // code (2026-11-17: 53 ms against 22 ms), so on CI the tests only catch a regression past three times it.
 export const keystrokeBudgetMs = 50;
 export const ciSlowdown = 3;
+// A warm-up and three typings of 94 keystrokes take several seconds on a CI runner, past vitest's 5 s default.
+export const benchmarkTimeoutMs = 60_000;
 
 export function keystrokeLimitMs(env: Readonly<Record<string, string | undefined>> = process.env): number {
   return env["CI"] === "true" ? keystrokeBudgetMs * ciSlowdown : keystrokeBudgetMs;

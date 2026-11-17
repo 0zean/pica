@@ -2,7 +2,7 @@ import { createFilesService, err, filesError, ok } from "@pica/core";
 import type { Repo } from "@pica/core";
 import { describe, expect, it } from "vitest";
 import { silentLogger, startEngine } from "../../src/index.ts";
-import { keystrokeLimitMs, largeIndex, slowest, timeKeystrokes } from "../../../core/tests/files/large-index.ts";
+import { benchmarkTimeoutMs, keystrokeLimitMs, largeIndex, slowest, timeKeystrokes } from "../../../core/tests/files/large-index.ts";
 import { makeSocketDir, TestClient } from "../helpers.ts";
 
 // PLAN.md §9: quick open over 100,000 files answers in under 50 ms per keystroke, measured as a
@@ -57,5 +57,5 @@ describe("files.quickOpen over a 100,000-file workspace", () => {
       await engine.close();
       await socket.remove();
     }
-  });
+  }, benchmarkTimeoutMs);
 });

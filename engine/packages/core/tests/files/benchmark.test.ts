@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createPathRanker } from "../../src/index.ts";
-import { keystrokeLimitMs, largeIndex, slowest, timeKeystrokes } from "./large-index.ts";
+import { benchmarkTimeoutMs, keystrokeLimitMs, largeIndex, slowest, timeKeystrokes } from "./large-index.ts";
 
 // PLAN.md §9: quick open over 100,000 files answers in under 50 ms per keystroke. This measures the
 // ranker alone, in CPU time so a busy machine does not count against it;
@@ -16,5 +16,5 @@ describe("quick-open ranking over 100,000 paths", () => {
     const worst = slowest(timings);
     console.log(`slowest keystroke: ${worst.ms.toFixed(1)} ms for "${worst.query}" over ${String(timings.length)} keystrokes`);
     expect(worst.ms).toBeLessThan(keystrokeLimitMs());
-  });
+  }, benchmarkTimeoutMs);
 });
