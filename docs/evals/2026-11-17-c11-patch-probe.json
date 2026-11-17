@@ -1,0 +1,115 @@
+{
+  "suite": "C-10",
+  "version": 1,
+  "runtime": "copilot",
+  "generatedAt": "2026-11-17T05:58:43.262Z",
+  "tierSettings": {
+    "reasoning": "gpt-5.6-luna",
+    "worker": "auto"
+  },
+  "stopped": "the credit limit of 6 was passed after 2 sessions (6.22 credits), during console-to-logger",
+  "profiles": [
+    {
+      "profile": "balanced",
+      "tiers": {
+        "reasoning": [
+          "gpt-5.6-luna"
+        ],
+        "worker": [
+          "claude-haiku-5.5"
+        ]
+      },
+      "totals": {
+        "tasks": 2,
+        "succeeded": 2,
+        "reasoningInputTokens": 56868,
+        "reasoningCachedInputTokens": 472720,
+        "reasoningOutputTokens": 22292,
+        "workerInputTokens": 30703,
+        "workerCachedInputTokens": 57005,
+        "workerOutputTokens": 14853,
+        "credits": 6.2235875,
+        "wallTimeMs": 240735
+      },
+      "tasks": [
+        {
+          "taskId": "rename-fmt-cents",
+          "category": "multi-file-edit",
+          "successes": 1,
+          "runCount": 1,
+          "reasoningInputTokens": 36961,
+          "reasoningCachedInputTokens": 370381,
+          "reasoningOutputTokens": 15237,
+          "workerInputTokens": 30703,
+          "workerCachedInputTokens": 57005,
+          "workerOutputTokens": 14853,
+          "credits": 4.6747245,
+          "wallTimeMs": 182542,
+          "costDecisions": 25,
+          "reasoningInputSpread": {
+            "min": 407342,
+            "max": 407342
+          },
+          "creditsSpread": {
+            "min": 4.6747245,
+            "max": 4.6747245
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "fmtCents is renamed to formatCents everywhere, every module loads, and the tests pass",
+              "costDecisions": 25,
+              "reasoningInputTokens": 36961,
+              "reasoningCachedInputTokens": 370381,
+              "reasoningOutputTokens": 15237,
+              "workerInputTokens": 30703,
+              "workerCachedInputTokens": 57005,
+              "workerOutputTokens": 14853,
+              "credits": 4.6747245,
+              "wallTimeMs": 182542
+            }
+          ]
+        },
+        {
+          "taskId": "console-to-logger",
+          "category": "multi-file-edit",
+          "successes": 1,
+          "runCount": 1,
+          "reasoningInputTokens": 19907,
+          "reasoningCachedInputTokens": 102339,
+          "reasoningOutputTokens": 7055,
+          "workerInputTokens": 0,
+          "workerCachedInputTokens": 0,
+          "workerOutputTokens": 0,
+          "credits": 1.548863,
+          "wallTimeMs": 58193,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 122246,
+            "max": 122246
+          },
+          "creditsSpread": {
+            "min": 1.548863,
+            "max": 1.548863
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "console.log is replaced by logger.info, every module loads, and the tests pass",
+              "costDecisions": 0,
+              "reasoningInputTokens": 19907,
+              "reasoningCachedInputTokens": 102339,
+              "reasoningOutputTokens": 7055,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 1.548863,
+              "wallTimeMs": 58193
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "comparison": null
+}
