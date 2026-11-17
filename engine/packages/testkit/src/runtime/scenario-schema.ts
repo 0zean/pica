@@ -22,6 +22,9 @@ const toolCallStep = z.strictObject({
   success: z.boolean().default(true),
   // The tool never finishes on its own; only `abort` ends the turn.
   hangs: z.boolean().default(false),
+  // The runtime's own permission flow asks the host before running the call, with this reason,
+  // when the hook allowed it (A-07). A hook's ask or deny still decides first.
+  asks: z.string().min(1).optional(),
 });
 
 const usageStep = z.strictObject({

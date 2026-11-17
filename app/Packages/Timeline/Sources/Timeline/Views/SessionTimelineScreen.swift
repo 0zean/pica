@@ -19,6 +19,7 @@ public struct SessionTimelineScreen: View {
 
     public var body: some View {
         SessionTimelineView(store: store, title: title)
+            .environment(\.resolveApproval, .engine(client))
             .task {
                 let events = await client.events(sessionId: store.sessionId, afterSeq: store.lastSeq)
                 await store.follow(events)

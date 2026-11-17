@@ -160,13 +160,35 @@ public final class ApprovalItem {
     public let approvalId: Id
     public let kind: Kind
     public let summary: String
+    /// The tool the request is for and its command, path or url, when its call is in the timeline (A-07).
+    public let toolName: String?
+    public let subject: String?
     public internal(set) var choice: ApprovalChoice?
+    /// True from a click on a choice until the engine reports the resolution, or the request fails.
+    public internal(set) var isResolving = false
+    /// Why the last choice was not accepted; the request is still pending.
+    public internal(set) var failure: String?
 
-    init(approvalId: Id, kind: Kind, summary: String) {
+    init(approvalId: Id, kind: Kind, summary: String, toolName: String? = nil, subject: String? = nil) {
         id = "approval.\(approvalId)"
         self.approvalId = approvalId
         self.kind = kind
         self.summary = summary
+        self.toolName = toolName
+        self.subject = subject
+    }
+
+    /// Sends `choice` through `action`. The row shows the choice once `approval.resolved` arrives.
+    public func resolve(_ choice: ApprovalChoice, with action: ResolveApprovalAction) async {
+        guard self.choice == nil, !isResolving else { return }
+        isResolving = true
+        failure = nil
+        do {
+            try await action(approvalId: approvalId, choice: choice)
+        } catch {
+            isResolving = false
+            failure = ResolveApprovalAction.describe(error)
+        }
     }
 }
 

@@ -17,6 +17,8 @@ import type {
   SessionRoutingProfile,
   SessionSendMode,
 } from "./info.ts";
+import { describeRule, matchingRule, ruleFor } from "./permission-rules.ts";
+import type { PermissionRules } from "./permission-rules.ts";
 import { isLiveSessionState, transitionSession } from "./transitions.ts";
 import type { SessionTrigger } from "./transitions.ts";
 
@@ -45,6 +47,9 @@ export interface SessionServiceDeps {
   readonly usage?: Pick<UsageRepository, "rollup">;
   // X-03: awaited once the runtime is ready and once the session has ended; it does not block either.
   readonly lifecycle?: (event: SessionLifecycleEvent) => Promise<void>;
+  // A-07: `permissions.tools` answer matching permission prompts, and "always allow" adds one.
+  // Without it every prompt is an approval and `allow_always` allows once.
+  readonly permissionRules?: PermissionRules;
 }
 
 export interface SessionLifecycleEvent {
@@ -90,10 +95,14 @@ export interface SessionService {
 
 type AbortReason = "user" | "budget" | "engine";
 
+type PermissionPrompt = Pick<Extract<RuntimeEvent, { type: "permission.requested" }>["data"], "toolName" | "arguments">;
+
 interface LiveSession {
   readonly runtime: RuntimeSession;
   readonly recorder: RuntimeEventRecorder;
   readonly approvals: Map<string, PendingApproval>;
+  // The tool and arguments of each pending tool-call approval, from which "always allow" derives its rule.
+  readonly prompts: Map<string, PermissionPrompt>;
   readonly queue: string[];
   readonly budget: SessionBudget;
   // True when the limit is below what the runtime accepts, so the engine stops the turn itself.
@@ -165,6 +174,7 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
       runtime,
       recorder: createRuntimeEventRecorder(deps.events, { sessionId, rootAgent }),
       approvals: new Map(),
+      prompts: new Map(),
       queue: [],
       budget,
       enforcesBudget: limit !== null && runtimeLimit(limit) === undefined,
@@ -221,6 +231,12 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     session: LiveSession,
     event: Extract<RuntimeEvent, { type: "permission.requested" | "session_limits_exhausted.requested" }>,
   ): void {
+    if (event.type === "permission.requested" && answerByRule(sessionId, session, event)) {
+      return;
+    }
+    if (event.type === "permission.requested") {
+      session.prompts.set(event.data.requestId, { toolName: event.data.toolName, arguments: event.data.arguments });
+    }
     for (const appended of session.recorder.record(event).appended) {
       if (appended.type === "approval.requested") {
         session.approvals.set(appended.payload.id, appended.payload);
@@ -229,6 +245,40 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     if (stateOf(sessionId) === "running") {
       move(sessionId, "approval_requested");
     }
+  }
+
+  // A prompt a permission rule matches is answered at once and is no approval: the decision is
+  // recorded (and audited) as the rule's, and the runtime's `permission.completed` is ignored.
+  function answerByRule(
+    sessionId: string,
+    session: LiveSession,
+    event: Extract<RuntimeEvent, { type: "permission.requested" }>,
+  ): boolean {
+    const { requestId, toolCallId, toolName } = event.data;
+    const rule = matchingRule(deps.permissionRules?.current() ?? [], toolName, event.data.arguments);
+    if (rule === undefined) {
+      return false;
+    }
+    const allowed = rule.permission === "allow";
+    append(sessionId, {
+      type: "policy.decision",
+      payload: {
+        ruleId: "permission.rule",
+        ruleGroup: "permission",
+        outcome: allowed ? "allow" : "deny",
+        reason: `The permission rule for ${describeRule(rule)} ${allowed ? "allows" : "denies"} it`,
+        toolCallId,
+        toolName,
+        agent: rootAgent,
+      },
+      timestamp: event.timestamp,
+    });
+    void session.runtime.resolvePermission(requestId, allowed).then((resolved) => {
+      if (!resolved.ok) {
+        append(sessionId, { type: "session.error", payload: { code: resolved.error.code, message: resolved.error.message }, timestamp: clock() });
+      }
+    });
+    return true;
   }
 
   function recordUsage(
@@ -446,8 +496,15 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     if (session.approvals.get(approvalId)?.kind === "budget") {
       return resolveBudget(sessionId, session, approvalId, choice, budgetCredits);
     }
+    if (choice === "allow_always") {
+      const saved = saveRule(session, approvalId);
+      if (!saved.ok) {
+        return saved;
+      }
+    }
     // Removed before the first await, so a concurrent second resolve cannot reach the runtime.
     session.approvals.delete(approvalId);
+    session.prompts.delete(approvalId);
     append(sessionId, { type: "approval.resolved", payload: { approvalId, choice }, timestamp: clock() });
     if (session.approvals.size === 0 && stateOf(sessionId) === "awaiting_approval") {
       move(sessionId, "approval_resolved");
@@ -458,6 +515,17 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
       return runtimeFailure(resolved.error);
     }
     return ok(undefined);
+  }
+
+  // Written before the approval is resolved: when the rule cannot be saved the approval stays
+  // pending, so the user can still allow it once or deny it.
+  function saveRule(session: LiveSession, approvalId: string): SessionResult<undefined> {
+    const prompt = session.prompts.get(approvalId);
+    if (deps.permissionRules === undefined || prompt === undefined) {
+      return ok(undefined);
+    }
+    const added = deps.permissionRules.add(ruleFor(prompt.toolName, prompt.arguments, "allow"));
+    return added.ok ? ok(undefined) : sessionFailure("session.store_failed", `the permission rule was not saved: ${added.message}`);
   }
 
   async function resolveBudget(
