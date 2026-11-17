@@ -12,6 +12,7 @@
 | Socket | `PICA_SOCKET` if set (`picad` reads the same variable), else `~/Library/Application Support/Pica/run/picad.sock`, the CLI's default too |
 | Engine log | `picad.log` next to the socket; the engine's stderr (JSON lines, H-04) is appended to it |
 | Single-instance lock | `app.lock` next to the socket |
+| Window state (A-04) | `window-state.json` next to the socket; see [navigation-shell.md](navigation-shell.md) |
 
 ## Which engine runs
 

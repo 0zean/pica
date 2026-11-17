@@ -63,10 +63,12 @@ app-ui-test-gallery:
 	xcodebuild -project app/Pica.xcodeproj -scheme PicaGallery -destination 'platform=macOS,arch=$(shell uname -m)' \
 		-derivedDataPath app/.derived -resultBundlePath app/.derived/ui-tests.xcresult test
 
-# The launch performance test (A-01) runs Pica against `picad` with a FakeRuntime. Variables prefixed
-# TEST_RUNNER_ reach the (sandboxed) test runner, which hands Pica the Node to start the engine with.
+# Pica's UI tests (A-01 launch performance, A-04 navigation) run Pica against `picad` with a FakeRuntime. Variables
+# prefixed TEST_RUNNER_ reach the (sandboxed) test runner, which hands Pica the Node to start the engine with.
+# UI_TEST=<Class>[/<method>] runs only those tests.
 app-ui-test-pica: engine-install
 	rm -rf app/.derived/pica-ui-tests.xcresult
 	TEST_RUNNER_PICA_NODE="$$(command -v node)" xcodebuild -project app/Pica.xcodeproj -scheme Pica \
 		-destination 'platform=macOS,arch=$(shell uname -m)' \
+		$(if $(UI_TEST),-only-testing:PicaUITests/$(UI_TEST)) \
 		-derivedDataPath app/.derived -resultBundlePath app/.derived/pica-ui-tests.xcresult test

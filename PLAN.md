@@ -886,9 +886,10 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 **A-04 · Navigation shell** — A-01, A-02, A-03
 - Build: three-column layout, sidebar of workspaces, repos, and sessions, toolbar, window restoration.
 - Verify:
-  - [ ] UI test: a workspace created through the engine appears in the sidebar.
-  - [ ] Selection and column widths are restored after relaunch.
-  - [ ] Every sidebar item is reachable and activatable by keyboard alone.
+  - [x] UI test: a workspace created through the engine appears in the sidebar.
+  - [x] Selection and column widths are restored after relaunch.
+  - [x] Every sidebar item is reachable and activatable by keyboard alone.
+- Notes: specified in [docs/navigation-shell.md](docs/navigation-shell.md). The inspector is SwiftUI's `.inspector` on the session column, the toggleable third column. Sessions waiting for approval or failed sort to the top of their workspace. ⌘1–9 select sessions in sidebar order; ⌥⌘I toggles the inspector. AppKit restores the window frame and the sidebar's width from the app's defaults; `window-state.json` next to the socket holds the selection, the inspector's width and visibility, and collapsed workspaces. No protocol change was needed. The engine does not announce `workspace.delete` or repo registration, so those reach the sidebar on the next `workspace.changed` or reconnect. The UI tests' socket is in the runner's container, the only place the sandboxed runner may connect to.
 
 **A-05 · Session timeline** — A-04
 - Build: virtualized timeline, streaming Markdown, tool rows, sub-agent groups, policy rows.
@@ -1130,7 +1131,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | A-01 | App shell and engine supervision | E-05, S-05 | done |
 | A-02 | EngineClient | E-02 | done |
 | A-03 | Design system | F-01 | done |
-| A-04 | Navigation shell | A-01, A-02, A-03 | todo |
+| A-04 | Navigation shell | A-01, A-02, A-03 | doing (PR open) |
 | A-05 | Session timeline | A-04 | todo |
 | A-06 | Composer | A-05 | todo |
 | A-07 | Approvals | A-05 | todo |

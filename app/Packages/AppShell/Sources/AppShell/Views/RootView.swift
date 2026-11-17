@@ -1,33 +1,36 @@
 import DesignSystem
 import SwiftUI
 
-/// The main window's content. A-04 replaces the placeholder with the navigation shell.
+/// The main window's content: the navigation shell (A-04), with the engine's status over it (A-01).
 public struct RootView: View {
     private let model: AppModel
+    private let navigation: NavigationStore
     private let onInteractive: @MainActor () -> Void
 
-    public init(model: AppModel, onInteractive: @escaping @MainActor () -> Void = {}) {
+    public init(model: AppModel, navigation: NavigationStore, onInteractive: @escaping @MainActor () -> Void = {}) {
         self.model = model
+        self.navigation = navigation
         self.onInteractive = onInteractive
     }
 
     public var body: some View {
         let presentation = model.presentation
-        VStack(spacing: 0) {
-            if presentation.style == .banner {
-                EngineStatusBanner(presentation: presentation)
+        // The split view does not expose an identifier of its own, so a container carries the root's.
+        ZStack {
+            NavigationShell(store: navigation) {
+                if presentation.style == .banner {
+                    EngineStatusBanner(presentation: presentation)
+                }
             }
-            EmptyState("No sessions yet", message: "Sessions you start appear here.")
-                .padding(Spacing.xLarge)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+        .accessibilityElement(children: .contain)
         .disabled(presentation.style == .blocking)
         .overlay {
             if presentation.style == .blocking {
                 EngineProblemPanel(presentation: presentation, retry: model.retry)
             }
         }
-        .frame(minWidth: 640, minHeight: 420)
+        .frame(minWidth: 720, minHeight: 420)
         .background(Palette.background)
         .accessibilityIdentifier("pica.root")
         .onAppear {
