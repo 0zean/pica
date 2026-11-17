@@ -23,6 +23,8 @@ const configKeys: Readonly<Record<string, readonly [JsonValue, JsonValue]>> = {
   "routing.delegation.read.rangeExemptLines": [1, 2],
   "routing.delegation.read.exclude": [["user/**"], ["org/**"]],
   "routing.delegation.output.maxBytes": [1, 2],
+  "routing.delegation.codeWriter.maxToolCalls": [1, 2],
+  "routing.delegation.codeWriter.maxWriteBytes": [1, 2],
   "budget.sessionCredits": [1, 2],
   "budget.workspaceDailyCredits": [1, 2],
   "permissions.mode": ["auto", "ask"],

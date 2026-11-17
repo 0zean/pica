@@ -142,7 +142,27 @@ describe("read delegation gate (FakeRuntime)", () => {
       { type: "tool.completed", agent: "main" },
       { type: "tool.failed", agent: "main" },
     ]);
-    expect(String(toolOutcomes(sessionId)[1]?.error)).toContain("limit 8192");
+    expect(String(toolOutcomes(sessionId)[1]?.error)).toContain("8192-byte limit");
+  });
+
+  it("stops a code-writer delegation at its tool-call limit (C-11)", async () => {
+    await writeFile(workspaceConfig, '{ "routing": { "delegation": { "codeWriter": { "maxToolCalls": 2 } } } }\n');
+    const edit = { type: "toolCall", name: "edit", arguments: { path: join(repo, "small.ts"), old_str: "x", new_str: "y" }, result: "ok" };
+    const sessions = service([
+      { steps: [{ type: "subagent", agentName: "code-writer", model: "model-a", steps: [edit, edit, edit, edit] }, view("small.ts")] },
+    ]);
+    const sessionId = await startSession(sessions);
+    await runTurn(sessions, sessionId, "ask code-writer for four edits");
+
+    const outcomes = toolOutcomes(sessionId);
+    expect(outcomes.map(({ type, agent }) => ({ type, agent }))).toEqual([
+      { type: "tool.completed", agent: "code-writer" },
+      { type: "tool.completed", agent: "code-writer" },
+      { type: "tool.failed", agent: "code-writer" },
+      { type: "tool.failed", agent: "code-writer" },
+      { type: "tool.completed", agent: "main" },
+    ]);
+    expect(String(outcomes[2]?.error)).toContain("limit of 2 tool calls");
   });
 
   it("lets the main agent read an excluded path whole", async () => {

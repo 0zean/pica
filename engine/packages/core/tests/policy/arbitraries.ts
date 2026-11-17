@@ -81,6 +81,7 @@ const config: fc.Arbitrary<PolicyConfig> = fc.record({
         exclude: fc.array(fc.constantFrom("**", "*.sql", "/a/**"), { maxLength: 2 }),
       }),
       output: fc.record({ maxBytes: bytes }),
+      codeWriter: fc.record({ maxToolCalls: fc.integer({ min: 1, max: 50 }), maxWriteBytes: bytes }),
     }),
   }),
   permissions: fc.record(

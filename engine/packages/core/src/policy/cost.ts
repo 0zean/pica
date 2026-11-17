@@ -22,8 +22,9 @@ export const largeReadRule: Rule = (call, context) => {
     ruleId: "cost.large-read",
     ruleGroup: "cost",
     reason:
-      `${target.path} is ${String(target.sizeBytes)} bytes (limit ${String(minBytes)}). ` +
-      `Delegate the question to bulk-reader, or read a range of at most ${String(rangeExemptLines)} lines.`,
+      `${target.path} is ${String(target.sizeBytes)} bytes, over the ${String(minBytes)}-byte limit for whole reads and for searches that print lines. ` +
+      `Next, either call view with a view_range of at most ${String(rangeExemptLines)} lines, ` +
+      "or use the task tool to ask bulk-reader one specific question about the file.",
     call,
   };
 };
@@ -51,8 +52,9 @@ export const shellWriteRule: Rule = (call, context) => {
     ruleId: "cost.shell-write",
     ruleGroup: "cost",
     reason:
-      `This command writes ${written.raw}, and the ${profile} profile routes file writes to sub-agents. ` +
-      "Ask code-writer to write it from a precise spec.",
+      `This command writes ${written.raw}, and the ${profile} profile does not let the main agent write files with shell redirects, tee, touch, cp, mv or install. ` +
+      "Do not retry it in another form. Next, use the task tool to ask code-writer to write the file, " +
+      "and give it the path and the full content in the prompt.",
     call,
   };
 };
