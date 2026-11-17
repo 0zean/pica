@@ -59,6 +59,27 @@ export const shellWriteRule: Rule = (call, context) => {
   };
 };
 
+// C-11: under `balanced` the main agent keeps `apply_patch` for in-place edits, and new files still go
+// to `code-writer` (PLAN.md §5.4, D-23). The engine maps each path a patch adds or moves to a write
+// target with `creates`, and this rule denies it. A patch that also updates files is denied whole.
+export const patchAddFileRule: Rule = (call, context) => {
+  const { target } = call;
+  const { profile } = context.config.routing;
+  if (profile === "off" || call.result !== undefined || call.agent !== mainAgent || target.kind !== "write" || target.creates !== true) {
+    return undefined;
+  }
+  return {
+    outcome: "deny",
+    ruleId: "cost.patch-add-file",
+    ruleGroup: "cost",
+    reason:
+      `This patch creates ${target.path}, and the ${profile} profile does not let the main agent create files. ` +
+      "Apply the patch again without its `*** Add File` and `*** Move to` sections, " +
+      "and use the task tool to ask code-writer to write the new file, with its path and full content in the prompt.",
+    call,
+  };
+};
+
 export const oversizedOutputRule: Rule = (call, context) => {
   const { result } = call;
   const { profile, delegation } = context.config.routing;

@@ -165,6 +165,26 @@ describe("read delegation gate (FakeRuntime)", () => {
     expect(String(outcomes[2]?.error)).toContain("limit of 2 tool calls");
   });
 
+  it("lets the main agent patch files under balanced but denies a patch that adds one (C-11)", async () => {
+    // The hook passes `apply_patch`'s arguments as the raw patch text (S-04).
+    const patch = (body: string): unknown => ({ type: "toolCall", name: "apply_patch", arguments: `*** Begin Patch\n${body}*** End Patch\n`, result: "ok" });
+    const sessions = service([
+      {
+        steps: [
+          patch("*** Update File: small.ts\n@@\n-x\n+y\n"),
+          patch("*** Update File: small.ts\n@@\n-x\n+y\n*** Add File: test/new.test.ts\n+x\n"),
+        ],
+      },
+    ]);
+    const sessionId = await startSession(sessions);
+    await runTurn(sessions, sessionId, "edit small.ts, then add a test");
+
+    const outcomes = toolOutcomes(sessionId);
+    expect(outcomes.map(({ type }) => type)).toEqual(["tool.completed", "tool.failed"]);
+    expect(String(outcomes[1]?.error)).toContain("test/new.test.ts");
+    expect(String(outcomes[1]?.error)).toContain("code-writer");
+  });
+
   it("lets the main agent read an excluded path whole", async () => {
     await writeFile(workspaceConfig, '{ "routing": { "delegation": { "read": { "exclude": ["*.sql"] } } } }\n');
     const sessions = service([{ steps: [view("schema.sql")] }]);

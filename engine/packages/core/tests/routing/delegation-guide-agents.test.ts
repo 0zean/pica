@@ -17,7 +17,7 @@ describe("delegation guide agent set", () => {
     const guide = delegationGuide("balanced", [agent("zeta"), agent("alpha")]);
     expect(guide.indexOf("`alpha`")).toBeLessThan(guide.indexOf("`zeta`"));
     expect(guide).not.toMatch(/bulk-reader|code-writer|repo-scout/);
-    expect(guide).toContain("You have no tool that creates files.");
+    expect(guide).toContain("You cannot create files. A patch with an `*** Add File` or `*** Move to` section is denied whole.\n");
   });
 
   it("states strict's write rule without code-writer", () => {

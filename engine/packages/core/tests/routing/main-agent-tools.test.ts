@@ -3,6 +3,8 @@ import { builtinTools, mainAgentTools, routingProfileNames, toolKind } from "../
 
 // Asserted against C-02's tool catalog, built from the tools S-02 observed.
 const createFileTools = builtinTools.filter((tool) => tool.createsFiles === true).map((tool) => tool.name);
+// The ones whose created files the engine sees and denies per call (C-11), so `balanced` keeps them.
+const ungatedCreateFileTools = builtinTools.filter((tool) => tool.createsFiles === true && tool.createsGated !== true).map((tool) => tool.name);
 
 describe("main-agent tools per profile", () => {
   it("the catalog names at least one create-file tool", () => {
@@ -15,14 +17,17 @@ describe("main-agent tools per profile", () => {
     expect(tools.length).toBeGreaterThan(0);
   });
 
-  it("balanced: the main agent has no create-file tool but keeps its other write tools", () => {
+  it("balanced: the main agent has no ungated create-file tool but keeps its other write tools", () => {
     const tools = mainAgentTools("balanced");
-    expect(tools.filter((name) => createFileTools.includes(name))).toEqual([]);
+    expect(ungatedCreateFileTools.length).toBeGreaterThan(0);
+    expect(tools.filter((name) => ungatedCreateFileTools.includes(name))).toEqual([]);
     expect(tools.some((name) => toolKind(name) === "write")).toBe(true);
   });
 
-  it("balanced: apply_patch is hidden with create, since a patch can add files (S-04)", () => {
-    expect(mainAgentTools("balanced")).not.toContain("apply_patch");
+  it("balanced: apply_patch stays, since a patch that adds a file is denied per call (C-11)", () => {
+    expect(mainAgentTools("balanced")).toContain("apply_patch");
+    expect(mainAgentTools("balanced")).not.toContain("create");
+    expect(mainAgentTools("strict")).not.toContain("apply_patch");
     expect(toolKind("rg")).toBe("search");
   });
 

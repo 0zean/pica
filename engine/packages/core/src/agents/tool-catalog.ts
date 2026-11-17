@@ -5,8 +5,10 @@ export type ToolKind = "read" | "search" | "write" | "shell" | "web" | "agent" |
 export interface BuiltinTool {
   readonly name: string;
   readonly kind: ToolKind;
-  /** Set on the write tool that makes new files; `balanced` removes it from the main agent (C-05). */
+  /** Set on the write tools that can make new files; `balanced` removes them from the main agent (C-05). */
   readonly createsFiles?: true;
+  /** Set when the engine can see each file a call creates, so `balanced` keeps the tool and denies those calls (C-11). */
+  readonly createsGated?: true;
 }
 
 // The runtime's built-in tools as `tools.list` reports them (SDK 1.0.28, docs/spikes/S-02-tools.json),
@@ -19,7 +21,7 @@ export const builtinTools: readonly BuiltinTool[] = [
   { name: "glob", kind: "search" },
   { name: "create", kind: "write", createsFiles: true },
   { name: "edit", kind: "write" },
-  { name: "apply_patch", kind: "write", createsFiles: true },
+  { name: "apply_patch", kind: "write", createsFiles: true, createsGated: true },
   { name: "bash", kind: "shell" },
   { name: "read_bash", kind: "shell" },
   { name: "stop_bash", kind: "shell" },

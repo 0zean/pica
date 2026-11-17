@@ -67,11 +67,10 @@ function writeRules(profile: Exclude<RoutingProfileName, "off">, hasCodeWriter: 
     ];
   }
   return [
-    hasCodeWriter
-      ? "- You have no tool that creates files. To create a file, ask `code-writer`."
-      : "- You have no tool that creates files.",
+    "- You cannot create files. A patch with an `*** Add File` or `*** Move to` section is denied whole." +
+      (hasCodeWriter ? " To create a file, ask `code-writer`." : ""),
     shell,
-    "- Edit existing files yourself: `edit` for a few changes, or one `sed -i` command or script for the same change across many files." +
+    "- Edit existing files yourself with `apply_patch` or `edit`. Put the same change across many files in one patch." +
       (hasCodeWriter ? " That costs less than delegating it." : ""),
     ...spec,
   ];

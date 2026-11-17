@@ -507,6 +507,10 @@
       "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/routing/delegation-guide.test.ts packages/adapters/tests/agents/builtin-prompts.test.ts packages/core/tests/sessions/pre-tool-use.test.ts"
     },
     {
+      "check": "Under `balanced` the main agent keeps `apply_patch`; a patch that adds or moves a file is denied whole (`cost.patch-add-file`) with a reason naming code-writer, and a patch that only updates files is allowed.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/policy/patch-add-file.test.ts packages/core/tests/routing/main-agent-tools.test.ts && pnpm exec vitest run packages/adapters/tests/sessions/read-gate.test.ts -t 'denies a patch that adds one'"
+    },
+    {
       "check": "On the C-10 suite, on the mean of 3 runs, `balanced` passes the D-21 gate against `off`. The report is committed to `docs/evals/`.",
       "live": true,
       "run": "make engine-install && cd engine && PICA_LIVE=1 pnpm exec vitest run packages/evals/tests/live-suite.test.ts"

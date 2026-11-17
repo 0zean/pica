@@ -39,7 +39,7 @@ async function createSession(routingProfile: RoutingProfileName, turns: unknown[
 
 describe("C-07 main-agent routing", () => {
   it("balanced: hides the file-creating tools from the main agent and passes the guide", async () => {
-    expect(await setup("balanced")).toMatchObject({ excludedTools: ["apply_patch", "create"], systemMessage: guide("balanced") });
+    expect(await setup("balanced")).toMatchObject({ excludedTools: ["create"], systemMessage: guide("balanced") });
   });
 
   it("strict: hides every write tool", async () => {
@@ -56,7 +56,7 @@ describe("C-07 main-agent routing", () => {
   it("passes both through the session service to the runtime", async () => {
     const balanced = await createSession("balanced");
     expect(balanced.runtime.sessionOptions(balanced.sessionId)).toMatchObject({
-      excludedTools: ["apply_patch", "create"],
+      excludedTools: ["create"],
       systemMessage: guide("balanced"),
     });
     expect(guide("balanced")).toContain("code-writer");
