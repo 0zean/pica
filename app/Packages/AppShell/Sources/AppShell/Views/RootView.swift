@@ -1,15 +1,22 @@
 import DesignSystem
+import PicaProtocol
 import SwiftUI
 
 /// The main window's content: the navigation shell (A-04), with the engine's status over it (A-01).
 public struct RootView: View {
     private let model: AppModel
     private let navigation: NavigationStore
+    private let sessionContent: SessionContent
     private let onInteractive: @MainActor () -> Void
 
-    public init(model: AppModel, navigation: NavigationStore, onInteractive: @escaping @MainActor () -> Void = {}) {
+    /// `sessionContent` draws a selected session; the app target supplies the timeline, a feature of its own.
+    public init(
+        model: AppModel, navigation: NavigationStore, sessionContent: @escaping SessionContent = SessionColumn.placeholder,
+        onInteractive: @escaping @MainActor () -> Void = {}
+    ) {
         self.model = model
         self.navigation = navigation
+        self.sessionContent = sessionContent
         self.onInteractive = onInteractive
     }
 
@@ -17,7 +24,7 @@ public struct RootView: View {
         let presentation = model.presentation
         // The split view does not expose an identifier of its own, so a container carries the root's.
         ZStack {
-            NavigationShell(store: navigation) {
+            NavigationShell(store: navigation, sessionContent: sessionContent) {
                 if presentation.style == .banner {
                     EngineStatusBanner(presentation: presentation)
                 }

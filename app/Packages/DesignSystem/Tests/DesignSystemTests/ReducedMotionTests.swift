@@ -2,6 +2,7 @@ import Foundation
 import SwiftUI
 import Testing
 @testable import DesignSystem
+import DesignSystemTestSupport
 
 @MainActor
 @Suite struct ReducedMotionTests {

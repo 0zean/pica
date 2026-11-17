@@ -2,7 +2,9 @@
 
 The main window (PLAN.md §7.1) is a `NavigationSplitView` with the sidebar and the session column, plus the
 inspector as SwiftUI's trailing `.inspector`, which is how a third column is made toggleable. The code is in
-`app/Packages/AppShell/Sources/AppShell/Navigation` (the store) and `Views` (the columns). The checks are
+`app/Packages/AppShell/Sources/AppShell/Navigation` (the store) and `Views` (the columns). The session column draws
+a selected session with the `SessionContent` the app target passes to `RootView`: the timeline (A-05,
+docs/session-timeline.md). The checks are
 `NavigationShellUITests` in `app/PicaUITests` and `NavigationStoreTests` in AppShell's tests.
 
 ## Data flow

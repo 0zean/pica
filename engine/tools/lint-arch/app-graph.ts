@@ -11,6 +11,8 @@ const allowedPackageDependencies: Readonly<Record<string, readonly string[]>> = 
   // A-01: launch, engine supervision and the app-wide store; the same footing as a feature.
   AppShell: ["EngineClient", "PicaProtocol", "DesignSystem"],
   Features: ["EngineClient", "PicaProtocol", "DesignSystem"],
+  // A-05: the session timeline, a feature large enough for its own package (PLAN.md §4.3).
+  Timeline: ["EngineClient", "PicaProtocol", "DesignSystem"],
 };
 
 const featuresPackage = "Features";

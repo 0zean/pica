@@ -17,25 +17,39 @@ final class PicaUnderTest {
     let home: URL
     /// Also in the runner's temporary directory: the sandbox lets the runner connect only to sockets in its container.
     let socketPath: String
+    /// The FakeRuntime scenario in `fake-picad-scenarios.ts` that sessions play.
+    let scenario: String
+    /// Where Pica writes `TimelineMetrics`' report.
+    let timelineMetricsPath: String
+    private let scrollScript: Bool
     private let node: String
 
-    init() throws {
+    init(scenario: String = "empty", scrollScript: Bool = false) throws {
+        self.scenario = scenario
+        self.scrollScript = scrollScript
         // `make app-ui-test` passes this as TEST_RUNNER_PICA_NODE.
         node = try XCTUnwrap(ProcessInfo.processInfo.environment["PICA_NODE"], "set PICA_NODE to a Node 22 executable")
         name = "pica-ui-\(UUID().uuidString.prefix(8))"
         home = FileManager.default.temporaryDirectory.appending(path: name)
         try FileManager.default.createDirectory(at: home, withIntermediateDirectories: true)
         socketPath = home.appending(path: "picad.sock").path
+        timelineMetricsPath = home.appending(path: "timeline-metrics.json").path
         XCTAssertLessThan(socketPath.utf8.count, 104, "\(socketPath) is longer than sun_path allows")
     }
 
     var environment: [String: String] {
-        [
+        var environment = [
             "PICA_NODE": node,
             "PICA_ENGINE_ENTRY": Self.repository.appending(path: "engine/packages/server/tests/processes/fake-picad.ts").path,
             "PICA_TEST_HOME": home.path,
             "PICA_SOCKET": socketPath,
+            "PICA_TEST_SCENARIO": scenario,
+            "PICA_TIMELINE_METRICS_PATH": timelineMetricsPath,
         ]
+        if scrollScript {
+            environment["PICA_TIMELINE_SCROLL_SCRIPT"] = "1"
+        }
+        return environment
     }
 
     /// Launches Pica and waits until it is connected to its engine.
@@ -136,10 +150,32 @@ extension EngineClient {
         return repo
     }
 
-    func createSession(in workspace: Workspace, writing repo: Repo) async throws -> Session {
+    func createSession(in workspace: Workspace, writing repo: Repo, prompt: String? = nil) async throws -> Session {
         try await request(
             Methods.SessionCreate.self,
-            SessionCreateParams(workspaceId: workspace.id, writeRepoIds: [repo.id], referenceRepoIds: [])
+            SessionCreateParams(workspaceId: workspace.id, writeRepoIds: [repo.id], referenceRepoIds: [], prompt: prompt)
         ).session
     }
+
+    /// Waits until the session has finished its turn and returns it.
+    func waitUntilIdle(_ sessionId: Id, timeout: Duration = .seconds(60)) async throws -> Session {
+        let deadline = ContinuousClock.now + timeout
+        while true {
+            let session = try await request(Methods.SessionGet.self, BySession(sessionId: sessionId)).session
+            if session.state == .idle { return session }
+            guard ContinuousClock.now < deadline else { throw WaitError.timedOut(session.state) }
+            try await Task.sleep(for: .milliseconds(100))
+        }
+    }
+
+    func send(_ text: String, to sessionId: Id) async throws {
+        let accepted = try await request(
+            Methods.SessionSend.self, SessionSendParams(sessionId: sessionId, text: text, mode: .send)).accepted
+        guard accepted else { throw WaitError.notAccepted }
+    }
+}
+
+enum WaitError: Error {
+    case timedOut(SessionState)
+    case notAccepted
 }

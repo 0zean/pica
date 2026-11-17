@@ -818,16 +818,20 @@
   ],
   "A-05": [
     {
-      "check": "Snapshot test for each event type."
+      "check": "Snapshot test for each event type.",
+      "run": "swift test --package-path app/Packages/Timeline --filter TimelineSnapshotTests"
     },
     {
-      "check": "A 10,000-event fixture opens in under 300 ms."
+      "check": "A 10,000-event fixture opens in under 300 ms.",
+      "run": "make app-ui-test-pica UI_TEST=TimelineUITests/testATenThousandEventSessionOpensInUnder300Milliseconds"
     },
     {
-      "check": "Scroll hitch time ratio under 1% on that fixture."
+      "check": "Scroll hitch time ratio under 1% on that fixture.",
+      "run": "swift test --package-path app/Packages/Timeline --filter 'FrameClockTests|ScrollScriptTests' && make app-ui-test-pica UI_TEST=TimelineUITests/testScrollHitchTimeRatioIsUnderOnePercent"
     },
     {
-      "check": "Streaming appends do not move the scroll position when the user has scrolled up."
+      "check": "Streaming appends do not move the scroll position when the user has scrolled up.",
+      "run": "swift test --package-path app/Packages/Timeline --filter ScrollFollowTests && make app-ui-test-pica UI_TEST=TimelineUITests/testStreamingAppendsDoNotMoveTheScrollPositionWhenScrolledUp"
     }
   ],
   "A-06": [

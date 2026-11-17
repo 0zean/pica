@@ -2,12 +2,14 @@
 // app's tests (A-01). The app starts it the way it starts the real engine: `--socket <path>`, the
 // ready line on stdout, JSON log lines on stderr, SIGTERM to stop, exit code 1 when the
 // composition fails. PICA_TEST_HOME stands in for the home directory, so the data directory is
-// `$PICA_TEST_HOME/Library/Application Support/Pica/`.
+// `$PICA_TEST_HOME/Library/Application Support/Pica/`. PICA_TEST_SCENARIO names the FakeRuntime's
+// scenario in `fake-picad-scenarios.ts` (default `empty`).
 import { parseArgs } from "node:util";
 import { ManagedPolicyLoader } from "@pica/adapters";
 import { createSecretScrubber, createStructuredLog } from "@pica/core";
 import { FakeRuntime, scenarioSchema, sequentialIds, steppingClock } from "@pica/testkit";
 import { composeEngine, startEngine } from "../../src/index.ts";
+import { fakePicadScenarios } from "./fake-picad-scenarios.ts";
 
 const log = createStructuredLog({
   write: (line) => {
@@ -24,12 +26,12 @@ async function main(): Promise<void> {
   if (socketPath === undefined || homeDir === undefined) {
     throw new Error("fake-picad needs --socket and PICA_TEST_HOME");
   }
-  const scenario = scenarioSchema.parse({
-    version: 1,
-    models: [{ id: "model-a", name: "Model A" }],
-    defaultModel: "model-a",
-    turns: [],
-  });
+  const scenarioName = process.env["PICA_TEST_SCENARIO"] ?? "empty";
+  const named = fakePicadScenarios[scenarioName];
+  if (named === undefined) {
+    throw new Error(`fake-picad has no scenario ${JSON.stringify(scenarioName)}`);
+  }
+  const scenario = scenarioSchema.parse(named);
   const composed = composeEngine({
     homeDir,
     userName: "tester",
