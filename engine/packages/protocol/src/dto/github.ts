@@ -21,3 +21,11 @@ export const GitHubRepo = z.object({
   fork: z.boolean(),
   topics: z.array(z.string()),
 });
+
+export const PullRequest = z.object({
+  number: z.int().positive(),
+  url: z.string().min(1),
+  // The branches it merges from and into.
+  head: z.string().min(1),
+  base: z.string().min(1),
+});

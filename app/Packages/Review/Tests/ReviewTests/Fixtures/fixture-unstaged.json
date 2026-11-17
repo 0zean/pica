@@ -1,0 +1,110 @@
+{
+  "files": [
+    {
+      "path": "image.bin",
+      "originalPath": null,
+      "change": "modified",
+      "binary": true,
+      "hunks": []
+    },
+    {
+      "path": "notes.txt",
+      "originalPath": null,
+      "change": "modified",
+      "binary": false,
+      "hunks": [
+        {
+          "header": "@@ -1,5 +1,6 @@",
+          "lines": [
+            {
+              "kind": "context",
+              "text": "line 1",
+              "oldLine": 1,
+              "newLine": 1
+            },
+            {
+              "kind": "context",
+              "text": "line 2 changed",
+              "oldLine": 2,
+              "newLine": 2
+            },
+            {
+              "kind": "context",
+              "text": "line 3",
+              "oldLine": 3,
+              "newLine": 3
+            },
+            {
+              "kind": "removed",
+              "text": "line 4",
+              "oldLine": 4,
+              "newLine": null
+            },
+            {
+              "kind": "added",
+              "text": "line 4 edited",
+              "oldLine": null,
+              "newLine": 4
+            },
+            {
+              "kind": "context",
+              "text": "line 5",
+              "oldLine": 5,
+              "newLine": 5
+            },
+            {
+              "kind": "added",
+              "text": "line 6",
+              "oldLine": null,
+              "newLine": 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "vendor/lib",
+      "originalPath": null,
+      "change": "modified",
+      "binary": false,
+      "hunks": [
+        {
+          "header": "@@ -1 +1 @@",
+          "lines": [
+            {
+              "kind": "removed",
+              "text": "Subproject commit 030b0096ae36fbc8202c240f15b0a9ad24d2e0fc",
+              "oldLine": 1,
+              "newLine": null
+            },
+            {
+              "kind": "added",
+              "text": "Subproject commit e191b7d12e2f2423143500f7753a833085928c7f-dirty",
+              "oldLine": null,
+              "newLine": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "untracked file.txt",
+      "originalPath": null,
+      "change": "untracked",
+      "binary": false,
+      "hunks": [
+        {
+          "header": "@@ -0,0 +1 @@",
+          "lines": [
+            {
+              "kind": "added",
+              "text": "brand new",
+              "oldLine": null,
+              "newLine": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

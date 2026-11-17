@@ -868,13 +868,16 @@
   ],
   "A-08": [
     {
-      "check": "Diff snapshot tests against fixtures, including renames and binary files."
+      "check": "Diff snapshot tests against fixtures, including renames and binary files.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/review/git-rpc.test.ts packages/core/tests/git/hunk-patch.test.ts && cd .. && swift test --package-path app/Packages/Review --filter 'DiffSnapshotTests|DiffDocumentTests|SyntaxHighlighterTests'"
     },
     {
-      "check": "UI test: stage a hunk, commit, and confirm the commit in a temporary repo."
+      "check": "UI test: stage a hunk, commit, and confirm the commit in a temporary repo.",
+      "run": "swift test --package-path app/Packages/Review --filter ReviewStoreTests && make app-ui-test-pica UI_TEST=ReviewUITests/testStagingAHunkAndCommittingRecordsTheCommit"
     },
     {
-      "check": "A 5,000-line diff renders in under 200 ms."
+      "check": "A 5,000-line diff renders in under 200 ms.",
+      "run": "swift test --package-path app/Packages/Review --filter DiffPerformanceTests && make app-ui-test-pica UI_TEST=ReviewUITests/testA5000LineDiffRendersInUnder200Milliseconds"
     }
   ],
   "A-09": [

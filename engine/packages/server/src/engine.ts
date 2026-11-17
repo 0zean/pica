@@ -52,6 +52,8 @@ import type { EngineConfigAccess } from "./config-handlers.ts";
 import { registerEngineHandlers } from "./engine-handlers.ts";
 import { registerFanOutHandlers, toFanOutDto } from "./fanout-handlers.ts";
 import { registerFilesHandlers } from "./files-handlers.ts";
+import { registerGitHandlers } from "./git-handlers.ts";
+import type { EngineReviewOptions } from "./git-handlers.ts";
 import { registerMcpHealthHandlers, registerMcpPresetHandlers } from "./mcp-handlers.ts";
 import { registerMcpImportHandlers } from "./mcp-import-handlers.ts";
 import { SocketListener } from "./listener.ts";
@@ -121,6 +123,8 @@ export interface EngineOptions {
   readonly mcpImport?: EngineMcpImportOptions;
   // A-09: answers `files.list`, `files.read` and `files.quickOpen`.
   readonly files?: FilesService;
+  // A-08: answers `git.*` and `github.createPullRequest` for the review.
+  readonly review?: EngineReviewOptions;
 }
 
 export interface EngineMcpImportOptions {
@@ -190,6 +194,9 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
   }
   if (options.files !== undefined) {
     registerFilesHandlers(router, options.files);
+  }
+  if (options.review !== undefined) {
+    registerGitHandlers(router, options.review);
   }
   const listener = await SocketListener.start({
     socketPath: options.socketPath,

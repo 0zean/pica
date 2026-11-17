@@ -7,7 +7,7 @@ import { ConfigLayer, ConfigValue } from "./dto/config.ts";
 import { FanOut } from "./dto/fanout.ts";
 import { FileEntry, QuickOpenHit } from "./dto/files.ts";
 import { Branch, Commit, FileDiff, GitStatus } from "./dto/git.ts";
-import { GitHubAuthStatus, GitHubRepo, GitHubTeam } from "./dto/github.ts";
+import { GitHubAuthStatus, GitHubRepo, GitHubTeam, PullRequest } from "./dto/github.ts";
 import { McpPreset, McpScope, McpServerDef, McpServerStatus } from "./dto/mcp.ts";
 import { McpImportNote, McpImportSelection, McpImportSnippet, McpImportSource } from "./dto/mcp-import.ts";
 import { ModelInfo, TierAssignment } from "./dto/models.ts";
@@ -92,6 +92,18 @@ export const methods = {
   "github.listTeamRepos": clientMethod(
     z.object({ host: z.string().min(1), org: z.string().min(1), teamSlug: z.string().min(1) }),
     z.object({ repos: z.array(GitHubRepo) }),
+  ),
+  // A-08: opens a pull request from the worktree's current branch, which must be pushed.
+  "github.createPullRequest": clientMethod(
+    z.object({
+      sessionId: Id,
+      repoId: Id,
+      title: z.string().min(1),
+      body: z.string(),
+      base: z.string().min(1).optional(),
+      draft: z.boolean().optional(),
+    }),
+    z.object({ pullRequest: PullRequest }),
   ),
 
   "session.create": clientMethod(
