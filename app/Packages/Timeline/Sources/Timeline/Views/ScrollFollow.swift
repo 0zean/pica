@@ -11,8 +11,10 @@ struct ScrollFollow: Equatable {
         var contentHeight: CGFloat
         var viewportHeight: CGFloat
 
-        /// Within a few points of the end, so a fraction of a line left over still counts.
-        var isAtBottom: Bool { offset + viewportHeight >= contentHeight - 8 }
+        /// Within a few points of the end, so a fraction of a line left over still counts. Following the newest row
+        /// leaves the list's bottom padding (8 points) below it, and rows can sit on half points on a Retina display,
+        /// so the margin is a point more than the padding.
+        var isAtBottom: Bool { offset + viewportHeight >= contentHeight - 9 }
     }
 
     private(set) var isFollowing = true

@@ -94,6 +94,14 @@ function timelineTurns(): Turn[] {
   ];
 }
 
+/** The A-06 composer scenario: the first turn runs until it is stopped, so a test can send while it runs. */
+function composerTurns(): Turn[] {
+  return [
+    { steps: [streamedText("Working on it.", 2), { ...toolCall("view", "src/a.ts", "a"), hangs: true }] },
+    { steps: [streamedText("Done.", 1), usage(100, 20)] },
+  ];
+}
+
 /** A shell call the runtime's own permission flow asks about, as Copilot asks the host (A-07). */
 function askingShell(command: string): ToolCallStep {
   return {
@@ -122,5 +130,6 @@ function approvalTurns(): Turn[] {
 export const fakePicadScenarios: Record<string, Scenario> = {
   empty: scenario([]),
   timeline: scenario(timelineTurns()),
+  composer: scenario(composerTurns()),
   approvals: scenario(approvalTurns()),
 };

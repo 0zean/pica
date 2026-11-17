@@ -65,11 +65,6 @@ final class ApprovalsUITests: XCTestCase {
         }
         try pica.withEngine { engine in try await engine.send("go", to: sessionId) }
         if let choice, let shows {
-            // Cards showing `shows` before the click; resolving this one adds one. A combined element's text is in
-            // its value.
-            let showing = app.descendants(matching: .any).matching(identifier: "pica.approval.summary")
-                .matching(NSPredicate(format: "label CONTAINS %@ OR value CONTAINS %@", shows, shows))
-            let shownBefore = showing.count
             let button = app.buttons["pica.approval.\(choice)"].firstMatch
             XCTAssertTrue(button.waitForExistence(timeout: 20), "no card offers \(choice)")
             // A card that has just arrived may still sit below the visible part of the timeline.
@@ -80,7 +75,13 @@ final class ApprovalsUITests: XCTestCase {
                 return false
             }
             button.click()
-            waitUntil("a card shows “\(shows)”", timeout: 20) { showing.count > shownBefore }
+            // The newest card is the last one in the list. Older ones may have left the lazily built rows, so count
+            // nothing. A combined element's text is in its value.
+            let summaries = app.descendants(matching: .any).matching(identifier: "pica.approval.summary")
+            waitUntil("the newest card shows “\(shows)”", timeout: 20) {
+                guard let newest = summaries.allElementsBoundByIndex.last else { return false }
+                return newest.label.contains(shows) || (newest.value as? String)?.contains(shows) == true
+            }
             waitUntil("no card offers a choice", timeout: 10) { self.pendingChoices(app).isEmpty }
         }
         return try pica.withEngine { engine in

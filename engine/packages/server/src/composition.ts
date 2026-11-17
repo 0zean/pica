@@ -177,6 +177,7 @@ function sessionOptions(deps: SessionComposition): EngineSessionOptions {
     audit: audit.value,
     newSessionId: randomUUID,
     defaultProfile: (workspaceId) => defaultProfileFor(store, config, workspaceId),
+    catalog: { catalog, agents: () => loadedAgents.value, tiers, models },
     // A-07: rules are read from the config as last loaded, so a written rule applies on the next prompt.
     permissionRules: {
       current: () => config.current().permissions.tools ?? [],

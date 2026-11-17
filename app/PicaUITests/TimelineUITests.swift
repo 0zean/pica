@@ -196,5 +196,5 @@ struct TimelineMetricsReport: Decodable {
     var hitchRatio: Double
 
     /// As `ScrollFollow` decides it.
-    var isAtBottom: Bool { scrollOffset + viewportHeight >= contentHeight - 8 }
+    var isAtBottom: Bool { scrollOffset + viewportHeight >= contentHeight - 9 }
 }

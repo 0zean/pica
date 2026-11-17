@@ -59,6 +59,13 @@ private struct TimelineList: View {
             } action: { old, new in
                 follow.update(from: old, to: new)
                 metrics?.scrolled(from: old, to: new)
+                // A row can grow after it was scrolled to (a lazily built row is measured late), so keep the newest
+                // row in sight while following.
+                if follow.isFollowing, new.contentHeight > old.contentHeight, !new.isAtBottom,
+                    let last = store.entries.last
+                {
+                    proxy.scrollTo(last.id, anchor: .bottom)
+                }
             }
             .onChange(of: store.revision) {
                 metrics?.applied(store)

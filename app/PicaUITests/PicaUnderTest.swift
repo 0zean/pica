@@ -21,6 +21,8 @@ final class PicaUnderTest {
     let scenario: String
     /// Where Pica writes `TimelineMetrics`' report.
     let timelineMetricsPath: String
+    /// Where Pica writes `ComposerMetrics`' report.
+    let composerMetricsPath: String
     private let scrollScript: Bool
     private let node: String
 
@@ -34,6 +36,7 @@ final class PicaUnderTest {
         try FileManager.default.createDirectory(at: home, withIntermediateDirectories: true)
         socketPath = home.appending(path: "picad.sock").path
         timelineMetricsPath = home.appending(path: "timeline-metrics.json").path
+        composerMetricsPath = home.appending(path: "composer-metrics.json").path
         XCTAssertLessThan(socketPath.utf8.count, 104, "\(socketPath) is longer than sun_path allows")
     }
 
@@ -45,6 +48,7 @@ final class PicaUnderTest {
             "PICA_SOCKET": socketPath,
             "PICA_TEST_SCENARIO": scenario,
             "PICA_TIMELINE_METRICS_PATH": timelineMetricsPath,
+            "PICA_COMPOSER_METRICS_PATH": composerMetricsPath,
             // A-07: no system notifications, so no test meets the permission prompt.
             "PICA_NOTIFICATIONS": "off",
         ]
