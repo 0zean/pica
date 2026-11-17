@@ -10,8 +10,7 @@ export type ToolTarget =
       readonly range?: LineRange;
       readonly force?: true;
     }
-  // `creates`: the call makes a new file at `path`, as an `apply_patch` add or move does (C-11).
-  | { readonly kind: "write"; readonly path: string; readonly creates?: true }
+  | { readonly kind: "write"; readonly path: string }
   | { readonly kind: "search"; readonly paths: readonly string[] }
   | { readonly kind: "shell"; readonly command: string; readonly cwd: string }
   | {
@@ -101,7 +100,6 @@ export type RuleId =
   | "safety.shell-outside-write-roots"
   | "cost.large-read"
   | "cost.shell-write"
-  | "cost.patch-add-file"
   | "cost.delegation-limit"
   | "cost.oversized-output"
   | `permission.mcp-tool:${string}`

@@ -1,4 +1,4 @@
-import { largeReadRule, oversizedOutputRule, patchAddFileRule, shellWriteRule } from "./cost.ts";
+import { largeReadRule, oversizedOutputRule, shellWriteRule } from "./cost.ts";
 import { managedRule } from "./managed.ts";
 import { managedMcpAllowlistRule } from "./mcp-allowlist.ts";
 import { permissionRule } from "./permission.ts";
@@ -15,7 +15,6 @@ export const orderedRules: readonly Rule[] = [
   shellScopeRule,
   largeReadRule,
   shellWriteRule,
-  patchAddFileRule,
   oversizedOutputRule,
 ];
 

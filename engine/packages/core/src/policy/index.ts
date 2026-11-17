@@ -1,6 +1,5 @@
 export { defaultCommandDenyList } from "./command-deny-list.ts";
-export { oversizedOutputRule, patchAddFileRule, shellWriteRule } from "./cost.ts";
-export { patchCreatedPaths, patchText } from "./patch.ts";
+export { oversizedOutputRule, shellWriteRule } from "./cost.ts";
 export { decide, orderedRules } from "./decide.ts";
 export {
   mainAgent,

@@ -1,5 +1,5 @@
 import { toolKind } from "../agents/index.ts";
-import { decide, defaultCommandDenyList, mainAgent, patchAddFileRule, patchCreatedPaths, patchText, shellWriteRule } from "../policy/index.ts";
+import { decide, defaultCommandDenyList, mainAgent, shellWriteRule } from "../policy/index.ts";
 import type {
   CommandRule,
   ManagedRule,
@@ -34,9 +34,8 @@ export interface ReadGateDeps {
 
 // PLAN.md §5.3 large-read gate. Only the reads a call makes are decided here: `view`, content
 // searches, and whole-file prints in shell commands. A shell command is also checked by the
-// shell-write cost gate (`cost.shell-write`), a main-agent `apply_patch` by the patch-create gate
-// (`cost.patch-add-file`), and a sub-agent's call by its delegation's limits (`cost.delegation-limit`,
-// C-11). Every other call is allowed.
+// shell-write cost gate (`cost.shell-write`), and a sub-agent's call by its delegation's limits
+// (`cost.delegation-limit`, C-11). Every other call is allowed.
 export function createReadGate(deps: ReadGateDeps): (sessionId: string) => RuntimeHooks {
   return (sessionId) => {
     const limiter = createDelegationLimiter();
@@ -46,8 +45,7 @@ export function createReadGate(deps: ReadGateDeps): (sessionId: string) => Runti
 
 async function gateRead(deps: ReadGateDeps, sessionId: string, limiter: DelegationLimiter, input: ToolUseInput): Promise<PreToolUseDecision> {
   const reads = readingKinds.has(toolKind(input.toolName) ?? "other");
-  const patch = input.toolName === "apply_patch" && input.agentId === undefined;
-  if (!reads && !patch && input.agentId === undefined) {
+  if (!reads && input.agentId === undefined) {
     return { decision: "allow" };
   }
   const session = deps.sessions.get(sessionId);
@@ -59,13 +57,6 @@ async function gateRead(deps: ReadGateDeps, sessionId: string, limiter: Delegati
   if (limited !== undefined) {
     deps.onDecision?.(sessionId, limited);
     return { decision: "deny", reason: limited.reason };
-  }
-  if (patch) {
-    const created = decidePatchCreate(context, input);
-    if (created !== undefined) {
-      deps.onDecision?.(sessionId, created);
-      return { decision: "deny", reason: created.reason };
-    }
   }
   if (!reads) {
     return { decision: "allow" };
@@ -111,18 +102,6 @@ async function decideShellWrite(deps: ReadGateDeps, context: PolicyContext, inpu
   }
   const call: ToolCall = { id: input.toolCallId, tool: input.toolName, agent: callingAgent(input), target: { kind: "shell", command, cwd: context.cwd } };
   return shellWriteRule(call, deps.realPath === undefined ? context : await withRealPaths(call, context, deps.realPath));
-}
-
-// Only the patch-create rule: an `apply_patch` from the main agent that adds or moves a file (C-11).
-// Paths are judged as written; the write-root and permission checks are the runtime's flow.
-function decidePatchCreate(context: PolicyContext, input: ToolUseInput): PolicyDecision | undefined {
-  const text = patchText(input.arguments);
-  const path = text === undefined ? undefined : patchCreatedPaths(text)[0];
-  if (path === undefined) {
-    return undefined;
-  }
-  const call: ToolCall = { id: input.toolCallId, tool: input.toolName, agent: mainAgent, target: { kind: "write", path, creates: true } };
-  return patchAddFileRule(call, context);
 }
 
 // A sub-agent's calls carry `agentId` (a UUID) and `agentType`, its name (S-02). Policy rules name
