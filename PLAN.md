@@ -988,9 +988,10 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 **A-14 · Settings and command palette** — A-04, E-04
 - Build: Settings scene editing the config files; ⌘K palette over an action registry; keybinding editor.
 - Verify:
-  - [ ] A test enumerates the action registry and finds every action in the palette.
-  - [ ] A rebound shortcut persists and triggers its action.
-  - [ ] A managed-locked setting is shown disabled with the policy named.
+  - [x] A test enumerates the action registry and finds every action in the palette.
+  - [x] A rebound shortcut persists and triggers its action.
+  - [x] A managed-locked setting is shown disabled with the policy named.
+- Notes: `app/Packages/PicaSettings`, specified in [docs/settings.md](docs/settings.md). A feature package (lint-arch rule added; named so it does not shadow SwiftUI's `Settings` scene). `ActionID` is a `CaseIterable` enum with titles, menus and default shortcuts in `ActionCatalog`; the app target (`app/Pica/AppActions.swift`) runs actions through one exhaustive `switch`, and `ActionCommands` replaces the system Settings item and SwiftUI's sidebar group so every registry shortcut can be rebound. ⌘K shows the palette as a sheet (actions, then "Go to" each sidebar session). Shortcuts are stored in config.jsonc under the new `keybindings` record (`ctrl+alt+shift+cmd+key`, empty for none) and recorded with an `NSEvent` local monitor; a shortcut without ⌘/⌃/⌥ or one another action has is refused. The Settings scene has General (routing profile, tiers, budgets, permission mode) and Keyboard panes. Engine change: the production composition now serves `config.get` and `config.set` (user layer only; workspace and repo layers are not composed), editing `config.jsonc` in place with `jsonc-parser` through the same helper as A-07's rule writer; `ConfigValue` gains `lockedBy` (the policy id), and a set on a locked key answers `policy_denied` naming it. This unblocked A-06's tier picker, which now writes `routing.tiers` and shows the lock. `fake-picad` loads `PICA_TEST_MANAGED_POLICY` as if root owned it. ⌘1–9 and the composer's keys stay fixed.
 
 **A-15 · Onboarding** — A-12, A-13
 - Build: precondition checks (Copilot login, git, GitHub auth), first workspace.
@@ -1175,7 +1176,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | A-11 | Usage and cost | A-05, C-08, C-09 | todo |
 | A-12 | Workspace and repo management | A-04, R-06 | todo |
 | A-13 | MCP management | A-04, M-06, M-07 | todo |
-| A-14 | Settings and command palette | A-04, E-04 | todo |
+| A-14 | Settings and command palette | A-04, E-04 | done |
 | A-15 | Onboarding | A-12, A-13 | todo |
 | A-16 | Session overview | A-05, R-11 | todo |
 | X-01 | Themes and density | A-03, A-14 | todo |

@@ -89,6 +89,16 @@ public final class NavigationStore {
         selection = item
     }
 
+    /// Selects the session `offset` rows after the selected one in sidebar order, wrapping around; the first session
+    /// when none is selected.
+    public func selectSession(offset: Int) {
+        let sessions = sidebar.flatMap(\.sessions)
+        guard !sessions.isEmpty else { return }
+        let current: Int? = if case .session(let id) = selection { sessions.firstIndex { $0.id == id } } else { nil }
+        let next = current.map { ($0 + offset % sessions.count + sessions.count) % sessions.count } ?? 0
+        select(.session(sessions[next].id))
+    }
+
     public func workspaceId(of item: SidebarItem) -> Id? {
         switch item {
         case .workspace(let id): id

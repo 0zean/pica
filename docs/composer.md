@@ -72,7 +72,7 @@ Repos, agents and skills load once when the composer appears; files are searched
 whose query is no longer the one being typed is dropped.
 
 The engine did not serve `agents.list`, `models.*`, `files.*` or `config.*` before A-06, though the protocol declares
-them. A-06 adds `agents.list`, `models.list` and `models.tiers` to the production composition
+them (`config.*` is served since A-14). A-06 adds `agents.list`, `models.list` and `models.tiers` to the production composition
 (`engine/packages/server/src/catalog-handlers.ts`), from the agent loader and model catalog sessions already use.
 `agents.list` returns the built-in and user agents; workspace and repo agent layers are not composed yet, so it ignores
 `workspaceId` and `repoId`. `files.quickOpen` and `files.list` need a search adapter (A-09), so until then the
@@ -119,9 +119,10 @@ what applies and set what new sessions get:
 - **Profile.** The label is this session's profile. The menu sets the profile new sessions in the workspace start with
   (`workspace.update` with `overrides.routingProfile`, which the engine's default profile reads).
 - **Tiers.** The label is the model the reasoning tier resolves to (`models.tiers`, names from `models.list`). The
-  menu shows each tier's setting and model. The engine does not serve `config.set` yet, so it says to set
-  `routing.tiers` in `config.jsonc`; sessions started afterwards use the change. Choosing a model in the menu becomes
-  possible once `config.set` is served.
+  menu offers Auto and each model the policy allows, per tier; choosing one writes `routing.tiers.<tier>` to the user's
+  `config.jsonc` with `config.set` (A-14, [settings.md](settings.md)) and reloads `models.tiers`. Sessions started
+  afterwards use the change. When a managed policy locks `routing.tiers` (`config.get` reports it locked), the menu only
+  shows the tiers and names the policy, and a refused write is shown in the status line.
 
 Changing a running session's profile or models needs an engine change (a `session.update`, and re-creating the
 runtime session with the new excluded tools and model); it is left for a later unit.

@@ -45,6 +45,8 @@ public final class ComposerStore {
     public private(set) var skills: [String] = []
     public private(set) var models: [ModelInfo] = []
     public private(set) var tiers: [TierAssignment] = []
+    /// The managed policy that locks the tiers; the tier picker is then read-only.
+    public private(set) var tierLock: String?
     /// The profile new sessions in this session's workspace start with.
     public private(set) var defaultProfile: RoutingProfile?
     /// Counts the times the catalogs above were loaded.
@@ -288,12 +290,14 @@ public final class ComposerStore {
         async let agentList = try? backend.agents(workspaceId: workspaceId)
         async let modelList = try? backend.models()
         async let tierList = try? backend.tiers()
+        async let lock = try? backend.tierLock()
         async let workspace = try? backend.workspace(workspaceId)
         loadedRepos = await repoList ?? []
         repos = loadedRepos.map(mentionRepo)
         agents = await agentList ?? []
         models = await modelList ?? []
         tiers = await tierList ?? []
+        tierLock = await lock ?? nil
         defaultProfile = await workspace?.overrides.routingProfile
         skills = Array(Set(await backend.skills(repoIds: loadedRepos.map(\.id)))).sorted()
         catalogRevision += 1
@@ -304,6 +308,16 @@ public final class ComposerStore {
         do {
             try await backend.setDefaultProfile(profile, workspaceId: session.workspaceId)
             defaultProfile = profile
+        } catch {
+            status = .failed(Self.describe(error))
+        }
+    }
+
+    /// Writes a tier's model to the user's config. Sessions started afterwards use it.
+    public func setTier(_ tier: Tier, to setting: String) async {
+        do {
+            try await backend.setTier(tier, to: setting)
+            tiers = try await backend.tiers()
         } catch {
             status = .failed(Self.describe(error))
         }
