@@ -60,6 +60,8 @@ public final class ComposerStore {
     @ObservationIgnored private let drafts: ComposerDrafts?
     @ObservationIgnored private var dismissedQueryStart: Int?
     @ObservationIgnored private var fileSearch: Task<Void, Never>?
+    /// Set when the engine could not search files (it does not serve `files.quickOpen` yet); no more searches are made.
+    @ObservationIgnored private var filesUnavailable = false
     @ObservationIgnored private var fileHits: (query: String, items: [CompletionItem])?
     @ObservationIgnored private var loadedRepos: [Repo] = []
 
@@ -252,14 +254,20 @@ public final class ComposerStore {
     /// query is still the one being typed.
     private func searchFiles(for query: String) {
         fileSearch?.cancel()
-        guard !query.isEmpty else { return }
+        guard !query.isEmpty, !filesUnavailable else { return }
         let backend = backend
         let workspaceId = session.workspaceId
         let names = Dictionary(repos.map { ($0.id, $0.name) }, uniquingKeysWith: { first, _ in first })
         fileSearch = Task { [weak self] in
             try? await Task.sleep(for: Self.fileSearchDelay)
             guard !Task.isCancelled else { return }
-            let hits = (try? await backend.files(workspaceId: workspaceId, query: query, limit: Self.completionLimit)) ?? []
+            let hits: [QuickOpenHit]
+            do {
+                hits = try await backend.files(workspaceId: workspaceId, query: query, limit: Self.completionLimit)
+            } catch {
+                self?.filesUnavailable = true
+                return
+            }
             guard !Task.isCancelled, let self else { return }
             let items = hits.map { hit in
                 let repo = names[hit.repoId] ?? hit.repoId
@@ -290,15 +298,6 @@ public final class ComposerStore {
         skills = Array(Set(await backend.skills(repoIds: loadedRepos.map(\.id)))).sorted()
         catalogRevision += 1
         updateCompletion()
-    }
-
-    public func setTier(_ tier: Tier, to setting: String) async {
-        do {
-            try await backend.setTier(tier, to: setting)
-            tiers = try await backend.tiers()
-        } catch {
-            status = .failed(Self.describe(error))
-        }
     }
 
     public func setDefaultProfile(_ profile: RoutingProfile) async {

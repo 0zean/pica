@@ -903,9 +903,10 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 **A-06 · Composer** — A-05
 - Build: multiline input, `@` mentions for repos, files, and agents, `/` for skills, profile and tier pickers, steer and queue while running.
 - Verify:
-  - [ ] Mention tokenizer table tests.
-  - [ ] UI tests: `@` opens completions and Return inserts; ⌘↩ sends; sending while running queues.
-  - [ ] Keystroke to glyph under 16 ms with a 10,000-event session open.
+  - [x] Mention tokenizer table tests.
+  - [x] UI tests: `@` opens completions and Return inserts; ⌘↩ sends; sending while running queues.
+  - [x] Keystroke to glyph under 16 ms with a 10,000-event session open.
+- Notes: `app/Packages/Composer`, specified in [docs/composer.md](docs/composer.md). A feature package (lint-arch rule added); the app target puts it under the timeline in the `SessionContent` closure. The input is an `NSTextView` (TextKit 1) for key handling, mention coloring and a measured height. ⌘↩ sends when idle and queues while a turn runs, ⇧⌘↩ steers, ⌘. stops, all through `session.send` modes and `session.abort`. Mentions name repos, files (`repo:path`) and agents; a sent message gets a closing list of where mentioned repos and files are. No protocol change. The engine served none of `agents.list`, `models.*`, `files.*` and `config.*`: A-06 adds `agents.list`, `models.list` and `models.tiers` to the production composition, while file and skill completions wait for `files.*` (A-09) and the tier picker only shows the tiers until `config.set` is served. A session keeps the profile and models it started with, so the profile picker sets the workspace's default for new sessions. Pica measures keystroke to glyph itself (`ComposerMetrics`, on only in UI tests) while XCUITest types, so the keys take the system's event path; keys Pica posted to itself (`NSApplication.postEvent`) waited 8–10 ms in AppKit's queue, which a keyboard's do not. `fake-picad` has a `composer` scenario whose first turn runs until it is stopped. Measured on 2026-11-16 (Debug build, Apple silicon at 120 Hz, 10,025-event session open, six runs): glyph median 12.9–13.3 ms, p95 13.5–15.2 ms; the composer's own handling of a key is about 2 ms. Each rebuilt Pica has to be allowed to access the Documents folder again before its UI tests can start the engine, since the worktrees are under `~/Documents` and Debug builds are signed ad hoc.
 
 **A-07 · Approvals** — A-05
 - Build: inline approval cards, system notification, allow once, always, deny.
@@ -1134,7 +1135,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | A-03 | Design system | F-01 | done |
 | A-04 | Navigation shell | A-01, A-02, A-03 | done |
 | A-05 | Session timeline | A-04 | done |
-| A-06 | Composer | A-05 | todo |
+| A-06 | Composer | A-05 | doing (PR open) |
 | A-07 | Approvals | A-05 | todo |
 | A-08 | Review | A-04, R-01 | todo |
 | A-09 | Files and quick open | A-04, R-08 | todo |

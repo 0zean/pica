@@ -39,20 +39,21 @@ struct ProfilePicker: View {
     }
 }
 
-/// The models the reasoning and worker tiers run on: `auto` or a model the policy allows. The setting goes to the
-/// user's config and applies to sessions started afterwards.
+/// The models the reasoning and worker tiers run on (`models.tiers`): each tier's setting and the model it resolves to.
+/// The engine does not serve `config.set` yet, so the menu shows them and says where to change them; sessions started
+/// afterwards use a changed setting.
 struct TierPicker: View {
     let store: ComposerStore
 
     var body: some View {
         Menu {
-            ForEach([Tier.reasoning, .worker], id: \.self) { tier in
-                Section(Self.title(tier)) {
-                    Toggle("Auto", isOn: binding(tier, "auto"))
-                    ForEach(store.models.filter(\.allowedByPolicy), id: \.id) { model in
-                        Toggle(model.name, isOn: binding(tier, model.id))
-                    }
+            ForEach(store.tiers, id: \.tier) { assignment in
+                Section(Self.title(assignment.tier)) {
+                    Text(describe(assignment))
                 }
+            }
+            Section {
+                Text("Set routing.tiers in config.jsonc to change them.")
             }
         } label: {
             Label(label, systemImage: "cpu")
@@ -61,20 +62,23 @@ struct TierPicker: View {
         .menuStyle(.button)
         .buttonStyle(.borderless)
         .fixedSize()
+        .disabled(store.tiers.isEmpty)
         .help("Models for the reasoning and worker tiers. New sessions use them.")
         .accessibilityIdentifier("pica.composer.tiers")
     }
 
     private var label: String {
         guard let reasoning = store.tiers.first(where: { $0.tier == .reasoning }) else { return "Tiers" }
-        let model = reasoning.resolvedModelId.map { id in store.models.first { $0.id == id }?.name ?? id }
-        return reasoning.setting == "auto" ? "Auto" + (model.map { " · \($0)" } ?? "") : (model ?? reasoning.setting)
+        return modelName(reasoning.resolvedModelId) ?? reasoning.setting
     }
 
-    private func binding(_ tier: Tier, _ setting: String) -> Binding<Bool> {
-        Binding(
-            get: { store.tiers.first { $0.tier == tier }?.setting == setting },
-            set: { if $0 { Task { await store.setTier(tier, to: setting) } } })
+    private func describe(_ assignment: TierAssignment) -> String {
+        let model = modelName(assignment.resolvedModelId) ?? "no model available"
+        return assignment.setting == "auto" ? "Auto: \(model)" : model
+    }
+
+    private func modelName(_ id: Id?) -> String? {
+        id.map { id in store.models.first { $0.id == id }?.name ?? id }
     }
 
     static func title(_ tier: Tier) -> String {

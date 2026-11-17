@@ -69,7 +69,15 @@ Completions come from:
 | `/` | Skills | `files.list` of `.github/skills` and `.claude/skills` in each workspace repo: one skill per directory |
 
 Repos, agents and skills load once when the composer appears; files are searched as the query changes, and a search
-whose query is no longer the one being typed is dropped. Items are ranked by prefix match, then a match at a word
+whose query is no longer the one being typed is dropped.
+
+The engine did not serve `agents.list`, `models.*`, `files.*` or `config.*` before A-06, though the protocol declares
+them. A-06 adds `agents.list`, `models.list` and `models.tiers` to the production composition
+(`engine/packages/server/src/catalog-handlers.ts`), from the agent loader and model catalog sessions already use.
+`agents.list` returns the built-in and user agents; workspace and repo agent layers are not composed yet, so it ignores
+`workspaceId` and `repoId`. `files.quickOpen` and `files.list` need a search adapter (A-09), so until then the
+composer offers no files or skills: the first failed file search turns searching off for that composer, and a failed
+skill listing leaves the list empty. No method or type was added to the protocol. Items are ranked by prefix match, then a match at a word
 start, then a substring, then the letters in order, ignoring case; eight at most.
 
 ### What is sent
@@ -110,9 +118,10 @@ what applies and set what new sessions get:
 
 - **Profile.** The label is this session's profile. The menu sets the profile new sessions in the workspace start with
   (`workspace.update` with `overrides.routingProfile`, which the engine's default profile reads).
-- **Tiers.** The label is the reasoning tier's setting and the model it resolves to (`models.tiers`). The menu sets
-  `auto` or a model the policy allows (`models.list`) for each tier, in the user's config (`config.set
-  routing.tiers.<tier>` at the `user` layer). Sessions started afterwards use it.
+- **Tiers.** The label is the model the reasoning tier resolves to (`models.tiers`, names from `models.list`). The
+  menu shows each tier's setting and model. The engine does not serve `config.set` yet, so it says to set
+  `routing.tiers` in `config.jsonc`; sessions started afterwards use the change. Choosing a model in the menu becomes
+  possible once `config.set` is served.
 
 Changing a running session's profile or models needs an engine change (a `session.update`, and re-creating the
 runtime session with the new excluded tools and model); it is left for a later unit.
@@ -123,14 +132,33 @@ Keystroke to glyph is under 16 ms with a 10,000-event session open. Pica measure
 which only the UI tests turn on (`PICA_COMPOSER_METRICS_PATH`), as A-05 does with `TimelineMetrics`. For each key that
 types a character it takes the time from the key event's timestamp to:
 
+- **queue**: the composer starting to handle it, and **handle**: how long that took (`keyDown`);
 - **commit**: the end of the run loop pass that drew the new glyph, after Core Animation has committed it (a run loop
   observer of order 2,100,000, after Core Animation's at 2,000,000);
 - **glyph**: the first display refresh after that commit (the `targetTimestamp` of the display link), the earliest the
   glyph can be on screen.
 
-`ComposerLatencyUITests` opens the `timeline` scenario's 10,025-event session, clicks into the composer and lets Pica
-type 120 characters into it itself (`PICA_COMPOSER_TYPING_SCRIPT`), one every 100 ms through the window's event queue
-like any key. XCUITest's own typing waits on accessibility snapshots that hold Pica's main thread, which would be
-counted against the composer. The check is the 95th percentile of glyph times.
+The report is written once keys stop arriving for half a second. `ComposerLatencyUITests` opens the `timeline`
+scenario's 10,025-event session, clicks into the composer and has XCUITest type 120 characters. XCUITest's keys come
+through the system's event path, as a keyboard's do, and its typing takes no accessibility snapshots between keys (A-05
+had to avoid XCUITest's scrolling for that reason). The check is the 95th percentile of glyph times.
 
-MEASUREMENTS
+A first version had Pica type into itself with `NSApplication.postEvent`, as A-05's scroll script scrolls. It
+measured 13.7–23 ms at p95 while the main thread answered a queued block within 0.3 ms and the composer handled each key
+in about 2.4 ms: events an app posts to itself waited 8–10 ms in AppKit's queue before delivery, which no keyboard event
+does. So the measurement uses the system's path instead.
+
+Measured on 2026-11-16 (Debug build with the Main Thread Checker, as `xcodebuild test` runs it; Apple silicon at
+120 Hz; 120 keys; 10,025-event session open), over six runs:
+
+| | Median | p95 | Max |
+|---|---|---|---|
+| Glyph (event to first refresh after commit) | 12.9–13.3 ms | 13.5–15.2 ms | 29.3–32.3 ms |
+| Commit (event to frame committed) | 9.8–9.9 ms | 11.1–12.2 ms | 14.9–23.2 ms |
+| Queue (event to the composer handling it) | 5.6–6.0 ms | 6.4–6.7 ms | 6.7–8.0 ms |
+| Handle (the composer's `keyDown`) | 1.6–1.8 ms | 2.6–5.2 ms | 5.3–7.7 ms |
+
+Most of the time is the system delivering the key (queue) and waiting for the display's next refresh; the composer's
+own work is about 2 ms. The margin under the budget is small (0.8 ms in the worst run), so a slower machine or more
+work per key could fail the check; a Release build without the Main Thread Checker would have more room. Typing does not redraw the timeline, since nothing the timeline observes changes. The maximum
+is a single key in each run; which key, and why, is not yet known.

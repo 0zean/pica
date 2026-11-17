@@ -24,14 +24,11 @@ final class PicaUnderTest {
     /// Where Pica writes `ComposerMetrics`' report.
     let composerMetricsPath: String
     private let scrollScript: Bool
-    private let typingScript: Int
     private let node: String
 
-    /// `typingScript` is how many characters the composer types itself once it has focus (A-06).
-    init(scenario: String = "empty", scrollScript: Bool = false, typingScript: Int = 0) throws {
+    init(scenario: String = "empty", scrollScript: Bool = false) throws {
         self.scenario = scenario
         self.scrollScript = scrollScript
-        self.typingScript = typingScript
         // `make app-ui-test` passes this as TEST_RUNNER_PICA_NODE.
         node = try XCTUnwrap(ProcessInfo.processInfo.environment["PICA_NODE"], "set PICA_NODE to a Node 22 executable")
         name = "pica-ui-\(UUID().uuidString.prefix(8))"
@@ -55,9 +52,6 @@ final class PicaUnderTest {
         ]
         if scrollScript {
             environment["PICA_TIMELINE_SCROLL_SCRIPT"] = "1"
-        }
-        if typingScript > 0 {
-            environment["PICA_COMPOSER_TYPING_SCRIPT"] = String(typingScript)
         }
         return environment
     }

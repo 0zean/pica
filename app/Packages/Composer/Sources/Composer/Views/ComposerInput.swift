@@ -215,19 +215,27 @@ final class ComposerTextView: NSTextView {
     static let placeholder = "Message the session. @ mentions a repo, file or agent; / runs a skill; ⌘↩ sends."
 
     private var link: CADisplayLink?
-    private var typingScript: TypingScript?
 
     override func keyDown(with event: NSEvent) {
         if onKey?(event) == true { return }
-        if let metrics, Self.typesCharacter(event) {
-            metrics.keyReceived(timestamp: event.timestamp)
+        guard let metrics, Self.typesCharacter(event) else {
+            super.keyDown(with: event)
+            return
         }
+        metrics.keyReceived(timestamp: event.timestamp)
+        let start = CACurrentMediaTime()
         super.keyDown(with: event)
+        metrics.keyHandled(seconds: CACurrentMediaTime() - start)
     }
 
     override func performKeyEquivalent(with event: NSEvent) -> Bool {
         if window?.firstResponder === self, onKey?(event) == true { return true }
         return super.performKeyEquivalent(with: event)
+    }
+
+    override func didChangeText() {
+        super.didChangeText()
+        metrics?.textChanged(length: (string as NSString).length)
     }
 
     override func draw(_ dirtyRect: NSRect) {
@@ -240,12 +248,6 @@ final class ComposerTextView: NSTextView {
             (Self.placeholder as NSString).draw(at: origin, withAttributes: attributes)
         }
         metrics?.inputDrew()
-    }
-
-    override func becomeFirstResponder() -> Bool {
-        let became = super.becomeFirstResponder()
-        if became { startTypingScriptIfAsked() }
-        return became
     }
 
     override func viewDidMoveToWindow() {
@@ -267,15 +269,6 @@ final class ComposerTextView: NSTextView {
 
     @objc private func tick(_ link: CADisplayLink) {
         metrics?.frame(targetTimestamp: link.targetTimestamp)
-    }
-
-    private func startTypingScriptIfAsked() {
-        guard typingScript == nil, let metrics, metrics.typingScriptLength > 0, let window else { return }
-        let script = TypingScript(length: metrics.typingScriptLength, window: window) { [weak self] in
-            metrics.typingFinished(textLength: (self?.string as NSString?)?.length ?? 0)
-        }
-        typingScript = script
-        script.start()
     }
 
     private static func typesCharacter(_ event: NSEvent) -> Bool {

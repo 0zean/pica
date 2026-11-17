@@ -14,8 +14,6 @@ public protocol ComposerBackend: Sendable {
     func files(workspaceId: Id, query: String, limit: Int) async throws -> [QuickOpenHit]
     func models() async throws -> [ModelInfo]
     func tiers() async throws -> [TierAssignment]
-    /// Sets a tier's model (`"auto"` or a model id) in the user's config.
-    func setTier(_ tier: Tier, to setting: String) async throws
     func workspace(_ workspaceId: Id) async throws -> Workspace
     /// Sets the routing profile new sessions in the workspace start with.
     func setDefaultProfile(_ profile: RoutingProfile, workspaceId: Id) async throws
@@ -77,11 +75,6 @@ public struct EngineComposerBackend: ComposerBackend {
         try await client.request(Methods.ModelsTiers.self).tiers
     }
 
-    public func setTier(_ tier: Tier, to setting: String) async throws {
-        _ = try await client.request(
-            Methods.ConfigSet.self,
-            ConfigSetParams(keyPath: "routing.tiers.\(tier.rawValue)", value: .string(setting), layer: .user))
-    }
 
     public func workspace(_ workspaceId: Id) async throws -> Workspace {
         try await client.request(Methods.WorkspaceGet.self, ById(id: workspaceId)).workspace

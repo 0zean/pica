@@ -160,15 +160,24 @@ import Testing
         #expect(store.repos.first { $0.name == "beacon" }?.path == "/src/beacon")
     }
 
-    @Test func pickersWriteConfigAndTheWorkspace() async {
+    @Test func filesAreNotSearchedAgainOnceTheEngineCannot() async throws {
+        backend.filesFail = true
+        let store = await store()
+        type("@x", into: store)
+        try await Task.sleep(for: .milliseconds(150))
+        type("y", into: store)
+        try await Task.sleep(for: .milliseconds(150))
+        #expect(backend.fileQueries == ["x"])
+        #expect(store.completion == nil)
+    }
+
+    @Test func theProfilePickerSetsTheWorkspaceDefault() async {
         let store = await store()
         #expect(store.defaultProfile == .balanced)
         await store.setDefaultProfile(.strict)
         #expect(backend.profiles == [.strict])
         #expect(store.defaultProfile == .strict)
-        await store.setTier(.worker, to: "model-b")
-        #expect(backend.tierSettings == ["worker=model-b"])
-        #expect(store.tiers.first { $0.tier == .worker }?.setting == "model-b")
+        #expect(store.tiers.map(\.setting) == ["auto", "auto"])
     }
 
     private func waitUntil(_ condition: @MainActor () -> Bool) async throws {
@@ -193,8 +202,8 @@ final class FakeBackend: ComposerBackend, @unchecked Sendable {
     var failure: Failure?
     var fileQueries: [String] = []
     var profiles: [RoutingProfile] = []
-    var tierSettings: [String] = []
-    private var tierList = [
+    var filesFail = false
+    private let tierList = [
         TierAssignment(tier: .reasoning, setting: "auto", resolvedModelId: "model-a"),
         TierAssignment(tier: .worker, setting: "auto", resolvedModelId: "model-b"),
     ]
@@ -223,7 +232,11 @@ final class FakeBackend: ComposerBackend, @unchecked Sendable {
     nonisolated func skills(repoIds: [Id]) async -> [String] { ["review", "fix-tests", "review"] }
 
     nonisolated func files(workspaceId: Id, query: String, limit: Int) async throws -> [QuickOpenHit] {
-        await MainActor.run { fileQueries.append(query) }
+        let fail = await MainActor.run {
+            fileQueries.append(query)
+            return filesFail
+        }
+        if fail { throw Failure() }
         return query == "main" ? [QuickOpenHit(repoId: "r1", path: "src/main.swift", score: 1)] : []
     }
 
@@ -234,12 +247,6 @@ final class FakeBackend: ComposerBackend, @unchecked Sendable {
 
     nonisolated func tiers() async throws -> [TierAssignment] { await MainActor.run { tierList } }
 
-    nonisolated func setTier(_ tier: Tier, to setting: String) async throws {
-        await MainActor.run {
-            tierSettings.append("\(tier.rawValue)=\(setting)")
-            tierList = tierList.map { $0.tier == tier ? TierAssignment(tier: tier, setting: setting, resolvedModelId: setting) : $0 }
-        }
-    }
 
     nonisolated func workspace(_ workspaceId: Id) async throws -> Workspace {
         Workspace(id: workspaceId, name: "Atlas", sources: [], pinnedRepoIds: [], overrides: WorkspaceOverrides(routingProfile: .balanced))

@@ -71,26 +71,28 @@ final class ComposerUITests: XCTestCase {
 }
 
 /// PLAN.md §9: keystroke to glyph under 16 ms with a 10,000-event session open. The session plays the `timeline`
-/// scenario. Pica types into its composer itself (`TypingScript`) and measures each keystroke (`ComposerMetrics`).
+/// scenario. XCUITest types 120 characters into the composer, through the system's event path as a keyboard's keys
+/// arrive, and Pica measures each keystroke itself (`ComposerMetrics`, docs/composer.md).
 final class ComposerLatencyUITests: XCTestCase {
     private static let budgetMs = 16.0
     private static let keystrokes = 120
 
     @MainActor
     func testKeystrokeToGlyphIsUnder16MillisecondsWithATenThousandEventSessionOpen() throws {
-        let fixture = try ComposerFixture(scenario: "timeline", prompt: "go", typingScript: Self.keystrokes)
+        let fixture = try ComposerFixture(scenario: "timeline", prompt: "go")
         defer { fixture.remove() }
         XCTAssertGreaterThanOrEqual(fixture.session.lastSeq, 10_000, "the fixture session is too small")
         fixture.waitForTimeline()
-        _ = fixture.focusInput()
-        let report = try fixture.composerReport()
-        XCTAssertEqual(report.textLength, Self.keystrokes, "the typing script did not type every character")
+        let input = fixture.focusInput()
+        let sentence = String(String(repeating: "the quick brown fox jumps over the lazy dog ", count: 3).prefix(Self.keystrokes))
+        input.typeText(sentence)
+        let report = try fixture.composerReport { $0.keystrokes >= Self.keystrokes }
+        XCTAssertEqual(report.textLength, Self.keystrokes, "not every character reached the composer")
         XCTAssertEqual(report.keystrokes, Self.keystrokes, "not every keystroke was measured")
 
         let glyph = Percentiles(report.glyphMs)
-        let commit = Percentiles(report.commitMs)
-        let queue = Percentiles(report.queueMs)
-        let summary = "glyph ms \(glyph); commit ms \(commit); queue ms \(queue); events \(fixture.session.lastSeq)"
+        let summary = "glyph ms \(glyph); commit ms \(Percentiles(report.commitMs)); queue ms \(Percentiles(report.queueMs)); "
+            + "handle ms \(Percentiles(report.handleMs)); events \(fixture.session.lastSeq)"
         print("ComposerLatencyUITests:", summary)
         let attachment = XCTAttachment(string: summary)
         attachment.lifetime = .keepAlways
@@ -127,8 +129,8 @@ private final class ComposerFixture {
     let app: XCUIApplication
     let session: Session
 
-    init(scenario: String = "composer", prompt: String? = nil, typingScript: Int = 0) throws {
-        pica = try PicaUnderTest(scenario: scenario, typingScript: typingScript)
+    init(scenario: String = "composer", prompt: String? = nil) throws {
+        pica = try PicaUnderTest(scenario: scenario)
         app = pica.launch()
         let path = try pica.makeRepository("atlas")
         session = try pica.withEngine { engine in
@@ -162,12 +164,12 @@ private final class ComposerFixture {
         }
     }
 
-    func composerReport() throws -> ComposerMetricsReport {
+    func composerReport(where condition: @escaping (ComposerMetricsReport) -> Bool) throws -> ComposerMetricsReport {
         let path = pica.composerMetricsPath
         var latest: ComposerMetricsReport?
         waitUntil("Pica reports its composer metrics", timeout: 60) {
             latest = try? JSONDecoder().decode(ComposerMetricsReport.self, from: Data(contentsOf: URL(filePath: path)))
-            return latest?.finished == true
+            return latest.map(condition) ?? false
         }
         return try XCTUnwrap(latest)
     }
@@ -221,5 +223,5 @@ struct ComposerMetricsReport: Decodable {
     var glyphMs: [Double]
     var commitMs: [Double]
     var queueMs: [Double]
-    var finished: Bool
+    var handleMs: [Double]
 }

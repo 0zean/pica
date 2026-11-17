@@ -175,6 +175,7 @@ function sessionOptions(deps: SessionComposition): EngineSessionOptions {
     audit: audit.value,
     newSessionId: randomUUID,
     defaultProfile: (workspaceId) => defaultProfileFor(store, config, workspaceId),
+    catalog: { catalog, agents: () => loadedAgents.value, tiers, models },
   };
 }
 

@@ -43,6 +43,8 @@ import type {
   WorkspaceService,
 } from "@pica/core";
 import { registerAccountHandlers } from "./account-handlers.ts";
+import { registerCatalogHandlers } from "./catalog-handlers.ts";
+import type { EngineCatalogOptions } from "./catalog-handlers.ts";
 import { registerEngineHandlers } from "./engine-handlers.ts";
 import { registerFanOutHandlers, toFanOutDto } from "./fanout-handlers.ts";
 import { registerMcpHealthHandlers, registerMcpPresetHandlers } from "./mcp-handlers.ts";
@@ -87,6 +89,8 @@ export interface EngineSessionOptions {
   readonly delegator?: Delegator;
   // The routing profile for a session created without one (D-22); without it, `off`.
   readonly defaultProfile?: (workspaceId: string) => SessionRoutingProfile;
+  // A-06: answers `agents.list`, `models.list` and `models.tiers`.
+  readonly catalog?: EngineCatalogOptions;
 }
 
 export interface EngineOptions {
@@ -140,6 +144,9 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
   });
   if (options.sessions !== undefined) {
     registerAccountHandlers(router, options.sessions.runtime);
+  }
+  if (options.sessions?.catalog !== undefined) {
+    registerCatalogHandlers(router, options.sessions.catalog);
   }
   // M-02: presets need no adapter, so they are always answered.
   registerMcpPresetHandlers(router, options.githubHost === undefined ? {} : { githubHost: options.githubHost });
