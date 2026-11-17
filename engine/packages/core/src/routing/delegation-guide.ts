@@ -54,6 +54,7 @@ function writeRules(profile: Exclude<RoutingProfileName, "off">, hasCodeWriter: 
     ? [
         "- Give `code-writer` everything in the prompt: each file's path and its full content, or the exact edits. " +
           "It does not explore the repository or run anything, and it stops after a few tool calls. Run the tests or checks yourself afterwards.",
+        "- `code-writer` cannot create directories. For a file in a directory that may not exist yet, run `mkdir -p` on it before you delegate.",
       ]
     : [];
   if (profile === "strict") {

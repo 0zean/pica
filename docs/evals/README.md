@@ -93,7 +93,10 @@ and `.md`, which get committed. It leaves the signed-in user's Pica data untouch
 cd engine && PICA_LIVE=1 pnpm exec vitest run packages/evals/tests/live-suite.test.ts
 ```
 
-To run only some tasks, set `EVAL_TASKS=schema-column-owner,money-tests`.
+To run only some tasks, set `EVAL_TASKS=schema-column-owner,money-tests`. `EVAL_PROFILES=balanced` runs
+only some profiles, `EVAL_RUNS=1` sets the runs per task, `EVAL_MAX_CREDITS` sets the stop, and
+`EVAL_REPORT_NAME=c11-live` names the report files (`<date>-c10-live` by default), so a later run on the
+same day doesn't overwrite an earlier report.
 
 On a default-model-only plan such as Copilot Free, sub-agents run on the same model as the main agent
 (D-16). There, delegation moves tokens from the reasoning tier to the worker tier, but it cannot lower

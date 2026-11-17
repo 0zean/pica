@@ -1,0 +1,229 @@
+{
+  "suite": "C-10",
+  "version": 1,
+  "runtime": "copilot",
+  "generatedAt": "2026-11-17T03:01:13.995Z",
+  "tierSettings": {
+    "reasoning": "gpt-5.6-luna",
+    "worker": "auto"
+  },
+  "stopped": null,
+  "profiles": [
+    {
+      "profile": "balanced",
+      "tiers": {
+        "reasoning": [
+          "gpt-5.6-luna"
+        ],
+        "worker": [
+          "claude-haiku-5.5"
+        ]
+      },
+      "totals": {
+        "tasks": 5,
+        "succeeded": 5,
+        "reasoningInputTokens": 60265,
+        "reasoningCachedInputTokens": 478194,
+        "reasoningOutputTokens": 6669,
+        "workerInputTokens": 18999,
+        "workerCachedInputTokens": 48565,
+        "workerOutputTokens": 7074,
+        "credits": 3.8995705,
+        "wallTimeMs": 145516
+      },
+      "tasks": [
+        {
+          "taskId": "slug-tests",
+          "category": "test-scaffolding",
+          "successes": 1,
+          "runCount": 1,
+          "reasoningInputTokens": 15746,
+          "reasoningCachedInputTokens": 86605,
+          "reasoningOutputTokens": 1207,
+          "workerInputTokens": 11719,
+          "workerCachedInputTokens": 24141,
+          "workerOutputTokens": 2544,
+          "credits": 1.0077185,
+          "wallTimeMs": 34635,
+          "costDecisions": 1,
+          "reasoningInputSpread": {
+            "min": 102351,
+            "max": 102351
+          },
+          "creditsSpread": {
+            "min": 1.0077185,
+            "max": 1.0077185
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "test/slug.test.mjs has at least 3 cases, passes, and fails on a broken src/slug.mjs",
+              "costDecisions": 1,
+              "reasoningInputTokens": 15746,
+              "reasoningCachedInputTokens": 86605,
+              "reasoningOutputTokens": 1207,
+              "workerInputTokens": 11719,
+              "workerCachedInputTokens": 24141,
+              "workerOutputTokens": 2544,
+              "credits": 1.0077185,
+              "wallTimeMs": 34635
+            }
+          ]
+        },
+        {
+          "taskId": "service-ports",
+          "category": "config-generation",
+          "successes": 1,
+          "runCount": 1,
+          "reasoningInputTokens": 9345,
+          "reasoningCachedInputTokens": 113171,
+          "reasoningOutputTokens": 2071,
+          "workerInputTokens": 7280,
+          "workerCachedInputTokens": 24424,
+          "workerOutputTokens": 4530,
+          "credits": 1.049016,
+          "wallTimeMs": 43129,
+          "costDecisions": 1,
+          "reasoningInputSpread": {
+            "min": 122516,
+            "max": 122516
+          },
+          "creditsSpread": {
+            "min": 1.049016,
+            "max": 1.049016
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "config/ports.json maps every service to its port",
+              "costDecisions": 1,
+              "reasoningInputTokens": 9345,
+              "reasoningCachedInputTokens": 113171,
+              "reasoningOutputTokens": 2071,
+              "workerInputTokens": 7280,
+              "workerCachedInputTokens": 24424,
+              "workerOutputTokens": 4530,
+              "credits": 1.049016,
+              "wallTimeMs": 43129
+            }
+          ]
+        },
+        {
+          "taskId": "rename-fmt-cents",
+          "category": "multi-file-edit",
+          "successes": 1,
+          "runCount": 1,
+          "reasoningInputTokens": 9769,
+          "reasoningCachedInputTokens": 54356,
+          "reasoningOutputTokens": 605,
+          "workerInputTokens": 0,
+          "workerCachedInputTokens": 0,
+          "workerOutputTokens": 0,
+          "credits": 0.425477,
+          "wallTimeMs": 13186,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 64125,
+            "max": 64125
+          },
+          "creditsSpread": {
+            "min": 0.425477,
+            "max": 0.425477
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "fmtCents is renamed to formatCents everywhere, every module loads, and the tests pass",
+              "costDecisions": 0,
+              "reasoningInputTokens": 9769,
+              "reasoningCachedInputTokens": 54356,
+              "reasoningOutputTokens": 605,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.425477,
+              "wallTimeMs": 13186
+            }
+          ]
+        },
+        {
+          "taskId": "console-to-logger",
+          "category": "multi-file-edit",
+          "successes": 1,
+          "runCount": 1,
+          "reasoningInputTokens": 15464,
+          "reasoningCachedInputTokens": 159500,
+          "reasoningOutputTokens": 2004,
+          "workerInputTokens": 0,
+          "workerCachedInputTokens": 0,
+          "workerOutputTokens": 0,
+          "credits": 0.945945,
+          "wallTimeMs": 39465,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 174964,
+            "max": 174964
+          },
+          "creditsSpread": {
+            "min": 0.945945,
+            "max": 0.945945
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "console.log is replaced by logger.info, every module loads, and the tests pass",
+              "costDecisions": 0,
+              "reasoningInputTokens": 15464,
+              "reasoningCachedInputTokens": 159500,
+              "reasoningOutputTokens": 2004,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.945945,
+              "wallTimeMs": 39465
+            }
+          ]
+        },
+        {
+          "taskId": "license-headers",
+          "category": "multi-file-edit",
+          "successes": 1,
+          "runCount": 1,
+          "reasoningInputTokens": 9941,
+          "reasoningCachedInputTokens": 64562,
+          "reasoningOutputTokens": 782,
+          "workerInputTokens": 0,
+          "workerCachedInputTokens": 0,
+          "workerOutputTokens": 0,
+          "credits": 0.471414,
+          "wallTimeMs": 15101,
+          "costDecisions": 0,
+          "reasoningInputSpread": {
+            "min": 74503,
+            "max": 74503
+          },
+          "creditsSpread": {
+            "min": 0.471414,
+            "max": 0.471414
+          },
+          "runs": [
+            {
+              "succeeded": true,
+              "detail": "every module starts with the license line and is otherwise unchanged",
+              "costDecisions": 0,
+              "reasoningInputTokens": 9941,
+              "reasoningCachedInputTokens": 64562,
+              "reasoningOutputTokens": 782,
+              "workerInputTokens": 0,
+              "workerCachedInputTokens": 0,
+              "workerOutputTokens": 0,
+              "credits": 0.471414,
+              "wallTimeMs": 15101
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "comparison": null
+}

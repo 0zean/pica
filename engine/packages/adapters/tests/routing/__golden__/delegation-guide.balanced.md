@@ -12,9 +12,10 @@ Every call you make costs a turn on the reasoning tier, and a call the rules bel
 - A shell command that writes a file into the repository (a redirect, a heredoc, `tee`, `touch`, or a `cp`, `mv` or `install` destination) is denied. Do not try it.
 - Edit existing files yourself: `edit` for a few changes, or one `sed -i` command or script for the same change across many files. That costs less than delegating it.
 - Give `code-writer` everything in the prompt: each file's path and its full content, or the exact edits. It does not explore the repository or run anything, and it stops after a few tool calls. Run the tests or checks yourself afterwards.
+- `code-writer` cannot create directories. For a file in a directory that may not exist yet, run `mkdir -p` on it before you delegate.
 
 ## Sub-agents
 
 - `bulk-reader` (worker): Answers a specific question about large files or many files, citing path:line.
-- `code-writer` (worker): Creates files from a precise spec. Give it each file's path and its full content, or exact instructions it can follow without exploring.
+- `code-writer` (worker): Creates files from a precise spec. Give it each file's path and its full content, or exact instructions it can follow without exploring. It cannot create directories.
 - `repo-scout` (worker): Finds where something lives across the workspace's repositories.
