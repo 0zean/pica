@@ -2,22 +2,24 @@ import AppKit
 import EngineClient
 import Foundation
 
-/// Everything the app sets up at launch: the single-instance lock, the engine supervisor, and the store.
+/// Everything the app sets up at launch: the single-instance lock, the engine supervisor, and the stores.
 @MainActor
 public final class AppLaunch {
     public let model: AppModel
+    public let navigation: NavigationStore
     private let lock: SingleInstanceLock?
     private let launchMetricsPath: String?
     private var recordedInteractive = false
 
-    private init(model: AppModel, lock: SingleInstanceLock?, launchMetricsPath: String?) {
+    private init(model: AppModel, navigation: NavigationStore, lock: SingleInstanceLock?, launchMetricsPath: String?) {
         self.model = model
+        self.navigation = navigation
         self.lock = lock
         self.launchMetricsPath = launchMetricsPath
     }
 
     /// The socket `picad` listens on: `PICA_SOCKET` when set (as `picad` itself reads it), else the default the CLI also uses.
-    /// The lock and `picad.log` sit next to it.
+    /// The lock, `picad.log` and `window-state.json` sit next to it.
     public static func socketPath(environment: [String: String]) -> String {
         environment["PICA_SOCKET"]
             ?? URL.applicationSupportDirectory.appending(path: "Pica/run/picad.sock").path
@@ -54,12 +56,16 @@ public final class AppLaunch {
             secrets: KeychainSecretBroker(),
             clientConfiguration: clientConfiguration)
         let model = AppModel(supervisor: supervisor)
+        let stateFile = WindowStateFile(url: URL(filePath: socket).deletingLastPathComponent().appending(path: "window-state.json"))
+        let navigation = NavigationStore(client: supervisor.client, stateFile: stateFile)
         NotificationCenter.default.addObserver(
-            forName: NSApplication.willTerminateNotification, object: nil, queue: nil
+            forName: NSApplication.willTerminateNotification, object: nil, queue: .main
         ) { _ in
+            MainActor.assumeIsolated { navigation.saveNow() }
             supervisor.terminateEngine()
         }
-        return AppLaunch(model: model, lock: lock, launchMetricsPath: environment["PICA_LAUNCH_METRICS_PATH"])
+        return AppLaunch(
+            model: model, navigation: navigation, lock: lock, launchMetricsPath: environment["PICA_LAUNCH_METRICS_PATH"])
     }
 
     /// Called once the main window can take input; records launch timing when the performance test asks for it.

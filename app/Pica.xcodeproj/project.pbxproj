@@ -12,6 +12,9 @@
 		A10000000000000000000023 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000033 /* DesignSystem */; };
 		A10000000000000000000024 /* AppShell in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000034 /* AppShell */; };
 		A10000000000000000000121 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000131 /* DesignSystem */; };
+		A10000000000000000000321 /* PicaProtocol in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000331 /* PicaProtocol */; };
+		A10000000000000000000322 /* EngineClient in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000332 /* EngineClient */; };
+		A10000000000000000000323 /* EngineClientTestSupport in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000333 /* EngineClientTestSupport */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -92,6 +95,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A10000000000000000000321 /* PicaProtocol in Frameworks */,
+				A10000000000000000000322 /* EngineClient in Frameworks */,
+				A10000000000000000000323 /* EngineClientTestSupport in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -210,6 +216,11 @@
 				A10000000000000000000303 /* PicaUITests */,
 			);
 			name = PicaUITests;
+			packageProductDependencies = (
+				A10000000000000000000331 /* PicaProtocol */,
+				A10000000000000000000332 /* EngineClient */,
+				A10000000000000000000333 /* EngineClientTestSupport */,
+			);
 			productName = PicaUITests;
 			productReference = A10000000000000000000302 /* PicaUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -612,6 +623,18 @@
 		A10000000000000000000131 /* DesignSystem */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = DesignSystem;
+		};
+		A10000000000000000000331 /* PicaProtocol */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PicaProtocol;
+		};
+		A10000000000000000000332 /* EngineClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = EngineClient;
+		};
+		A10000000000000000000333 /* EngineClientTestSupport */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = EngineClientTestSupport;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

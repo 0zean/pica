@@ -13,11 +13,16 @@ struct PicaApp: App {
         }
         _launch = State(initialValue: launch)
         launch.model.start()
+        launch.navigation.start()
     }
 
     var body: some Scene {
         Window("Pica", id: "main") {
-            RootView(model: launch.model, onInteractive: launch.windowBecameInteractive)
+            RootView(model: launch.model, navigation: launch.navigation, onInteractive: launch.windowBecameInteractive)
+        }
+        .commands {
+            SidebarCommands()
+            NavigationCommands(store: launch.navigation)
         }
     }
 }

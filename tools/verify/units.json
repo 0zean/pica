@@ -804,13 +804,16 @@
   ],
   "A-04": [
     {
-      "check": "UI test: a workspace created through the engine appears in the sidebar."
+      "check": "UI test: a workspace created through the engine appears in the sidebar.",
+      "run": "make engine-install && swift test --package-path app/Packages/AppShell --filter NavigationStoreEngineTests && make app-ui-test-pica UI_TEST=NavigationShellUITests/testAWorkspaceCreatedThroughTheEngineAppearsInTheSidebar"
     },
     {
-      "check": "Selection and column widths are restored after relaunch."
+      "check": "Selection and column widths are restored after relaunch.",
+      "run": "swift test --package-path app/Packages/AppShell --filter WindowStateTests && make app-ui-test-pica UI_TEST=NavigationShellUITests/testSelectionAndColumnWidthsAreRestoredAfterRelaunch"
     },
     {
-      "check": "Every sidebar item is reachable and activatable by keyboard alone."
+      "check": "Every sidebar item is reachable and activatable by keyboard alone.",
+      "run": "make app-ui-test-pica UI_TEST=NavigationShellUITests/testEverySidebarItemIsReachableAndActivatableByKeyboardAlone"
     }
   ],
   "A-05": [
