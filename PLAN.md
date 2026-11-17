@@ -894,10 +894,11 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 **A-05 · Session timeline** — A-04
 - Build: virtualized timeline, streaming Markdown, tool rows, sub-agent groups, policy rows.
 - Verify:
-  - [ ] Snapshot test for each event type.
-  - [ ] A 10,000-event fixture opens in under 300 ms.
-  - [ ] Scroll hitch time ratio under 1% on that fixture.
-  - [ ] Streaming appends do not move the scroll position when the user has scrolled up.
+  - [x] Snapshot test for each event type.
+  - [x] A 10,000-event fixture opens in under 300 ms.
+  - [x] Scroll hitch time ratio under 1% on that fixture.
+  - [x] Streaming appends do not move the scroll position when the user has scrolled up.
+- Notes: `app/Packages/Timeline`, specified in [docs/session-timeline.md](docs/session-timeline.md). It is a feature package (lint-arch rule added); the app target hands it to AppShell's session column as `SessionContent`, so AppShell does not depend on it. Markdown is parsed with Apple's swift-markdown (cmark-gfm). The timeline is a `ScrollView` over a `LazyVStack`: SwiftUI's `List` stalled for about 50 ms when it re-estimated row heights mid-scroll. Rows are not selectable (selectable text made building a row several times slower and scrolling hitch); messages have a Copy menu and expanded details stay selectable. Pica measures itself (`TimelineMetrics`, on only in UI tests) and scrolls itself for the hitch check, since XCUITest's scrolling jumps a page per event and its accessibility queries hold the main thread. `fake-picad` takes `PICA_TEST_SCENARIO`; the `timeline` scenario writes 10,025 events. Measured on 2026-11-16 (Debug build, Apple silicon): open median 0.21–0.22 s, hitch time ratio 0.1–0.3%. `EngineClient`'s line splitter now uses `memchr`; its per-byte scan made a 10,000-event replay take 0.69 s in Debug builds (now 0.20 s).
 
 **A-06 · Composer** — A-05
 - Build: multiline input, `@` mentions for repos, files, and agents, `/` for skills, profile and tier pickers, steer and queue while running.
@@ -1132,7 +1133,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | A-02 | EngineClient | E-02 | done |
 | A-03 | Design system | F-01 | done |
 | A-04 | Navigation shell | A-01, A-02, A-03 | done |
-| A-05 | Session timeline | A-04 | todo |
+| A-05 | Session timeline | A-04 | doing (PR open) |
 | A-06 | Composer | A-05 | todo |
 | A-07 | Approvals | A-05 | todo |
 | A-08 | Review | A-04, R-01 | todo |

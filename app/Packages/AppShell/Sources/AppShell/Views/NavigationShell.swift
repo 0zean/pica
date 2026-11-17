@@ -4,6 +4,7 @@ import SwiftUI
 /// The main window's three columns (PLAN.md §7.1): the sidebar, the session, and the toggleable inspector.
 struct NavigationShell<Banner: View>: View {
     @Bindable var store: NavigationStore
+    let sessionContent: SessionContent
     @ViewBuilder let banner: Banner
 
     static var sidebarWidths: (min: Double, ideal: Double, max: Double) { (180, 240, 420) }
@@ -16,7 +17,7 @@ struct NavigationShell<Banner: View>: View {
                 .navigationSplitViewColumnWidth(
                     min: Self.sidebarWidths.min, ideal: Self.sidebarWidths.ideal, max: Self.sidebarWidths.max)
         } detail: {
-            SessionColumn(store: store)
+            SessionColumn(store: store, sessionContent: sessionContent)
                 .safeAreaInset(edge: .top, spacing: 0) { banner }
                 .inspector(isPresented: $store.isInspectorPresented) {
                     InspectorColumn()

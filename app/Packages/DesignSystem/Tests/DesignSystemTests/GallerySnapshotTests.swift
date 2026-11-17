@@ -1,9 +1,12 @@
 import SwiftUI
 import Testing
 @testable import DesignSystem
+import DesignSystemTestSupport
 
 @MainActor
 @Suite struct GallerySnapshotTests {
+    private let location = SnapshotLocation(testFile: #filePath)
+
     /// The sparks hold still under Reduce Motion, which makes the rendering independent of the clock.
     private func renderGallery(_ appearance: Appearance) -> Bitmap {
         Snapshot.render(
@@ -13,7 +16,7 @@ import Testing
 
     @Test(arguments: Appearance.allCases)
     func galleryMatchesReference(_ appearance: Appearance) {
-        Snapshot.assertMatchesReference(renderGallery(appearance), named: "gallery-\(appearance.snapshotName)")
+        Snapshot.assertMatchesReference(renderGallery(appearance), named: "gallery-\(appearance.snapshotName)", in: location)
     }
 
     @Test func eachAppearanceRendersDifferently() {

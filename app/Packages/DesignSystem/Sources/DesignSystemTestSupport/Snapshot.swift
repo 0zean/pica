@@ -3,20 +3,33 @@ import SwiftUI
 import Testing
 import DesignSystem
 
+/// Where a test target keeps its reference images: `<package>/Tests/<target>/__Snapshots__/macOS-<major>/`.
+/// A mismatch or a missing reference writes the rendered image to `<package>/.snapshot-failures/`, which CI uploads.
+public struct SnapshotLocation: Sendable {
+    let package: URL
+    let target: String
+
+    /// `testFile` is any file directly inside the test target's directory, usually `#filePath`.
+    public init(testFile: StaticString) {
+        let targetDirectory = URL(fileURLWithPath: "\(testFile)").deletingLastPathComponent()
+        target = targetDirectory.lastPathComponent
+        package = targetDirectory.deletingLastPathComponent().deletingLastPathComponent()
+    }
+}
+
 /// Renders SwiftUI views with `ImageRenderer` and compares them with reference PNGs committed under
 /// `__Snapshots__/macOS-<major>/`. System text rendering changes between macOS releases, so each
 /// major version keeps its own references; CI's `macos-26` image is the merge gate.
 ///
-/// Set `PICA_RECORD_SNAPSHOTS=1` to write new references. A mismatch or a missing reference writes the
-/// rendered image to `.snapshot-failures/` in the package, which CI uploads.
+/// Set `PICA_RECORD_SNAPSHOTS=1` to write new references.
 @MainActor
-enum Snapshot {
+public enum Snapshot {
     /// A pixel counts as different when any channel differs by more than this (out of 255).
-    static let channelTolerance = 4
+    public static let channelTolerance = 4
     /// The share of pixels allowed to differ, to absorb antialiasing changes within a macOS release.
-    static let differingPixelTolerance = 0.005
+    public static let differingPixelTolerance = 0.005
 
-    static func render(_ view: some View, width: CGFloat, appearance: Appearance) -> Bitmap {
+    public static func render(_ view: some View, width: CGFloat, appearance: Appearance) -> Bitmap {
         let content = view
             .frame(width: width)
             .background(Palette.background)
@@ -32,8 +45,11 @@ enum Snapshot {
         return Bitmap(image)
     }
 
-    static func assertMatchesReference(_ bitmap: Bitmap, named name: String, sourceLocation: SourceLocation = #_sourceLocation) {
-        let reference = referenceDirectory.appending(path: "\(name).png")
+    public static func assertMatchesReference(
+        _ bitmap: Bitmap, named name: String, in location: SnapshotLocation, sourceLocation: SourceLocation = #_sourceLocation
+    ) {
+        let reference = referenceDirectory(location).appending(path: "\(name).png")
+        let failureDirectory = failureDirectory(location)
         if ProcessInfo.processInfo.environment["PICA_RECORD_SNAPSHOTS"] == "1" {
             write(bitmap, to: reference)
             return
@@ -56,16 +72,12 @@ enum Snapshot {
 
     private static let osMajor = ProcessInfo.processInfo.operatingSystemVersion.majorVersion
 
-    private static var packageDirectory: URL {
-        URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+    private static func referenceDirectory(_ location: SnapshotLocation) -> URL {
+        location.package.appending(path: "Tests/\(location.target)/__Snapshots__/macOS-\(osMajor)")
     }
 
-    private static var referenceDirectory: URL {
-        packageDirectory.appending(path: "Tests/DesignSystemTests/__Snapshots__/macOS-\(osMajor)")
-    }
-
-    private static var failureDirectory: URL {
-        packageDirectory.appending(path: ".snapshot-failures/macOS-\(osMajor)")
+    private static func failureDirectory(_ location: SnapshotLocation) -> URL {
+        location.package.appending(path: ".snapshot-failures/macOS-\(osMajor)")
     }
 
     private static func write(_ bitmap: Bitmap, to url: URL) {
@@ -83,18 +95,18 @@ enum Snapshot {
 }
 
 /// An 8-bit sRGB RGBA bitmap, so images from different sources compare byte for byte.
-struct Bitmap: Equatable {
-    let width: Int
-    let height: Int
-    let bytes: [UInt8]
+public struct Bitmap: Equatable, Sendable {
+    public let width: Int
+    public let height: Int
+    public let bytes: [UInt8]
 
-    init(width: Int, height: Int, bytes: [UInt8]) {
+    public init(width: Int, height: Int, bytes: [UInt8]) {
         self.width = width
         self.height = height
         self.bytes = bytes
     }
 
-    init(_ image: CGImage) {
+    public init(_ image: CGImage) {
         width = image.width
         height = image.height
         var bytes = [UInt8](repeating: 0, count: width * height * 4)
@@ -108,14 +120,14 @@ struct Bitmap: Equatable {
         self.bytes = bytes
     }
 
-    init?(contentsOf url: URL) {
+    public init?(contentsOf url: URL) {
         guard let source = CGImageSourceCreateWithURL(url as CFURL, nil),
               let image = CGImageSourceCreateImageAtIndex(source, 0, nil)
         else { return nil }
         self.init(image)
     }
 
-    func differingPixelShare(from other: Bitmap, channelTolerance: Int) -> Double {
+    public func differingPixelShare(from other: Bitmap, channelTolerance: Int) -> Double {
         guard width == other.width, height == other.height else { return 1 }
         var differing = 0
         for pixel in stride(from: 0, to: bytes.count, by: 4) {
@@ -127,7 +139,7 @@ struct Bitmap: Equatable {
         return Double(differing) / Double(max(width * height, 1))
     }
 
-    func pngData() -> Data? {
+    public func pngData() -> Data? {
         var copy = bytes
         return copy.withUnsafeMutableBytes { buffer -> Data? in
             guard let context = CGContext(
@@ -142,21 +154,21 @@ struct Bitmap: Equatable {
 }
 
 extension Appearance {
-    var colorScheme: ColorScheme {
+    public var colorScheme: ColorScheme {
         switch self {
         case .light, .lightIncreasedContrast: .light
         case .dark, .darkIncreasedContrast: .dark
         }
     }
 
-    var contrast: ColorSchemeContrast {
+    public var contrast: ColorSchemeContrast {
         switch self {
         case .light, .dark: .standard
         case .lightIncreasedContrast, .darkIncreasedContrast: .increased
         }
     }
 
-    var snapshotName: String {
+    public var snapshotName: String {
         switch self {
         case .light: "light"
         case .dark: "dark"

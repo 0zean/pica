@@ -11,6 +11,7 @@
 		A10000000000000000000022 /* EngineClient in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000032 /* EngineClient */; };
 		A10000000000000000000023 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000033 /* DesignSystem */; };
 		A10000000000000000000024 /* AppShell in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000034 /* AppShell */; };
+		A10000000000000000000025 /* Timeline in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000035 /* Timeline */; };
 		A10000000000000000000121 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000131 /* DesignSystem */; };
 		A10000000000000000000321 /* PicaProtocol in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000331 /* PicaProtocol */; };
 		A10000000000000000000322 /* EngineClient in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000332 /* EngineClient */; };
@@ -73,6 +74,7 @@
 				A10000000000000000000022 /* EngineClient in Frameworks */,
 				A10000000000000000000023 /* DesignSystem in Frameworks */,
 				A10000000000000000000024 /* AppShell in Frameworks */,
+				A10000000000000000000025 /* Timeline in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -150,6 +152,7 @@
 				A10000000000000000000032 /* EngineClient */,
 				A10000000000000000000033 /* DesignSystem */,
 				A10000000000000000000034 /* AppShell */,
+				A10000000000000000000035 /* Timeline */,
 			);
 			productName = Pica;
 			productReference = A10000000000000000000002 /* Pica.app */;
@@ -265,6 +268,7 @@
 				A10000000000000000000062 /* XCLocalSwiftPackageReference "Packages/EngineClient" */,
 				A10000000000000000000063 /* XCLocalSwiftPackageReference "Packages/DesignSystem" */,
 				A10000000000000000000064 /* XCLocalSwiftPackageReference "Packages/AppShell" */,
+				A10000000000000000000065 /* XCLocalSwiftPackageReference "Packages/Timeline" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A10000000000000000000005 /* Products */;
@@ -601,6 +605,10 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/AppShell;
 		};
+		A10000000000000000000065 /* XCLocalSwiftPackageReference "Packages/Timeline" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/Timeline;
+		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -619,6 +627,10 @@
 		A10000000000000000000034 /* AppShell */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = AppShell;
+		};
+		A10000000000000000000035 /* Timeline */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Timeline;
 		};
 		A10000000000000000000131 /* DesignSystem */ = {
 			isa = XCSwiftPackageProductDependency;

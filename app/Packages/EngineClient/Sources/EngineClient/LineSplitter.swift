@@ -14,7 +14,9 @@ struct LineSplitter {
         var lines: [Data] = []
         var start = bytes.startIndex
         while start < bytes.endIndex {
-            let newline = bytes[start...].firstIndex(of: 0x0A)
+            // memchr rather than `firstIndex(of:)`, which walks the buffer one generic call per byte in debug builds.
+            let newline = memchr(bytes.baseAddress! + start, 0x0A, bytes.endIndex - start)
+                .map { UnsafeRawPointer($0) - UnsafeRawPointer(bytes.baseAddress!) }
             let end = newline ?? bytes.endIndex
             guard partial.count + (end - start) <= maxFrameBytes else {
                 throw FrameTooLarge(maxFrameBytes: maxFrameBytes)

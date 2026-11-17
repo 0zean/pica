@@ -31,7 +31,7 @@ public final class NavigationStore {
         didSet { if inspectorWidth != oldValue { scheduleSave() } }
     }
 
-    @ObservationIgnored private let client: EngineClient
+    @ObservationIgnored let client: EngineClient
     @ObservationIgnored private let stateFile: WindowStateFile?
     @ObservationIgnored private let clock: any Clock<Duration>
     @ObservationIgnored private var following: Task<Void, Never>?
