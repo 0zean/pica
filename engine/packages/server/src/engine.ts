@@ -47,6 +47,8 @@ import type {
 import { registerAccountHandlers } from "./account-handlers.ts";
 import { registerCatalogHandlers } from "./catalog-handlers.ts";
 import type { EngineCatalogOptions } from "./catalog-handlers.ts";
+import { registerConfigHandlers } from "./config-handlers.ts";
+import type { EngineConfigAccess } from "./config-handlers.ts";
 import { registerEngineHandlers } from "./engine-handlers.ts";
 import { registerFanOutHandlers, toFanOutDto } from "./fanout-handlers.ts";
 import { registerFilesHandlers } from "./files-handlers.ts";
@@ -94,6 +96,8 @@ export interface EngineSessionOptions {
   readonly defaultProfile?: (workspaceId: string) => SessionRoutingProfile;
   // A-06: answers `agents.list`, `models.list` and `models.tiers`.
   readonly catalog?: EngineCatalogOptions;
+  // A-14: answers `config.get` and `config.set`.
+  readonly config?: EngineConfigAccess;
   // A-07: `permissions.tools` answer permission prompts; "always allow" appends one.
   readonly permissionRules?: PermissionRules;
 }
@@ -154,6 +158,9 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
   }
   if (options.sessions?.catalog !== undefined) {
     registerCatalogHandlers(router, options.sessions.catalog);
+  }
+  if (options.sessions?.config !== undefined) {
+    registerConfigHandlers(router, options.sessions.config);
   }
   // M-02: presets need no adapter, so they are always answered.
   registerMcpPresetHandlers(router, options.githubHost === undefined ? {} : { githubHost: options.githubHost });

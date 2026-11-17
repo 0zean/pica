@@ -931,13 +931,16 @@
   ],
   "A-14": [
     {
-      "check": "A test enumerates the action registry and finds every action in the palette."
+      "check": "A test enumerates the action registry and finds every action in the palette.",
+      "run": "swift test --package-path app/Packages/PicaSettings --filter 'ActionRegistryTests|ShortcutTests' && make app-ui-test-pica UI_TEST=SettingsUITests/testThePaletteListsEveryActionInTheRegistry"
     },
     {
-      "check": "A rebound shortcut persists and triggers its action."
+      "check": "A rebound shortcut persists and triggers its action.",
+      "run": "make engine-install && (cd engine && pnpm exec vitest run packages/server/tests/composition/config.test.ts packages/adapters/tests/config/config-value-writer.test.ts) && swift test --package-path app/Packages/PicaSettings --filter KeybindingStoreTests && make app-ui-test-pica UI_TEST=SettingsUITests/testAReboundShortcutPersistsAndTriggersItsAction"
     },
     {
-      "check": "A managed-locked setting is shown disabled with the policy named."
+      "check": "A managed-locked setting is shown disabled with the policy named.",
+      "run": "swift test --package-path app/Packages/PicaSettings --filter SettingsStoreTests && swift test --package-path app/Packages/Composer --filter ComposerStoreTests && make app-ui-test-pica UI_TEST=SettingsUITests/testAManagedLockedSettingIsDisabledAndNamesThePolicy"
     }
   ],
   "A-15": [

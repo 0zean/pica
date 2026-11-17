@@ -3,9 +3,11 @@
 // ready line on stdout, JSON log lines on stderr, SIGTERM to stop, exit code 1 when the
 // composition fails. PICA_TEST_HOME stands in for the home directory, so the data directory is
 // `$PICA_TEST_HOME/Library/Application Support/Pica/`. PICA_TEST_SCENARIO names the FakeRuntime's
-// scenario in `fake-picad-scenarios.ts` (default `empty`).
+// scenario in `fake-picad-scenarios.ts` (default `empty`). PICA_TEST_MANAGED_POLICY names a policy
+// file (JSONC, docs/managed-policy.md) to load as if root owned it (A-14).
 import { parseArgs } from "node:util";
-import { ManagedPolicyLoader } from "@pica/adapters";
+import { ManagedPolicyLoader, nodeManagedPolicyFileSystem } from "@pica/adapters";
+import type { ManagedPolicyFileSystem } from "@pica/adapters";
 import { createSecretScrubber, createStructuredLog } from "@pica/core";
 import { FakeRuntime, scenarioSchema, sequentialIds, steppingClock } from "@pica/testkit";
 import { composeEngine, startEngine } from "../../src/index.ts";
@@ -38,7 +40,7 @@ async function main(): Promise<void> {
     env: {},
     log,
     runtime: new FakeRuntime({ scenario, clock: steppingClock("2026-11-16T10:00:00.000Z"), ids: sequentialIds() }),
-    managedPolicy: new ManagedPolicyLoader([]),
+    managedPolicy: testManagedPolicy(process.env["PICA_TEST_MANAGED_POLICY"]),
   });
   const listener = await startEngine({ socketPath, log, ...composed.options });
   const stop = (): void => {
@@ -50,6 +52,15 @@ async function main(): Promise<void> {
   process.once("SIGTERM", stop);
   process.once("SIGINT", stop);
   process.stdout.write(`${JSON.stringify({ ready: true, socket: listener.socketPath })}\n`);
+}
+
+function testManagedPolicy(path: string | undefined): ManagedPolicyLoader {
+  if (path === undefined) return new ManagedPolicyLoader([]);
+  const rootOwned: ManagedPolicyFileSystem = {
+    ...nodeManagedPolicyFileSystem,
+    ownership: (target) => ({ uid: 0, mode: nodeManagedPolicyFileSystem.ownership(target).mode & ~0o022 }),
+  };
+  return new ManagedPolicyLoader([{ format: "jsonc", path }], rootOwned);
 }
 
 main().catch((error: unknown) => {

@@ -17,6 +17,8 @@ const allowedPackageDependencies: Readonly<Record<string, readonly string[]>> = 
   Composer: ["EngineClient", "PicaProtocol", "DesignSystem"],
   // A-09: the file tree, quick open and the read-only viewer; a feature package of its own.
   Files: ["EngineClient", "PicaProtocol", "DesignSystem"],
+  // A-14: Settings, the ⌘K palette and the action registry; the app target runs the actions.
+  PicaSettings: ["EngineClient", "PicaProtocol", "DesignSystem"],
 };
 
 const featuresPackage = "Features";

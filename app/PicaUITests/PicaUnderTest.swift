@@ -11,6 +11,14 @@ import XCTest
 final class PicaUnderTest {
     static let repository = URL(filePath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
         .deletingLastPathComponent()
+    /// The `fake-picad.ts` Pica starts. `make app-ui-test-pica` passes a copy of `engine/` outside ~/Documents as
+    /// TEST_RUNNER_PICA_UI_TEST_ENGINE (`tools/ui-tests/stage-engine.sh`): Node runs as Pica's child, so reading a
+    /// checkout under ~/Documents would make macOS ask each rebuilt Pica for the Documents folder.
+    static var fakePicad: URL {
+        let engine = ProcessInfo.processInfo.environment["PICA_UI_TEST_ENGINE"].map { URL(filePath: $0) }
+            ?? repository.appending(path: "engine")
+        return engine.appending(path: "packages/server/tests/processes/fake-picad.ts")
+    }
 
     let name: String
     /// In the runner's own temporary directory, because the runner is sandboxed and Pica must be able to write there.
@@ -26,11 +34,14 @@ final class PicaUnderTest {
     /// Where Pica appends the files it would open in the external editor (A-09).
     let editorLogPath: String
     private let scrollScript: Bool
+    /// A-14: a managed policy (docs/managed-policy.md) `fake-picad` loads as if root owned it.
+    private let managedPolicy: String?
     private let node: String
 
-    init(scenario: String = "empty", scrollScript: Bool = false) throws {
+    init(scenario: String = "empty", scrollScript: Bool = false, managedPolicy: String? = nil) throws {
         self.scenario = scenario
         self.scrollScript = scrollScript
+        self.managedPolicy = managedPolicy
         // `make app-ui-test` passes this as TEST_RUNNER_PICA_NODE.
         node = try XCTUnwrap(ProcessInfo.processInfo.environment["PICA_NODE"], "set PICA_NODE to a Node 22 executable")
         name = "pica-ui-\(UUID().uuidString.prefix(8))"
@@ -41,12 +52,20 @@ final class PicaUnderTest {
         composerMetricsPath = home.appending(path: "composer-metrics.json").path
         editorLogPath = home.appending(path: "external-editor.log").path
         XCTAssertLessThan(socketPath.utf8.count, 104, "\(socketPath) is longer than sun_path allows")
+        if let managedPolicy {
+            try Data(managedPolicy.utf8).write(to: policyFile)
+        }
     }
+
+    var policyFile: URL { home.appending(path: "policy.jsonc") }
+
+    /// The user layer `config.set` writes.
+    var configFile: URL { home.appending(path: "Library/Application Support/Pica/config.jsonc") }
 
     var environment: [String: String] {
         var environment = [
             "PICA_NODE": node,
-            "PICA_ENGINE_ENTRY": Self.repository.appending(path: "engine/packages/server/tests/processes/fake-picad.ts").path,
+            "PICA_ENGINE_ENTRY": Self.fakePicad.path,
             "PICA_TEST_HOME": home.path,
             "PICA_SOCKET": socketPath,
             "PICA_TEST_SCENARIO": scenario,
@@ -59,6 +78,9 @@ final class PicaUnderTest {
         ]
         if scrollScript {
             environment["PICA_TIMELINE_SCROLL_SCRIPT"] = "1"
+        }
+        if managedPolicy != nil {
+            environment["PICA_TEST_MANAGED_POLICY"] = policyFile.path
         }
         return environment
     }

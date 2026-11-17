@@ -1360,6 +1360,10 @@
         },
         "locked": {
           "type": "boolean"
+        },
+        "lockedBy": {
+          "type": "string",
+          "minLength": 1
         }
       },
       "required": [
