@@ -65,13 +65,20 @@ final class ApprovalsUITests: XCTestCase {
         }
         try pica.withEngine { engine in try await engine.send("go", to: sessionId) }
         if let choice, let shows {
-            // Cards showing `shows` before the click; resolving this one adds one.
+            // Cards showing `shows` before the click; resolving this one adds one. A combined element's text is in
+            // its value.
             let showing = app.descendants(matching: .any).matching(identifier: "pica.approval.summary")
-                .matching(NSPredicate(format: "label CONTAINS %@", shows))
+                .matching(NSPredicate(format: "label CONTAINS %@ OR value CONTAINS %@", shows, shows))
             let shownBefore = showing.count
             let button = app.buttons["pica.approval.\(choice)"].firstMatch
             XCTAssertTrue(button.waitForExistence(timeout: 20), "no card offers \(choice)")
-            waitUntil("the choice can be clicked", timeout: 10) { button.isEnabled && button.isHittable }
+            // A card that has just arrived may still sit below the visible part of the timeline.
+            let list = app.descendants(matching: .any)["pica.timeline.list"]
+            waitUntil("the choice can be clicked", timeout: 10) {
+                if button.isHittable { return button.isEnabled }
+                list.scroll(byDeltaX: 0, deltaY: -2000)
+                return false
+            }
             button.click()
             waitUntil("a card shows “\(shows)”", timeout: 20) { showing.count > shownBefore }
             waitUntil("no card offers a choice", timeout: 10) { self.pendingChoices(app).isEmpty }

@@ -910,8 +910,8 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 **A-07 · Approvals** — A-05
 - Build: inline approval cards, system notification, allow once, always, deny.
 - Verify:
-  - [ ] UI test over a FakeRuntime scenario resolves each choice correctly.
-  - [ ] "Always allow" writes a permission rule to config and suppresses the next identical request.
+  - [x] UI test over a FakeRuntime scenario resolves each choice correctly.
+  - [x] "Always allow" writes a permission rule to config and suppresses the next identical request.
 - Notes: specified in [docs/approvals.md](docs/approvals.md). The timeline's approval row (A-05) gains the choices and names the call (tool and its command, path or url); budget approvals get Raise Budget and Stop. Rows resolve through a `ResolveApprovalAction` in the environment, which `SessionTimelineScreen` sets. Engine change: config gains `permissions.tools` (`{ tool, match?, permission }`), and resolving `allow_always` appends the rule to the user's `config.jsonc` in place (comments kept) before the approval resolves; if it cannot be written the approval stays pending. A permission prompt a rule matches is answered at once and recorded as a `policy.decision` (`permission.rule`), not an approval. Identity is the tool plus its `command`, `path` or `url` argument. `ApprovalNotifier` (AppShell) posts a `UserNotifications` notification when a session enters `awaiting_approval` while Pica is not frontmost, withdraws it when the session moves on, and asks for permission only on first post; `PICA_NOTIFICATIONS=off` turns it off for UI tests. FakeRuntime's tool-call step takes `asks`; `fake-picad`'s `approvals` scenario plays it. Limit: the production composition has no policy rule that asks for a call yet (the `permission.ask` and shell-scope rules are not composed into `onPreToolUse`), so tool-call approvals come only from the runtime's own permission flow.
 
 **A-08 · Review** — A-04, R-01
@@ -1136,7 +1136,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | A-04 | Navigation shell | A-01, A-02, A-03 | done |
 | A-05 | Session timeline | A-04 | done |
 | A-06 | Composer | A-05 | todo |
-| A-07 | Approvals | A-05 | todo |
+| A-07 | Approvals | A-05 | done |
 | A-08 | Review | A-04, R-01 | todo |
 | A-09 | Files and quick open | A-04, R-08 | todo |
 | A-10 | Terminal | A-04, R-02 | todo |
