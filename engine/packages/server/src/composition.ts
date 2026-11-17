@@ -34,6 +34,7 @@ import {
 import type { AgentRuntime, JsonObject, JsonValue, ModelCatalog, PolicyContext, SessionRoutingProfile, Store, TierSettingsInput, TokenPrices } from "@pica/core";
 import { loadEngineConfig } from "./composition-config.ts";
 import type { EngineConfig, EngineConfigOptions } from "./composition-config.ts";
+import { filesOptions } from "./composition-files.ts";
 import { workspaceOptions } from "./composition-workspaces.ts";
 import type { EngineMcpImportOptions, EngineOptions, EngineSessionOptions } from "./engine.ts";
 import type { Logger } from "./logger.ts";
@@ -78,6 +79,7 @@ export function composeEngine(options: ProductionOptions): ComposedEngine {
         sessions: sessionOptions({ store, runtime, config, dataDir, homeDir: options.homeDir, log: options.log }),
         mcpImport: mcpImportOptions(options.homeDir),
         ...workspaces,
+        files: filesOptions(workspaces.workspaces, options.env),
       },
       close: async () => {
         await stopRuntime();
