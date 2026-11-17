@@ -563,17 +563,20 @@ public struct ConfigValue: Codable, Hashable, Sendable {
     public var value: JSONValue
     public var layer: ConfigLayer
     public var locked: Bool
+    public var lockedBy: String?
 
     public init(
         keyPath: String,
         value: JSONValue,
         layer: ConfigLayer,
-        locked: Bool
+        locked: Bool,
+        lockedBy: String? = nil
     ) {
         self.keyPath = keyPath
         self.value = value
         self.layer = layer
         self.locked = locked
+        self.lockedBy = lockedBy
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -581,6 +584,7 @@ public struct ConfigValue: Codable, Hashable, Sendable {
         case value
         case layer
         case locked
+        case lockedBy
     }
 
     public init(from decoder: any Decoder) throws {
@@ -589,6 +593,7 @@ public struct ConfigValue: Codable, Hashable, Sendable {
         value = try container.decode(JSONValue.self, forKey: .value)
         layer = try container.decode(ConfigLayer.self, forKey: .layer)
         locked = try container.decode(Bool.self, forKey: .locked)
+        lockedBy = try container.decodeIfPresent(String.self, forKey: .lockedBy)
     }
 
     public func encode(to encoder: any Encoder) throws {
@@ -597,6 +602,7 @@ public struct ConfigValue: Codable, Hashable, Sendable {
         try container.encode(value, forKey: .value)
         try container.encode(layer, forKey: .layer)
         try container.encode(locked, forKey: .locked)
+        try container.encodeIfPresent(lockedBy, forKey: .lockedBy)
     }
 }
 

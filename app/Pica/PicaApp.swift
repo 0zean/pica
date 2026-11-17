@@ -3,6 +3,7 @@ import AppShell
 import Composer
 import EngineClient
 import PicaProtocol
+import PicaSettings
 import Review
 import SwiftUI
 import Timeline
@@ -10,6 +11,8 @@ import Timeline
 @main
 struct PicaApp: App {
     @State private var launch: AppLaunch
+    /// The action registry, ⌘K palette, keybindings and Settings (A-14).
+    private let actions: AppActions
     /// Set only when the UI tests ask for the timeline's performance (`PICA_TIMELINE_METRICS_PATH`).
     private let timelineMetrics = TimelineMetrics(environment: ProcessInfo.processInfo.environment)
     /// Set only when the UI tests ask for the composer's keystroke latency (`PICA_COMPOSER_METRICS_PATH`).
@@ -25,6 +28,7 @@ struct PicaApp: App {
             exit(0)
         }
         _launch = State(initialValue: launch)
+        actions = AppActions(client: launch.model.client, navigation: launch.navigation)
         launch.model.start()
         launch.navigation.start()
     }
@@ -34,10 +38,16 @@ struct PicaApp: App {
             RootView(
                 model: launch.model, navigation: launch.navigation, sessionContent: sessionTimeline,
                 onInteractive: launch.windowBecameInteractive)
+            .modifier(ActionHost(actions: actions))
         }
         .commands {
-            SidebarCommands()
+            ActionCommands(registry: actions.registry, keybindings: actions.keybindings)
             NavigationCommands(store: launch.navigation)
+        }
+        Settings {
+            SettingsView(
+                navigation: actions.settingsNavigation, settings: actions.settings, keybindings: actions.keybindings,
+                registry: actions.registry)
         }
     }
 

@@ -33,7 +33,15 @@ const configKeys: Readonly<Record<string, readonly [JsonValue, JsonValue]>> = {
   "hooks.sessionStart": [[{ command: "user-setup" }], [{ command: "org-setup" }]],
   "hooks.sessionEnd": [[], [{ command: "org-cleanup", timeoutSeconds: 10 }]],
   "hooks.beforeCommit": [[{ command: "true" }], [{ name: "secret scan", command: "org-scan" }]],
+  // `keybindings` is a record by action id, so each action's shortcut is its own key.
+  "keybindings.toggleInspector": ["cmd+j", "cmd+ctrl+i"],
 };
+
+const recordKeys = ["keybindings"];
+
+function schemaKeyOf(keyPath: string): string {
+  return recordKeys.find((record) => keyPath.startsWith(`${record}.`)) ?? keyPath;
+}
 
 const nonManagedLayers: readonly ConfigFileLayer[] = ["user", "workspace", "repo"];
 
@@ -65,7 +73,7 @@ const models: readonly CatalogModel[] = [model("approved-large", 10, 30), model(
 
 describe("managed policy: user config is ignored for every lockable key", () => {
   it("covers every key of config.jsonc", () => {
-    expect(Object.keys(configKeys).sort()).toEqual(schemaLeaves(buildConfigJsonSchema() as SchemaNode, []).sort());
+    expect([...new Set(Object.keys(configKeys).map(schemaKeyOf))].sort()).toEqual(schemaLeaves(buildConfigJsonSchema() as SchemaNode, []).sort());
   });
 
   const cases = Object.entries(configKeys).flatMap(([keyPath, [userValue, lockedValue]]) =>

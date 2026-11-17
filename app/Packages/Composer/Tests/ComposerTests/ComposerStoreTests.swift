@@ -180,6 +180,24 @@ import Testing
         #expect(store.tiers.map(\.setting) == ["auto", "auto"])
     }
 
+    /// A-14: the tier picker writes `routing.tiers` and shows what the engine then resolves.
+    @Test func theTierPickerWritesTheTierSetting() async {
+        let store = await store()
+        #expect(store.tierLock == nil)
+        await store.setTier(.worker, to: "model-a")
+        #expect(store.tiers.map(\.setting) == ["auto", "model-a"])
+        #expect(store.tiers.last?.resolvedModelId == "model-a")
+    }
+
+    @Test func aLockedTierPickerNamesThePolicyAndARefusedWriteIsShown() async {
+        backend.lockedBy = "acme"
+        let store = await store()
+        #expect(store.tierLock == "acme")
+        await store.setTier(.worker, to: "model-a")
+        #expect(store.tiers.map(\.setting) == ["auto", "auto"])
+        if case .failed = store.status {} else { Issue.record("expected the refusal to be shown, got \(store.status)") }
+    }
+
     private func waitUntil(_ condition: @MainActor () -> Bool) async throws {
         for _ in 0..<100 where !condition() {
             try await Task.sleep(for: .milliseconds(10))
@@ -203,10 +221,11 @@ final class FakeBackend: ComposerBackend, @unchecked Sendable {
     var fileQueries: [String] = []
     var profiles: [RoutingProfile] = []
     var filesFail = false
-    private let tierList = [
+    var tierList = [
         TierAssignment(tier: .reasoning, setting: "auto", resolvedModelId: "model-a"),
         TierAssignment(tier: .worker, setting: "auto", resolvedModelId: "model-b"),
     ]
+    var lockedBy: String?
 
     nonisolated func send(sessionId: Id, text: String, mode: SendMode) async throws -> Bool {
         try await MainActor.run {
@@ -246,6 +265,17 @@ final class FakeBackend: ComposerBackend, @unchecked Sendable {
     }
 
     nonisolated func tiers() async throws -> [TierAssignment] { await MainActor.run { tierList } }
+
+    nonisolated func tierLock() async throws -> String? { await MainActor.run { lockedBy } }
+
+    nonisolated func setTier(_ tier: Tier, to setting: String) async throws {
+        try await MainActor.run {
+            if lockedBy != nil { throw Failure() }
+            tierList = tierList.map {
+                $0.tier == tier ? TierAssignment(tier: tier, setting: setting, resolvedModelId: setting == "auto" ? "model-a" : setting) : $0
+            }
+        }
+    }
 
 
     nonisolated func workspace(_ workspaceId: Id) async throws -> Workspace {

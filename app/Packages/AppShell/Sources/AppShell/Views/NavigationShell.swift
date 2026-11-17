@@ -57,8 +57,8 @@ struct NavigationShell<Banner: View>: View {
     }
 }
 
-/// The menu items for moving around the window: ⌘1–9 for the sessions in sidebar order, ⌥⌘I for the inspector.
-/// ⌘K, ⌘P and ⌘N belong to their own units (A-14, A-09, A-06).
+/// The Go menu: ⌘1–9 for the sessions in sidebar order. The inspector, the sidebar and ⌘K are actions in the app's
+/// registry (A-14, docs/settings.md); ⌘P and ⌘N belong to their own units (A-09, A-06).
 public struct NavigationCommands: Commands {
     private let store: NavigationStore
 
@@ -67,12 +67,6 @@ public struct NavigationCommands: Commands {
     }
 
     public var body: some Commands {
-        CommandGroup(after: .sidebar) {
-            Button(store.isInspectorPresented ? "Hide Inspector" : "Show Inspector") {
-                store.isInspectorPresented.toggle()
-            }
-            .keyboardShortcut("i", modifiers: [.command, .option])
-        }
         CommandMenu("Go") {
             let sessions = store.numberedSessions
             if sessions.isEmpty {

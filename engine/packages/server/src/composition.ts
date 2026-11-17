@@ -4,6 +4,7 @@ import { join } from "node:path";
 import {
   CopilotRuntime,
   appendPermissionRule,
+  setConfigValue,
   builtinAgentsDir,
   createJsonlAuditStore,
   createMcpImportFiles,
@@ -179,6 +180,11 @@ function sessionOptions(deps: SessionComposition): EngineSessionOptions {
     newSessionId: randomUUID,
     defaultProfile: (workspaceId) => defaultProfileFor(store, config, workspaceId),
     catalog: { catalog, agents: () => loadedAgents.value, tiers, models },
+    config: {
+      resolved: config.resolved,
+      policyId: policy?.id,
+      setUserValue: (keyPath, value) => setConfigValue(config.userFile, keyPath, value),
+    },
     // A-07: rules are read from the config as last loaded, so a written rule applies on the next prompt.
     permissionRules: {
       current: () => config.current().permissions.tools ?? [],

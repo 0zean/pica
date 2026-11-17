@@ -48,6 +48,29 @@ import Testing
     }
 }
 
+/// A-14: Select Next and Previous Session walk the sidebar's sessions and wrap around.
+@Suite @MainActor struct AdjacentSessionTests {
+    @Test func nextAndPreviousWrapAround() async throws {
+        let store = NavigationStore(client: EngineClient(socketPath: "/nonexistent", secrets: InMemorySecretBroker()), stateFile: nil)
+        await store.workspaceChanged(Workspace(id: "w", name: "W", sources: [], pinnedRepoIds: [], overrides: WorkspaceOverrides()))
+        for (id, updatedAt) in [("a", "2026-11-16T03:00:00Z"), ("b", "2026-11-16T02:00:00Z"), ("c", "2026-11-16T01:00:00Z")] {
+            store.sessionChanged(Session(
+                id: id, workspaceId: "w", title: id, state: .idle, writeRoots: [], referenceRoots: [], routingProfile: .off,
+                budgetCredits: nil, lastSeq: 0, createdAt: "2026-11-16T00:00:00Z", updatedAt: updatedAt))
+        }
+        #expect(store.sidebar.flatMap(\.sessions).map(\.id) == ["a", "b", "c"])
+        store.selectSession(offset: 1)
+        #expect(store.selection == .session("a"))
+        store.selectSession(offset: 1)
+        #expect(store.selection == .session("b"))
+        store.selectSession(offset: -1)
+        store.selectSession(offset: -1)
+        #expect(store.selection == .session("c"))
+        store.selectSession(offset: 1)
+        #expect(store.selection == .session("a"))
+    }
+}
+
 @Suite struct SessionOrderingTests {
     private func session(_ id: String, _ state: SessionState, updatedAt: String) -> Session {
         Session(

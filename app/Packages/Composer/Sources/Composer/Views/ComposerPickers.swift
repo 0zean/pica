@@ -40,8 +40,8 @@ struct ProfilePicker: View {
 }
 
 /// The models the reasoning and worker tiers run on (`models.tiers`): each tier's setting and the model it resolves to.
-/// The engine does not serve `config.set` yet, so the menu shows them and says where to change them; sessions started
-/// afterwards use a changed setting.
+/// Choosing one writes `routing.tiers` in the user's config.jsonc (`config.set`); sessions started afterwards use it.
+/// When a managed policy locks the tiers the menu only shows them and names the policy.
 struct TierPicker: View {
     let store: ComposerStore
 
@@ -49,22 +49,50 @@ struct TierPicker: View {
         Menu {
             ForEach(store.tiers, id: \.tier) { assignment in
                 Section(Self.title(assignment.tier)) {
-                    Text(describe(assignment))
+                    if store.tierLock != nil {
+                        Text(describe(assignment))
+                    } else {
+                        choices(for: assignment)
+                    }
                 }
             }
             Section {
-                Text("Set routing.tiers in config.jsonc to change them.")
+                if let lock = store.tierLock {
+                    Label("Locked by managed policy “\(lock)”", systemImage: "lock.fill")
+                } else {
+                    Text("New sessions use the models chosen here.")
+                }
             }
         } label: {
-            Label(label, systemImage: "cpu")
+            Label(label, systemImage: store.tierLock == nil ? "cpu" : "lock.fill")
                 .font(Typography.caption)
         }
         .menuStyle(.button)
         .buttonStyle(.borderless)
         .fixedSize()
         .disabled(store.tiers.isEmpty)
-        .help("Models for the reasoning and worker tiers. New sessions use them.")
+        .help(help)
         .accessibilityIdentifier("pica.composer.tiers")
+    }
+
+    @ViewBuilder
+    private func choices(for assignment: TierAssignment) -> some View {
+        let resolved = modelName(assignment.resolvedModelId) ?? "no model available"
+        Toggle("Auto (\(resolved))", isOn: binding(assignment, "auto"))
+        ForEach(store.models.filter { $0.allowedByPolicy || $0.id == assignment.setting }, id: \.id) { model in
+            Toggle(model.name, isOn: binding(assignment, model.id))
+        }
+    }
+
+    private func binding(_ assignment: TierAssignment, _ setting: String) -> Binding<Bool> {
+        Binding(
+            get: { assignment.setting == setting },
+            set: { if $0 { Task { await store.setTier(assignment.tier, to: setting) } } })
+    }
+
+    private var help: String {
+        if let lock = store.tierLock { return "Models for the reasoning and worker tiers, locked by managed policy “\(lock)”." }
+        return "Models for the reasoning and worker tiers. New sessions use them."
     }
 
     private var label: String {
