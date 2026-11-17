@@ -7,13 +7,19 @@ import Foundation
 public final class AppLaunch {
     public let model: AppModel
     public let navigation: NavigationStore
+    /// Notifies of sessions waiting for approval while Pica is in the background (A-07).
+    public let approvalNotifier: ApprovalNotifier?
     private let lock: SingleInstanceLock?
     private let launchMetricsPath: String?
     private var recordedInteractive = false
 
-    private init(model: AppModel, navigation: NavigationStore, lock: SingleInstanceLock?, launchMetricsPath: String?) {
+    private init(
+        model: AppModel, navigation: NavigationStore, approvalNotifier: ApprovalNotifier?, lock: SingleInstanceLock?,
+        launchMetricsPath: String?
+    ) {
         self.model = model
         self.navigation = navigation
+        self.approvalNotifier = approvalNotifier
         self.lock = lock
         self.launchMetricsPath = launchMetricsPath
     }
@@ -64,8 +70,10 @@ public final class AppLaunch {
             MainActor.assumeIsolated { navigation.saveNow() }
             supervisor.terminateEngine()
         }
+        let approvalNotifier = ApprovalNotifier.live(client: supervisor.client, navigation: navigation, environment: environment)
         return AppLaunch(
-            model: model, navigation: navigation, lock: lock, launchMetricsPath: environment["PICA_LAUNCH_METRICS_PATH"])
+            model: model, navigation: navigation, approvalNotifier: approvalNotifier, lock: lock,
+            launchMetricsPath: environment["PICA_LAUNCH_METRICS_PATH"])
     }
 
     /// Called once the main window can take input; records launch timing when the performance test asks for it.

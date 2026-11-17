@@ -341,7 +341,7 @@ export class FakeSession implements RuntimeSession {
       complete(false, { content: unavailable });
       return "continue";
     }
-    const decision = await this.#decide(input, interrupt);
+    const decision = await this.#decide(input, interrupt, step.asks);
     if (decision !== interrupted && decision.decision === "deny") {
       complete(false, { content: `Denied: ${decision.reason}` });
       return "continue";
@@ -367,8 +367,13 @@ export class FakeSession implements RuntimeSession {
   async #decide(
     input: ToolUseInput,
     interrupt: Interrupt,
+    runtimeAsks?: string,
   ): Promise<Exclude<PreToolUseDecision, { decision: "ask" }> | typeof interrupted> {
-    const decision = await Promise.race([this.#preToolUse(input), interrupt.promise]);
+    const hooked = await Promise.race([this.#preToolUse(input), interrupt.promise]);
+    const decision: PreToolUseDecision | typeof interrupted =
+      hooked !== interrupted && hooked.decision === "allow" && runtimeAsks !== undefined
+        ? { decision: "ask", reason: runtimeAsks }
+        : hooked;
     if (decision === interrupted || decision.decision !== "ask") {
       return decision;
     }

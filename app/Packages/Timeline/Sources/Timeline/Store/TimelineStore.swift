@@ -113,7 +113,9 @@ public final class TimelineStore {
             runningSubagents[payload.agent] = nil
         case .policyDecision(let event): policyDecided(seq, event.payload)
         case .approvalRequested(let event): approvalRequested(event.payload)
-        case .approvalResolved(let event): approvals[event.payload.approvalId]?.choice = event.payload.choice
+        case .approvalResolved(let event):
+            approvals[event.payload.approvalId]?.choice = event.payload.choice
+            approvals[event.payload.approvalId]?.isResolving = false
         case .usageRecorded(let event):
             usage.inputTokens += event.payload.inputTokens
             usage.cachedInputTokens += event.payload.cachedInputTokens
@@ -229,16 +231,21 @@ public final class TimelineStore {
     private func approvalRequested(_ request: ApprovalRequest) {
         switch request.kind {
         case .toolCall:
-            addApproval(request.id, kind: .toolCall(toolCallId: request.toolCallId), summary: request.summary)
+            let call = request.toolCallId.flatMap { tools[$0] }
+            addApproval(
+                request.id, kind: .toolCall(toolCallId: request.toolCallId), summary: request.summary,
+                toolName: call?.toolName, subject: call.flatMap { Self.subject(of: $0.arguments) })
         case .budget:
             addApproval(request.id, kind: .budget(spentCredits: 0, limitCredits: 0), summary: request.summary)
         }
     }
 
     /// `budget.exhausted` and its `approval.requested` name the same approval; the first one makes the row.
-    private func addApproval(_ approvalId: Id, kind: ApprovalItem.Kind, summary: String) {
+    private func addApproval(
+        _ approvalId: Id, kind: ApprovalItem.Kind, summary: String, toolName: String? = nil, subject: String? = nil
+    ) {
         guard approvals[approvalId] == nil else { return }
-        let item = ApprovalItem(approvalId: approvalId, kind: kind, summary: summary)
+        let item = ApprovalItem(approvalId: approvalId, kind: kind, summary: summary, toolName: toolName, subject: subject)
         approvals[approvalId] = item
         appendTopLevel(.approval(item))
     }
@@ -255,6 +262,15 @@ public final class TimelineStore {
     private func appendTopLevel(_ entry: TimelineEntry) {
         topLevelIndex[entry.id] = entries.count
         entries.append(entry)
+    }
+
+    /// What makes two requests for a tool the same, as the engine's permission rules compare them: the command,
+    /// path or url argument (docs/approvals.md).
+    static func subject(of arguments: [String: JSONValue]) -> String? {
+        for key in ["command", "path", "url"] {
+            if case .string(let value)? = arguments[key], !value.isEmpty { return value }
+        }
+        return nil
     }
 
     private static func abortTitle(_ reason: SessionAbortedPayload.Reason) -> String {

@@ -145,6 +145,37 @@
             ],
             "additionalProperties": false
           }
+        },
+        "tools": {
+          "description": "Answers to permission prompts; a rule with match beats one without, and deny beats allow",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "tool": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The tool name, as the approval names it"
+              },
+              "match": {
+                "description": "The call's command, path or url argument, exactly; omit to match every call of the tool",
+                "type": "string",
+                "minLength": 1
+              },
+              "permission": {
+                "type": "string",
+                "enum": [
+                  "allow",
+                  "deny"
+                ]
+              }
+            },
+            "required": [
+              "tool",
+              "permission"
+            ],
+            "additionalProperties": false
+          }
         }
       },
       "additionalProperties": false
