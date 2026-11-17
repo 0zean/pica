@@ -956,8 +956,10 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 **A-09 · Files and quick open** — A-04, R-08
 - Build: file tree, ⌘P across workspace repos, read-only viewer, open in external editor.
 - Verify:
-  - [ ] Fuzzy ranking table tests.
-  - [ ] A query over a 100,000-file index returns in under 50 ms.
+  - [x] Fuzzy ranking table tests.
+  - [x] A query over a 100,000-file index returns in under 50 ms.
+  - [x] UI tests: the file tree opens a file in the viewer and the external editor; ⌘P finds files across the workspace's repos; the composer completes files and skills.
+- Notes: specified in [docs/files.md](docs/files.md). Engine: the production composition now serves `files.list`, `files.read` and `files.quickOpen` (`core/src/files/`, `server/src/files-handlers.ts`) over R-08's `RepoFiles`, so a repo's files are what git lists (ignored files and `.git` never appear) in its checkout, contained as R-08 does. No protocol change. Each repo's listing is kept for 10 s; quick open answers from the old one while it lists again, so a keystroke never waits for git. Ranking is an in-order subsequence match scored over every placement (bonuses for word and segment starts, the file name, and runs; gaps cost), restricted to the positions each character can take and narrowed to the last query's matches when the query grows. App: feature package `app/Packages/Files` (lint-arch rule added). AppShell's inspector now shows `InspectorPane`s the app target supplies, as tabs; Files is the first. File ▸ Quick Open… takes ⌘P from Print; each keystroke asks the engine at once, one search out at a time with only the newest query sent next. The viewer is a window per file (non-editable `NSTextView`); the external editor is `NSWorkspace.open`, logged instead under `PICA_EXTERNAL_EDITOR_LOG` for UI tests. A-06's file and skill completions now work with no composer change. Measured on 2026-11-17 (Apple silicon, Node 22, 94 keystrokes over 100,000 synthetic paths): slowest keystroke 20–22 ms in the ranker and over the socket, median 0.5 ms over the socket. UI tests use `fake-picad`'s `empty` scenario, since files need only repos on disk (`PicaUnderTest.makeRepository(_:files:)`). Not done: a session's worktree is not shown apart from the checkout, no filesystem watching, no syntax or match highlighting, no `skills.*` method.
 
 **A-10 · Terminal** — A-04, R-02
 - Build: terminal panel bound to the session's worktree.
@@ -1170,7 +1172,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | A-06 | Composer | A-05 | done |
 | A-07 | Approvals | A-05 | done |
 | A-08 | Review | A-04, R-01 | todo |
-| A-09 | Files and quick open | A-04, R-08 | todo |
+| A-09 | Files and quick open | A-04, R-08 | done |
 | A-10 | Terminal | A-04, R-02 | todo |
 | A-11 | Usage and cost | A-05, C-08, C-09 | todo |
 | A-12 | Workspace and repo management | A-04, R-06 | todo |

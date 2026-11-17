@@ -75,9 +75,10 @@ The engine did not serve `agents.list`, `models.*`, `files.*` or `config.*` befo
 them. A-06 adds `agents.list`, `models.list` and `models.tiers` to the production composition
 (`engine/packages/server/src/catalog-handlers.ts`), from the agent loader and model catalog sessions already use.
 `agents.list` returns the built-in and user agents; workspace and repo agent layers are not composed yet, so it ignores
-`workspaceId` and `repoId`. `files.quickOpen` and `files.list` need a search adapter (A-09), so until then the
-composer offers no files or skills: the first failed file search turns searching off for that composer, and a failed
-skill listing leaves the list empty. No method or type was added to the protocol. Items are ranked by prefix match, then a match at a word
+`workspaceId` and `repoId`. A-09 serves `files.quickOpen` and `files.list` ([files.md](files.md)), so files and
+skills complete: file hits use quick open's ranking, and a skill is a directory of a skill folder that git lists a file
+in. If a file search fails, searching stays off for that composer, and a failed skill listing leaves the list empty.
+No method or type was added to the protocol. Items are ranked by prefix match, then a match at a word
 start, then a substring, then the letters in order, ignoring case; eight at most.
 
 ### What is sent

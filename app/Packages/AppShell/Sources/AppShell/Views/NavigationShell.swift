@@ -5,6 +5,7 @@ import SwiftUI
 struct NavigationShell<Banner: View>: View {
     @Bindable var store: NavigationStore
     let sessionContent: SessionContent
+    let inspectorPanes: [InspectorPane]
     @ViewBuilder let banner: Banner
 
     static var sidebarWidths: (min: Double, ideal: Double, max: Double) { (180, 240, 420) }
@@ -20,7 +21,7 @@ struct NavigationShell<Banner: View>: View {
             SessionColumn(store: store, sessionContent: sessionContent)
                 .safeAreaInset(edge: .top, spacing: 0) { banner }
                 .inspector(isPresented: $store.isInspectorPresented) {
-                    InspectorColumn()
+                    InspectorColumn(store: store, panes: inspectorPanes)
                         .onGeometryChange(for: Double.self, of: { $0.size.width.rounded() }) { store.inspectorWidth = $0 }
                         .inspectorColumnWidth(
                             min: Self.inspectorWidths.min,
