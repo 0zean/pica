@@ -21,6 +21,8 @@ const allowedPackageDependencies: Readonly<Record<string, readonly string[]>> = 
   Review: ["EngineClient", "PicaProtocol", "DesignSystem"],
   // A-14: Settings, the ⌘K palette and the action registry; the app target runs the actions.
   PicaSettings: ["EngineClient", "PicaProtocol", "DesignSystem"],
+  // A-10: the terminal panel under the session column; a feature package of its own.
+  Terminal: ["EngineClient", "PicaProtocol", "DesignSystem"],
 };
 
 const featuresPackage = "Features";

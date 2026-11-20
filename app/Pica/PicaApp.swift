@@ -8,6 +8,7 @@ import PicaProtocol
 import PicaSettings
 import Review
 import SwiftUI
+import Terminal
 import Timeline
 
 @main
@@ -27,6 +28,8 @@ struct PicaApp: App {
     @State private var quickOpen: QuickOpen
     /// Opens files in the user's editor; UI tests log the paths instead (`PICA_EXTERNAL_EDITOR_LOG`).
     private let editor = ExternalEditor.system(environment: ProcessInfo.processInfo.environment)
+    /// Each session's terminal panel and its shell, kept while the app runs (A-10).
+    @State private var terminals: SessionTerminals
 
     init() {
         guard let launch = AppLaunch.begin() else {
@@ -35,6 +38,7 @@ struct PicaApp: App {
         }
         _launch = State(initialValue: launch)
         _quickOpen = State(initialValue: QuickOpen(client: launch.model.client))
+        _terminals = State(initialValue: SessionTerminals(backend: EngineTerminalBackend(client: launch.model.client)))
         actions = AppActions(client: launch.model.client, navigation: launch.navigation)
         launch.model.start()
         launch.navigation.start()
@@ -100,7 +104,7 @@ struct PicaApp: App {
     /// changes (A-08) in their place. Features meet only here, in the app target (PLAN.md §4.3).
     private func sessionTimeline(_ session: Session, client: EngineClient) -> AnyView {
         AnyView(
-            SessionDetail(session: session) {
+            SessionDetail(session: session, terminals: terminals) {
                 VStack(spacing: 0) {
                     SessionTimelineScreen(
                         sessionId: session.id, title: session.displayTitle, historySeq: session.lastSeq, client: client
@@ -117,22 +121,41 @@ struct PicaApp: App {
 }
 
 /// The session column's two views, switched from the toolbar or with ⇧⌘R: the conversation, and the review of what
-/// the session changed.
+/// the session changed. The terminal (A-10, ⌃`) opens under either.
 private struct SessionDetail<Conversation: View, Changes: View>: View {
     let session: Session
+    let terminals: SessionTerminals
     @ViewBuilder let conversation: Conversation
     @ViewBuilder let review: Changes
     @State private var reviewing = false
 
     var body: some View {
-        Group {
-            if reviewing {
-                review
-            } else {
-                conversation
+        VSplitView {
+            Group {
+                if reviewing {
+                    review
+                } else {
+                    conversation
+                }
+            }
+            .frame(minHeight: 200)
+            if let terminal = terminals.panels[session.id] {
+                SessionTerminalPanel(terminal: terminal) { terminals.close(session.id) }
+                    .frame(minHeight: 120, idealHeight: 260)
             }
         }
         .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Toggle(isOn: Binding(
+                    get: { terminals.isOpen(session.id) }, set: { terminals.setOpen($0, for: session.id) })
+                ) {
+                    Label("Terminal", systemImage: "terminal")
+                }
+                .toggleStyle(.button)
+                .keyboardShortcut("`", modifiers: .control)
+                .help(terminals.isOpen(session.id) ? "Close the Terminal (⌃`)" : "Open a Terminal (⌃`)")
+                .accessibilityIdentifier("pica.toolbar.terminal")
+            }
             ToolbarItem(placement: .primaryAction) {
                 Toggle(isOn: $reviewing) {
                     Label("Review Changes", systemImage: "plusminus")

@@ -1176,7 +1176,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | A-07 | Approvals | A-05 | done |
 | A-08 | Review | A-04, R-01 | done |
 | A-09 | Files and quick open | A-04, R-08 | done |
-| A-10 | Terminal | A-04, R-02 | todo |
+| A-10 | Terminal | A-04, R-02 | doing |
 | A-11 | Usage and cost | A-05, C-08, C-09 | todo |
 | A-12 | Workspace and repo management | A-04, R-06 | todo |
 | A-13 | MCP management | A-04, M-06, M-07 | todo |
