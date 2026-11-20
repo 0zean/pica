@@ -84,13 +84,14 @@ export const methods = {
   "repo.remove": clientMethod(z.object({ id: Id, force: z.boolean() }), Ok),
   "repo.card": clientMethod(ById, z.object({ card: RepoCard })),
 
-  "github.authStatus": clientMethod(z.object({ host: z.string().min(1) }), GitHubAuthStatus),
+  // A-12: `host` defaults to the GitHub host the engine is configured for.
+  "github.authStatus": clientMethod(z.object({ host: z.string().min(1).optional() }), GitHubAuthStatus),
   "github.listTeams": clientMethod(
-    z.object({ host: z.string().min(1) }),
+    z.object({ host: z.string().min(1).optional() }),
     z.object({ teams: z.array(GitHubTeam) }),
   ),
   "github.listTeamRepos": clientMethod(
-    z.object({ host: z.string().min(1), org: z.string().min(1), teamSlug: z.string().min(1) }),
+    z.object({ host: z.string().min(1).optional(), org: z.string().min(1), teamSlug: z.string().min(1) }),
     z.object({ repos: z.array(GitHubRepo) }),
   ),
   // A-08: opens a pull request from the worktree's current branch, which must be pushed.

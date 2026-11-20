@@ -972,15 +972,17 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 **A-11 · Usage and cost** — A-05, C-08, C-09
 - Build: session chip for context, tokens, and credits; dashboard by model, agent, workspace, and day; savings estimate; budget warnings.
 - Verify:
-  - [ ] View-model tests from ledger fixtures.
-  - [ ] Chart snapshot tests.
-  - [ ] The savings figure is always labeled as an estimate (asserted in the snapshot).
+  - [x] View-model tests from ledger fixtures.
+  - [x] Chart snapshot tests.
+  - [x] The savings figure is always labeled as an estimate (asserted in the snapshot).
+- Notes: `app/Packages/Usage`, specified in [docs/usage.md](docs/usage.md). A feature package (lint-arch rule added). No engine or protocol change: the production composition already served `usage.rollup`, `workspace.list` and `config.get`, and raising a budget through its approval broadcasts the new `budgetCredits` in `session.changed`. The session chip over the timeline shows context use, tokens and credits against the budget, toned by the worse of the context and budget fractions at C-09's thresholds (0.75 and 0.9); clicking it shows the session's credits by agent and model and the savings estimate. Timeline still sums the events and takes the chip from the app target (`usageChip:`); its own plain chip stays only for its snapshot tests. The dashboard is a window (Window ▸ Usage Dashboard, ⇧⌘U, `showUsage` in A-14's registry) with Today, Last 7 Days or Last 30 Days as whole UTC days, an optional workspace filter, totals, the savings estimate, a warning row for each workspace whose spend today reaches 75% of `budget.workspaceDailyCredits`, and Swift Charts of credits by day, model, agent and workspace (at most eight bars, the rest as Other). Day labels are made in UTC and drawn as categories, so a bar never moves to another day in the Mac's time zone. The savings figure reaches views only through `SavingsFigure`, titled "Estimated savings" with a footnote on how it is estimated; the snapshot tests read each drawing back with Vision's text recognition and fail if "savings" appears without "Estimated savings", since `ImageRenderer` drawings carry no accessibility tree. The ledger fixture (three workspaces, five sessions, four agents, three models, nine UTC days) is the engine's own `usage.rollup` answers, checked by `server/tests/usage/app-fixtures.test.ts`. `fake-picad` has a `usage` scenario; `UsageUITests` checks the chip, its popover and the dashboard against it. The dashboard warns against the config's daily cap only: a workspace's `overrides.dailyCredits` is stored but the engine does not enforce it yet.
 
 **A-12 · Workspace and repo management** — A-04, R-06
 - Build: add repo by path or URL, team browser with search and multi-select, sync status.
 - Verify:
-  - [ ] UI test against the stub GitHub server imports a team and shows its repos as available.
-  - [ ] Auth errors display their `fix` action.
+  - [x] UI test against the stub GitHub server imports a team and shows its repos as available.
+  - [x] Auth errors display their `fix` action.
+- Notes: `app/Packages/Workspaces`, specified in [docs/workspaces.md](docs/workspaces.md). A feature package (lint-arch rule added). Selecting a workspace in the sidebar shows its management screen in the session column (AppShell's `RootView` gains optional `workspaceContent` and `sidebarAccessory`, which the app target fills); the `+` menu in the sidebar's toolbar and four new registry actions (`newWorkspace` ⇧⌘N, `addRepository`, `importTeams`, `syncWorkspace`, in the File menu) open the same sheets through one `WorkspaceManager` in `AppActions`. The workspace and its repos come from `NavigationStore`, which already follows `workspace.changed`; no broadcast was added, since create, pin, source changes and sync all broadcast it, A-12 always pins what it registers, and it deletes no workspace (A-04's `workspace.delete` and clone-state gaps remain). Add Repository takes a path (`/`, `~`; registered in place) or a URL (`://`, `user@host:path`; partial clone), then pins it. The team browser lists `github.listTeams` with checkboxes, a search over name and `org/slug`, Space and ⌘A, and a preview of the focused team's repos; import adds a `team` source per chosen team (skipping ones the workspace has) and syncs once, so the repos arrive `available`. Sync status is per workspace (`WorkspaceStore`) plus each source's last sync. Errors become `WorkspaceProblem` (message, code, `data.fix`); the fix is a button, and `FixPerformer` opens `open_url`, copies `run_command` and a `gh auth login` for `sign_in` (the app never runs `gh`), and hands `retry`/`open_settings` to the caller; `PICA_FIX_ACTION_LOG` logs them instead for UI tests. Engine: the production composition now serves `github.authStatus`, `github.listTeams` and `github.listTeamRepos` (`github-handlers.ts`) over discovery's host and provider chain (`gitHubOptions`); signed out, `authStatus` answers `signedIn: false` instead of an error. Protocol: `host` is optional on those three and defaults to the engine's host (another host is `invalid_params`, `github.unknown_host`). `ProductionOptions.github` replaces the host and providers for tests; `fake-picad` starts the stub GitHub server (`fake-github.ts`, over R-04's `startStubGitHub`) when `PICA_TEST_GITHUB` is `signed-in` or `signed-out`, with an SSO-protected team. For A-15: `github.authStatus` is a ready precondition check, and `WorkspaceProblem`, `FixPerformer`, `WorkspaceManager.createWorkspace` and the two `PICA_TEST_GITHUB` modes cover "GitHub auth fails, then passes" and the first workspace.
 
 **A-13 · MCP management** — A-04, M-06, M-07
 - Build: catalog of optional presets, add and edit, paste a server snippet, import from other agent platforms (M-07), authenticate, attach per workspace and session, token-cost column, health.
@@ -1178,8 +1180,8 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | A-08 | Review | A-04, R-01 | done |
 | A-09 | Files and quick open | A-04, R-08 | done |
 | A-10 | Terminal | A-04, R-02 | done |
-| A-11 | Usage and cost | A-05, C-08, C-09 | todo |
-| A-12 | Workspace and repo management | A-04, R-06 | todo |
+| A-11 | Usage and cost | A-05, C-08, C-09 | done |
+| A-12 | Workspace and repo management | A-04, R-06 | done |
 | A-13 | MCP management | A-04, M-06, M-07 | todo |
 | A-14 | Settings and command palette | A-04, E-04 | done |
 | A-15 | Onboarding | A-12, A-13 | todo |

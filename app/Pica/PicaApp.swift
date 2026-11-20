@@ -10,6 +10,8 @@ import Review
 import SwiftUI
 import Terminal
 import Timeline
+import Usage
+import Workspaces
 
 @main
 struct PicaApp: App {
@@ -48,8 +50,10 @@ struct PicaApp: App {
         Window("Pica", id: "main") {
             RootView(
                 model: launch.model, navigation: launch.navigation, sessionContent: sessionTimeline,
+                workspaceContent: workspaceScreen, sidebarAccessory: workspaceAddMenu,
                 inspectorPanes: inspectorPanes, onInteractive: launch.windowBecameInteractive)
                 .modifier(ActionHost(actions: actions))
+                .modifier(WorkspaceSheets(manager: actions.workspaces))
                 .overlay {
                     if quickOpen.isPresented {
                         ZStack {
@@ -78,6 +82,12 @@ struct PicaApp: App {
             }
         }
         .defaultSize(width: 760, height: 640)
+
+        // A-11: the Usage dashboard (⇧⌘U).
+        Window("Usage", id: UsageDashboardScreen.windowId) {
+            UsageDashboardScreen(client: launch.model.client)
+        }
+        .defaultSize(width: 980, height: 820)
     }
 
     /// The inspector's panes, one per feature (A-09 Files).
@@ -90,6 +100,15 @@ struct PicaApp: App {
                 return AnyView(FileTreeView(workspaceId: workspaceId, client: context.client, editor: editor))
             },
         ]
+    }
+
+    /// A-12: a selected workspace's sources, sync status and repos, with its add buttons.
+    private func workspaceScreen(_ workspace: Workspace, repos: [Repo]) -> AnyView {
+        AnyView(WorkspaceScreen(workspace: workspace, repos: repos, manager: actions.workspaces))
+    }
+
+    private var workspaceAddMenu: AnyView {
+        AnyView(WorkspaceAddMenu(manager: actions.workspaces, workspaceId: actions.targetWorkspaceId))
     }
 
     /// ⌘P searches the selected item's workspace, or the only workspace there is.
@@ -107,7 +126,8 @@ struct PicaApp: App {
             SessionDetail(session: session, terminals: terminals) {
                 VStack(spacing: 0) {
                     SessionTimelineScreen(
-                        sessionId: session.id, title: session.displayTitle, historySeq: session.lastSeq, client: client
+                        sessionId: session.id, title: session.displayTitle, historySeq: session.lastSeq, client: client,
+                        usageChip: { usage in usageChip(usage, session: session, client: client) }
                     )
                     .environment(timelineMetrics)
                     SessionComposer(session: session, client: client, drafts: drafts)
@@ -117,6 +137,30 @@ struct PicaApp: App {
                 SessionReview(session: session, client: client)
                     .environment(reviewMetrics)
             })
+    }
+}
+
+/// A-11's chip over the timeline, from the events the timeline (A-05) sums and the session's budget limit.
+@MainActor
+private func usageChip(_ usage: SessionUsageSummary, session: Session, client: EngineClient) -> AnyView {
+    let figures = SessionUsageFigures(
+        inputTokens: usage.inputTokens, cachedInputTokens: usage.cachedInputTokens, outputTokens: usage.outputTokens,
+        credits: usage.credits, contextTokens: usage.contextTokens, contextLimit: usage.contextLimit,
+        budgetCredits: session.budgetCredits)
+    return AnyView(UsageChipHost(figures: figures, sessionId: session.id, client: client))
+}
+
+/// Gives the chip the `openWindow` action for its Open Usage Dashboard button.
+private struct UsageChipHost: View {
+    let figures: SessionUsageFigures
+    let sessionId: Id
+    let client: EngineClient
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some View {
+        SessionUsageChip(figures: figures, sessionId: sessionId, client: client) {
+            openWindow(id: UsageDashboardScreen.windowId)
+        }
     }
 }
 

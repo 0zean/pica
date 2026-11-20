@@ -2462,10 +2462,10 @@ public struct GitUnstageParams: Codable, Hashable, Sendable {
 }
 
 public struct GithubAuthStatusParams: Codable, Hashable, Sendable {
-    public var host: String
+    public var host: String?
 
     public init(
-        host: String
+        host: String? = nil
     ) {
         self.host = host
     }
@@ -2476,12 +2476,12 @@ public struct GithubAuthStatusParams: Codable, Hashable, Sendable {
 
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        host = try container.decode(String.self, forKey: .host)
+        host = try container.decodeIfPresent(String.self, forKey: .host)
     }
 
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(host, forKey: .host)
+        try container.encodeIfPresent(host, forKey: .host)
     }
 }
 
@@ -2564,12 +2564,12 @@ public struct GithubCreatePullRequestResult: Codable, Hashable, Sendable {
 }
 
 public struct GithubListTeamReposParams: Codable, Hashable, Sendable {
-    public var host: String
+    public var host: String?
     public var org: String
     public var teamSlug: String
 
     public init(
-        host: String,
+        host: String? = nil,
         org: String,
         teamSlug: String
     ) {
@@ -2586,14 +2586,14 @@ public struct GithubListTeamReposParams: Codable, Hashable, Sendable {
 
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        host = try container.decode(String.self, forKey: .host)
+        host = try container.decodeIfPresent(String.self, forKey: .host)
         org = try container.decode(String.self, forKey: .org)
         teamSlug = try container.decode(String.self, forKey: .teamSlug)
     }
 
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(host, forKey: .host)
+        try container.encodeIfPresent(host, forKey: .host)
         try container.encode(org, forKey: .org)
         try container.encode(teamSlug, forKey: .teamSlug)
     }
@@ -2624,10 +2624,10 @@ public struct GithubListTeamReposResult: Codable, Hashable, Sendable {
 }
 
 public struct GithubListTeamsParams: Codable, Hashable, Sendable {
-    public var host: String
+    public var host: String?
 
     public init(
-        host: String
+        host: String? = nil
     ) {
         self.host = host
     }
@@ -2638,12 +2638,12 @@ public struct GithubListTeamsParams: Codable, Hashable, Sendable {
 
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        host = try container.decode(String.self, forKey: .host)
+        host = try container.decodeIfPresent(String.self, forKey: .host)
     }
 
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(host, forKey: .host)
+        try container.encodeIfPresent(host, forKey: .host)
     }
 }
 

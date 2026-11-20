@@ -2594,10 +2594,7 @@
           "type": "string",
           "minLength": 1
         }
-      },
-      "required": [
-        "host"
-      ]
+      }
     },
     "GithubCreatePullRequestParams": {
       "type": "object",
@@ -2658,7 +2655,6 @@
         }
       },
       "required": [
-        "host",
         "org",
         "teamSlug"
       ]
@@ -2684,10 +2680,7 @@
           "type": "string",
           "minLength": 1
         }
-      },
-      "required": [
-        "host"
-      ]
+      }
     },
     "GithubListTeamsResult": {
       "type": "object",

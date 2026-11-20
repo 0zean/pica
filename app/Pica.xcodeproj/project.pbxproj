@@ -16,7 +16,9 @@
 		A1000000000000000000F001 /* Files in Frameworks */ = {isa = PBXBuildFile; productRef = A1000000000000000000F002 /* Files */; };
 		A1000000000000000000A101 /* Terminal in Frameworks */ = {isa = PBXBuildFile; productRef = A1000000000000000000A102 /* Terminal */; };
 		A1000000000000000000A801 /* Review in Frameworks */ = {isa = PBXBuildFile; productRef = A1000000000000000000A802 /* Review */; };
+		A10000000000000000A11001 /* Usage in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000A11002 /* Usage */; };
 		A10000000000000000A14001 /* PicaSettings in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000A14002 /* PicaSettings */; };
+		A10000000000000000A12001 /* Workspaces in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000A12002 /* Workspaces */; };
 		A10000000000000000000121 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000131 /* DesignSystem */; };
 		A10000000000000000000321 /* PicaProtocol in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000331 /* PicaProtocol */; };
 		A10000000000000000000322 /* EngineClient in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000332 /* EngineClient */; };
@@ -85,7 +87,9 @@
 				A1000000000000000000F001 /* Files in Frameworks */,
 				A1000000000000000000A101 /* Terminal in Frameworks */,
 				A1000000000000000000A801 /* Review in Frameworks */,
+				A10000000000000000A11001 /* Usage in Frameworks */,
 				A10000000000000000A14001 /* PicaSettings in Frameworks */,
+				A10000000000000000A12001 /* Workspaces in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -169,7 +173,9 @@
 				A1000000000000000000F002 /* Files */,
 				A1000000000000000000A102 /* Terminal */,
 				A1000000000000000000A802 /* Review */,
+				A10000000000000000A11002 /* Usage */,
 				A10000000000000000A14002 /* PicaSettings */,
+				A10000000000000000A12002 /* Workspaces */,
 			);
 			productName = Pica;
 			productReference = A10000000000000000000002 /* Pica.app */;
@@ -291,7 +297,9 @@
 				A1000000000000000000F003 /* XCLocalSwiftPackageReference "Packages/Files" */,
 				A1000000000000000000A103 /* XCLocalSwiftPackageReference "Packages/Terminal" */,
 				A1000000000000000000A803 /* XCLocalSwiftPackageReference "Packages/Review" */,
+				A10000000000000000A11003 /* XCLocalSwiftPackageReference "Packages/Usage" */,
 				A10000000000000000A14003 /* XCLocalSwiftPackageReference "Packages/PicaSettings" */,
+				A10000000000000000A12003 /* XCLocalSwiftPackageReference "Packages/Workspaces" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A10000000000000000000005 /* Products */;
@@ -648,9 +656,17 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/Review;
 		};
+		A10000000000000000A11003 /* XCLocalSwiftPackageReference "Packages/Usage" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/Usage;
+		};
 		A10000000000000000A14003 /* XCLocalSwiftPackageReference "Packages/PicaSettings" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/PicaSettings;
+		};
+		A10000000000000000A12003 /* XCLocalSwiftPackageReference "Packages/Workspaces" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/Workspaces;
 		};
 /* End XCLocalSwiftPackageReference section */
 
@@ -691,9 +707,17 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = Review;
 		};
+		A10000000000000000A11002 /* Usage */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Usage;
+		};
 		A10000000000000000A14002 /* PicaSettings */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = PicaSettings;
+		};
+		A10000000000000000A12002 /* Workspaces */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Workspaces;
 		};
 		A10000000000000000000131 /* DesignSystem */ = {
 			isa = XCSwiftPackageProductDependency;
