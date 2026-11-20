@@ -194,7 +194,11 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
         const repo = workspaces?.repo(repoId);
         return repo?.ok === true ? (repo.value.localPath ?? undefined) : undefined;
       });
-    registerMcpImportHandlers(router, { service: options.mcpImport.service, repoRoot });
+    registerMcpImportHandlers(router, {
+      service: options.mcpImport.service,
+      repoRoot,
+      ...(mcp === undefined ? {} : { onImported: mcp.resync }),
+    });
   }
   if (options.workspaces !== undefined) {
     registerWorkspaceHandlers(router, {

@@ -9,6 +9,7 @@ public enum ActionID: String, CaseIterable, Sendable, Codable {
     case toggleInspector
     case selectNextSession
     case selectPreviousSession
+    case showMcpServers
 }
 
 /// Where an action's menu item is.
@@ -62,6 +63,9 @@ public enum ActionCatalog {
         case .selectPreviousSession:
             ActionDefinition(id: id, title: "Select Previous Session", menu: .window, defaultShortcut: Shortcut("cmd+alt+up"),
                 keywords: ["go"])
+        case .showMcpServers:
+            ActionDefinition(id: id, title: "MCP Servers", menu: .window, defaultShortcut: Shortcut("cmd+shift+m"),
+                keywords: ["mcp", "tools", "servers", "presets", "import"])
         }
     }
 }

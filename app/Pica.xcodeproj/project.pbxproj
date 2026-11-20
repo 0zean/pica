@@ -16,6 +16,7 @@
 		A1000000000000000000F001 /* Files in Frameworks */ = {isa = PBXBuildFile; productRef = A1000000000000000000F002 /* Files */; };
 		A1000000000000000000A801 /* Review in Frameworks */ = {isa = PBXBuildFile; productRef = A1000000000000000000A802 /* Review */; };
 		A10000000000000000A14001 /* PicaSettings in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000A14002 /* PicaSettings */; };
+		A10000000000000000A13001 /* McpServers in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000A13002 /* McpServers */; };
 		A10000000000000000000121 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000131 /* DesignSystem */; };
 		A10000000000000000000321 /* PicaProtocol in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000331 /* PicaProtocol */; };
 		A10000000000000000000322 /* EngineClient in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000332 /* EngineClient */; };
@@ -84,6 +85,7 @@
 				A1000000000000000000F001 /* Files in Frameworks */,
 				A1000000000000000000A801 /* Review in Frameworks */,
 				A10000000000000000A14001 /* PicaSettings in Frameworks */,
+				A10000000000000000A13001 /* McpServers in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -167,6 +169,7 @@
 				A1000000000000000000F002 /* Files */,
 				A1000000000000000000A802 /* Review */,
 				A10000000000000000A14002 /* PicaSettings */,
+				A10000000000000000A13002 /* McpServers */,
 			);
 			productName = Pica;
 			productReference = A10000000000000000000002 /* Pica.app */;
@@ -288,6 +291,7 @@
 				A1000000000000000000F003 /* XCLocalSwiftPackageReference "Packages/Files" */,
 				A1000000000000000000A803 /* XCLocalSwiftPackageReference "Packages/Review" */,
 				A10000000000000000A14003 /* XCLocalSwiftPackageReference "Packages/PicaSettings" */,
+				A10000000000000000A13003 /* XCLocalSwiftPackageReference "Packages/McpServers" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A10000000000000000000005 /* Products */;
@@ -636,6 +640,10 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/Files;
 		};
+		A10000000000000000A13003 /* XCLocalSwiftPackageReference "Packages/McpServers" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/McpServers;
+		};
 		A1000000000000000000A803 /* XCLocalSwiftPackageReference "Packages/Review" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/Review;
@@ -674,6 +682,10 @@
 		A1000000000000000000F002 /* Files */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Files;
+		};
+		A10000000000000000A13002 /* McpServers */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = McpServers;
 		};
 		A1000000000000000000A802 /* Review */ = {
 			isa = XCSwiftPackageProductDependency;

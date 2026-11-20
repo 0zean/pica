@@ -44,6 +44,7 @@ struct PresetSheet: View {
         }
         .padding(Spacing.large)
         .frame(width: 520)
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("pica.mcp.preset")
     }
 

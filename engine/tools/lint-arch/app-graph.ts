@@ -21,6 +21,8 @@ const allowedPackageDependencies: Readonly<Record<string, readonly string[]>> = 
   Review: ["EngineClient", "PicaProtocol", "DesignSystem"],
   // A-14: Settings, the ⌘K palette and the action registry; the app target runs the actions.
   PicaSettings: ["EngineClient", "PicaProtocol", "DesignSystem"],
+  // A-13: the MCP Servers window and the inspector's MCP pane; named so it shadows no MCP SDK module.
+  McpServers: ["EngineClient", "PicaProtocol", "DesignSystem"],
 };
 
 const featuresPackage = "Features";

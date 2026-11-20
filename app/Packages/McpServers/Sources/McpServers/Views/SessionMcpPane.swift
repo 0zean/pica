@@ -45,11 +45,12 @@ public struct SessionMcpPane: View {
         .padding(Spacing.medium)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .task(id: session.id) { await store.load(session: session) }
+        .onChange(of: session.state) { store.follow(session) }
         .task { await store.watchStatuses() }
         .alert(
             "Reset this session's prompt cache?", isPresented: pendingBinding, presenting: store.pendingChange
-        ) { _ in
-            Button("Change Servers") { Task { await store.confirmPendingChange() } }
+        ) { change in
+            Button("Change Servers") { Task { await store.confirm(change) } }
                 .accessibilityIdentifier("pica.mcp.cacheWarning.confirm")
             Button("Cancel", role: .cancel) { store.cancelPendingChange() }
         } message: { change in

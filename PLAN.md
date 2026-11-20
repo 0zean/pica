@@ -984,9 +984,10 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 **A-13 · MCP management** — A-04, M-06, M-07
 - Build: catalog of optional presets, add and edit, paste a server snippet, import from other agent platforms (M-07), authenticate, attach per workspace and session, token-cost column, health.
 - Verify:
-  - [ ] UI test adds a preset and sees it healthy against a stub server.
-  - [ ] A saved secret is never rendered back into a field.
-  - [ ] Changing servers on a running session shows the cache-invalidation warning first.
+  - [x] UI test adds a preset and sees it healthy against a stub server.
+  - [x] A saved secret is never rendered back into a field.
+  - [x] Changing servers on a running session shows the cache-invalidation warning first.
+- Notes: `app/Packages/McpServers`, specified in [docs/mcp.md](docs/mcp.md). A feature package (lint-arch rule added; named so it shadows no MCP SDK module). Servers are managed in a window of their own (Window ▸ MCP Servers, ⇧⌘M, a new registry action), not a Settings pane: A-14's Settings edits the user layer of config.jsonc in a fixed pane and knows no workspace or session, while servers live in their own files at two scopes, have live health, and need a wide table and sheets. Per-session attachment is the inspector's MCP pane, since only the main window knows the session. Engine: the production composition now serves every `mcp.*` method. Core `mcp-manage/` writes servers into `mcp.jsonc` (global or workspace scope, read back through M-01's rules first, so inline secrets are refused), keeps attachments per workspace and session in `mcp-attachments.json`, copies a workspace's servers into each new session, and turns a session's M-04 plan into the runtime's new `SessionOptions.mcpServers` (and per-agent `mcpServers`) with M-03's secrets substituted; a server whose secret cannot be read is left out and the session still starts. M-06's monitor checks every global and workspace server, and M-03's `mcp.login` is composed with an in-memory grant store; a signed-in server gets its bearer token in checks and sessions. Background `secrets.get` goes to whichever client has the secret (`SocketListener.requestAnyClient`), and `needs_auth` servers are rechecked when a client connects. Protocol: `mcp.add`, `mcp.update` and `mcp.remove` take `workspaceId`; `mcp.attach` and `mcp.detach` take a session or a workspace and `acknowledgeCacheReset`; new `mcp.attachments`; `ErrorCode` gains `cache_reset_unconfirmed`. A change to a live session is refused with that code unless acknowledged (PLAN.md §5.5); acknowledged, an idle session's runtime is closed and resumed with the new servers (`SessionService.reconfigure`), and a busy one answers `invalid_state`. The app never sends the change first: its warning names the server's tool-definition tokens and the cold cache. Secrets the user types go straight to the Keychain broker under a reference; `McpBackend` has no call that reads one, and the editor shows a saved secret as saved with an empty field. `fake-picad`'s `mcp` scenario starts testkit's stub MCP server (`startStubMcpServer`, `redirectingFetch`) behind the GitHub preset's endpoint, and Pica keeps secrets in memory under UI tests (`PICA_SECRETS=memory`), since a rebuilt ad-hoc build would be asked for Keychain access. Not done: repo-scope servers are not listed or attachable, no file watching, grants are not persisted, the app attaches to the whole session only (agent scope is engine-only), and `open_settings` fix targets do not open the window yet. M-02's GHE endpoint and M-07's Codex import are still open.
 
 **A-14 · Settings and command palette** — A-04, E-04
 - Build: Settings scene editing the config files; ⌘K palette over an action registry; keybinding editor.
@@ -1179,7 +1180,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | A-10 | Terminal | A-04, R-02 | todo |
 | A-11 | Usage and cost | A-05, C-08, C-09 | todo |
 | A-12 | Workspace and repo management | A-04, R-06 | todo |
-| A-13 | MCP management | A-04, M-06, M-07 | todo |
+| A-13 | MCP management | A-04, M-06, M-07 | done |
 | A-14 | Settings and command palette | A-04, E-04 | done |
 | A-15 | Onboarding | A-12, A-13 | todo |
 | A-16 | Session overview | A-05, R-11 | todo |

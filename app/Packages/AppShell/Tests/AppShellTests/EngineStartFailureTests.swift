@@ -1,4 +1,5 @@
 @testable import AppShell
+import EngineClient
 import EngineClientTestSupport
 import Foundation
 import Testing

@@ -27,13 +27,16 @@ struct SessionMcpStoreTests {
     }
 
     @Test(arguments: [SessionState.idle, .running, .awaitingApproval, .starting])
-    func aLiveSessionAsksFirstAndChangesNothingUntilConfirmed(state: SessionState) async {
+    func aLiveSessionAsksFirstAndChangesNothingUntilConfirmed(state: SessionState) async throws {
         let (store, backend) = await store(state)
         await store.toggle(github)
         #expect(store.pendingChange == .init(serverId: "github", serverName: "GitHub", attach: true, toolDefinitionTokens: 640))
         #expect(backend.calls.isEmpty)
-        #expect(SessionMcpPane.warning(for: store.pendingChange!).contains("640 tool-definition tokens"))
-        await store.confirmPendingChange()
+        let change = try #require(store.pendingChange)
+        #expect(SessionMcpPane.warning(for: change).contains("640 tool-definition tokens"))
+        // The alert clears the pending change as it closes, before its button's action runs.
+        store.cancelPendingChange()
+        await store.confirm(change)
         #expect(backend.calls == ["attach github ack=true"])
         #expect(store.attached == ["github"])
     }

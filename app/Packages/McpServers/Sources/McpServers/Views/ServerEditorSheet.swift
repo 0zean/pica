@@ -75,6 +75,7 @@ struct ServerEditorSheet: View {
         .padding(Spacing.large)
         .frame(width: 560)
         .frame(minHeight: 520)
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("pica.mcp.editor")
     }
 }

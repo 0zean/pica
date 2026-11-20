@@ -39,6 +39,7 @@ struct ImportSheet: View {
         .padding(Spacing.large)
         .frame(width: 600, height: 520)
         .task { if store.mode == .platforms { await store.loadPlatforms() } }
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("pica.mcp.import")
     }
 

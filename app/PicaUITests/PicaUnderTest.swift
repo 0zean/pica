@@ -153,6 +153,16 @@ final class PicaUnderTest {
     func remove() {
         try? FileManager.default.removeItem(at: home)
     }
+
+    /// Chooses an inspector pane by its title. The choice is remembered across launches (`pica.inspector.pane`), so a
+    /// test that needs one pane chooses it rather than relying on the default.
+    func showInspectorPane(_ title: String, in app: XCUIApplication) {
+        let inspector = app.descendants(matching: .any)["pica.inspector"]
+        XCTAssertTrue(inspector.waitForExistence(timeout: 5), "the inspector is not open")
+        let segment = inspector.radioButtons[title].exists ? inspector.radioButtons[title] : inspector.buttons[title]
+        XCTAssertTrue(segment.waitForExistence(timeout: 5), "the inspector has no \(title) pane: \(inspector.debugDescription)")
+        segment.click()
+    }
 }
 
 private final class Outcome<T: Sendable>: @unchecked Sendable {

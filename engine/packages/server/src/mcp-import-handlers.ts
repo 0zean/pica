@@ -9,6 +9,8 @@ export interface McpImportHandlerDeps {
   readonly service: McpImportService;
   // The local checkout of a registered repo, for project files and repo-scope imports.
   readonly repoRoot: (repoId: string) => string | undefined;
+  // A-13: health follows the files once servers are imported.
+  readonly onImported?: () => void;
 }
 
 const errorCodes: Readonly<Record<McpImportErrorCode, ErrorCodeName>> = {
@@ -47,6 +49,7 @@ export function registerMcpImportHandlers(router: MethodRouter, deps: McpImportH
         secrets: brokerSecretWriter(context),
       }),
     );
+    deps.onImported?.();
     return { ...outcome, servers: [...outcome.servers], secretRefs: [...outcome.secretRefs], notes: [...outcome.notes] };
   });
 }

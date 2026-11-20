@@ -45,6 +45,11 @@ public final class SessionMcpStore {
         }
     }
 
+    /// Keeps the session's state current between loads, so a change is asked about whenever the session is live.
+    public func follow(_ session: Session) {
+        self.session = session
+    }
+
     public func watchStatuses() async {
         for await status in await backend.statusChanges() {
             statuses[status.serverId] = status
@@ -64,9 +69,9 @@ public final class SessionMcpStore {
         await apply(serverId: server.id, attach: attach, acknowledged: false)
     }
 
-    /// The user accepted the cache reset.
-    public func confirmPendingChange() async {
-        guard let change = pendingChange else { return }
+    /// The user accepted the cache reset for `change`. It is passed in because the alert clears `pendingChange` as it
+    /// closes, which can happen before its button's action runs.
+    public func confirm(_ change: PendingChange) async {
         pendingChange = nil
         await apply(serverId: change.serverId, attach: change.attach, acknowledged: true)
     }

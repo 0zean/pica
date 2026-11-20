@@ -4,6 +4,7 @@ import Composer
 import DesignSystem
 import EngineClient
 import Files
+import McpServers
 import PicaProtocol
 import PicaSettings
 import Review
@@ -74,9 +75,22 @@ struct PicaApp: App {
             }
         }
         .defaultSize(width: 760, height: 640)
+
+        // A-13: MCP servers get a window of their own: a wide table with live health, and sheets for presets,
+        // editing and import. Per-session attachment is the inspector's MCP pane.
+        Window("MCP Servers", id: McpServersScreen.windowId) {
+            McpServersScreen(
+                backend: mcpBackend, workspaces: launch.navigation.workspaces,
+                workspaceId: launch.navigation.selection.flatMap(launch.navigation.workspaceId(of:)))
+        }
+        .defaultSize(width: 900, height: 560)
     }
 
-    /// The inspector's panes, one per feature (A-09 Files).
+    private var mcpBackend: EngineMcpBackend {
+        EngineMcpBackend(client: launch.model.client, secrets: launch.secrets)
+    }
+
+    /// The inspector's panes, one per feature (A-09 Files, A-13 MCP).
     private var inspectorPanes: [InspectorPane] {
         [
             InspectorPane(id: "files", title: "Files", systemImage: "folder") { [editor] context in
@@ -84,6 +98,12 @@ struct PicaApp: App {
                     return AnyView(EmptyState("No workspace", message: "Select a workspace to browse its files."))
                 }
                 return AnyView(FileTreeView(workspaceId: workspaceId, client: context.client, editor: editor))
+            },
+            InspectorPane(id: "mcp", title: "MCP", systemImage: "puzzlepiece.extension") { [mcpBackend] context in
+                guard let session = context.session else {
+                    return AnyView(EmptyState("No session", message: "Select a session to choose its MCP servers."))
+                }
+                return AnyView(SessionMcpPane(session: session, backend: mcpBackend).id(session.id))
             },
         ]
     }
