@@ -13,7 +13,7 @@ import { McpImportNote, McpImportSelection, McpImportSnippet, McpImportSource } 
 import { ModelInfo, TierAssignment } from "./dto/models.ts";
 import { ApprovalChoice, ApprovalRequest } from "./dto/policy.ts";
 import { Repo, RepoCard, RepoSource, RepoSourceKind } from "./dto/repo.ts";
-import { SendMode, Session } from "./dto/session.ts";
+import { SendMode, Session, SessionRoot } from "./dto/session.ts";
 import { SavingsEstimate, UsageGroupBy, UsageRollupRow } from "./dto/usage.ts";
 import { RoutingProfile, Workspace, WorkspaceOverrides } from "./dto/workspace.ts";
 
@@ -84,13 +84,14 @@ export const methods = {
   "repo.remove": clientMethod(z.object({ id: Id, force: z.boolean() }), Ok),
   "repo.card": clientMethod(ById, z.object({ card: RepoCard })),
 
-  "github.authStatus": clientMethod(z.object({ host: z.string().min(1) }), GitHubAuthStatus),
+  // A-12: `host` defaults to the GitHub host the engine is configured for.
+  "github.authStatus": clientMethod(z.object({ host: z.string().min(1).optional() }), GitHubAuthStatus),
   "github.listTeams": clientMethod(
-    z.object({ host: z.string().min(1) }),
+    z.object({ host: z.string().min(1).optional() }),
     z.object({ teams: z.array(GitHubTeam) }),
   ),
   "github.listTeamRepos": clientMethod(
-    z.object({ host: z.string().min(1), org: z.string().min(1), teamSlug: z.string().min(1) }),
+    z.object({ host: z.string().min(1).optional(), org: z.string().min(1), teamSlug: z.string().min(1) }),
     z.object({ repos: z.array(GitHubRepo) }),
   ),
   // A-08: opens a pull request from the worktree's current branch, which must be pushed.
@@ -119,6 +120,8 @@ export const methods = {
   ),
   "session.list": clientMethod(z.object({ workspaceId: Id.optional() }), z.object({ sessions: z.array(Session) })),
   "session.get": clientMethod(BySession, z.object({ session: Session })),
+  // A-10: write roots first, the first being where the session's agent runs.
+  "session.roots": clientMethod(BySession, z.object({ roots: z.array(SessionRoot) })),
   "session.send": clientMethod(
     z.object({ sessionId: Id, text: z.string().min(1), mode: SendMode }),
     z.object({ accepted: z.boolean() }),

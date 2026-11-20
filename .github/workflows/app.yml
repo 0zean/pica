@@ -32,6 +32,9 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
           cache-dependency-path: engine/pnpm-lock.yaml
+      # A-10: SwiftTerm compiles a Metal shader; Xcode 26 and later ship the Metal Toolchain as a separate component.
+      - name: Metal Toolchain
+        run: xcrun metal --version >/dev/null 2>&1 || xcodebuild -downloadComponent MetalToolchain
       - run: make -k verify-app
       - name: Upload snapshot failures
         if: failure()

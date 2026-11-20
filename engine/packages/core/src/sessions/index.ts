@@ -14,6 +14,8 @@ export { checkWorkspaceDailyCap, createSessionBudget, defaultWarningThresholds, 
 export type { BudgetSettings, BudgetWarning, SessionBudget } from "./budget.ts";
 export { createReadGate } from "./pre-tool-use.ts";
 export type { ReadGateDeps } from "./pre-tool-use.ts";
+export { sessionRoots } from "./roots.ts";
+export type { SessionRootInfo } from "./roots.ts";
 export { createSessionService } from "./service.ts";
 export type { CreateSessionRequest, SessionLifecycleEvent, SessionService, SessionServiceDeps } from "./service.ts";
 export { isLiveSessionState, sessionStates, sessionTransitions, sessionTriggers, transitionSession } from "./transitions.ts";

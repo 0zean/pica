@@ -5,6 +5,8 @@ import SwiftUI
 struct NavigationShell<Banner: View>: View {
     @Bindable var store: NavigationStore
     let sessionContent: SessionContent
+    let workspaceContent: WorkspaceContent?
+    let sidebarAccessory: AnyView?
     let inspectorPanes: [InspectorPane]
     @ViewBuilder let banner: Banner
 
@@ -14,11 +16,11 @@ struct NavigationShell<Banner: View>: View {
     var body: some View {
         NavigationSplitView {
             // AppKit saves and restores the sidebar's width in the app's defaults; `ideal` is the first launch's width.
-            SidebarView(store: store)
+            SidebarView(store: store, accessory: sidebarAccessory)
                 .navigationSplitViewColumnWidth(
                     min: Self.sidebarWidths.min, ideal: Self.sidebarWidths.ideal, max: Self.sidebarWidths.max)
         } detail: {
-            SessionColumn(store: store, sessionContent: sessionContent)
+            SessionColumn(store: store, sessionContent: sessionContent, workspaceContent: workspaceContent)
                 .safeAreaInset(edge: .top, spacing: 0) { banner }
                 .inspector(isPresented: $store.isInspectorPresented) {
                     InspectorColumn(store: store, panes: inspectorPanes)

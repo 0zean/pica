@@ -13,6 +13,10 @@ public struct ActionCommands: Commands {
 
     public var body: some Commands {
         CommandGroup(replacing: .appSettings) { items(.app) }
+        CommandGroup(before: .newItem) {
+            items(.file)
+            Divider()
+        }
         CommandGroup(replacing: .sidebar) { items(.view) }
         CommandGroup(before: .windowList) {
             items(.window)

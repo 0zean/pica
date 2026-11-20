@@ -135,6 +135,30 @@ function reviewTurns(): Turn[] {
   return [{ steps: [streamedText("Renaming two lines of the story.", 2), toolCall("edit", "story.txt", "edited"), usage(200, 40)] }];
 }
 
+/**
+ * The A-11 usage scenario: one turn in which the main agent (model-a, priced) delegates to `bulk-reader`, and the
+ * runtime reports the context in use, so the chip and the dashboard have figures from every source.
+ */
+function usageTurns(): Turn[] {
+  return [
+    {
+      steps: [
+        streamedText("Reading the schema through a cheaper agent.", 2),
+        usage(12_000, 800),
+        {
+          type: "subagent",
+          agentName: "bulk-reader",
+          model: "model-a",
+          viaTask: false,
+          steps: [{ type: "usage", model: "model-a", inputTokens: 90_000, cachedInputTokens: 0, outputTokens: 1_200 }],
+        },
+        { type: "contextUsage", currentTokens: 54_000, tokenLimit: 128_000 },
+        streamedText("The schema has 14 tables.", 1),
+      ],
+    },
+  ];
+}
+
 export const fakePicadScenarios: Record<string, Scenario> = {
   empty: scenario([]),
   timeline: scenario(timelineTurns()),
@@ -143,4 +167,5 @@ export const fakePicadScenarios: Record<string, Scenario> = {
   review: scenario(reviewTurns()),
   // A-13: no turns; `fake-picad.ts` also starts a stub MCP server that the GitHub preset reaches.
   mcp: scenario([]),
+  usage: scenario(usageTurns()),
 };

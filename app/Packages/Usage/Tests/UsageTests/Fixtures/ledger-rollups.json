@@ -1,0 +1,331 @@
+{
+  "now": "2026-11-16T12:00:00.000Z",
+  "workspaces": [
+    {
+      "id": "ws-1",
+      "name": "Payments"
+    },
+    {
+      "id": "ws-2",
+      "name": "Search"
+    },
+    {
+      "id": "ws-3",
+      "name": "Mobile"
+    }
+  ],
+  "rollups": {
+    "week.day": {
+      "rows": [
+        {
+          "key": "2026-11-10",
+          "calls": 3,
+          "inputTokens": 196000,
+          "cachedInputTokens": 72000,
+          "outputTokens": 3000,
+          "credits": 13.8975
+        },
+        {
+          "key": "2026-11-11",
+          "calls": 2,
+          "inputTokens": 48000,
+          "cachedInputTokens": 22000,
+          "outputTokens": 7200,
+          "credits": 6.28
+        },
+        {
+          "key": "2026-11-13",
+          "calls": 2,
+          "inputTokens": 80000,
+          "cachedInputTokens": 5000,
+          "outputTokens": 1700,
+          "credits": 2.5605
+        },
+        {
+          "key": "2026-11-15",
+          "calls": 2,
+          "inputTokens": 265000,
+          "cachedInputTokens": 80000,
+          "outputTokens": 4500,
+          "credits": 19.78
+        },
+        {
+          "key": "2026-11-16",
+          "calls": 3,
+          "inputTokens": 125000,
+          "cachedInputTokens": 109000,
+          "outputTokens": 16300,
+          "credits": 23.42
+        }
+      ],
+      "savings": {
+        "estimated": true,
+        "credits": 199.55
+      }
+    },
+    "week.model": {
+      "rows": [
+        {
+          "key": "claude-sonnet",
+          "calls": 6,
+          "inputTokens": 74000,
+          "cachedInputTokens": 231000,
+          "outputTokens": 9000,
+          "credits": 42.63
+        },
+        {
+          "key": "gemini-flash",
+          "calls": 2,
+          "inputTokens": 270000,
+          "cachedInputTokens": 25000,
+          "outputTokens": 3300,
+          "credits": 11.428
+        },
+        {
+          "key": "gpt-mini",
+          "calls": 4,
+          "inputTokens": 370000,
+          "cachedInputTokens": 32000,
+          "outputTokens": 20400,
+          "credits": 11.88
+        }
+      ],
+      "savings": {
+        "estimated": true,
+        "credits": 199.55
+      }
+    },
+    "week.agent": {
+      "rows": [
+        {
+          "key": "bulk-reader",
+          "calls": 2,
+          "inputTokens": 430000,
+          "cachedInputTokens": 20000,
+          "outputTokens": 4000,
+          "credits": 15.1675
+        },
+        {
+          "key": "code-writer",
+          "calls": 2,
+          "inputTokens": 130000,
+          "cachedInputTokens": 32000,
+          "outputTokens": 18000,
+          "credits": 5.58
+        },
+        {
+          "key": "main",
+          "calls": 7,
+          "inputTokens": 94000,
+          "cachedInputTokens": 236000,
+          "outputTokens": 9800,
+          "credits": 43.578
+        },
+        {
+          "key": "repo-scout",
+          "calls": 1,
+          "inputTokens": 60000,
+          "cachedInputTokens": 0,
+          "outputTokens": 900,
+          "credits": 1.6125
+        }
+      ],
+      "savings": {
+        "estimated": true,
+        "credits": 199.55
+      }
+    },
+    "week.workspace": {
+      "rows": [
+        {
+          "key": "ws-1",
+          "calls": 7,
+          "inputTokens": 364000,
+          "cachedInputTokens": 194000,
+          "outputTokens": 26200,
+          "credits": 41.3775
+        },
+        {
+          "key": "ws-2",
+          "calls": 4,
+          "inputTokens": 345000,
+          "cachedInputTokens": 85000,
+          "outputTokens": 6200,
+          "credits": 22.3405
+        },
+        {
+          "key": "ws-3",
+          "calls": 1,
+          "inputTokens": 5000,
+          "cachedInputTokens": 9000,
+          "outputTokens": 300,
+          "credits": 2.22
+        }
+      ],
+      "savings": {
+        "estimated": true,
+        "credits": 199.55
+      }
+    },
+    "week.ws-1.day": {
+      "rows": [
+        {
+          "key": "2026-11-10",
+          "calls": 3,
+          "inputTokens": 196000,
+          "cachedInputTokens": 72000,
+          "outputTokens": 3000,
+          "credits": 13.8975
+        },
+        {
+          "key": "2026-11-11",
+          "calls": 2,
+          "inputTokens": 48000,
+          "cachedInputTokens": 22000,
+          "outputTokens": 7200,
+          "credits": 6.28
+        },
+        {
+          "key": "2026-11-16",
+          "calls": 2,
+          "inputTokens": 120000,
+          "cachedInputTokens": 100000,
+          "outputTokens": 16000,
+          "credits": 21.2
+        }
+      ],
+      "savings": {
+        "estimated": true,
+        "credits": 112.9425
+      }
+    },
+    "week.ws-1.model": {
+      "rows": [
+        {
+          "key": "claude-sonnet",
+          "calls": 4,
+          "inputTokens": 54000,
+          "cachedInputTokens": 162000,
+          "outputTokens": 6700,
+          "credits": 31.11
+        },
+        {
+          "key": "gpt-mini",
+          "calls": 3,
+          "inputTokens": 310000,
+          "cachedInputTokens": 32000,
+          "outputTokens": 19500,
+          "credits": 10.2675
+        }
+      ],
+      "savings": {
+        "estimated": true,
+        "credits": 112.9425
+      }
+    },
+    "week.ws-1.agent": {
+      "rows": [
+        {
+          "key": "bulk-reader",
+          "calls": 1,
+          "inputTokens": 180000,
+          "cachedInputTokens": 0,
+          "outputTokens": 1500,
+          "credits": 4.6875
+        },
+        {
+          "key": "code-writer",
+          "calls": 2,
+          "inputTokens": 130000,
+          "cachedInputTokens": 32000,
+          "outputTokens": 18000,
+          "credits": 5.58
+        },
+        {
+          "key": "main",
+          "calls": 4,
+          "inputTokens": 54000,
+          "cachedInputTokens": 162000,
+          "outputTokens": 6700,
+          "credits": 31.11
+        }
+      ],
+      "savings": {
+        "estimated": true,
+        "credits": 112.9425
+      }
+    },
+    "today.workspace": {
+      "rows": [
+        {
+          "key": "ws-1",
+          "calls": 2,
+          "inputTokens": 120000,
+          "cachedInputTokens": 100000,
+          "outputTokens": 16000,
+          "credits": 21.2
+        },
+        {
+          "key": "ws-3",
+          "calls": 1,
+          "inputTokens": 5000,
+          "cachedInputTokens": 9000,
+          "outputTokens": 300,
+          "credits": 2.22
+        }
+      ],
+      "savings": {
+        "estimated": true,
+        "credits": 41.8
+      }
+    },
+    "session.s-2.agent": {
+      "rows": [
+        {
+          "key": "code-writer",
+          "calls": 2,
+          "inputTokens": 130000,
+          "cachedInputTokens": 32000,
+          "outputTokens": 18000,
+          "credits": 5.58
+        },
+        {
+          "key": "main",
+          "calls": 2,
+          "inputTokens": 38000,
+          "cachedInputTokens": 90000,
+          "outputTokens": 5200,
+          "credits": 21.9
+        }
+      ],
+      "savings": {
+        "estimated": true,
+        "credits": 61.38
+      }
+    },
+    "session.s-2.model": {
+      "rows": [
+        {
+          "key": "claude-sonnet",
+          "calls": 2,
+          "inputTokens": 38000,
+          "cachedInputTokens": 90000,
+          "outputTokens": 5200,
+          "credits": 21.9
+        },
+        {
+          "key": "gpt-mini",
+          "calls": 2,
+          "inputTokens": 130000,
+          "cachedInputTokens": 32000,
+          "outputTokens": 18000,
+          "credits": 5.58
+        }
+      ],
+      "savings": {
+        "estimated": true,
+        "credits": 61.38
+      }
+    }
+  }
+}

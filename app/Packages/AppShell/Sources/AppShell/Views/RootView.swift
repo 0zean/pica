@@ -7,18 +7,23 @@ public struct RootView: View {
     private let model: AppModel
     private let navigation: NavigationStore
     private let sessionContent: SessionContent
+    private let workspaceContent: WorkspaceContent?
+    private let sidebarAccessory: AnyView?
     private let inspectorPanes: [InspectorPane]
     private let onInteractive: @MainActor () -> Void
 
     /// `sessionContent` draws a selected session; the app target supplies the timeline, a feature of its own. It
-    /// supplies the inspector's panes the same way.
+    /// supplies the inspector's panes, a selected workspace's view and the sidebar's accessory (A-12) the same way.
     public init(
         model: AppModel, navigation: NavigationStore, sessionContent: @escaping SessionContent = SessionColumn.placeholder,
+        workspaceContent: WorkspaceContent? = nil, sidebarAccessory: AnyView? = nil,
         inspectorPanes: [InspectorPane] = [], onInteractive: @escaping @MainActor () -> Void = {}
     ) {
         self.model = model
         self.navigation = navigation
         self.sessionContent = sessionContent
+        self.workspaceContent = workspaceContent
+        self.sidebarAccessory = sidebarAccessory
         self.inspectorPanes = inspectorPanes
         self.onInteractive = onInteractive
     }
@@ -27,7 +32,10 @@ public struct RootView: View {
         let presentation = model.presentation
         // The split view does not expose an identifier of its own, so a container carries the root's.
         ZStack {
-            NavigationShell(store: navigation, sessionContent: sessionContent, inspectorPanes: inspectorPanes) {
+            NavigationShell(
+                store: navigation, sessionContent: sessionContent, workspaceContent: workspaceContent,
+                sidebarAccessory: sidebarAccessory, inspectorPanes: inspectorPanes
+            ) {
                 if presentation.style == .banner {
                     EngineStatusBanner(presentation: presentation)
                 }

@@ -9,7 +9,10 @@ import PicaProtocol
 import PicaSettings
 import Review
 import SwiftUI
+import Terminal
 import Timeline
+import Usage
+import Workspaces
 
 @main
 struct PicaApp: App {
@@ -28,6 +31,8 @@ struct PicaApp: App {
     @State private var quickOpen: QuickOpen
     /// Opens files in the user's editor; UI tests log the paths instead (`PICA_EXTERNAL_EDITOR_LOG`).
     private let editor = ExternalEditor.system(environment: ProcessInfo.processInfo.environment)
+    /// Each session's terminal panel and its shell, kept while the app runs (A-10).
+    @State private var terminals: SessionTerminals
 
     init() {
         guard let launch = AppLaunch.begin() else {
@@ -36,6 +41,7 @@ struct PicaApp: App {
         }
         _launch = State(initialValue: launch)
         _quickOpen = State(initialValue: QuickOpen(client: launch.model.client))
+        _terminals = State(initialValue: SessionTerminals(backend: EngineTerminalBackend(client: launch.model.client)))
         actions = AppActions(client: launch.model.client, navigation: launch.navigation)
         launch.model.start()
         launch.navigation.start()
@@ -45,8 +51,10 @@ struct PicaApp: App {
         Window("Pica", id: "main") {
             RootView(
                 model: launch.model, navigation: launch.navigation, sessionContent: sessionTimeline,
+                workspaceContent: workspaceScreen, sidebarAccessory: workspaceAddMenu,
                 inspectorPanes: inspectorPanes, onInteractive: launch.windowBecameInteractive)
                 .modifier(ActionHost(actions: actions))
+                .modifier(WorkspaceSheets(manager: actions.workspaces))
                 .overlay {
                     if quickOpen.isPresented {
                         ZStack {
@@ -84,6 +92,12 @@ struct PicaApp: App {
                 workspaceId: launch.navigation.selection.flatMap(launch.navigation.workspaceId(of:)))
         }
         .defaultSize(width: 900, height: 560)
+
+        // A-11: the Usage dashboard (⇧⌘U).
+        Window("Usage", id: UsageDashboardScreen.windowId) {
+            UsageDashboardScreen(client: launch.model.client)
+        }
+        .defaultSize(width: 980, height: 820)
     }
 
     private var mcpBackend: EngineMcpBackend {
@@ -108,6 +122,15 @@ struct PicaApp: App {
         ]
     }
 
+    /// A-12: a selected workspace's sources, sync status and repos, with its add buttons.
+    private func workspaceScreen(_ workspace: Workspace, repos: [Repo]) -> AnyView {
+        AnyView(WorkspaceScreen(workspace: workspace, repos: repos, manager: actions.workspaces))
+    }
+
+    private var workspaceAddMenu: AnyView {
+        AnyView(WorkspaceAddMenu(manager: actions.workspaces, workspaceId: actions.targetWorkspaceId))
+    }
+
     /// ⌘P searches the selected item's workspace, or the only workspace there is.
     private func presentQuickOpen() {
         let navigation = launch.navigation
@@ -120,10 +143,11 @@ struct PicaApp: App {
     /// changes (A-08) in their place. Features meet only here, in the app target (PLAN.md §4.3).
     private func sessionTimeline(_ session: Session, client: EngineClient) -> AnyView {
         AnyView(
-            SessionDetail(session: session) {
+            SessionDetail(session: session, terminals: terminals) {
                 VStack(spacing: 0) {
                     SessionTimelineScreen(
-                        sessionId: session.id, title: session.displayTitle, historySeq: session.lastSeq, client: client
+                        sessionId: session.id, title: session.displayTitle, historySeq: session.lastSeq, client: client,
+                        usageChip: { usage in usageChip(usage, session: session, client: client) }
                     )
                     .environment(timelineMetrics)
                     SessionComposer(session: session, client: client, drafts: drafts)
@@ -136,23 +160,66 @@ struct PicaApp: App {
     }
 }
 
+/// A-11's chip over the timeline, from the events the timeline (A-05) sums and the session's budget limit.
+@MainActor
+private func usageChip(_ usage: SessionUsageSummary, session: Session, client: EngineClient) -> AnyView {
+    let figures = SessionUsageFigures(
+        inputTokens: usage.inputTokens, cachedInputTokens: usage.cachedInputTokens, outputTokens: usage.outputTokens,
+        credits: usage.credits, contextTokens: usage.contextTokens, contextLimit: usage.contextLimit,
+        budgetCredits: session.budgetCredits)
+    return AnyView(UsageChipHost(figures: figures, sessionId: session.id, client: client))
+}
+
+/// Gives the chip the `openWindow` action for its Open Usage Dashboard button.
+private struct UsageChipHost: View {
+    let figures: SessionUsageFigures
+    let sessionId: Id
+    let client: EngineClient
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some View {
+        SessionUsageChip(figures: figures, sessionId: sessionId, client: client) {
+            openWindow(id: UsageDashboardScreen.windowId)
+        }
+    }
+}
+
 /// The session column's two views, switched from the toolbar or with ⇧⌘R: the conversation, and the review of what
-/// the session changed.
+/// the session changed. The terminal (A-10, ⌃`) opens under either.
 private struct SessionDetail<Conversation: View, Changes: View>: View {
     let session: Session
+    let terminals: SessionTerminals
     @ViewBuilder let conversation: Conversation
     @ViewBuilder let review: Changes
     @State private var reviewing = false
 
     var body: some View {
-        Group {
-            if reviewing {
-                review
-            } else {
-                conversation
+        VSplitView {
+            Group {
+                if reviewing {
+                    review
+                } else {
+                    conversation
+                }
+            }
+            .frame(minHeight: 200)
+            if let terminal = terminals.panels[session.id] {
+                SessionTerminalPanel(terminal: terminal) { terminals.close(session.id) }
+                    .frame(minHeight: 120, idealHeight: 260)
             }
         }
         .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Toggle(isOn: Binding(
+                    get: { terminals.isOpen(session.id) }, set: { terminals.setOpen($0, for: session.id) })
+                ) {
+                    Label("Terminal", systemImage: "terminal")
+                }
+                .toggleStyle(.button)
+                .keyboardShortcut("`", modifiers: .control)
+                .help(terminals.isOpen(session.id) ? "Close the Terminal (⌃`)" : "Open a Terminal (⌃`)")
+                .accessibilityIdentifier("pica.toolbar.terminal")
+            }
             ToolbarItem(placement: .primaryAction) {
                 Toggle(isOn: $reviewing) {
                     Label("Review Changes", systemImage: "plusminus")

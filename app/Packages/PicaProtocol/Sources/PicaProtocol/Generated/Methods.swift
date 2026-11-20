@@ -181,6 +181,13 @@ public enum Methods {
         public static let direction = MethodDirection.client
     }
 
+    public enum SessionRoots: PicaMethod {
+        public typealias Params = BySession
+        public typealias Result = SessionRootsResult
+        public static let name = "session.roots"
+        public static let direction = MethodDirection.client
+    }
+
     public enum SessionSend: PicaMethod {
         public typealias Params = SessionSendParams
         public typealias Result = SessionSendResult

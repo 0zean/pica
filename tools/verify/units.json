@@ -896,29 +896,36 @@
   ],
   "A-10": [
     {
-      "check": "UI test: a command's output appears and its working directory is the worktree."
+      "check": "UI test: a command's output appears and its working directory is the worktree.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/sessions/roots.test.ts packages/server/tests/sessions/roots.test.ts && cd .. && make app-ui-test-pica UI_TEST=TerminalUITests/testACommandsOutputAppearsAndItRunsInTheWorktree"
     },
     {
-      "check": "Closing the panel ends the shell process."
+      "check": "Closing the panel ends the shell process.",
+      "run": "swift test --package-path app/Packages/Terminal && make app-ui-test-pica UI_TEST=TerminalUITests/testClosingThePanelEndsTheShell"
     }
   ],
   "A-11": [
     {
-      "check": "View-model tests from ledger fixtures."
+      "check": "View-model tests from ledger fixtures.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/usage/app-fixtures.test.ts && cd .. && swift test --package-path app/Packages/Usage --filter 'UsageDashboardTests|SessionUsageTests'"
     },
     {
-      "check": "Chart snapshot tests."
+      "check": "Chart snapshot tests.",
+      "run": "swift test --package-path app/Packages/Usage --filter UsageSnapshotTests"
     },
     {
-      "check": "The savings figure is always labeled as an estimate (asserted in the snapshot)."
+      "check": "The savings figure is always labeled as an estimate (asserted in the snapshot).",
+      "run": "swift test --package-path app/Packages/Usage --filter 'UsageSnapshotTests|UsageDashboardTests/theSavingsFigureIsTheEnginesEstimateUnderItsLabel' && make app-ui-test-pica UI_TEST=UsageUITests"
     }
   ],
   "A-12": [
     {
-      "check": "UI test against the stub GitHub server imports a team and shows its repos as available."
+      "check": "UI test against the stub GitHub server imports a team and shows its repos as available.",
+      "run": "make engine-install && (cd engine && pnpm exec vitest run packages/server/tests/workspaces) && swift test --package-path app/Packages/Workspaces --filter 'TeamBrowserStoreTests|WorkspaceStoreTests|RepoLocationTests|SyncStatusTests' && make app-ui-test-pica UI_TEST=WorkspacesUITests/testImportingTeamsShowsTheirReposAsAvailable && make app-ui-test-pica UI_TEST=WorkspacesUITests/testAddingARepositoryByPathPinsItToTheWorkspace"
     },
     {
-      "check": "Auth errors display their `fix` action."
+      "check": "Auth errors display their `fix` action.",
+      "run": "make engine-install && (cd engine && pnpm exec vitest run packages/server/tests/workspaces/github-rpc.test.ts) && swift test --package-path app/Packages/Workspaces --filter 'FixPerformerTests|TeamBrowserStoreTests' && make app-ui-test-pica UI_TEST=WorkspacesUITests/testAnSSOErrorShowsItsFixAction && make app-ui-test-pica UI_TEST=WorkspacesUITests/testSignedOutShowsTheSignInFix"
     }
   ],
   "A-13": [
