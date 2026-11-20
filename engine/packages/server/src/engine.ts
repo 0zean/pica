@@ -63,6 +63,7 @@ import type { UsageMetricsExporter } from "./metrics-export.ts";
 import { MethodRouter } from "./router.ts";
 import { registerRepoHandlers } from "./repo-handlers.ts";
 import { registerSessionHandlers, toSessionDto } from "./session-handlers.ts";
+import { registerSessionRootsHandlers } from "./session-roots-handlers.ts";
 import { registerUsageHandlers } from "./usage-handlers.ts";
 import { registerWorkspaceHandlers } from "./workspace-handlers.ts";
 import { registerGitHubHandlers } from "./github-handlers.ts";
@@ -264,6 +265,7 @@ function startSessions(
     log.warn(`${String(recovered.value.length)} session(s) from the previous engine are resumable`);
   }
   registerSessionHandlers(router, { sessions: service, log: eventLog, events: options.store.events });
+  registerSessionRootsHandlers(router, options.store);
   // R-11: fan-out runs drive sessions through the same service and follow them on the same log.
   registerFanOutHandlers(
     router,

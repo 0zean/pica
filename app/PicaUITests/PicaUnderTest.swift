@@ -101,9 +101,10 @@ final class PicaUnderTest {
     }
 
     /// Launches Pica and waits until it is connected to its engine.
-    func launch() -> XCUIApplication {
+    /// `extraEnvironment` is added to Pica's: A-10 picks the terminal's shell with `SHELL`.
+    func launch(extraEnvironment: [String: String] = [:]) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchEnvironment = environment
+        app.launchEnvironment = environment.merging(extraEnvironment) { _, extra in extra }
         app.launch()
         XCTAssertTrue(app.windows.firstMatch.waitForExistence(timeout: 10), "the main window did not appear")
         let banner = app.descendants(matching: .any)["pica.engineStatus"]

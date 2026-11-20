@@ -896,10 +896,12 @@
   ],
   "A-10": [
     {
-      "check": "UI test: a command's output appears and its working directory is the worktree."
+      "check": "UI test: a command's output appears and its working directory is the worktree.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/sessions/roots.test.ts packages/server/tests/sessions/roots.test.ts && cd .. && make app-ui-test-pica UI_TEST=TerminalUITests/testACommandsOutputAppearsAndItRunsInTheWorktree"
     },
     {
-      "check": "Closing the panel ends the shell process."
+      "check": "Closing the panel ends the shell process.",
+      "run": "swift test --package-path app/Packages/Terminal && make app-ui-test-pica UI_TEST=TerminalUITests/testClosingThePanelEndsTheShell"
     }
   ],
   "A-11": [
