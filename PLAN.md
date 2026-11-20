@@ -971,9 +971,10 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 **A-11 · Usage and cost** — A-05, C-08, C-09
 - Build: session chip for context, tokens, and credits; dashboard by model, agent, workspace, and day; savings estimate; budget warnings.
 - Verify:
-  - [ ] View-model tests from ledger fixtures.
-  - [ ] Chart snapshot tests.
-  - [ ] The savings figure is always labeled as an estimate (asserted in the snapshot).
+  - [x] View-model tests from ledger fixtures.
+  - [x] Chart snapshot tests.
+  - [x] The savings figure is always labeled as an estimate (asserted in the snapshot).
+- Notes: `app/Packages/Usage`, specified in [docs/usage.md](docs/usage.md). A feature package (lint-arch rule added). No engine or protocol change: the production composition already served `usage.rollup`, `workspace.list` and `config.get`, and raising a budget through its approval broadcasts the new `budgetCredits` in `session.changed`. The session chip over the timeline shows context use, tokens and credits against the budget, toned by the worse of the context and budget fractions at C-09's thresholds (0.75 and 0.9); clicking it shows the session's credits by agent and model and the savings estimate. Timeline still sums the events and takes the chip from the app target (`usageChip:`); its own plain chip stays only for its snapshot tests. The dashboard is a window (Window ▸ Usage Dashboard, ⇧⌘U, `showUsage` in A-14's registry) with Today, Last 7 Days or Last 30 Days as whole UTC days, an optional workspace filter, totals, the savings estimate, a warning row for each workspace whose spend today reaches 75% of `budget.workspaceDailyCredits`, and Swift Charts of credits by day, model, agent and workspace (at most eight bars, the rest as Other). Day labels are made in UTC and drawn as categories, so a bar never moves to another day in the Mac's time zone. The savings figure reaches views only through `SavingsFigure`, titled "Estimated savings" with a footnote on how it is estimated; the snapshot tests read each drawing back with Vision's text recognition and fail if "savings" appears without "Estimated savings", since `ImageRenderer` drawings carry no accessibility tree. The ledger fixture (three workspaces, five sessions, four agents, three models, nine UTC days) is the engine's own `usage.rollup` answers, checked by `server/tests/usage/app-fixtures.test.ts`. `fake-picad` has a `usage` scenario; `UsageUITests` checks the chip, its popover and the dashboard against it. The dashboard warns against the config's daily cap only: a workspace's `overrides.dailyCredits` is stored but the engine does not enforce it yet.
 
 **A-12 · Workspace and repo management** — A-04, R-06
 - Build: add repo by path or URL, team browser with search and multi-select, sync status.
@@ -1178,7 +1179,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | A-08 | Review | A-04, R-01 | done |
 | A-09 | Files and quick open | A-04, R-08 | done |
 | A-10 | Terminal | A-04, R-02 | todo |
-| A-11 | Usage and cost | A-05, C-08, C-09 | todo |
+| A-11 | Usage and cost | A-05, C-08, C-09 | done |
 | A-12 | Workspace and repo management | A-04, R-06 | done |
 | A-13 | MCP management | A-04, M-06, M-07 | todo |
 | A-14 | Settings and command palette | A-04, E-04 | done |

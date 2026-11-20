@@ -13,6 +13,7 @@ public enum ActionID: String, CaseIterable, Sendable, Codable {
     case addRepository
     case importTeams
     case syncWorkspace
+    case showUsage
 }
 
 /// Where an action's menu item is.
@@ -79,6 +80,9 @@ public enum ActionCatalog {
         case .syncWorkspace:
             ActionDefinition(id: id, title: "Sync Workspace", menu: .file, defaultShortcut: nil,
                 keywords: ["refresh", "github", "team"])
+        case .showUsage:
+            ActionDefinition(id: id, title: "Usage Dashboard", menu: .window, defaultShortcut: Shortcut("shift+cmd+u"),
+                keywords: ["cost", "credits", "tokens", "budget", "savings"])
         }
     }
 }

@@ -23,6 +23,8 @@ const allowedPackageDependencies: Readonly<Record<string, readonly string[]>> = 
   PicaSettings: ["EngineClient", "PicaProtocol", "DesignSystem"],
   // A-12: workspace and repo management, the team browser and sync status; the app target runs its actions.
   Workspaces: ["EngineClient", "PicaProtocol", "DesignSystem"],
+  // A-11: the session chip and the Usage dashboard; the app target puts the chip in the timeline's header.
+  Usage: ["EngineClient", "PicaProtocol", "DesignSystem"],
 };
 
 const featuresPackage = "Features";

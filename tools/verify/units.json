@@ -904,13 +904,16 @@
   ],
   "A-11": [
     {
-      "check": "View-model tests from ledger fixtures."
+      "check": "View-model tests from ledger fixtures.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/usage/app-fixtures.test.ts && cd .. && swift test --package-path app/Packages/Usage --filter 'UsageDashboardTests|SessionUsageTests'"
     },
     {
-      "check": "Chart snapshot tests."
+      "check": "Chart snapshot tests.",
+      "run": "swift test --package-path app/Packages/Usage --filter UsageSnapshotTests"
     },
     {
-      "check": "The savings figure is always labeled as an estimate (asserted in the snapshot)."
+      "check": "The savings figure is always labeled as an estimate (asserted in the snapshot).",
+      "run": "swift test --package-path app/Packages/Usage --filter 'UsageSnapshotTests|UsageDashboardTests/theSavingsFigureIsTheEnginesEstimateUnderItsLabel' && make app-ui-test-pica UI_TEST=UsageUITests"
     }
   ],
   "A-12": [
