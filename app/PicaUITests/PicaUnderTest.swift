@@ -79,6 +79,8 @@ final class PicaUnderTest {
             "PICA_NOTIFICATIONS": "off",
             // A-09: files to open in the external editor are logged here instead.
             "PICA_EXTERNAL_EDITOR_LOG": editorLogPath,
+            // A-13: secrets stay in Pica's memory; a rebuilt, ad-hoc signed Pica would be asked for Keychain access.
+            "PICA_SECRETS": "memory",
         ]
         if scrollScript {
             environment["PICA_TIMELINE_SCROLL_SCRIPT"] = "1"

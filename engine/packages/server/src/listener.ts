@@ -69,8 +69,8 @@ export class SocketListener {
   }
 
   // A-13: an engine-to-client request with no connection to answer it, such as `secrets.get` for a
-  // background health check. Newest client first; one that does not serve the method (the CLI) is
-  // skipped.
+  // background health check. Asks each client, newest first, until one answers with a result: a
+  // test client or the CLI may lack the secret or the method while the app has it.
   async requestAnyClient<M extends EngineMethodName>(method: M, params: EngineMethodParams<M>): Promise<ClientReply> {
     let last: ClientReply = { ok: false, code: "client_disconnected", message: "no client is connected" };
     for (const connection of [...this.connections].reverse()) {
@@ -78,10 +78,12 @@ export class SocketListener {
         continue;
       }
       const reply = await connection.request(method, params);
-      if (reply.ok || (reply.code !== "method_not_found" && reply.code !== "client_disconnected")) {
+      if (reply.ok) {
         return reply;
       }
-      last = reply;
+      if (reply.code !== "method_not_found" && reply.code !== "client_disconnected") {
+        last = reply;
+      }
     }
     return last;
   }

@@ -141,4 +141,6 @@ export const fakePicadScenarios: Record<string, Scenario> = {
   composer: scenario(composerTurns()),
   approvals: scenario(approvalTurns()),
   review: scenario(reviewTurns()),
+  // A-13: no turns; `fake-picad.ts` also starts a stub MCP server that the GitHub preset reaches.
+  mcp: scenario([]),
 };
