@@ -965,8 +965,9 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 **A-10 · Terminal** — A-04, R-02
 - Build: terminal panel bound to the session's worktree.
 - Verify:
-  - [ ] UI test: a command's output appears and its working directory is the worktree.
-  - [ ] Closing the panel ends the shell process.
+  - [x] UI test: a command's output appears and its working directory is the worktree.
+  - [x] Closing the panel ends the shell process.
+- Notes: `app/Packages/Terminal`, specified in [docs/terminal.md](docs/terminal.md). A feature package (lint-arch rule added). The panel is a `VSplitView` at the bottom of the session column, under the conversation or the review, toggled by the toolbar's Terminal button (⌃`): the inspector is narrower than 80 columns and rebuilds its pane per workspace, and replacing the conversation as A-08's review does would hide what the shell is for. The pseudo-terminal and the shell live in the app (not sandboxed) through SwiftTerm's `LocalProcessTerminalView`: Node has no PTY, and `node-pty` is a native module off §8's list. The shell is the user's login shell (`SHELL`, else the account's) with an environment built for a terminal (no `PICA_*`). It starts in the first of the session's roots, which the engine answers through the new `session.roots` method (`Session.writeRoots` is empty until R-10, so until then a repo's root is its checkout); with several roots a header menu switches between them. `SessionTerminals` keeps a panel per session while Pica runs, so switching sessions keeps the shell. Closing the panel sends SIGHUP, then SIGKILL after 2 s, and keeps the shell until SwiftTerm's exit monitor has reaped it; SwiftTerm's `terminate()` is not used, since it sends SIGTERM (which interactive shells ignore) and cancels that monitor. The terminal view's accessibility value is the visible screen with wrapped lines joined, which the UI tests read; they run `/bin/sh` (`SHELL` in `PicaUnderTest.launch(extraEnvironment:)`). SwiftTerm is pinned at 1.18.0, the newest release without a build-tool plugin on its library; since 1.12 it compiles a Metal shader, so building Pica needs Xcode's Metal Toolchain (`xcodebuild -downloadComponent MetalToolchain`, once per machine; CI's `verify-app` installs it when missing). Not done: ⌃` is not an `ActionID` in A-14's registry, one shell per session, and the shell is not confined to the session's roots.
 
 **A-11 · Usage and cost** — A-05, C-08, C-09
 - Build: session chip for context, tokens, and credits; dashboard by model, agent, workspace, and day; savings estimate; budget warnings.
@@ -1176,7 +1177,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | A-07 | Approvals | A-05 | done |
 | A-08 | Review | A-04, R-01 | done |
 | A-09 | Files and quick open | A-04, R-08 | done |
-| A-10 | Terminal | A-04, R-02 | doing |
+| A-10 | Terminal | A-04, R-02 | done |
 | A-11 | Usage and cost | A-05, C-08, C-09 | todo |
 | A-12 | Workspace and repo management | A-04, R-06 | todo |
 | A-13 | MCP management | A-04, M-06, M-07 | todo |
