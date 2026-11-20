@@ -20,6 +20,7 @@ export class Connection {
   private readonly log: Logger;
   private readonly decoder: NdjsonDecoder;
   private handshaken = false;
+  private readonly handshakeListeners: (() => void)[] = [];
   private beforeHandshake: Promise<void> = Promise.resolve();
   private closed = false;
   private readonly clientRequests: ClientRequests;
@@ -51,6 +52,10 @@ export class Connection {
 
   get isHandshaken(): boolean {
     return this.handshaken;
+  }
+
+  onHandshake(listener: () => void): void {
+    this.handshakeListeners.push(listener);
   }
 
   onClose(listener: () => void): void {
@@ -137,10 +142,16 @@ export class Connection {
         },
         request: (method, params) => this.request(method, params),
       });
+      const greeted = message.method === "engine.hello" && !this.handshaken;
       if (message.method === "engine.hello") {
         this.handshaken = true;
       }
       this.writeFrame(encodeFrame(response));
+      if (greeted) {
+        for (const listener of this.handshakeListeners) {
+          listener();
+        }
+      }
     } catch (error) {
       this.writeFrame(encodeFrame(errorResponse(message.id, this.toFailure(error))));
       if (error instanceof RpcFailure && error.code === "protocol_version_mismatch") {

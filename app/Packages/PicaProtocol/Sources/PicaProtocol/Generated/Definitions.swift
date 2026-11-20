@@ -959,6 +959,7 @@ public enum ErrorCode: String, CaseIterable, Codable, Hashable, Sendable {
     case conflict
     case refusedWithoutForce = "refused_without_force"
     case invalidState = "invalid_state"
+    case cacheResetUnconfirmed = "cache_reset_unconfirmed"
     case authRequired = "auth_required"
     case authSsoRequired = "auth_sso_required"
     case authScopeMissing = "auth_scope_missing"
@@ -2675,25 +2676,31 @@ public typealias Id = String
 
 public struct McpAddParams: Codable, Hashable, Sendable {
     public var server: McpServerDef
+    public var workspaceId: Id?
 
     public init(
-        server: McpServerDef
+        server: McpServerDef,
+        workspaceId: Id? = nil
     ) {
         self.server = server
+        self.workspaceId = workspaceId
     }
 
     private enum CodingKeys: String, CodingKey {
         case server
+        case workspaceId
     }
 
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         server = try container.decode(McpServerDef.self, forKey: .server)
+        workspaceId = try container.decodeIfPresent(Id.self, forKey: .workspaceId)
     }
 
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(server, forKey: .server)
+        try container.encodeIfPresent(workspaceId, forKey: .workspaceId)
     }
 }
 
@@ -2723,45 +2730,57 @@ public struct McpAddResult: Codable, Hashable, Sendable {
 
 public struct McpAttachParams: Codable, Hashable, Sendable {
     public var serverId: Id
-    public var sessionId: Id
+    public var sessionId: Id?
+    public var workspaceId: Id?
     public var agent: String?
+    public var acknowledgeCacheReset: Bool?
 
     public init(
         serverId: Id,
-        sessionId: Id,
-        agent: String? = nil
+        sessionId: Id? = nil,
+        workspaceId: Id? = nil,
+        agent: String? = nil,
+        acknowledgeCacheReset: Bool? = nil
     ) {
         self.serverId = serverId
         self.sessionId = sessionId
+        self.workspaceId = workspaceId
         self.agent = agent
+        self.acknowledgeCacheReset = acknowledgeCacheReset
     }
 
     private enum CodingKeys: String, CodingKey {
         case serverId
         case sessionId
+        case workspaceId
         case agent
+        case acknowledgeCacheReset
     }
 
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         serverId = try container.decode(Id.self, forKey: .serverId)
-        sessionId = try container.decode(Id.self, forKey: .sessionId)
+        sessionId = try container.decodeIfPresent(Id.self, forKey: .sessionId)
+        workspaceId = try container.decodeIfPresent(Id.self, forKey: .workspaceId)
         agent = try container.decodeIfPresent(String.self, forKey: .agent)
+        acknowledgeCacheReset = try container.decodeIfPresent(Bool.self, forKey: .acknowledgeCacheReset)
     }
 
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(serverId, forKey: .serverId)
-        try container.encode(sessionId, forKey: .sessionId)
+        try container.encodeIfPresent(sessionId, forKey: .sessionId)
+        try container.encodeIfPresent(workspaceId, forKey: .workspaceId)
         try container.encodeIfPresent(agent, forKey: .agent)
+        try container.encodeIfPresent(acknowledgeCacheReset, forKey: .acknowledgeCacheReset)
     }
 }
 
 public struct McpAttachResult: Codable, Hashable, Sendable {
-    public var toolDefinitionTokens: Count
+    public var toolDefinitionTokens: Count?
 
     public init(
-        toolDefinitionTokens: Count
+        toolDefinitionTokens: Count?
     ) {
         self.toolDefinitionTokens = toolDefinitionTokens
     }
@@ -2772,7 +2791,7 @@ public struct McpAttachResult: Codable, Hashable, Sendable {
 
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        toolDefinitionTokens = try container.decode(Count.self, forKey: .toolDefinitionTokens)
+        toolDefinitionTokens = try container.decode(Count?.self, forKey: .toolDefinitionTokens)
     }
 
     public func encode(to encoder: any Encoder) throws {
@@ -2781,33 +2800,141 @@ public struct McpAttachResult: Codable, Hashable, Sendable {
     }
 }
 
-public struct McpDetachParams: Codable, Hashable, Sendable {
+public struct McpAttachment: Codable, Hashable, Sendable {
     public var serverId: Id
-    public var sessionId: Id
+    public var agent: String?
 
     public init(
         serverId: Id,
-        sessionId: Id
+        agent: String?
     ) {
         self.serverId = serverId
-        self.sessionId = sessionId
+        self.agent = agent
     }
 
     private enum CodingKeys: String, CodingKey {
         case serverId
-        case sessionId
+        case agent
     }
 
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         serverId = try container.decode(Id.self, forKey: .serverId)
-        sessionId = try container.decode(Id.self, forKey: .sessionId)
+        agent = try container.decode(String?.self, forKey: .agent)
     }
 
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(serverId, forKey: .serverId)
-        try container.encode(sessionId, forKey: .sessionId)
+        try container.encode(agent, forKey: .agent)
+    }
+}
+
+public struct McpAttachmentsParams: Codable, Hashable, Sendable {
+    public var sessionId: Id?
+    public var workspaceId: Id?
+
+    public init(
+        sessionId: Id? = nil,
+        workspaceId: Id? = nil
+    ) {
+        self.sessionId = sessionId
+        self.workspaceId = workspaceId
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case sessionId
+        case workspaceId
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        sessionId = try container.decodeIfPresent(Id.self, forKey: .sessionId)
+        workspaceId = try container.decodeIfPresent(Id.self, forKey: .workspaceId)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(sessionId, forKey: .sessionId)
+        try container.encodeIfPresent(workspaceId, forKey: .workspaceId)
+    }
+}
+
+public struct McpAttachmentsResult: Codable, Hashable, Sendable {
+    public var attachments: [McpAttachment]
+    public var toolDefinitionTokens: Count?
+
+    public init(
+        attachments: [McpAttachment],
+        toolDefinitionTokens: Count?
+    ) {
+        self.attachments = attachments
+        self.toolDefinitionTokens = toolDefinitionTokens
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case attachments
+        case toolDefinitionTokens
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        attachments = try container.decode([McpAttachment].self, forKey: .attachments)
+        toolDefinitionTokens = try container.decode(Count?.self, forKey: .toolDefinitionTokens)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(attachments, forKey: .attachments)
+        try container.encode(toolDefinitionTokens, forKey: .toolDefinitionTokens)
+    }
+}
+
+public struct McpDetachParams: Codable, Hashable, Sendable {
+    public var serverId: Id
+    public var sessionId: Id?
+    public var workspaceId: Id?
+    public var agent: String?
+    public var acknowledgeCacheReset: Bool?
+
+    public init(
+        serverId: Id,
+        sessionId: Id? = nil,
+        workspaceId: Id? = nil,
+        agent: String? = nil,
+        acknowledgeCacheReset: Bool? = nil
+    ) {
+        self.serverId = serverId
+        self.sessionId = sessionId
+        self.workspaceId = workspaceId
+        self.agent = agent
+        self.acknowledgeCacheReset = acknowledgeCacheReset
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case serverId
+        case sessionId
+        case workspaceId
+        case agent
+        case acknowledgeCacheReset
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        serverId = try container.decode(Id.self, forKey: .serverId)
+        sessionId = try container.decodeIfPresent(Id.self, forKey: .sessionId)
+        workspaceId = try container.decodeIfPresent(Id.self, forKey: .workspaceId)
+        agent = try container.decodeIfPresent(String.self, forKey: .agent)
+        acknowledgeCacheReset = try container.decodeIfPresent(Bool.self, forKey: .acknowledgeCacheReset)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(serverId, forKey: .serverId)
+        try container.encodeIfPresent(sessionId, forKey: .sessionId)
+        try container.encodeIfPresent(workspaceId, forKey: .workspaceId)
+        try container.encodeIfPresent(agent, forKey: .agent)
+        try container.encodeIfPresent(acknowledgeCacheReset, forKey: .acknowledgeCacheReset)
     }
 }
 
@@ -3432,6 +3559,36 @@ public struct McpPresetsResult: Codable, Hashable, Sendable {
     }
 }
 
+public struct McpRemoveParams: Codable, Hashable, Sendable {
+    public var id: Id
+    public var workspaceId: Id?
+
+    public init(
+        id: Id,
+        workspaceId: Id? = nil
+    ) {
+        self.id = id
+        self.workspaceId = workspaceId
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case workspaceId
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(Id.self, forKey: .id)
+        workspaceId = try container.decodeIfPresent(Id.self, forKey: .workspaceId)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encodeIfPresent(workspaceId, forKey: .workspaceId)
+    }
+}
+
 public struct McpRenderPresetParams: Codable, Hashable, Sendable {
     public var presetId: Id
     public var parameters: [String: String]
@@ -3870,25 +4027,31 @@ public enum McpTransport: Codable, Hashable, Sendable {
 
 public struct McpUpdateParams: Codable, Hashable, Sendable {
     public var server: McpServerDef
+    public var workspaceId: Id?
 
     public init(
-        server: McpServerDef
+        server: McpServerDef,
+        workspaceId: Id? = nil
     ) {
         self.server = server
+        self.workspaceId = workspaceId
     }
 
     private enum CodingKeys: String, CodingKey {
         case server
+        case workspaceId
     }
 
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         server = try container.decode(McpServerDef.self, forKey: .server)
+        workspaceId = try container.decodeIfPresent(Id.self, forKey: .workspaceId)
     }
 
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(server, forKey: .server)
+        try container.encodeIfPresent(workspaceId, forKey: .workspaceId)
     }
 }
 

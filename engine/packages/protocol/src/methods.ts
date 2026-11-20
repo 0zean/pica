@@ -8,7 +8,7 @@ import { FanOut } from "./dto/fanout.ts";
 import { FileEntry, QuickOpenHit } from "./dto/files.ts";
 import { Branch, Commit, FileDiff, GitStatus } from "./dto/git.ts";
 import { GitHubAuthStatus, GitHubRepo, GitHubTeam, PullRequest } from "./dto/github.ts";
-import { McpPreset, McpScope, McpServerDef, McpServerStatus } from "./dto/mcp.ts";
+import { McpAttachment, McpPreset, McpScope, McpServerDef, McpServerStatus } from "./dto/mcp.ts";
 import { McpImportNote, McpImportSelection, McpImportSnippet, McpImportSource } from "./dto/mcp-import.ts";
 import { ModelInfo, TierAssignment } from "./dto/models.ts";
 import { ApprovalChoice, ApprovalRequest } from "./dto/policy.ts";
@@ -196,18 +196,53 @@ export const methods = {
     z.object({ hits: z.array(QuickOpenHit) }),
   ),
 
+  // A-13: global servers, and the workspace's own over them when `workspaceId` is given.
   "mcp.list": clientMethod(
     z.object({ workspaceId: Id.optional() }),
     z.object({ servers: z.array(McpServerDef) }),
   ),
-  "mcp.add": clientMethod(z.object({ server: McpServerDef }), z.object({ server: McpServerDef })),
-  "mcp.update": clientMethod(z.object({ server: McpServerDef }), z.object({ server: McpServerDef })),
-  "mcp.remove": clientMethod(ById, Ok),
-  "mcp.attach": clientMethod(
-    z.object({ serverId: Id, sessionId: Id, agent: z.string().min(1).optional() }),
-    z.object({ toolDefinitionTokens: Count }),
+  // Writes `server` into `mcp.jsonc` at its scope: `global`, or `workspace` with `workspaceId`.
+  // Repo-scope servers live in the repo's own files and are edited there.
+  "mcp.add": clientMethod(
+    z.object({ server: McpServerDef, workspaceId: Id.optional() }),
+    z.object({ server: McpServerDef }),
   ),
-  "mcp.detach": clientMethod(z.object({ serverId: Id, sessionId: Id }), Ok),
+  "mcp.update": clientMethod(
+    z.object({ server: McpServerDef, workspaceId: Id.optional() }),
+    z.object({ server: McpServerDef }),
+  ),
+  // Removes the server from the workspace's file when `workspaceId` is given, else from the global
+  // one, and detaches it everywhere it was attached.
+  "mcp.remove": clientMethod(z.object({ id: Id, workspaceId: Id.optional() }), Ok),
+  // Exactly one of `sessionId` and `workspaceId`. Changing a live session's servers resets its
+  // prompt cache (PLAN.md §5.5), so it is refused with `mcp.cache_reset_unconfirmed` unless
+  // `acknowledgeCacheReset` is true; the session's runtime is then reopened with the new servers.
+  "mcp.attach": clientMethod(
+    z.object({
+      serverId: Id,
+      sessionId: Id.optional(),
+      workspaceId: Id.optional(),
+      agent: z.string().min(1).optional(),
+      acknowledgeCacheReset: z.boolean().optional(),
+    }),
+    z.object({ toolDefinitionTokens: Count.nullable() }),
+  ),
+  "mcp.detach": clientMethod(
+    z.object({
+      serverId: Id,
+      sessionId: Id.optional(),
+      workspaceId: Id.optional(),
+      agent: z.string().min(1).optional(),
+      acknowledgeCacheReset: z.boolean().optional(),
+    }),
+    Ok,
+  ),
+  // What is attached to one session or workspace, and the tool-definition tokens it adds to each
+  // prompt; null while a server's tool list is unknown.
+  "mcp.attachments": clientMethod(
+    z.object({ sessionId: Id.optional(), workspaceId: Id.optional() }),
+    z.object({ attachments: z.array(McpAttachment), toolDefinitionTokens: Count.nullable() }),
+  ),
   "mcp.status": clientMethod(ById, z.object({ status: McpServerStatus })),
   "mcp.statusList": clientMethod(Empty, z.object({ statuses: z.array(McpServerStatus) })),
   "mcp.restart": clientMethod(ById, Ok),

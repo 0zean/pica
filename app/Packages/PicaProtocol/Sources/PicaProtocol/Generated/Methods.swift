@@ -371,7 +371,7 @@ public enum Methods {
     }
 
     public enum McpRemove: PicaMethod {
-        public typealias Params = ById
+        public typealias Params = McpRemoveParams
         public typealias Result = Ok
         public static let name = "mcp.remove"
         public static let direction = MethodDirection.client
@@ -388,6 +388,13 @@ public enum Methods {
         public typealias Params = McpDetachParams
         public typealias Result = Ok
         public static let name = "mcp.detach"
+        public static let direction = MethodDirection.client
+    }
+
+    public enum McpAttachments: PicaMethod {
+        public typealias Params = McpAttachmentsParams
+        public typealias Result = McpAttachmentsResult
+        public static let name = "mcp.attachments"
         public static let direction = MethodDirection.client
     }
 

@@ -6,6 +6,7 @@ import {
   type QuotaInfo,
   type ResumeOptions,
   type RuntimeAccount,
+  type RuntimeMcpServers,
   type RuntimeModel,
   type RuntimeResult,
   type RuntimeSession,
@@ -16,6 +17,7 @@ import {
   type CopilotClientOptions,
   type CopilotSession,
   type GetAuthStatusResponse,
+  type MCPServerConfig,
   type ModelInfo,
   type SessionConfig,
 } from "@github/copilot-sdk";
@@ -187,12 +189,35 @@ function sessionConfig(sessionId: string, options: SessionOptions, session: Copi
             prompt: agent.prompt,
             ...(agent.model === undefined ? {} : { model: agent.model }),
             ...(agent.tools === undefined ? {} : { tools: [...agent.tools] }),
+            ...(agent.mcpServers === undefined ? {} : { mcpServers: toSdkMcpServers(agent.mcpServers) }),
           })),
         }),
+    ...(options.mcpServers === undefined ? {} : { mcpServers: toSdkMcpServers(options.mcpServers) }),
     // Hidden from the main agent only; sub-agents keep them (§2.1, `defaultAgent.excludedTools`).
     ...(options.excludedTools === undefined ? {} : { defaultAgent: { excludedTools: [...options.excludedTools] } }),
     ...(options.systemMessage === undefined ? {} : { systemMessage: { mode: "append", content: options.systemMessage } }),
     ...(options.tools === undefined || options.tools.length === 0 ? {} : { tools: toSdkTools(options.tools) }),
     ...(options.maxAiCredits === undefined ? {} : { sessionLimits: { maxAiCredits: options.maxAiCredits } }),
   };
+}
+
+function toSdkMcpServers(servers: RuntimeMcpServers): Record<string, MCPServerConfig> {
+  return Object.fromEntries(
+    Object.entries(servers).map(([id, server]): [string, MCPServerConfig] => {
+      if (server.type === "local") {
+        return [
+          id,
+          {
+            type: "local",
+            command: server.command,
+            args: [...server.args],
+            env: { ...server.env },
+            ...(server.cwd === undefined ? {} : { workingDirectory: server.cwd }),
+            tools: [...server.tools],
+          },
+        ];
+      }
+      return [id, { type: server.type, url: server.url, headers: { ...server.headers }, tools: [...server.tools] }];
+    }),
+  );
 }

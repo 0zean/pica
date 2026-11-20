@@ -41,3 +41,10 @@ export const PicaMcpServerEntry = z.discriminatedUnion("type", [McpFileStdioServ
 export type PicaMcpServerEntry = z.output<typeof PicaMcpServerEntry>;
 export type PicaMcpFileValue = z.output<typeof McpFileValue>;
 export type McpFileImportedFrom = z.output<typeof McpFileImportedFrom>;
+
+// A-13: the engine's record of attached servers (`mcp-attachments.json` in Pica's data directory).
+const McpFileAttachments = z.array(z.strictObject({ serverId: z.string().min(1), agent: z.string().min(1).nullable() }));
+export const McpAttachmentsFile = z.strictObject({
+  workspaces: z.record(z.string(), McpFileAttachments),
+  sessions: z.record(z.string(), McpFileAttachments),
+});

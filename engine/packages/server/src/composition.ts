@@ -17,6 +17,7 @@ import {
   userAgentsDir,
   userConfigPath,
 } from "@pica/adapters";
+import type { McpHttpFetch } from "@pica/adapters";
 import {
   agentTier,
   catalogTierResolver,
@@ -36,6 +37,7 @@ import type { AgentRuntime, JsonObject, JsonValue, ModelCatalog, PolicyContext, 
 import { loadEngineConfig } from "./composition-config.ts";
 import type { EngineConfig, EngineConfigOptions } from "./composition-config.ts";
 import { filesOptions } from "./composition-files.ts";
+import { mcpOptions } from "./composition-mcp.ts";
 import { reviewOptions, workspaceOptions } from "./composition-workspaces.ts";
 import type { EngineMcpImportOptions, EngineOptions, EngineSessionOptions } from "./engine.ts";
 import type { Logger } from "./logger.ts";
@@ -48,6 +50,8 @@ export interface ProductionOptions {
   // Tests stand in a FakeRuntime; production drives the Copilot CLI runtime (E-09).
   readonly runtime?: AgentRuntime;
   readonly managedPolicy?: EngineConfigOptions["managedPolicy"];
+  // Tests send remote MCP servers to a local stub (A-13).
+  readonly mcpFetch?: McpHttpFetch;
 }
 
 export interface ComposedEngine {
@@ -75,9 +79,19 @@ export function composeEngine(options: ProductionOptions): ComposedEngine {
   try {
     const config = loadEngineConfig(options);
     const workspaces = workspaceOptions({ store, dataDir, env: options.env });
+    const sessions = sessionOptions({ store, runtime, config, dataDir, homeDir: options.homeDir, log: options.log });
     return {
       options: {
-        sessions: sessionOptions({ store, runtime, config, dataDir, homeDir: options.homeDir, log: options.log }),
+        sessions,
+        mcp: mcpOptions({
+          homeDir: options.homeDir,
+          dataDir,
+          store,
+          env: options.env,
+          agents: () => sessions.catalog?.agents().map((agent) => agent.name) ?? [],
+          managedAllowlist: config.policy?.mcpAllowlist,
+          ...(options.mcpFetch === undefined ? {} : { fetch: options.mcpFetch }),
+        }),
         mcpImport: mcpImportOptions(options.homeDir),
         review: reviewOptions({ store, env: options.env }),
         ...workspaces,

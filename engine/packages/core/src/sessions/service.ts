@@ -19,6 +19,8 @@ import type {
 } from "./info.ts";
 import { describeRule, matchingRule, ruleFor } from "./permission-rules.ts";
 import type { PermissionRules } from "./permission-rules.ts";
+import { withMcpServers } from "./mcp-options.ts";
+import type { SessionMcp } from "./mcp-options.ts";
 import { isLiveSessionState, transitionSession } from "./transitions.ts";
 import type { SessionTrigger } from "./transitions.ts";
 
@@ -50,6 +52,8 @@ export interface SessionServiceDeps {
   // A-07: `permissions.tools` answer matching permission prompts, and "always allow" adds one.
   // Without it every prompt is an approval and `allow_always` allows once.
   readonly permissionRules?: PermissionRules;
+  // A-13: the session's attached MCP servers. Without it sessions get none.
+  readonly mcp?: SessionMcp;
 }
 
 export interface SessionLifecycleEvent {
@@ -91,6 +95,9 @@ export interface SessionService {
     budgetCredits?: number,
   ): Promise<SessionResult<undefined>>;
   runningCount(): number;
+  // A-13: reopens an idle session's runtime so it starts with the MCP servers attached now. The
+  // conversation continues; the prompt cache does not.
+  reconfigure(sessionId: string): Promise<SessionResult<undefined>>;
 }
 
 type AbortReason = "user" | "budget" | "engine";
@@ -612,6 +619,44 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     return sessionFailure("session.invalid_request", setup.error.message);
   }
 
+  async function withSessionMcp<T extends DelegationSetup["sessionOptions"]>(session: Session, options: T): Promise<T> {
+    return deps.mcp === undefined ? options : withMcpServers(options, await deps.mcp.options(session));
+  }
+
+  async function reconfigure(sessionId: string): Promise<SessionResult<undefined>> {
+    const stored = read(sessionId);
+    if (!stored.ok) {
+      return stored;
+    }
+    const current = live.get(sessionId);
+    if (current === undefined || stored.value.state !== "idle") {
+      return sessionFailure("session.invalid_state", `session ${sessionId} is ${stored.value.state}; only an idle session can be reopened`);
+    }
+    const delegation = await delegationOptions(stored.value);
+    if (!delegation.ok) {
+      return delegation;
+    }
+    live.delete(sessionId);
+    current.unsubscribe();
+    await current.runtime.close();
+    const limit = current.budget.limit();
+    const reopened = await deps.runtime.resumeSession({
+      sessionId,
+      workingDirectory: workingDirectory(stored.value) ?? "/",
+      ...withRuntimeLimit(runtimeLimit(limit)),
+      ...runtimeHooks(sessionId),
+      ...engineTools(stored.value),
+      ...(await withSessionMcp(stored.value, delegation.value)),
+    });
+    if (!reopened.ok) {
+      append(sessionId, { type: "session.error", payload: { code: reopened.error.code, message: reopened.error.message }, timestamp: clock() });
+      move(sessionId, "fail");
+      return runtimeFailure(reopened.error);
+    }
+    attach(sessionId, reopened.value, current.budget);
+    return ok(undefined);
+  }
+
   async function resume(sessionId: string): Promise<SessionResult<SessionInfo>> {
     const stored = read(sessionId);
     if (!stored.ok) {
@@ -636,7 +681,7 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
       ...withRuntimeLimit(runtimeLimit(limit)),
       ...runtimeHooks(sessionId),
       ...engineTools(stored.value),
-      ...delegation.value,
+      ...(await withSessionMcp(stored.value, delegation.value)),
     });
     if (!resumed.ok) {
       append(sessionId, { type: "session.error", payload: { code: resumed.error.code, message: resumed.error.message }, timestamp: clock() });
@@ -706,6 +751,7 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     }
     append(session.id, stateChanged(null, "starting", at));
     changed(session);
+    deps.mcp?.seed(session);
     return startRuntime(session, directory, request.prompt);
   }
 
@@ -725,7 +771,7 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
       ...withRuntimeLimit(runtimeLimit(limit)),
       ...runtimeHooks(session.id),
       ...engineTools(session),
-      ...delegation.value,
+      ...(await withSessionMcp(session, delegation.value)),
     });
     if (!opened.ok) {
       append(session.id, { type: "session.error", payload: { code: opened.error.code, message: opened.error.message }, timestamp: clock() });
@@ -856,6 +902,7 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
       return ok([...(live.get(sessionId)?.approvals.values() ?? [])]);
     },
     resolveApproval,
+    reconfigure,
     runningCount: () =>
       [...live.keys()].filter((id) => {
         const state = stateOf(id);

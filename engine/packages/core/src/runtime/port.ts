@@ -59,7 +59,28 @@ export interface CustomAgentDefinition {
   readonly prompt: string;
   readonly model?: string;
   readonly tools?: readonly string[];
+  readonly mcpServers?: RuntimeMcpServers;
 }
+
+// An MCP server as the runtime starts it, keyed by server id, with secrets already substituted
+// (M-03): it is never logged or stored. `tools` is the only filter; `["*"]` means every tool.
+export type RuntimeMcpServer =
+  | {
+      readonly type: "local";
+      readonly command: string;
+      readonly args: readonly string[];
+      readonly env: Readonly<Record<string, string>>;
+      readonly cwd?: string;
+      readonly tools: readonly string[];
+    }
+  | {
+      readonly type: "http" | "sse";
+      readonly url: string;
+      readonly headers: Readonly<Record<string, string>>;
+      readonly tools: readonly string[];
+    };
+
+export type RuntimeMcpServers = Readonly<Record<string, RuntimeMcpServer>>;
 
 // A tool the engine implements itself (R-08). `invoke` never throws; a failure is `ok: false`
 // with text the model can read. `parameters` is a JSON Schema object.
@@ -88,6 +109,8 @@ export interface SessionOptions {
   readonly tools?: readonly EngineTool[];
   readonly maxAiCredits?: number;
   readonly hooks?: RuntimeHooks;
+  // A-13: the session's attached MCP servers; absent means none.
+  readonly mcpServers?: RuntimeMcpServers;
 }
 
 export interface ResumeOptions extends SessionOptions {

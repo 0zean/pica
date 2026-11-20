@@ -63,6 +63,10 @@ export const McpPreset = z.object({
   parameters: z.array(McpPresetParameter),
 });
 
+// A-13: a server attached to a workspace (copied into each new session there) or to a session.
+// `agent` names the one agent that gets it; null means the whole session.
+export const McpAttachment = z.object({ serverId: Id, agent: z.string().min(1).nullable() });
+
 export const McpPresetIssue = z.object({ parameter: z.string().min(1), message: z.string().min(1) });
 
 export type SecretRef = z.infer<typeof SecretRef>;
@@ -73,3 +77,4 @@ export type McpServerStatus = z.infer<typeof McpServerStatus>;
 export type McpPresetParameter = z.infer<typeof McpPresetParameter>;
 export type McpPreset = z.infer<typeof McpPreset>;
 export type McpPresetIssue = z.infer<typeof McpPresetIssue>;
+export type McpAttachment = z.infer<typeof McpAttachment>;

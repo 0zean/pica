@@ -24,3 +24,4 @@ export type { OutputGuardDeps, PostToolUseHook } from "./post-tool-use.ts";
 export { truncateHeadTail, utf8ByteLength } from "./truncate-output.ts";
 export { describeRule, matchingRule, requestSubject, ruleFor, sameRule } from "./permission-rules.ts";
 export type { PermissionRules } from "./permission-rules.ts";
+export { withMcpServers, type SessionMcp, type SessionMcpOptions } from "./mcp-options.ts";

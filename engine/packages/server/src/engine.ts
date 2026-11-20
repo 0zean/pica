@@ -35,6 +35,7 @@ import type {
   ReadGateDeps,
   RepoRegistry,
   RuntimeHooks,
+  SessionMcp,
   SessionRoutingProfile,
   SessionService,
   Store,
@@ -56,6 +57,10 @@ import { registerGitHandlers } from "./git-handlers.ts";
 import type { EngineReviewOptions } from "./git-handlers.ts";
 import { registerMcpHealthHandlers, registerMcpPresetHandlers } from "./mcp-handlers.ts";
 import { registerMcpImportHandlers } from "./mcp-import-handlers.ts";
+import { composeMcp } from "./mcp-composition.ts";
+import type { ComposedMcp, EngineMcpOptions } from "./mcp-composition.ts";
+import { registerMcpManageHandlers } from "./mcp-manage-handlers.ts";
+import { createBrokerSecretSource } from "@pica/adapters";
 import { SocketListener } from "./listener.ts";
 import type { ConnectionLimits } from "./connection.ts";
 import type { Logger } from "./logger.ts";
@@ -112,6 +117,9 @@ export interface EngineOptions {
   readonly sessions?: EngineSessionOptions;
   // M-06: answers `mcp.status*` and `mcp.restart`, and broadcasts `mcp.statusChanged`.
   readonly mcpHealth?: McpHealthMonitor;
+  // A-13: answers `mcp.list`, `mcp.add`, `mcp.update`, `mcp.remove`, `mcp.attach*`, `mcp.detach`
+  // and `mcp.login`, checks every server's health, and starts sessions with their attached servers.
+  readonly mcp?: EngineMcpOptions;
   // D-20: the configured GitHub host, which the GitHub MCP preset follows. Absent means github.com.
   readonly githubHost?: GitHubHost;
   // R-06: answers `workspace.*`, `repo.list` and `repo.get`, and broadcasts `workspace.changed`.
@@ -141,6 +149,8 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
   const router = new MethodRouter();
   // Session changes can only be broadcast once the listener exists; recovery runs before it does.
   const started: { listener?: SocketListener } = {};
+  const sessionsHolder: { service?: SessionService | undefined } = {};
+  const mcp = options.mcp === undefined ? undefined : startMcp(options.mcp, options.sessions, scrubber, log, started, sessionsHolder);
   const fanOut = {
     ...(options.workspaces === undefined ? {} : { workspaces: options.workspaces }),
     onChanged: (info: FanOutInfo) => {
@@ -152,7 +162,8 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
       ? undefined
       : startSessions(router, options.sessions, log, scrubber, (session) => {
           started.listener?.broadcast("session.changed", { session: toSessionDto(session) });
-        }, fanOut);
+        }, fanOut, mcp?.sessionMcp);
+  sessionsHolder.service = sessions;
   registerEngineHandlers(router, {
     uptimeMs: () => performance.now() - startedAt,
     sessionsRunning: () => sessions?.runningCount() ?? 0,
@@ -168,8 +179,12 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
   }
   // M-02: presets need no adapter, so they are always answered.
   registerMcpPresetHandlers(router, options.githubHost === undefined ? {} : { githubHost: options.githubHost });
-  if (options.mcpHealth !== undefined) {
-    registerMcpHealthHandlers(router, options.mcpHealth);
+  const mcpHealth = options.mcpHealth ?? mcp?.monitor;
+  if (mcpHealth !== undefined) {
+    registerMcpHealthHandlers(router, mcpHealth);
+  }
+  if (mcp !== undefined) {
+    registerMcpManageHandlers(router, mcp);
   }
   if (options.mcpImport !== undefined) {
     const { workspaces } = options;
@@ -205,12 +220,46 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
     ...(options.limits === undefined ? {} : { limits: options.limits }),
   });
   started.listener = listener;
-  if (options.mcpHealth !== undefined) {
-    options.mcpHealth.subscribe((status) => {
+  if (mcpHealth !== undefined) {
+    mcpHealth.subscribe((status) => {
       listener.broadcast("mcp.statusChanged", { status });
     });
   }
+  if (mcp !== undefined) {
+    listener.onClientHello(mcp.resync);
+    listener.beforeClose(() => mcp.monitor.stop());
+    mcp.resync();
+  }
   return listener;
+}
+
+// The broker reads `keychain:` secrets from whichever app is connected; a session's runtime is
+// reopened through the session service once it exists.
+function startMcp(
+  options: EngineMcpOptions,
+  sessionOptions: EngineSessionOptions | undefined,
+  scrubber: McpSecretRedactor,
+  log: Logger,
+  started: { readonly listener?: SocketListener },
+  sessions: { readonly service?: SessionService | undefined },
+): ComposedMcp {
+  return composeMcp(options, {
+    redactor: scrubber,
+    log,
+    keychain: createBrokerSecretSource((params) =>
+      started.listener === undefined
+        ? Promise.resolve({ ok: false, code: "client_disconnected", message: "the engine is still starting" })
+        : started.listener.requestAnyClient("secrets.get", params),
+    ),
+    store: sessionOptions?.store,
+    reconfigure: async (sessionId) => {
+      if (sessions.service === undefined) {
+        return { ok: false, error: { code: "invalid_state", message: "sessions are not served by this engine" } };
+      }
+      const reopened = await sessions.service.reconfigure(sessionId);
+      return reopened.ok ? reopened : { ok: false, error: { code: reopened.error.code, message: reopened.error.message } };
+    },
+  });
 }
 
 function startSessions(
@@ -220,6 +269,7 @@ function startSessions(
   scrubber: McpSecretRedactor,
   onChanged: NonNullable<Parameters<typeof createSessionService>[0]["onChanged"]>,
   fanOut: { readonly workspaces?: WorkspaceService; readonly onChanged: (fanOut: FanOutInfo) => void },
+  mcp: SessionMcp | undefined,
 ): SessionService {
   const usage = options.usage ?? {};
   const ledger = withUsageLedger(createRedactingEventLog(createEventLog(options.store.events), scrubber), {
@@ -246,6 +296,7 @@ function startSessions(
     ...(options.delegator === undefined ? {} : { delegator: options.delegator }),
     ...(options.defaultProfile === undefined ? {} : { defaultProfile: options.defaultProfile }),
     ...(options.permissionRules === undefined ? {} : { permissionRules: options.permissionRules }),
+    ...(mcp === undefined ? {} : { mcp }),
     ...sessionHooks(options, eventLog, clock),
     ...lifecycleHooks(options.userHooks, log),
   });

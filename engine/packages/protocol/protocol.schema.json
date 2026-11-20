@@ -478,7 +478,7 @@
     "mcp.remove": {
       "direction": "client",
       "params": {
-        "$ref": "#/$defs/ById"
+        "$ref": "#/$defs/McpRemoveParams"
       },
       "result": {
         "$ref": "#/$defs/Ok"
@@ -500,6 +500,15 @@
       },
       "result": {
         "$ref": "#/$defs/Ok"
+      }
+    },
+    "mcp.attachments": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/McpAttachmentsParams"
+      },
+      "result": {
+        "$ref": "#/$defs/McpAttachmentsResult"
       }
     },
     "mcp.status": {
@@ -1654,6 +1663,7 @@
         "conflict",
         "refused_without_force",
         "invalid_state",
+        "cache_reset_unconfirmed",
         "auth_required",
         "auth_sso_required",
         "auth_scope_missing",
@@ -2703,6 +2713,9 @@
       "properties": {
         "server": {
           "$ref": "#/$defs/McpServerDef"
+        },
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
         }
       },
       "required": [
@@ -2729,24 +2742,95 @@
         "sessionId": {
           "$ref": "#/$defs/Id"
         },
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        },
         "agent": {
           "type": "string",
           "minLength": 1
+        },
+        "acknowledgeCacheReset": {
+          "type": "boolean"
         }
       },
       "required": [
-        "serverId",
-        "sessionId"
+        "serverId"
       ]
     },
     "McpAttachResult": {
       "type": "object",
       "properties": {
         "toolDefinitionTokens": {
-          "$ref": "#/$defs/Count"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Count"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": [
+        "toolDefinitionTokens"
+      ]
+    },
+    "McpAttachment": {
+      "type": "object",
+      "properties": {
+        "serverId": {
+          "$ref": "#/$defs/Id"
+        },
+        "agent": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "serverId",
+        "agent"
+      ]
+    },
+    "McpAttachmentsParams": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        }
+      }
+    },
+    "McpAttachmentsResult": {
+      "type": "object",
+      "properties": {
+        "attachments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/McpAttachment"
+          }
+        },
+        "toolDefinitionTokens": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Count"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "attachments",
         "toolDefinitionTokens"
       ]
     },
@@ -2758,11 +2842,20 @@
         },
         "sessionId": {
           "$ref": "#/$defs/Id"
+        },
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        },
+        "agent": {
+          "type": "string",
+          "minLength": 1
+        },
+        "acknowledgeCacheReset": {
+          "type": "boolean"
         }
       },
       "required": [
-        "serverId",
-        "sessionId"
+        "serverId"
       ]
     },
     "McpImportCandidate": {
@@ -3194,6 +3287,20 @@
         "presets"
       ]
     },
+    "McpRemoveParams": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
     "McpRenderPresetParams": {
       "type": "object",
       "properties": {
@@ -3484,6 +3591,9 @@
       "properties": {
         "server": {
           "$ref": "#/$defs/McpServerDef"
+        },
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
         }
       },
       "required": [
