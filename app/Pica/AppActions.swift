@@ -4,6 +4,7 @@ import EngineClient
 import PicaProtocol
 import PicaSettings
 import SwiftUI
+import Workspaces
 
 /// The action registry's handlers and the stores Settings and the ⌘K palette use (A-14, docs/settings.md). Features
 /// meet here, in the app target: each action is run by the feature it belongs to.
@@ -12,6 +13,8 @@ final class AppActions {
     let keybindings: KeybindingStore
     let settings: SettingsStore
     let settingsNavigation = SettingsNavigation()
+    /// Workspace and repo management (A-12).
+    let workspaces: WorkspaceManager
     private(set) var registry: ActionRegistry!
     private(set) var palette: CommandPaletteModel!
     /// Set by the main window, which has the `openSettings` action.
@@ -23,9 +26,14 @@ final class AppActions {
         let backend = EngineConfigBackend(client: client)
         keybindings = KeybindingStore(backend: backend)
         settings = SettingsStore(backend: backend)
+        workspaces = WorkspaceManager(
+            backend: EngineWorkspacesBackend(client: client),
+            fixes: FixPerformer.system(environment: ProcessInfo.processInfo.environment))
         registry = ActionRegistry { [unowned self] id in perform(id) }
         palette = CommandPaletteModel(registry: registry) { [unowned self] in sessionItems() }
         keybindings.start(client: client)
+        workspaces.onCreated = { [unowned navigation] workspace in navigation.select(.workspace(workspace.id)) }
+        workspaces.openSettings = { [unowned self] in perform(.openSettings) }
     }
 
     private func perform(_ id: ActionID) {
@@ -46,6 +54,32 @@ final class AppActions {
             navigation.selectSession(offset: 1)
         case .selectPreviousSession:
             navigation.selectSession(offset: -1)
+        case .newWorkspace:
+            workspaces.presentNewWorkspace()
+        case .addRepository:
+            withTargetWorkspace { workspaces.presentAddRepository(workspaceId: $0) }
+        case .importTeams:
+            withTargetWorkspace { workspaces.presentTeamBrowser(workspaceId: $0) }
+        case .syncWorkspace:
+            withTargetWorkspace { id in
+                navigation.select(.workspace(id))
+                workspaces.sync(workspaceId: id)
+            }
+        }
+    }
+
+    /// The workspace the sidebar's selection is in, else the only workspace there is.
+    func targetWorkspaceId() -> Id? {
+        navigation.selection.flatMap(navigation.workspaceId(of:))
+            ?? (navigation.workspaces.count == 1 ? navigation.workspaces.first?.id : nil)
+    }
+
+    /// With no workspace to act on, a new one is the way forward.
+    private func withTargetWorkspace(_ body: (Id) -> Void) {
+        if let id = targetWorkspaceId() {
+            body(id)
+        } else {
+            workspaces.presentNewWorkspace()
         }
     }
 

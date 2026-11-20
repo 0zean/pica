@@ -9,11 +9,16 @@ public enum ActionID: String, CaseIterable, Sendable, Codable {
     case toggleInspector
     case selectNextSession
     case selectPreviousSession
+    case newWorkspace
+    case addRepository
+    case importTeams
+    case syncWorkspace
 }
 
 /// Where an action's menu item is.
 public enum ActionMenu: Sendable {
     case app
+    case file
     case view
     case window
 }
@@ -62,6 +67,18 @@ public enum ActionCatalog {
         case .selectPreviousSession:
             ActionDefinition(id: id, title: "Select Previous Session", menu: .window, defaultShortcut: Shortcut("cmd+alt+up"),
                 keywords: ["go"])
+        case .newWorkspace:
+            ActionDefinition(id: id, title: "New Workspace…", menu: .file, defaultShortcut: Shortcut("cmd+shift+n"),
+                keywords: ["create"])
+        case .addRepository:
+            ActionDefinition(id: id, title: "Add Repository…", menu: .file, defaultShortcut: nil,
+                keywords: ["repo", "clone", "folder", "url"])
+        case .importTeams:
+            ActionDefinition(id: id, title: "Import GitHub Teams…", menu: .file, defaultShortcut: nil,
+                keywords: ["team", "github", "repos"])
+        case .syncWorkspace:
+            ActionDefinition(id: id, title: "Sync Workspace", menu: .file, defaultShortcut: nil,
+                keywords: ["refresh", "github", "team"])
         }
     }
 }

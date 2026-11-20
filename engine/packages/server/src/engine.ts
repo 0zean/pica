@@ -65,6 +65,8 @@ import { registerRepoHandlers } from "./repo-handlers.ts";
 import { registerSessionHandlers, toSessionDto } from "./session-handlers.ts";
 import { registerUsageHandlers } from "./usage-handlers.ts";
 import { registerWorkspaceHandlers } from "./workspace-handlers.ts";
+import { registerGitHubHandlers } from "./github-handlers.ts";
+import type { EngineGitHubOptions } from "./github-handlers.ts";
 
 export interface EngineUsageOptions extends Partial<UsagePricing> {
   readonly reasoningPrices?: () => TokenPrices | null;
@@ -125,6 +127,8 @@ export interface EngineOptions {
   readonly files?: FilesService;
   // A-08: answers `git.*` and `github.createPullRequest` for the review.
   readonly review?: EngineReviewOptions;
+  // A-12: answers `github.authStatus`, `github.listTeams` and `github.listTeamRepos`.
+  readonly github?: EngineGitHubOptions;
 }
 
 export interface EngineMcpImportOptions {
@@ -197,6 +201,9 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
   }
   if (options.review !== undefined) {
     registerGitHandlers(router, options.review);
+  }
+  if (options.github !== undefined) {
+    registerGitHubHandlers(router, options.github);
   }
   const listener = await SocketListener.start({
     socketPath: options.socketPath,

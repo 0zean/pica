@@ -6,11 +6,15 @@ import SwiftUI
 /// Draws a selected session in the session column, given the client to follow it with.
 public typealias SessionContent = @MainActor (Session, EngineClient) -> AnyView
 
+/// Draws a selected workspace in the session column, given its repos as the sidebar holds them (A-12).
+public typealias WorkspaceContent = @MainActor (Workspace, [Repo]) -> AnyView
+
 /// The middle column: the selected session, as the app target draws it (the timeline, A-05), or what is selected
 /// when it is not a session.
 public struct SessionColumn: View {
     let store: NavigationStore
     let sessionContent: SessionContent
+    let workspaceContent: WorkspaceContent?
 
     /// Names the session, for previews and tests that run without the timeline.
     public static let placeholder: SessionContent = { session, _ in
@@ -30,7 +34,10 @@ public struct SessionColumn: View {
     @ViewBuilder private var content: some View {
         switch store.selection {
         case .workspace(let id):
-            if let workspace = store.workspace(id) {
+            if let workspace = store.workspace(id), let workspaceContent {
+                workspaceContent(workspace, store.reposByWorkspace[id] ?? [])
+                    .id(id)
+            } else if let workspace = store.workspace(id) {
                 let repos = store.reposByWorkspace[id]?.count ?? 0
                 let sessions = store.sidebar.first { $0.id == id }?.sessions.count ?? 0
                 SelectedItem(title: workspace.name, detail: "Workspace · \(repos) repos · \(sessions) sessions")
