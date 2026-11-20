@@ -99,7 +99,7 @@ final class FakeWorkspacesBackend: WorkspacesBackend, @unchecked Sendable {
 
 extension GitHubRepo {
     static func fixture(_ fullName: String) -> GitHubRepo {
-        GitHubRepo(fullName: fullName, cloneUrl: "https://github.com/\(fullName).git", archived: false, fork: false, topics: [])
+        GitHubRepo(fullName: fullName, cloneUrl: "https://git.example.com/\(fullName).git", archived: false, fork: false, topics: [])
     }
 }
 
@@ -108,7 +108,7 @@ extension RpcError {
         code: -32000, message: "An organization on github.com uses SAML single sign-on.",
         data: ErrorData(
             code: .authSsoRequired,
-            fix: FixAction(kind: .openUrl, label: "Authorize for single sign-on", target: "https://github.com/orgs/vault-corp/sso")))
+            fix: FixAction(kind: .openUrl, label: "Authorize for single sign-on", target: "https://git.example.com/orgs/vault-corp/sso")))
     static let sourceExists = RpcError(
         code: -32000, message: "the workspace already has this source", data: ErrorData(code: .alreadyExists))
     static let noRemote = RpcError(

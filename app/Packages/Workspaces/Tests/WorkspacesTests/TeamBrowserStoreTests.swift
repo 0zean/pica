@@ -73,7 +73,7 @@ import Testing
         }
         #expect(problem.code == .authSsoRequired)
         #expect(problem.fix?.kind == .openUrl)
-        #expect(problem.fix?.target == "https://github.com/orgs/vault-corp/sso")
+        #expect(problem.fix?.target == "https://git.example.com/orgs/vault-corp/sso")
         #expect(store.selected == ["vault-corp/vault"])
         #expect(workspace.sync == .failed(problem))
     }

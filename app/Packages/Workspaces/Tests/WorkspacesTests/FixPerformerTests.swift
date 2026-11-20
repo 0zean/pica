@@ -22,9 +22,9 @@ import Testing
     }
 
     @Test func anSSOFixOpensTheAuthorizationURL() {
-        let fix = FixAction(kind: .openUrl, label: "Authorize for single sign-on", target: "https://github.com/orgs/acme/sso")
+        let fix = FixAction(kind: .openUrl, label: "Authorize for single sign-on", target: "https://git.example.com/orgs/acme/sso")
         #expect(performer.perform(fix) == .done)
-        #expect(recorder.all == ["open https://github.com/orgs/acme/sso"])
+        #expect(recorder.all == ["open https://git.example.com/orgs/acme/sso"])
     }
 
     @Test func aScopeFixCopiesTheCommandAndSaysSo() {
@@ -52,7 +52,7 @@ import Testing
     @Test func anEngineErrorKeepsItsCodeAndFix() {
         let problem = WorkspaceProblem(EngineClientError.engine(.ssoRequired))
         #expect(problem.code == .authSsoRequired)
-        #expect(problem.fix?.target == "https://github.com/orgs/vault-corp/sso")
+        #expect(problem.fix?.target == "https://git.example.com/orgs/vault-corp/sso")
         #expect(WorkspaceProblem(EngineClientError.notConnected).fix?.kind == .retry)
     }
 

@@ -22,7 +22,7 @@ struct AddRepositorySheet: View {
                 .foregroundStyle(Palette.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
             HStack(spacing: Spacing.small) {
-                TextField("/path/to/repo or https://github.com/org/repo", text: $location)
+                TextField("/path/to/repo or https://host/org/repo.git", text: $location)
                     .textFieldStyle(.roundedBorder)
                     .focused($fieldFocused)
                     .onSubmit(add)

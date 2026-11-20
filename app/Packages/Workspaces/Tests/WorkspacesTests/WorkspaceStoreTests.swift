@@ -10,10 +10,10 @@ import Testing
     @Test func aPathIsRegisteredInPlaceAndAURLIsClonedThenEachIsPinned() async {
         let store = WorkspaceStore(workspaceId: "w1", backend: backend)
         #expect(await store.addRepo("  /work/atlas/ "))
-        #expect(await store.addRepo("https://github.com/acme/beacon"))
+        #expect(await store.addRepo("https://git.example.com/acme/beacon"))
         #expect(backend.calls == [
             "addPath /work/atlas", "pin added-1 w1",
-            "addUrl https://github.com/acme/beacon", "pin added-2 w1",
+            "addUrl https://git.example.com/acme/beacon", "pin added-2 w1",
         ])
         #expect(store.adding == .idle)
     }
@@ -72,7 +72,7 @@ import Testing
         ("/work/atlas/../beacon/", .path("/work/beacon")),
         ("~/src/atlas", .path("/Users/tester/src/atlas")),
         ("~", .path("/Users/tester")),
-        ("https://github.com/acme/atlas", .url("https://github.com/acme/atlas")),
+        ("https://git.example.com/acme/atlas", .url("https://git.example.com/acme/atlas")),
         ("ssh://git@github.com/acme/atlas.git", .url("ssh://git@github.com/acme/atlas.git")),
         ("git@github.com:acme/atlas.git", .url("git@github.com:acme/atlas.git")),
     ])
