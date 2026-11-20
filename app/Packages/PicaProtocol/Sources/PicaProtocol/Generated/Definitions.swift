@@ -5244,6 +5244,71 @@ public struct SessionResumeResult: Codable, Hashable, Sendable {
     }
 }
 
+public struct SessionRoot: Codable, Hashable, Sendable {
+    public var path: AbsolutePath
+    public var access: Access
+    public var repoId: Id?
+
+    public init(
+        path: AbsolutePath,
+        access: Access,
+        repoId: Id?
+    ) {
+        self.path = path
+        self.access = access
+        self.repoId = repoId
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case path
+        case access
+        case repoId
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        path = try container.decode(AbsolutePath.self, forKey: .path)
+        access = try container.decode(Access.self, forKey: .access)
+        repoId = try container.decode(Id?.self, forKey: .repoId)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(path, forKey: .path)
+        try container.encode(access, forKey: .access)
+        try container.encode(repoId, forKey: .repoId)
+    }
+
+    public enum Access: String, CaseIterable, Codable, Hashable, Sendable {
+        case write
+        case reference
+    }
+}
+
+public struct SessionRootsResult: Codable, Hashable, Sendable {
+    public var roots: [SessionRoot]
+
+    public init(
+        roots: [SessionRoot]
+    ) {
+        self.roots = roots
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case roots
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        roots = try container.decode([SessionRoot].self, forKey: .roots)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(roots, forKey: .roots)
+    }
+}
+
 public struct SessionSendParams: Codable, Hashable, Sendable {
     public var sessionId: Id
     public var text: String

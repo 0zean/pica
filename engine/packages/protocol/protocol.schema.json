@@ -232,6 +232,15 @@
         "$ref": "#/$defs/SessionGetResult"
       }
     },
+    "session.roots": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/BySession"
+      },
+      "result": {
+        "$ref": "#/$defs/SessionRootsResult"
+      }
+    },
     "session.send": {
       "direction": "client",
       "params": {
@@ -4561,6 +4570,50 @@
       },
       "required": [
         "session"
+      ]
+    },
+    "SessionRoot": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/AbsolutePath"
+        },
+        "access": {
+          "type": "string",
+          "enum": [
+            "write",
+            "reference"
+          ]
+        },
+        "repoId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "path",
+        "access",
+        "repoId"
+      ]
+    },
+    "SessionRootsResult": {
+      "type": "object",
+      "properties": {
+        "roots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SessionRoot"
+          }
+        }
+      },
+      "required": [
+        "roots"
       ]
     },
     "SessionSendParams": {

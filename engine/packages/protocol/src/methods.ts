@@ -13,7 +13,7 @@ import { McpImportNote, McpImportSelection, McpImportSnippet, McpImportSource } 
 import { ModelInfo, TierAssignment } from "./dto/models.ts";
 import { ApprovalChoice, ApprovalRequest } from "./dto/policy.ts";
 import { Repo, RepoCard, RepoSource, RepoSourceKind } from "./dto/repo.ts";
-import { SendMode, Session } from "./dto/session.ts";
+import { SendMode, Session, SessionRoot } from "./dto/session.ts";
 import { SavingsEstimate, UsageGroupBy, UsageRollupRow } from "./dto/usage.ts";
 import { RoutingProfile, Workspace, WorkspaceOverrides } from "./dto/workspace.ts";
 
@@ -119,6 +119,8 @@ export const methods = {
   ),
   "session.list": clientMethod(z.object({ workspaceId: Id.optional() }), z.object({ sessions: z.array(Session) })),
   "session.get": clientMethod(BySession, z.object({ session: Session })),
+  // A-10: write roots first, the first being where the session's agent runs.
+  "session.roots": clientMethod(BySession, z.object({ roots: z.array(SessionRoot) })),
   "session.send": clientMethod(
     z.object({ sessionId: Id, text: z.string().min(1), mode: SendMode }),
     z.object({ accepted: z.boolean() }),
