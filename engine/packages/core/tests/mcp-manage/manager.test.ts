@@ -122,11 +122,21 @@ describe("attaching", () => {
 describe("removing", () => {
   it("detaches a server only where it no longer resolves", async () => {
     const { deps, state } = harness("ended");
-    const own = { ...scripts, id: "x", scope: "workspace" } as const;
+    const own: McpServerDef = { ...scripts, id: "x", scope: "workspace" };
     let inA = true;
-    deps.definitions = (workspaceId) => ok(workspaceId === "A" ? (inA ? [own] : []) : workspaceId === "B" ? [own] : []);
-    deps.sessions.get = (sessionId) => ok({ workspaceId: sessionId === "sA" ? "A" : "B", state: "ended" });
-    const manager = createMcpManager({ ...deps, files: { ...deps.files, ids: () => ok(["x"]), write: () => { inA = false; return ok(undefined); } } });
+    const manager = createMcpManager({
+      ...deps,
+      definitions: (workspaceId) => ok(workspaceId === "A" ? (inA ? [own] : []) : workspaceId === "B" ? [own] : []),
+      sessions: { ...deps.sessions, get: (sessionId) => ok({ workspaceId: sessionId === "sA" ? "A" : "B", state: "ended" }) },
+      files: {
+        ...deps.files,
+        ids: () => ok(["x"]),
+        write: () => {
+          inA = false;
+          return ok(undefined);
+        },
+      },
+    });
     for (const workspaceId of ["A", "B"]) {
       await manager.attach({ serverId: "x", target: { kind: "workspace", workspaceId }, agent: null, acknowledgeCacheReset: false });
     }
