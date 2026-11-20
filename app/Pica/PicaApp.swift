@@ -9,6 +9,7 @@ import PicaSettings
 import Review
 import SwiftUI
 import Timeline
+import Usage
 
 @main
 struct PicaApp: App {
@@ -74,6 +75,12 @@ struct PicaApp: App {
             }
         }
         .defaultSize(width: 760, height: 640)
+
+        // A-11: the Usage dashboard (⇧⌘U).
+        Window("Usage", id: UsageDashboardScreen.windowId) {
+            UsageDashboardScreen(client: launch.model.client)
+        }
+        .defaultSize(width: 980, height: 820)
     }
 
     /// The inspector's panes, one per feature (A-09 Files).
@@ -103,7 +110,8 @@ struct PicaApp: App {
             SessionDetail(session: session) {
                 VStack(spacing: 0) {
                     SessionTimelineScreen(
-                        sessionId: session.id, title: session.displayTitle, historySeq: session.lastSeq, client: client
+                        sessionId: session.id, title: session.displayTitle, historySeq: session.lastSeq, client: client,
+                        usageChip: { usage in usageChip(usage, session: session, client: client) }
                     )
                     .environment(timelineMetrics)
                     SessionComposer(session: session, client: client, drafts: drafts)
@@ -113,6 +121,30 @@ struct PicaApp: App {
                 SessionReview(session: session, client: client)
                     .environment(reviewMetrics)
             })
+    }
+}
+
+/// A-11's chip over the timeline, from the events the timeline (A-05) sums and the session's budget limit.
+@MainActor
+private func usageChip(_ usage: SessionUsageSummary, session: Session, client: EngineClient) -> AnyView {
+    let figures = SessionUsageFigures(
+        inputTokens: usage.inputTokens, cachedInputTokens: usage.cachedInputTokens, outputTokens: usage.outputTokens,
+        credits: usage.credits, contextTokens: usage.contextTokens, contextLimit: usage.contextLimit,
+        budgetCredits: session.budgetCredits)
+    return AnyView(UsageChipHost(figures: figures, sessionId: session.id, client: client))
+}
+
+/// Gives the chip the `openWindow` action for its Open Usage Dashboard button.
+private struct UsageChipHost: View {
+    let figures: SessionUsageFigures
+    let sessionId: Id
+    let client: EngineClient
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some View {
+        SessionUsageChip(figures: figures, sessionId: sessionId, client: client) {
+            openWindow(id: UsageDashboardScreen.windowId)
+        }
     }
 }
 

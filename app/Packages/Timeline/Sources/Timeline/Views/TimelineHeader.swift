@@ -2,9 +2,13 @@ import DesignSystem
 import SwiftUI
 
 /// The bar over the timeline: the session's title, and its context use, tokens and credits.
+/// Draws the header's usage chip from the session's summed usage.
+public typealias UsageChipView = @MainActor (SessionUsageSummary) -> AnyView
+
 struct TimelineHeader: View {
     let store: TimelineStore
     let title: String
+    var usageChip: UsageChipView?
 
     var body: some View {
         HStack(spacing: Spacing.small) {
@@ -23,7 +27,11 @@ struct TimelineHeader: View {
                     .truncationMode(.tail)
             }
             Spacer(minLength: 0)
-            UsageChip(usage: store.usage)
+            if let usageChip {
+                usageChip(store.usage)
+            } else {
+                UsageChip(usage: store.usage)
+            }
         }
         .padding(.horizontal, Spacing.large)
         .padding(.vertical, Spacing.small)
@@ -36,7 +44,7 @@ struct TimelineHeader: View {
     }
 }
 
-/// Context use, tokens and credits in one chip; in a narrow column, context use alone, or nothing, so the chip never
+/// Context use, tokens and credits in one chip, when the app gives the header no chip of its own; in a narrow column, context use alone, or nothing, so the chip never
 /// sets the column's minimum width.
 struct UsageChip: View {
     let usage: SessionUsageSummary
