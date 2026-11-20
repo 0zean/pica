@@ -36,8 +36,10 @@ import Testing
         try await waitUntil { backend.heldCount == 1 }
         backend.release()
         try await waitUntil { store.answeredQuery == "abc" }
-        // The empty query lists the repos when the panel opens.
-        #expect(backend.queries == ["", "a", "abc"])
+        // The empty query lists the repos when the panel opens; it is sent apart from the keystrokes, so it may arrive
+        // after the first one.
+        #expect(backend.queries.contains(""))
+        #expect(backend.queries.filter { !$0.isEmpty } == ["a", "abc"])
         #expect(store.rows.map(\.reference.path) == ["abc.swift"])
     }
 

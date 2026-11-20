@@ -5,15 +5,17 @@ import SwiftUI
 public struct SessionTimelineView: View {
     private let store: TimelineStore
     private let title: String
+    private let usageChip: UsageChipView?
 
-    public init(store: TimelineStore, title: String) {
+    public init(store: TimelineStore, title: String, usageChip: UsageChipView? = nil) {
         self.store = store
         self.title = title
+        self.usageChip = usageChip
     }
 
     public var body: some View {
         VStack(spacing: 0) {
-            TimelineHeader(store: store, title: title)
+            TimelineHeader(store: store, title: title, usageChip: usageChip)
             if !store.hasCaughtUp {
                 ProgressView("Loading the session…")
                     .controlSize(.small)

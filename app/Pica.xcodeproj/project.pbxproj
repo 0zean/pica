@@ -15,6 +15,7 @@
 		A1000000000000000000C001 /* Composer in Frameworks */ = {isa = PBXBuildFile; productRef = A1000000000000000000C002 /* Composer */; };
 		A1000000000000000000F001 /* Files in Frameworks */ = {isa = PBXBuildFile; productRef = A1000000000000000000F002 /* Files */; };
 		A1000000000000000000A801 /* Review in Frameworks */ = {isa = PBXBuildFile; productRef = A1000000000000000000A802 /* Review */; };
+		A10000000000000000A11001 /* Usage in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000A11002 /* Usage */; };
 		A10000000000000000A14001 /* PicaSettings in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000A14002 /* PicaSettings */; };
 		A10000000000000000000121 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000131 /* DesignSystem */; };
 		A10000000000000000000321 /* PicaProtocol in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000331 /* PicaProtocol */; };
@@ -83,6 +84,7 @@
 				A1000000000000000000C001 /* Composer in Frameworks */,
 				A1000000000000000000F001 /* Files in Frameworks */,
 				A1000000000000000000A801 /* Review in Frameworks */,
+				A10000000000000000A11001 /* Usage in Frameworks */,
 				A10000000000000000A14001 /* PicaSettings in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -166,6 +168,7 @@
 				A1000000000000000000C002 /* Composer */,
 				A1000000000000000000F002 /* Files */,
 				A1000000000000000000A802 /* Review */,
+				A10000000000000000A11002 /* Usage */,
 				A10000000000000000A14002 /* PicaSettings */,
 			);
 			productName = Pica;
@@ -287,6 +290,7 @@
 				A1000000000000000000C003 /* XCLocalSwiftPackageReference "Packages/Composer" */,
 				A1000000000000000000F003 /* XCLocalSwiftPackageReference "Packages/Files" */,
 				A1000000000000000000A803 /* XCLocalSwiftPackageReference "Packages/Review" */,
+				A10000000000000000A11003 /* XCLocalSwiftPackageReference "Packages/Usage" */,
 				A10000000000000000A14003 /* XCLocalSwiftPackageReference "Packages/PicaSettings" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -640,6 +644,10 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/Review;
 		};
+		A10000000000000000A11003 /* XCLocalSwiftPackageReference "Packages/Usage" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/Usage;
+		};
 		A10000000000000000A14003 /* XCLocalSwiftPackageReference "Packages/PicaSettings" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/PicaSettings;
@@ -678,6 +686,10 @@
 		A1000000000000000000A802 /* Review */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Review;
+		};
+		A10000000000000000A11002 /* Usage */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Usage;
 		};
 		A10000000000000000A14002 /* PicaSettings */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -4,6 +4,7 @@ import EngineClient
 import PicaProtocol
 import PicaSettings
 import SwiftUI
+import Usage
 
 /// The action registry's handlers and the stores Settings and the ⌘K palette use (A-14, docs/settings.md). Features
 /// meet here, in the app target: each action is run by the feature it belongs to.
@@ -16,6 +17,8 @@ final class AppActions {
     private(set) var palette: CommandPaletteModel!
     /// Set by the main window, which has the `openSettings` action.
     var openSettings: (() -> Void)?
+    /// Set by the main window, which has the `openWindow` action (A-11).
+    var openUsage: (() -> Void)?
     private let navigation: NavigationStore
 
     init(client: EngineClient, navigation: NavigationStore) {
@@ -46,6 +49,8 @@ final class AppActions {
             navigation.selectSession(offset: 1)
         case .selectPreviousSession:
             navigation.selectSession(offset: -1)
+        case .showUsage:
+            openUsage?()
         }
     }
 
@@ -66,15 +71,19 @@ final class AppActions {
     }
 }
 
-/// Gives `AppActions` the window's `openSettings` action, and shows the palette over the window.
+/// Gives `AppActions` the window's `openSettings` and `openWindow` actions, and shows the palette over the window.
 struct ActionHost: ViewModifier {
     let actions: AppActions
     @Environment(\.openSettings) private var openSettings
+    @Environment(\.openWindow) private var openWindow
 
     func body(content: Content) -> some View {
         @Bindable var palette = actions.palette
         content
-            .onAppear { actions.openSettings = { openSettings() } }
+            .onAppear {
+                actions.openSettings = { openSettings() }
+                actions.openUsage = { openWindow(id: UsageDashboardScreen.windowId) }
+            }
             .sheet(isPresented: $palette.isPresented) {
                 CommandPaletteView(
                     model: actions.palette, registry: actions.registry, keybindings: actions.keybindings,

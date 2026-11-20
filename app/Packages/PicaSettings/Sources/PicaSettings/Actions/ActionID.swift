@@ -9,6 +9,7 @@ public enum ActionID: String, CaseIterable, Sendable, Codable {
     case toggleInspector
     case selectNextSession
     case selectPreviousSession
+    case showUsage
 }
 
 /// Where an action's menu item is.
@@ -62,6 +63,9 @@ public enum ActionCatalog {
         case .selectPreviousSession:
             ActionDefinition(id: id, title: "Select Previous Session", menu: .window, defaultShortcut: Shortcut("cmd+alt+up"),
                 keywords: ["go"])
+        case .showUsage:
+            ActionDefinition(id: id, title: "Usage Dashboard", menu: .window, defaultShortcut: Shortcut("shift+cmd+u"),
+                keywords: ["cost", "credits", "tokens", "budget", "savings"])
         }
     }
 }
