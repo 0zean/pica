@@ -9,17 +9,20 @@ public final class AppLaunch {
     public let navigation: NavigationStore
     /// Notifies of sessions waiting for approval while Pica is in the background (A-07).
     public let approvalNotifier: ApprovalNotifier?
+    /// Where the engine's `secrets.*` requests are answered, and where features store secrets the user enters (A-13).
+    public let secrets: any SecretBroker
     private let lock: SingleInstanceLock?
     private let launchMetricsPath: String?
     private var recordedInteractive = false
 
     private init(
-        model: AppModel, navigation: NavigationStore, approvalNotifier: ApprovalNotifier?, lock: SingleInstanceLock?,
-        launchMetricsPath: String?
+        model: AppModel, navigation: NavigationStore, approvalNotifier: ApprovalNotifier?, secrets: any SecretBroker,
+        lock: SingleInstanceLock?, launchMetricsPath: String?
     ) {
         self.model = model
         self.navigation = navigation
         self.approvalNotifier = approvalNotifier
+        self.secrets = secrets
         self.lock = lock
         self.launchMetricsPath = launchMetricsPath
     }
@@ -56,10 +59,11 @@ public final class AppLaunch {
     ) -> AppLaunch? {
         var clientConfiguration = EngineSupervisor.clientConfiguration()
         clientConfiguration.clientVersion = bundle.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0.0.0"
+        let secrets: any SecretBroker = environment["PICA_SECRETS"] == "memory" ? InMemorySecretBroker() : KeychainSecretBroker()
         let supervisor = EngineSupervisor(
             command: EngineCommand.resolve(environment: environment, bundle: bundle),
             socketPath: socket,
-            secrets: KeychainSecretBroker(),
+            secrets: secrets,
             clientConfiguration: clientConfiguration)
         let model = AppModel(supervisor: supervisor)
         let stateFile = WindowStateFile(url: URL(filePath: socket).deletingLastPathComponent().appending(path: "window-state.json"))
@@ -72,7 +76,7 @@ public final class AppLaunch {
         }
         let approvalNotifier = ApprovalNotifier.live(client: supervisor.client, navigation: navigation, environment: environment)
         return AppLaunch(
-            model: model, navigation: navigation, approvalNotifier: approvalNotifier, lock: lock,
+            model: model, navigation: navigation, approvalNotifier: approvalNotifier, secrets: secrets, lock: lock,
             launchMetricsPath: environment["PICA_LAUNCH_METRICS_PATH"])
     }
 

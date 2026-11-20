@@ -24,6 +24,8 @@ export type {
   QuotaInfo,
   ResumeOptions,
   RuntimeAccount,
+  RuntimeMcpServer,
+  RuntimeMcpServers,
   RuntimeModel,
   RuntimeResult,
   RuntimeSession,

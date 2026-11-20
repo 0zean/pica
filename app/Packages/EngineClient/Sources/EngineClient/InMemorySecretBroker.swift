@@ -1,7 +1,7 @@
-import EngineClient
 import Synchronization
 
-/// A `SecretBroker` over a dictionary, so tests never touch the Keychain.
+/// A `SecretBroker` over a dictionary, so tests never touch the Keychain. The app uses it under UI tests
+/// (`PICA_SECRETS=memory`), where an ad-hoc signed build would be asked for Keychain access after every rebuild.
 public final class InMemorySecretBroker: SecretBroker {
     private let storage: Mutex<[String: String]>
 

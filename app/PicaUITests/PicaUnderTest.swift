@@ -85,6 +85,8 @@ final class PicaUnderTest {
             "PICA_NOTIFICATIONS": "off",
             // A-09: files to open in the external editor are logged here instead.
             "PICA_EXTERNAL_EDITOR_LOG": editorLogPath,
+            // A-13: secrets stay in Pica's memory; a rebuilt, ad-hoc signed Pica would be asked for Keychain access.
+            "PICA_SECRETS": "memory",
             // A-12: fix actions are logged here instead of opening a browser or writing the pasteboard.
             "PICA_FIX_ACTION_LOG": fixLogPath,
         ]
@@ -162,6 +164,16 @@ final class PicaUnderTest {
 
     func remove() {
         try? FileManager.default.removeItem(at: home)
+    }
+
+    /// Chooses an inspector pane by its title. The choice is remembered across launches (`pica.inspector.pane`), so a
+    /// test that needs one pane chooses it rather than relying on the default.
+    func showInspectorPane(_ title: String, in app: XCUIApplication) {
+        let inspector = app.descendants(matching: .any)["pica.inspector"]
+        XCTAssertTrue(inspector.waitForExistence(timeout: 5), "the inspector is not open")
+        let segment = inspector.radioButtons[title].exists ? inspector.radioButtons[title] : inspector.buttons[title]
+        XCTAssertTrue(segment.waitForExistence(timeout: 5), "the inspector has no \(title) pane: \(inspector.debugDescription)")
+        segment.click()
     }
 }
 

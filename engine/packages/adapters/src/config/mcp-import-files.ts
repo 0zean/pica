@@ -24,11 +24,11 @@ export function createMcpImportFiles(options: McpImportFilesOptions): McpImportF
     },
 
     readTarget(target) {
-      const file = targetFile(options.homeDir, target);
+      const file = mcpTargetFile(options.homeDir, target);
       if (!file.ok) {
         return file;
       }
-      const text = readText(file.value);
+      const text = readMcpTargetText(file.value);
       if (!text.ok) {
         return text;
       }
@@ -40,24 +40,16 @@ export function createMcpImportFiles(options: McpImportFilesOptions): McpImportF
     },
 
     writeTarget(target, entries) {
-      const file = targetFile(options.homeDir, target);
+      const file = mcpTargetFile(options.homeDir, target);
       if (!file.ok) {
         return file;
       }
-      const text = readText(file.value);
+      const text = readMcpTargetText(file.value);
       if (!text.ok) {
         return text;
       }
-      const updated = withEntries(text.value ?? "{}\n", entries);
-      try {
-        mkdirSync(dirname(file.value), { recursive: true });
-        const temporary = `${file.value}.${String(process.pid)}.tmp`;
-        writeFileSync(temporary, updated, { encoding: "utf8", mode: 0o600 });
-        renameSync(temporary, file.value);
-      } catch (thrown) {
-        return err(configError("config.read_failed", file.value, [{ keyPath: "", message: errorMessage(thrown) }]));
-      }
-      return ok({ file: file.value });
+      const written = writeMcpTargetText(file.value, withEntries(text.value ?? "{}\n", entries));
+      return written.ok ? ok({ file: file.value }) : written;
     },
   };
 }
@@ -88,7 +80,20 @@ function readPlatformFile(location: McpImportFileLocation, homeDir: string): Mcp
   ];
 }
 
-function targetFile(homeDir: string, target: McpImportTarget): Result<string, ConfigError> {
+// Replaces the file atomically; an `mcp.jsonc` may name secret references, so it is private.
+export function writeMcpTargetText(file: string, text: string): Result<undefined, ConfigError> {
+  try {
+    mkdirSync(dirname(file), { recursive: true });
+    const temporary = `${file}.${String(process.pid)}.tmp`;
+    writeFileSync(temporary, text.endsWith("\n") ? text : `${text}\n`, { encoding: "utf8", mode: 0o600 });
+    renameSync(temporary, file);
+  } catch (thrown) {
+    return err(configError("config.read_failed", file, [{ keyPath: "", message: errorMessage(thrown) }]));
+  }
+  return ok(undefined);
+}
+
+export function mcpTargetFile(homeDir: string, target: McpImportTarget): Result<string, ConfigError> {
   switch (target.scope) {
     case "global":
       return ok(userMcpConfigPath(homeDir));
@@ -101,7 +106,7 @@ function targetFile(homeDir: string, target: McpImportTarget): Result<string, Co
   }
 }
 
-function readText(file: string): Result<string | undefined, ConfigError> {
+export function readMcpTargetText(file: string): Result<string | undefined, ConfigError> {
   try {
     return ok(readFileSync(file, "utf8"));
   } catch (thrown) {
@@ -119,7 +124,7 @@ function withEntries(text: string, entries: readonly McpImportWrite[]): string {
     const edits = modify(updated, ["servers", id], entry, { formattingOptions: { insertSpaces: true, tabSize: 2, eol: "\n" } });
     updated = applyEdits(updated, edits);
   }
-  return updated.endsWith("\n") ? updated : `${updated}\n`;
+  return updated;
 }
 
 function isErrno(thrown: unknown): thrown is { code: string } {

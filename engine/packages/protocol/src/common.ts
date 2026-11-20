@@ -25,6 +25,8 @@ export const ErrorCode = z.enum([
   "conflict",
   "refused_without_force",
   "invalid_state",
+  // A-13: changing a live session's MCP servers resets its prompt cache; ask the user first.
+  "cache_reset_unconfirmed",
   "auth_required",
   "auth_sso_required",
   "auth_scope_missing",

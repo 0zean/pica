@@ -5,6 +5,7 @@ import { dirname } from "node:path";
 import { notifications } from "@pica/protocol";
 import type { NotificationName } from "@pica/protocol";
 import type * as z from "zod";
+import type { ClientReply, EngineMethodName, EngineMethodParams } from "./client-requests.ts";
 import { Connection } from "./connection.ts";
 import type { ConnectionLimits } from "./connection.ts";
 import { encodeFrame } from "./framing.ts";
@@ -27,6 +28,8 @@ export type NotificationParams<N extends NotificationName> = z.input<(typeof not
 
 export class SocketListener {
   private readonly connections = new Set<Connection>();
+  private readonly handshakeListeners: (() => void)[] = [];
+  private readonly closeHooks: (() => Promise<void>)[] = [];
   private nextId = 1;
   readonly socketPath: string;
   private readonly server: Server;
@@ -65,7 +68,40 @@ export class SocketListener {
     }
   }
 
+  // A-13: an engine-to-client request with no connection to answer it, such as `secrets.get` for a
+  // background health check. Asks each client, newest first, until one answers with a result: a
+  // test client or the CLI may lack the secret or the method while the app has it.
+  async requestAnyClient<M extends EngineMethodName>(method: M, params: EngineMethodParams<M>): Promise<ClientReply> {
+    let last: ClientReply = { ok: false, code: "client_disconnected", message: "no client is connected" };
+    for (const connection of [...this.connections].reverse()) {
+      if (!connection.isHandshaken) {
+        continue;
+      }
+      const reply = await connection.request(method, params);
+      if (reply.ok) {
+        return reply;
+      }
+      if (reply.code !== "method_not_found" && reply.code !== "client_disconnected") {
+        last = reply;
+      }
+    }
+    return last;
+  }
+
+  // Called each time a client completes `engine.hello`.
+  onClientHello(listener: () => void): void {
+    this.handshakeListeners.push(listener);
+  }
+
+  // Runs before the socket closes: work the engine started beside the listener, such as MCP health.
+  beforeClose(hook: () => Promise<void>): void {
+    this.closeHooks.push(hook);
+  }
+
   async close(): Promise<void> {
+    for (const hook of this.closeHooks) {
+      await hook();
+    }
     for (const connection of this.connections) {
       connection.close();
     }
@@ -79,6 +115,11 @@ export class SocketListener {
 
   private accept(connection: Connection): void {
     this.connections.add(connection);
+    connection.onHandshake(() => {
+      for (const listener of this.handshakeListeners) {
+        listener();
+      }
+    });
     connection.onClose(() => {
       this.connections.delete(connection);
     });

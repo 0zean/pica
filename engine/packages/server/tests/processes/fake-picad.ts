@@ -5,12 +5,15 @@
 // `$PICA_TEST_HOME/Library/Application Support/Pica/`. PICA_TEST_SCENARIO names the FakeRuntime's
 // scenario in `fake-picad-scenarios.ts` (default `empty`). PICA_TEST_MANAGED_POLICY names a policy
 // file (JSONC, docs/managed-policy.md) to load as if root owned it (A-14). PICA_TEST_GITHUB (`signed-in` or
-// `signed-out`) points GitHub discovery at the stub server in `fake-github.ts` (A-12).
+// `signed-out`) points GitHub discovery at the stub server in `fake-github.ts` (A-12). The `mcp` scenario
+// also starts a stub MCP server and sends the GitHub preset's endpoint to it; it asks for the bearer
+// token `fakePicadMcpToken` (A-13).
 import { parseArgs } from "node:util";
 import { ManagedPolicyLoader, nodeManagedPolicyFileSystem } from "@pica/adapters";
 import type { ManagedPolicyFileSystem } from "@pica/adapters";
 import { createSecretScrubber, createStructuredLog } from "@pica/core";
-import { FakeRuntime, scenarioSchema, sequentialIds, steppingClock } from "@pica/testkit";
+import { FakeRuntime, redirectingFetch, scenarioSchema, sequentialIds, startStubMcpServer, steppingClock } from "@pica/testkit";
+import type { McpHttpFetch } from "@pica/adapters";
 import { composeEngine, startEngine } from "../../src/index.ts";
 import { fakePicadScenarios } from "./fake-picad-scenarios.ts";
 import { startFakeGitHub } from "./fake-github.ts";
@@ -36,6 +39,7 @@ async function main(): Promise<void> {
     throw new Error(`fake-picad has no scenario ${JSON.stringify(scenarioName)}`);
   }
   const scenario = scenarioSchema.parse(named);
+  const mcpFetch = scenarioName === "mcp" ? await stubMcpFetch() : undefined;
   const github = await fakeGitHub(process.env["PICA_TEST_GITHUB"]);
   const composed = composeEngine({
     homeDir,
@@ -44,6 +48,7 @@ async function main(): Promise<void> {
     log,
     runtime: new FakeRuntime({ scenario, clock: steppingClock("2026-11-16T10:00:00.000Z"), ids: sequentialIds() }),
     managedPolicy: testManagedPolicy(process.env["PICA_TEST_MANAGED_POLICY"]),
+    ...(mcpFetch === undefined ? {} : { mcpFetch }),
     ...(github === undefined ? {} : { github: github.access }),
   });
   const listener = await startEngine({ socketPath, log, ...composed.options });
@@ -57,6 +62,19 @@ async function main(): Promise<void> {
   process.once("SIGTERM", stop);
   process.once("SIGINT", stop);
   process.stdout.write(`${JSON.stringify({ ready: true, socket: listener.socketPath })}\n`);
+}
+
+export const fakePicadMcpToken = "pica-ui-test-token";
+
+async function stubMcpFetch(): Promise<McpHttpFetch> {
+  const stub = await startStubMcpServer({
+    tools: [
+      { name: "search_code", description: "Search code across repositories.", inputSchema: { type: "object", properties: { query: { type: "string" } } } },
+      { name: "get_issue", description: "Read an issue.", inputSchema: { type: "object", properties: { number: { type: "integer" } } } },
+    ],
+    bearerToken: fakePicadMcpToken,
+  });
+  return redirectingFetch({ "https://api.githubcopilot.com": stub.url });
 }
 
 async function fakeGitHub(mode: string | undefined): Promise<Awaited<ReturnType<typeof startFakeGitHub>> | undefined> {

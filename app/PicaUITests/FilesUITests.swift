@@ -14,6 +14,7 @@ final class FilesUITests: XCTestCase {
         fixture.app.buttons["pica.toolbar.inspector"].click()
         let inspector = fixture.app.descendants(matching: .any)["pica.inspector"]
         XCTAssertTrue(inspector.waitForExistence(timeout: 5), "the inspector did not open")
+        fixture.pica.showInspectorPane("Files", in: fixture.app)
         // The workspace's repos are listed; expanding one lists its root.
         let atlas = fixture.row("atlas:")
         XCTAssertTrue(atlas.waitForExistence(timeout: 5), "the atlas repo is not in the tree")
