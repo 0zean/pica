@@ -53,6 +53,21 @@ struct SecretFieldTests {
         #expect(draft.definition == local)
     }
 
+    @Test func anEnvironmentReferenceStaysTextAndDuplicateNamesAreRefused() {
+        let server = McpServerDef(
+            id: "ci", name: "CI",
+            transport: .stdio(.init(command: "ci-mcp", args: [], env: ["CI_TOKEN": .secretRef(SecretRef(secretRef: "env:CI_TOKEN"))], cwd: nil)),
+            toolAllowlist: nil, scope: .global)
+        var draft = ServerDraft(editing: server)
+        #expect(draft.fields[0].value == .plain("${secret:env:CI_TOKEN}"))
+        #expect(draft.fields[0].hasSavedSecret == false)
+        guard case .stdio(let stdio) = draft.definition.transport else { Issue.record("not local"); return }
+        #expect(stdio.env == ["CI_TOKEN": .string("${secret:env:CI_TOKEN}")])
+        draft.fields.append(DraftField(name: "CI_TOKEN", value: .plain("x")))
+        #expect(draft.problem == "Two headers or variables have the same name.")
+        _ = draft.definition
+    }
+
     @Test func aNewSecretGetsAReferenceUnderTheServer() {
         var draft = ServerDraft(scope: .global)
         draft.id = "tracker"

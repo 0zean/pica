@@ -35,7 +35,7 @@ The production composition now serves every `mcp.*` method. New or changed in A-
 | `mcp.list {workspaceId?}` | Resolved servers (M-01): the Copilot CLI's and Pica's global files, and the workspace's own file over them when `workspaceId` is given. Repo-scope files are not listed (see Limits). |
 | `mcp.add {server, workspaceId?}` | Writes the server into `mcp.jsonc` at its scope: `global`, or `workspace` with `workspaceId`. `already_exists` when the id is taken there; `invalid_params` for a `repo` scope or a `workspace` scope without an id. |
 | `mcp.update {server, workspaceId?}` | Replaces an existing entry; `not_found` when there is none. |
-| `mcp.remove {id, workspaceId?}` | Removes it from the workspace's file, or the global one, and detaches it from every workspace and session. |
+| `mcp.remove {id, workspaceId?}` | Removes it from the workspace's file, or the global one, and detaches it wherever the id no longer resolves: removing a workspace's own copy leaves a global server of that id, and other workspaces' copies, attached. Live sessions keep the server until they are reopened. |
 | `mcp.attachments {sessionId? \| workspaceId?}` | What is attached there, and the tool-definition tokens it adds to each prompt; null while a server's tool list is unknown. |
 | `mcp.attach {serverId, sessionId? \| workspaceId?, agent?, acknowledgeCacheReset?}` | Attaches, answering the server's tool-definition tokens. |
 | `mcp.detach {…same}` | Detaches. |
@@ -69,10 +69,13 @@ that the next turn pays full input price for the whole conversation. Only Change
 acknowledgement. If the engine still refuses (the session went live since the pane looked), the pane shows the same
 warning.
 
-Once acknowledged, the change applies only to an `idle` session: the engine writes the attachment, closes the
-session's runtime and resumes it by id with the new servers (`SessionService.reconfigure`); the conversation is kept.
-While a turn runs or an approval waits, it answers `invalid_state` ("change its MCP servers when it is idle") and
-changes nothing. If reopening fails, the attachment is put back. Ended, failed and resumable sessions change without a
+Once acknowledged, the change applies only to an `idle` session: the engine writes the attachment, gathers the new
+runtime's options (secrets included) while the old runtime still runs, checks that the session is still idle with the
+same runtime, then closes it and resumes it by id with the new servers (`SessionService.reconfigure`); the
+conversation is kept. A message or an end that arrives while the options are gathered wins, and the change answers
+`invalid_state`. While a turn runs or an approval waits, it answers `invalid_state` ("change its MCP servers when it
+is idle") and changes nothing. If the runtime cannot be reopened, the session becomes `resumable` (not `failed`) and
+the target's attachments are put back. Ended, failed and resumable sessions change without a
 warning: they have no runtime open, and a resumed session starts with whatever is attached then.
 
 ## Secrets
@@ -133,4 +136,8 @@ checked.
 - OAuth grants are in memory only. M-02's GitHub Enterprise endpoint is still unknown, and M-07 still does not read
   Codex's TOML file; pasting a Codex server converted to JSON works.
 - The `open_settings` fix targets M-03 names (`mcp/<id>/secrets`) are not routed to the window yet.
-- Agent-scoped attachments exist in the protocol and the engine; the app attaches to the whole session only.
+- Agent-scoped attachments exist in the protocol and the engine (an unknown agent is refused); the app attaches to
+  the whole session only.
+- Servers from the Copilot CLI's global file are listed as global but cannot be edited or removed through Pica; Edit
+  and Remove answer `not_found`.
+- `env:` references are shown as text: the engine reads them from its own environment, so there is nothing to store.

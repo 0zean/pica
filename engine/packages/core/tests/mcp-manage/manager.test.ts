@@ -119,6 +119,36 @@ describe("attaching", () => {
   });
 });
 
+describe("removing", () => {
+  it("detaches a server only where it no longer resolves", async () => {
+    const { deps, state } = harness("ended");
+    const own = { ...scripts, id: "x", scope: "workspace" } as const;
+    let inA = true;
+    deps.definitions = (workspaceId) => ok(workspaceId === "A" ? (inA ? [own] : []) : workspaceId === "B" ? [own] : []);
+    deps.sessions.get = (sessionId) => ok({ workspaceId: sessionId === "sA" ? "A" : "B", state: "ended" });
+    const manager = createMcpManager({ ...deps, files: { ...deps.files, ids: () => ok(["x"]), write: () => { inA = false; return ok(undefined); } } });
+    for (const workspaceId of ["A", "B"]) {
+      await manager.attach({ serverId: "x", target: { kind: "workspace", workspaceId }, agent: null, acknowledgeCacheReset: false });
+    }
+    manager.seedSession("sA", "A");
+    manager.seedSession("sB", "B");
+    expect(manager.remove("x", "A").ok).toBe(true);
+    expect(state()).toEqual({
+      workspaces: { A: [], B: [{ serverId: "x", agent: null }] },
+      sessions: { sA: [], sB: [{ serverId: "x", agent: null }] },
+    });
+  });
+});
+
+describe("agents", () => {
+  it("refuses an attachment to an agent the session does not have", async () => {
+    const { deps, state } = harness("ended");
+    const attached = await createMcpManager(deps).attach({ serverId: "github", target: { kind: "workspace", workspaceId: "ws" }, agent: "nope", acknowledgeCacheReset: false });
+    expect(!attached.ok && attached.error.code).toBe("mcp_manage.not_attachable");
+    expect(state().workspaces).toEqual({});
+  });
+});
+
 describe("runtime servers", () => {
   it("substitutes secrets, joins agent servers to their agent, and leaves out one whose secret is missing", async () => {
     const { deps } = harness("ended");

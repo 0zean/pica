@@ -25,7 +25,7 @@ public struct DraftField: Identifiable, Hashable, Sendable {
 
     /// Whether a secret is already stored for this field.
     public var hasSavedSecret: Bool {
-        if case .secret(_, let ref?, _) = value { return ref.hasPrefix("keychain:") || ref.hasPrefix("env:") }
+        if case .secret(_, let ref?, _) = value { return ref.hasPrefix("keychain:") }
         return false
     }
 }
@@ -108,6 +108,7 @@ public struct ServerDraft: Hashable, Sendable {
         if isRemote && URL(string: url)?.scheme?.hasPrefix("http") != true { return "Give the server's URL." }
         if !isRemote && command.trimmingCharacters(in: .whitespaces).isEmpty { return "Give the command that starts the server." }
         if fields.contains(where: { $0.name.trimmingCharacters(in: .whitespaces).isEmpty }) { return "Every header and variable needs a name." }
+        if Set(fields.map(\.name)).count != fields.count { return "Two headers or variables have the same name." }
         for field in fields {
             if case .secret(_, nil, let entered) = field.value, entered.isEmpty { return "Enter the secret for \(field.name)." }
         }
@@ -130,12 +131,12 @@ public struct ServerDraft: Hashable, Sendable {
             if isRemote {
                 .http(.init(
                     type: kind == .sse ? .sse : .http, url: url.trimmingCharacters(in: .whitespaces),
-                    headers: Dictionary(uniqueKeysWithValues: fields.map { ($0.name, headerValue($0)) })))
+                    headers: Dictionary(fields.map { ($0.name, headerValue($0)) }, uniquingKeysWith: { _, last in last })))
             } else {
                 .stdio(.init(
                     command: command.trimmingCharacters(in: .whitespaces),
                     args: arguments.split(separator: "\n", omittingEmptySubsequences: true).map(String.init),
-                    env: Dictionary(uniqueKeysWithValues: fields.map { ($0.name, envValue($0)) }),
+                    env: Dictionary(fields.map { ($0.name, envValue($0)) }, uniquingKeysWith: { _, last in last }),
                     cwd: workingDirectory.isEmpty ? nil : workingDirectory))
             }
         return McpServerDef(
@@ -187,20 +188,22 @@ public struct ServerDraft: Hashable, Sendable {
         guard let range = text.range(of: #"\$\{secret:[^}]+\}"#, options: .regularExpression), range.upperBound == text.endIndex
         else { return .plain(text) }
         let ref = String(text[range].dropFirst("${secret:".count).dropLast())
+        // An `env:` reference names a variable in the engine's environment; there is no secret here to replace.
+        guard ref.hasPrefix("keychain:") else { return .plain(text) }
         return .secret(prefix: String(text[..<range.lowerBound]), ref: ref, entered: "")
     }
 
     private static func fieldValue(_ value: McpTransport.Http.HeadersValue) -> DraftField.Value {
         switch value {
         case .string(let text): fieldValue(text)
-        case .secretRef(let ref): .secret(prefix: "", ref: ref.secretRef, entered: "")
+        case .secretRef(let ref): fieldValue("${secret:\(ref.secretRef)}")
         }
     }
 
     private static func fieldValue(_ value: McpTransport.Stdio.EnvValue) -> DraftField.Value {
         switch value {
         case .string(let text): fieldValue(text)
-        case .secretRef(let ref): .secret(prefix: "", ref: ref.secretRef, entered: "")
+        case .secretRef(let ref): fieldValue("${secret:\(ref.secretRef)}")
         }
     }
 }

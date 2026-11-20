@@ -4,6 +4,7 @@ import { createRuntimeEventRecorder } from "../events/index.ts";
 import type { RuntimeEventRecorder } from "../events/index.ts";
 import type { AgentRuntime, EngineTool, RuntimeEvent, RuntimeHooks, RuntimeSession } from "../runtime/index.ts";
 import { err, ok } from "../result.ts";
+import type { Result } from "../result.ts";
 import type { Session, SessionState, Store, StoreError, UsageRepository } from "../store/index.ts";
 import { checkWorkspaceDailyCap, createSessionBudget, sessionSpend, withinSessionCeiling } from "./budget.ts";
 import type { BudgetSettings, SessionBudget } from "./budget.ts";
@@ -604,6 +605,16 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
 
   // A session whose agent definitions do not load fails to start rather than run without sub-agents.
   async function delegationOptions(session: Session): Promise<SessionResult<DelegationSetup["sessionOptions"]>> {
+    const setup = await delegationSetup(session);
+    if (setup.ok) {
+      return ok(setup.value);
+    }
+    append(session.id, { type: "session.error", payload: { code: setup.error.code, message: setup.error.message }, timestamp: clock() });
+    move(session.id, "fail");
+    return sessionFailure("session.invalid_request", setup.error.message);
+  }
+
+  async function delegationSetup(session: Session): Promise<Result<DelegationSetup["sessionOptions"], DelegationError>> {
     if (deps.delegator === undefined) {
       return ok({});
     }
@@ -611,18 +622,16 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     const setup = isRoutingProfile(profile)
       ? await deps.delegator.setup({ sessionId: session.id, routingProfile: profile })
       : err<DelegationError>({ code: "delegation.invalid_profile", message: `unknown routing profile ${JSON.stringify(profile)}` });
-    if (setup.ok) {
-      return ok(setup.value.sessionOptions);
-    }
-    append(session.id, { type: "session.error", payload: { code: setup.error.code, message: setup.error.message }, timestamp: clock() });
-    move(session.id, "fail");
-    return sessionFailure("session.invalid_request", setup.error.message);
+    return setup.ok ? ok(setup.value.sessionOptions) : setup;
   }
 
   async function withSessionMcp<T extends DelegationSetup["sessionOptions"]>(session: Session, options: T): Promise<T> {
     return deps.mcp === undefined ? options : withMcpServers(options, await deps.mcp.options(session));
   }
 
+  // Everything the new runtime needs, secrets included, is gathered while the old one still runs,
+  // and the session is checked again before it is closed: a turn or an end that arrived meanwhile wins.
+  // A runtime that cannot be reopened leaves the session `resumable`, never `failed`.
   async function reconfigure(sessionId: string): Promise<SessionResult<undefined>> {
     const stored = read(sessionId);
     if (!stored.ok) {
@@ -632,26 +641,33 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     if (current === undefined || stored.value.state !== "idle") {
       return sessionFailure("session.invalid_state", `session ${sessionId} is ${stored.value.state}; only an idle session can be reopened`);
     }
-    const delegation = await delegationOptions(stored.value);
+    const delegation = await delegationSetup(stored.value);
     if (!delegation.ok) {
-      return delegation;
+      return sessionFailure("session.invalid_request", delegation.error.message);
+    }
+    const options = await withSessionMcp(stored.value, delegation.value);
+    if (live.get(sessionId) !== current || stateOf(sessionId) !== "idle") {
+      return sessionFailure("session.invalid_state", `session ${sessionId} changed while its new servers were prepared; try again when it is idle`);
     }
     live.delete(sessionId);
     current.unsubscribe();
     await current.runtime.close();
-    const limit = current.budget.limit();
     const reopened = await deps.runtime.resumeSession({
       sessionId,
       workingDirectory: workingDirectory(stored.value) ?? "/",
-      ...withRuntimeLimit(runtimeLimit(limit)),
+      ...withRuntimeLimit(runtimeLimit(current.budget.limit())),
       ...runtimeHooks(sessionId),
       ...engineTools(stored.value),
-      ...(await withSessionMcp(stored.value, delegation.value)),
+      ...options,
     });
     if (!reopened.ok) {
       append(sessionId, { type: "session.error", payload: { code: reopened.error.code, message: reopened.error.message }, timestamp: clock() });
-      move(sessionId, "fail");
+      move(sessionId, "engine_lost");
       return runtimeFailure(reopened.error);
+    }
+    if (stateOf(sessionId) !== "idle") {
+      await reopened.value.close();
+      return sessionFailure("session.invalid_state", `session ${sessionId} was ended while it was reopened`);
     }
     attach(sessionId, reopened.value, current.budget);
     return ok(undefined);

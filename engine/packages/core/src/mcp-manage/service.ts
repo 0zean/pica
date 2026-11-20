@@ -130,7 +130,7 @@ export function createMcpManager(deps: McpManagerDeps): McpManager {
     if (!written.ok) {
       return err(configFailure(written.error));
     }
-    const detached = updateState((state) => withoutServer(state, serverId));
+    const detached = updateState((state) => withoutUnresolved(state, serverId));
     deps.onServersChanged?.();
     return detached;
   }
@@ -224,6 +224,9 @@ export function createMcpManager(deps: McpManagerDeps): McpManager {
     if (attaching && !servers.value.some((server) => server.id === request.serverId)) {
       return err(mcpManageError("mcp_manage.not_found", `no MCP server ${request.serverId} is defined for this workspace`, { serverId: request.serverId }));
     }
+    if (attaching && request.agent !== null && !deps.agents().includes(request.agent)) {
+      return err(mcpManageError("mcp_manage.not_attachable", `no agent named "${request.agent}"`, { agent: request.agent }));
+    }
     if (!attaching && after.length === before.length) {
       return err(mcpManageError("mcp_manage.not_found", `${request.serverId} is not attached here`, { serverId: request.serverId }));
     }
@@ -248,11 +251,35 @@ export function createMcpManager(deps: McpManagerDeps): McpManager {
     if (live.value !== undefined && request.target.kind === "session") {
       const reopened = await deps.sessions.reconfigure(request.target.sessionId);
       if (!reopened.ok) {
-        deps.attachments.write(state.value);
+        restore(request.target, before);
         return err(mcpManageError("mcp_manage.session_busy", reopened.error.message, { sessionId: request.target.sessionId }));
       }
     }
     return planned;
+  }
+
+  // Puts back only the target's records, keeping any other change made while the session reopened.
+  function restore(target: McpAttachTarget, records: readonly McpAttachmentRecord[]): void {
+    updateState((state) => withRecords(state, target, records));
+  }
+
+  // After a server is removed from one file, it is detached wherever it no longer resolves: a
+  // workspace's own copy going leaves the global one, and other workspaces' copies, attached.
+  function withoutUnresolved(state: McpAttachmentState, serverId: string): McpAttachmentState {
+    const resolves = (workspaceId: string | undefined): boolean => {
+      const servers = deps.definitions(workspaceId);
+      return servers.ok && servers.value.some((server) => server.id === serverId);
+    };
+    const strip = (records: readonly McpAttachmentRecord[], workspaceId: string | undefined): readonly McpAttachmentRecord[] =>
+      resolves(workspaceId) ? records : records.filter((record) => record.serverId !== serverId);
+    const sessionWorkspace = (sessionId: string): string | undefined => {
+      const session = deps.sessions.get(sessionId);
+      return session.ok ? session.value.workspaceId : undefined;
+    };
+    return {
+      workspaces: Object.fromEntries(Object.entries(state.workspaces).map(([id, records]) => [id, strip(records, id)])),
+      sessions: Object.fromEntries(Object.entries(state.sessions).map(([id, records]) => [id, strip(records, sessionWorkspace(id))])),
+    };
   }
 
   // The session's state when it is live, else undefined.
@@ -345,12 +372,6 @@ function withRecords(state: McpAttachmentState, target: McpAttachTarget, records
   return target.kind === "session"
     ? { ...state, sessions: { ...state.sessions, [target.sessionId]: records } }
     : { ...state, workspaces: { ...state.workspaces, [target.workspaceId]: records } };
-}
-
-function withoutServer(state: McpAttachmentState, serverId: string): McpAttachmentState {
-  const strip = (all: Readonly<Record<string, readonly McpAttachmentRecord[]>>): Record<string, readonly McpAttachmentRecord[]> =>
-    Object.fromEntries(Object.entries(all).map(([id, records]) => [id, records.filter((record) => record.serverId !== serverId)]));
-  return { workspaces: strip(state.workspaces), sessions: strip(state.sessions) };
 }
 
 function singleServerPlan(planned: McpAttachmentPlan, serverId: string): McpAttachmentPlan {
