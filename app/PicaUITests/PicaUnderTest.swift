@@ -35,13 +35,18 @@ final class PicaUnderTest {
     let editorLogPath: String
     /// Where Pica writes `ReviewMetrics`' reports.
     let reviewMetricsPath: String
+    /// Where Pica appends the fix actions it carries out instead of opening a browser or copying (A-12).
+    let fixLogPath: String
     private let scrollScript: Bool
     /// A-14: a managed policy (docs/managed-policy.md) `fake-picad` loads as if root owned it.
     private let managedPolicy: String?
+    /// A-12: `signed-in` or `signed-out` points `fake-picad`'s GitHub discovery at its stub server (`fake-github.ts`).
+    private let github: String?
     private let node: String
 
-    init(scenario: String = "empty", scrollScript: Bool = false, managedPolicy: String? = nil) throws {
+    init(scenario: String = "empty", scrollScript: Bool = false, managedPolicy: String? = nil, github: String? = nil) throws {
         self.scenario = scenario
+        self.github = github
         self.scrollScript = scrollScript
         self.managedPolicy = managedPolicy
         // `make app-ui-test` passes this as TEST_RUNNER_PICA_NODE.
@@ -54,6 +59,7 @@ final class PicaUnderTest {
         composerMetricsPath = home.appending(path: "composer-metrics.json").path
         editorLogPath = home.appending(path: "external-editor.log").path
         reviewMetricsPath = home.appending(path: "review-metrics.json").path
+        fixLogPath = home.appending(path: "fix-actions.log").path
         XCTAssertLessThan(socketPath.utf8.count, 104, "\(socketPath) is longer than sun_path allows")
         if let managedPolicy {
             try Data(managedPolicy.utf8).write(to: policyFile)
@@ -79,7 +85,12 @@ final class PicaUnderTest {
             "PICA_NOTIFICATIONS": "off",
             // A-09: files to open in the external editor are logged here instead.
             "PICA_EXTERNAL_EDITOR_LOG": editorLogPath,
+            // A-12: fix actions are logged here instead of opening a browser or writing the pasteboard.
+            "PICA_FIX_ACTION_LOG": fixLogPath,
         ]
+        if let github {
+            environment["PICA_TEST_GITHUB"] = github
+        }
         if scrollScript {
             environment["PICA_TIMELINE_SCROLL_SCRIPT"] = "1"
         }

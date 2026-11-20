@@ -36,7 +36,8 @@ import type { AgentRuntime, JsonObject, JsonValue, ModelCatalog, PolicyContext, 
 import { loadEngineConfig } from "./composition-config.ts";
 import type { EngineConfig, EngineConfigOptions } from "./composition-config.ts";
 import { filesOptions } from "./composition-files.ts";
-import { reviewOptions, workspaceOptions } from "./composition-workspaces.ts";
+import { defaultGitHubAccess, gitHubOptions, reviewOptions, workspaceOptions } from "./composition-workspaces.ts";
+import type { GitHubAccessSettings } from "./composition-workspaces.ts";
 import type { EngineMcpImportOptions, EngineOptions, EngineSessionOptions } from "./engine.ts";
 import type { Logger } from "./logger.ts";
 
@@ -48,6 +49,8 @@ export interface ProductionOptions {
   // Tests stand in a FakeRuntime; production drives the Copilot CLI runtime (E-09).
   readonly runtime?: AgentRuntime;
   readonly managedPolicy?: EngineConfigOptions["managedPolicy"];
+  // A-12: tests point team discovery at a stub GitHub server.
+  readonly github?: GitHubAccessSettings;
 }
 
 export interface ComposedEngine {
@@ -74,7 +77,8 @@ export function composeEngine(options: ProductionOptions): ComposedEngine {
   const { runtime, stopRuntime } = ownedRuntime(options.runtime);
   try {
     const config = loadEngineConfig(options);
-    const workspaces = workspaceOptions({ store, dataDir, env: options.env });
+    const github = gitHubOptions(options.github ?? defaultGitHubAccess(options.env));
+    const workspaces = workspaceOptions({ store, dataDir, env: options.env }, github);
     return {
       options: {
         sessions: sessionOptions({ store, runtime, config, dataDir, homeDir: options.homeDir, log: options.log }),
@@ -82,6 +86,7 @@ export function composeEngine(options: ProductionOptions): ComposedEngine {
         review: reviewOptions({ store, env: options.env }),
         ...workspaces,
         files: filesOptions(workspaces.workspaces, options.env),
+        github,
       },
       close: async () => {
         await stopRuntime();

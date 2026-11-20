@@ -6,6 +6,8 @@ import SwiftUI
 /// Left and Right collapse and expand a workspace.
 struct SidebarView: View {
     @Bindable var store: NavigationStore
+    /// In the sidebar's toolbar, from the app target: workspace management's add menu (A-12).
+    var accessory: AnyView?
     @FocusState private var listFocused: Bool
 
     var body: some View {
@@ -44,6 +46,11 @@ struct SidebarView: View {
                     .lineLimit(3)
                     .padding(Spacing.small)
                     .accessibilityIdentifier("pica.sidebar.failure")
+            }
+        }
+        .toolbar {
+            if let accessory {
+                ToolbarItem(placement: .primaryAction) { accessory }
             }
         }
         .onAppear { listFocused = true }

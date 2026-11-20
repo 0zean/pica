@@ -10,6 +10,7 @@ import Review
 import SwiftUI
 import Timeline
 import Usage
+import Workspaces
 
 @main
 struct PicaApp: App {
@@ -45,8 +46,10 @@ struct PicaApp: App {
         Window("Pica", id: "main") {
             RootView(
                 model: launch.model, navigation: launch.navigation, sessionContent: sessionTimeline,
+                workspaceContent: workspaceScreen, sidebarAccessory: workspaceAddMenu,
                 inspectorPanes: inspectorPanes, onInteractive: launch.windowBecameInteractive)
                 .modifier(ActionHost(actions: actions))
+                .modifier(WorkspaceSheets(manager: actions.workspaces))
                 .overlay {
                     if quickOpen.isPresented {
                         ZStack {
@@ -93,6 +96,15 @@ struct PicaApp: App {
                 return AnyView(FileTreeView(workspaceId: workspaceId, client: context.client, editor: editor))
             },
         ]
+    }
+
+    /// A-12: a selected workspace's sources, sync status and repos, with its add buttons.
+    private func workspaceScreen(_ workspace: Workspace, repos: [Repo]) -> AnyView {
+        AnyView(WorkspaceScreen(workspace: workspace, repos: repos, manager: actions.workspaces))
+    }
+
+    private var workspaceAddMenu: AnyView {
+        AnyView(WorkspaceAddMenu(manager: actions.workspaces, workspaceId: actions.targetWorkspaceId))
     }
 
     /// ⌘P searches the selected item's workspace, or the only workspace there is.
