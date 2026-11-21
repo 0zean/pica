@@ -1070,9 +1070,10 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 **H-06 · Distribution** — S-05, A-01
 - Build: release workflow publishing ad-hoc signed, hardened-runtime builds to GitHub Releases with a `SHA256SUMS` asset; an `install.sh` release asset that downloads with `curl`, checks the checksum and signature, and installs without quarantine (prototype in `spikes/s-05-packaging/install.sh`); Sparkle updates with an appcast served from GitHub Releases; Developer ID signing and notarization as an optional step that runs only when credentials are configured (D-17).
 - Verify:
-  - [ ] The release workflow produces a zip whose app passes `codesign --verify --deep --strict` and attaches it to a draft GitHub release.
-  - [ ] An update from version N to N+1 through a local appcast succeeds and the engine version matches the app.
-  - [ ] An appcast entry with a bad signature is refused.
+  - [x] The release workflow produces a zip whose app passes `codesign --verify --deep --strict` and attaches it to a draft GitHub release.
+  - [x] An update from version N to N+1 through a local appcast succeeds and the engine version matches the app.
+  - [x] An appcast entry with a bad signature is refused.
+- Notes: specified in [docs/distribution.md](docs/distribution.md); scripts in `tools/release/`, workflow `.github/workflows/release.yml` (`workflow_dispatch` with a version; creates or refreshes a **draft** `v<version>` and never publishes or tags). `build.sh` (also `make release VERSION=x.y.z`) builds Release arm64 unsigned, then `package.sh` adds `Helpers/node` (the nodejs.org Node; a Homebrew build is refused), the engine bundled by esbuild into `Resources/engine/picad.mjs` (`engine/tools/bundle`, which stamps `ENGINE_VERSION`, now in `server/src/version.ts`; esbuild 0.28.2 is the new engine dependency) and the Copilot package, stamps `Info.plist`, signs inside out and verifies. Ad-hoc only, `MacOS/Pica` also needs `disable-library-validation`: it loads `Sparkle.framework`, and dyld refuses an ad-hoc library under another (absent) Team ID. Sparkle 2.10.1 (exact) is in the new `app/Packages/Updates` (lint-arch rule added): the updater and "Check for Updates…" exist only when `Info.plist` has `SUPublicEDKey` and `SUFeedURL` (`releases/latest/download/appcast.xml`); XPC services are removed (not sandboxed). `install.sh` reads `SHA256SUMS`, downloads with `curl`, checks the checksum and signatures, installs to `/Applications` or `~/Applications`; `--from <folder>` installs a local build or a draft's assets. The update checks drive Sparkle's own `SPUUpdater` from a small host (`tools/release/update-check`) against a bundle installed by `install.sh`, with throwaway keys and a test bundle id; the host runs from outside `~/Documents` because authd cannot read a client there (TCC) and Sparkle's installer launch needs `AuthorizationCreate`. Check 1 ran as workflow run 44947222511, which created draft `v0.1.0`. Developer ID signing and notarization run only with their secrets and were skipped there. Owner steps: generate the Sparkle key and set `SPARKLE_PRIVATE_ED_KEY` (secret) and `SPARKLE_PUBLIC_ED_KEY` (variable), as in the spec; until then releases cannot update themselves. Not done: no delta updates; a signed appcast feed is not required (Sparkle 2.10 only downgrades a failed feed signature, it does not refuse); the app's only direct GitHub fetch is Sparkle's appcast and download, from Release assets, not the API (§4.3).
 
 **H-07 · Performance gate** — all A units
 - Verify:
@@ -1199,7 +1200,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | H-03 | Redaction | M-03 | done |
 | H-04 | Observability | E-05 | done |
 | H-05 | Reliability | E-08, A-01 | todo |
-| H-06 | Distribution | S-05, A-01 | todo |
+| H-06 | Distribution | S-05, A-01 | done |
 | H-07 | Performance gate | all A units | todo |
 | H-08 | Documentation | M4 | todo |
 

@@ -18,7 +18,7 @@ work=$(mktemp -d "${TMPDIR:-/tmp}/pica-update-check.XXXXXX")
 server=""
 test_id=dev.pica.Pica.update-test
 cleanup() {
-  [ -n "$server" ] && { kill "$server"; wait "$server"; } 2>/dev/null
+  if [ -n "$server" ]; then kill "$server" 2>/dev/null || true; wait "$server" 2>/dev/null || true; fi
   rm -rf "$work" "$HOME/Library/Caches/$test_id" "$HOME/Library/Caches/pica-update-check"
   defaults delete "$test_id" >/dev/null 2>&1 || true
 }
