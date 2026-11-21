@@ -52,14 +52,20 @@ engine_benchmarks() {
     packages/server/tests/files/quick-open-benchmark.test.ts)
 }
 
-# One suite per run: `swift test` runs a package's suites in parallel. Built first, so the build is not measured.
+# One suite per run: `swift test` runs a package's suites in parallel. Built first, so the build is not measured. A
+# failed run is retried once after settling again: these are tails of a few events or one kill, which a burst of other
+# work on the machine decides (docs/performance.md). Both attempts are in the report's notes.
 app_package_benchmark() {
   id="$1"
   filter="$2"
   swift build --build-tests --package-path app/Packages/AppShell || return 1
-  settle "$id"
-  PICA_PERF_GATE=1 PICA_PERF_DIR="$perf_dir" swift test --skip-build --package-path app/Packages/AppShell \
-    --filter "$filter" && return 0
+  for attempt in 1 2; do
+    settle "$id (attempt $attempt)"
+    PICA_PERF_GATE=1 PICA_PERF_DIR="$perf_dir" swift test --skip-build --package-path app/Packages/AppShell \
+      --filter "$filter" && return 0
+    echo "$id: attempt $attempt failed, measured $(jq -c '{measured, samples}' "$perf_dir/$id.json" 2>/dev/null)" \
+      >> "$perf_dir/loads.txt"
+  done
   not_gating "$id"
 }
 
