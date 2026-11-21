@@ -1,6 +1,6 @@
 SWIFT_PACKAGES := $(wildcard app/Packages/*)
 
-.PHONY: verify verify-engine verify-app lint lint-arch lint-swift-boundary typecheck test build engine-install codegen codegen-drift app-packages app-build app-ui-test app-ui-test-gallery app-ui-test-pica perf
+.PHONY: verify verify-engine verify-app lint lint-arch lint-swift-boundary typecheck test build engine-install codegen codegen-drift app-packages app-build app-ui-test app-ui-test-gallery app-ui-test-pica app-ui-test-pica-build perf
 
 # `make verify UNIT=<ID>` runs only that unit's checks from tools/verify/units.json (PLAN.md §8.1).
 ifdef UNIT
@@ -89,6 +89,11 @@ app-ui-test-pica: engine-install
 		xcodebuild -project app/Pica.xcodeproj -scheme Pica $(UI_TEST_DESTINATION) \
 		$(if $(UI_TEST),-only-testing:PicaUITests/$(UI_TEST)) $(foreach test,$(UI_TESTS),-only-testing:PicaUITests/$(test)) \
 		-derivedDataPath "$(UI_TEST_DERIVED)" -resultBundlePath app/.derived/pica-ui-tests.xcresult test-without-building
+
+# Builds what app-ui-test-pica runs, so `make perf` can wait for the build's load to pass before measuring.
+app-ui-test-pica-build: engine-install
+	xcodebuild -project app/Pica.xcodeproj -scheme Pica $(UI_TEST_DESTINATION) \
+		-derivedDataPath "$(UI_TEST_DERIVED)" -quiet build-for-testing
 
 # H-07's performance gate: every PLAN.md §9 budget's test, then a report of each budget against its measured value
 # (docs/performance.md). Run it alone on the machine; locally under the UI-test lock.
