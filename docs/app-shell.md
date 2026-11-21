@@ -41,7 +41,9 @@ A missing engine is reported as `engine_not_found` without starting anything.
    the local socket after 50 ms, 100 ms, then every 250 ms, so it finds the new engine soon after its ready line.
    The test kills the engine with SIGKILL and requires the window to be back to connected within 2 s; it takes
    about 0.43 s on the reference machine.
-5. On quit the app sends SIGTERM to the engine it started. `picad` closes its listener and store and exits.
+5. An engine the supervisor started that keeps exiting soon after its ready line is restarted with growing delays,
+   then given up on as `engine_crash_loop` (H-05, [reliability.md](reliability.md#engine-crash-backoff-app)).
+6. On quit the app sends SIGTERM to the engine it started. `picad` closes its listener and store and exits.
 
 ## Protocol mismatch
 
@@ -61,6 +63,8 @@ reconnect, for example when an update replaced the engine under a running app. T
 | `reconnecting` | Banner "Reconnecting to the engine…"; the window is usable |
 | `incompatible` | Blocking panel naming both protocol versions, code `protocol_version_mismatch`, Quit |
 | `failed` | Blocking panel with the failure's message and code, Try Again and Quit |
+
+A damaged database the engine moved aside is shown as a dismissible notice above the content (H-05).
 
 The window never waits for the engine: it appears with the `starting` banner.
 

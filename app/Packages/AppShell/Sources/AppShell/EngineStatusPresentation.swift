@@ -34,8 +34,9 @@ public struct EngineStatusPresentation: Equatable, Sendable {
                     + "Quit Pica, stop any other Pica engine, and install a matching version of Pica.",
                 code: "protocol_version_mismatch")
         case .failed(let failure):
+            let title = failure.code == .engineCrashLoop ? "The engine keeps stopping" : "The engine could not start"
             self.init(
-                style: .blocking, title: "The engine could not start", message: failure.message,
+                style: .blocking, title: title, message: failure.message,
                 code: failure.code.rawValue, offersRetry: true)
         }
     }

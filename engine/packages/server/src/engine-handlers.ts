@@ -3,9 +3,17 @@ import { RpcFailure } from "./errors.ts";
 import type { MethodRouter } from "./router.ts";
 import { ENGINE_VERSION } from "./version.ts";
 
+export interface StoreRecoveryReport {
+  readonly backupPath: string;
+  readonly reason: string;
+  readonly at: string;
+}
+
 export interface EngineStatus {
   readonly uptimeMs: () => number;
   readonly sessionsRunning: () => number;
+  // H-05: the damaged database this engine moved aside at start, if it did.
+  readonly storeRecovery?: StoreRecoveryReport | null;
 }
 
 export function registerEngineHandlers(router: MethodRouter, status: EngineStatus): void {
@@ -23,5 +31,6 @@ export function registerEngineHandlers(router: MethodRouter, status: EngineStatu
     status: "ok",
     uptimeMs: Math.floor(status.uptimeMs()),
     sessionsRunning: status.sessionsRunning(),
+    ...(status.storeRecovery == null ? {} : { storeRecovery: status.storeRecovery }),
   }));
 }

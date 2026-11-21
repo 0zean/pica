@@ -50,7 +50,13 @@ export const methods = {
   ),
   "engine.health": clientMethod(
     Empty,
-    z.object({ status: z.enum(["ok", "degraded"]), uptimeMs: Count, sessionsRunning: Count }),
+    z.object({
+      status: z.enum(["ok", "degraded"]),
+      uptimeMs: Count,
+      sessionsRunning: Count,
+      // H-05: set when this engine found its database damaged, moved it to `backupPath` and started empty.
+      storeRecovery: z.object({ backupPath: AbsolutePath, reason: z.string(), at: Timestamp }).optional(),
+    }),
   ),
 
   "workspace.list": clientMethod(Empty, z.object({ workspaces: z.array(Workspace) })),

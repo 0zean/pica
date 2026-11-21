@@ -16,6 +16,10 @@ export type StoreErrorCode =
   | "store.conflict"
   | "store.busy"
   | "store.schema_too_new"
+  // H-05: the database file is damaged or is not a database.
+  | "store.corrupt"
+  // H-05: the disk (or the database's size limit) is full; nothing was written.
+  | "store.full"
   | "store.failed";
 
 export interface StoreError {

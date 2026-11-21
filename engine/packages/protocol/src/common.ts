@@ -39,6 +39,8 @@ export const ErrorCode = z.enum([
   "secret_unresolved",
   "git_failed",
   "runtime_failed",
+  // H-05: the disk is full; the session failed and its log keeps every event written before.
+  "storage_full",
 ]);
 
 export const FixAction = z.object({

@@ -53,6 +53,7 @@ import type { EngineCatalogOptions } from "./catalog-handlers.ts";
 import { registerConfigHandlers } from "./config-handlers.ts";
 import type { EngineConfigAccess } from "./config-handlers.ts";
 import { registerEngineHandlers } from "./engine-handlers.ts";
+import type { StoreRecoveryReport } from "./engine-handlers.ts";
 import { registerFanOutHandlers, toFanOutDto } from "./fanout-handlers.ts";
 import { registerFilesHandlers } from "./files-handlers.ts";
 import { registerCustomizationHandlers } from "./customization-handlers.ts";
@@ -146,6 +147,8 @@ export interface EngineOptions {
   readonly github?: EngineGitHubOptions;
   // A-15: answers `engine.git`.
   readonly gitInstall?: () => Promise<GitInstallation>;
+  // H-05: reported by `engine.health` when the store was moved aside at start.
+  readonly storeRecovery?: StoreRecoveryReport | null;
 }
 
 export interface EngineMcpImportOptions {
@@ -180,6 +183,7 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
   registerEngineHandlers(router, {
     uptimeMs: () => performance.now() - startedAt,
     sessionsRunning: () => sessions?.runningCount() ?? 0,
+    storeRecovery: options.storeRecovery ?? null,
   });
   if (options.sessions !== undefined) {
     registerAccountHandlers(router, options.sessions.runtime);

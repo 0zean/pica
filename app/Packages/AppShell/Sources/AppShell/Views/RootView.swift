@@ -39,6 +39,9 @@ public struct RootView: View {
                 if presentation.style == .banner {
                     EngineStatusBanner(presentation: presentation)
                 }
+                if let recovery = model.storeRecovery {
+                    StoreRecoveryNotice(backupPath: recovery.backupPath, dismiss: model.dismissStoreRecovery)
+                }
             }
         }
         .accessibilityElement(children: .contain)
@@ -79,6 +82,37 @@ struct EngineStatusBanner: View {
         .background(Palette.surface)
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier("pica.engineStatus")
+    }
+}
+
+/// H-05: the engine found its database damaged, moved it aside and started with an empty one.
+struct StoreRecoveryNotice: View {
+    let backupPath: String
+    let dismiss: () -> Void
+
+    var body: some View {
+        HStack(spacing: Spacing.small) {
+            Image(systemName: "exclamationmark.triangle")
+                .foregroundStyle(Palette.warning)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: Spacing.xSmall) {
+                Text("Pica's database was damaged")
+                    .font(Typography.headline)
+                    .foregroundStyle(Palette.textPrimary)
+                Text("It was moved to \(backupPath) and Pica started with an empty one.")
+                    .font(Typography.callout)
+                    .foregroundStyle(Palette.textSecondary)
+                    .textSelection(.enabled)
+            }
+            Spacer()
+            Button("Dismiss", action: dismiss)
+                .buttonStyle(.pica(.secondary))
+        }
+        .padding(.horizontal, Spacing.large)
+        .padding(.vertical, Spacing.small)
+        .background(Palette.surface)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("pica.storeRecovery")
     }
 }
 

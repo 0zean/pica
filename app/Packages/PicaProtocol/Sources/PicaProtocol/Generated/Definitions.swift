@@ -1282,21 +1282,25 @@ public struct EngineHealthResult: Codable, Hashable, Sendable {
     public var status: Status
     public var uptimeMs: Count
     public var sessionsRunning: Count
+    public var storeRecovery: StoreRecovery?
 
     public init(
         status: Status,
         uptimeMs: Count,
-        sessionsRunning: Count
+        sessionsRunning: Count,
+        storeRecovery: StoreRecovery? = nil
     ) {
         self.status = status
         self.uptimeMs = uptimeMs
         self.sessionsRunning = sessionsRunning
+        self.storeRecovery = storeRecovery
     }
 
     private enum CodingKeys: String, CodingKey {
         case status
         case uptimeMs
         case sessionsRunning
+        case storeRecovery
     }
 
     public init(from decoder: any Decoder) throws {
@@ -1304,6 +1308,7 @@ public struct EngineHealthResult: Codable, Hashable, Sendable {
         status = try container.decode(Status.self, forKey: .status)
         uptimeMs = try container.decode(Count.self, forKey: .uptimeMs)
         sessionsRunning = try container.decode(Count.self, forKey: .sessionsRunning)
+        storeRecovery = try container.decodeIfPresent(StoreRecovery.self, forKey: .storeRecovery)
     }
 
     public func encode(to encoder: any Encoder) throws {
@@ -1311,11 +1316,48 @@ public struct EngineHealthResult: Codable, Hashable, Sendable {
         try container.encode(status, forKey: .status)
         try container.encode(uptimeMs, forKey: .uptimeMs)
         try container.encode(sessionsRunning, forKey: .sessionsRunning)
+        try container.encodeIfPresent(storeRecovery, forKey: .storeRecovery)
     }
 
     public enum Status: String, CaseIterable, Codable, Hashable, Sendable {
         case ok
         case degraded
+    }
+
+    public struct StoreRecovery: Codable, Hashable, Sendable {
+        public var backupPath: AbsolutePath
+        public var reason: String
+        public var at: Timestamp
+
+        public init(
+            backupPath: AbsolutePath,
+            reason: String,
+            at: Timestamp
+        ) {
+            self.backupPath = backupPath
+            self.reason = reason
+            self.at = at
+        }
+
+        private enum CodingKeys: String, CodingKey {
+            case backupPath
+            case reason
+            case at
+        }
+
+        public init(from decoder: any Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            backupPath = try container.decode(AbsolutePath.self, forKey: .backupPath)
+            reason = try container.decode(String.self, forKey: .reason)
+            at = try container.decode(Timestamp.self, forKey: .at)
+        }
+
+        public func encode(to encoder: any Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(backupPath, forKey: .backupPath)
+            try container.encode(reason, forKey: .reason)
+            try container.encode(at, forKey: .at)
+        }
     }
 }
 
@@ -1471,6 +1513,7 @@ public enum ErrorCode: String, CaseIterable, Codable, Hashable, Sendable {
     case secretUnresolved = "secret_unresolved"
     case gitFailed = "git_failed"
     case runtimeFailed = "runtime_failed"
+    case storageFull = "storage_full"
 }
 
 public struct ErrorData: Codable, Hashable, Sendable {
