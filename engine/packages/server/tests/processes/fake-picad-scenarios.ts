@@ -170,6 +170,11 @@ function overviewTurns(): Turn[] {
   ];
 }
 
+/** The H-07 resources scenario: a session's first message plays one turn of about 2,000 events and ends idle. */
+function resourcesTurns(): Turn[] {
+  return [{ steps: Array.from({ length: 67 }, (_, index) => workTurn(index).steps).flat() }];
+}
+
 export const fakePicadScenarios: Record<string, Scenario> = {
   empty: scenario([]),
   timeline: scenario(timelineTurns()),
@@ -180,4 +185,5 @@ export const fakePicadScenarios: Record<string, Scenario> = {
   mcp: scenario([]),
   usage: scenario(usageTurns()),
   overview: scenario(overviewTurns()),
+  resources: scenario(resourcesTurns()),
 };

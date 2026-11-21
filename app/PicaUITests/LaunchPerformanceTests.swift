@@ -35,6 +35,9 @@ final class LaunchPerformanceTests: XCTestCase {
         report.lifetime = .keepAlways
         add(report)
 
+        recordBudget(BudgetMeasurement(
+            id: "launch", measured: median * 1000, threshold: Self.budgetSeconds * 1000, unit: "ms",
+            samples: samples.map { $0 * 1000 }))
         XCTAssertLessThan(median, Self.budgetSeconds, "median cold launch \(median) s is over the 1.0 s budget; samples \(samples)")
         XCTAssertLessThanOrEqual(
             median, baseline.medianSeconds + baseline.toleranceSeconds,

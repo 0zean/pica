@@ -25,6 +25,9 @@ final class TimelineUITests: XCTestCase {
         samples.sort()
         let median = samples[samples.count / 2]
         attach("open (s): \(samples), median \(median), events \(fixture.session.lastSeq)")
+        recordBudget(BudgetMeasurement(
+            id: "timeline-open", measured: median * 1000, threshold: Self.openBudgetSeconds * 1000, unit: "ms",
+            samples: samples.map { $0 * 1000 }))
         XCTAssertLessThan(
             median, Self.openBudgetSeconds,
             "median open of \(fixture.session.lastSeq) events took \(median) s; samples \(samples)")
@@ -40,6 +43,8 @@ final class TimelineUITests: XCTestCase {
         _ = try fixture.open()
         let report = try fixture.report { $0.scrolled }
         attach("scroll: \(report.scrollSeconds) s, hitches \(report.hitches) for \(report.hitchSeconds) s, ratio \(report.hitchRatio)")
+        recordBudget(BudgetMeasurement(
+            id: "timeline-hitch", measured: report.hitchRatio * 100, threshold: Self.hitchRatioBudget * 100, unit: "%"))
         XCTAssertLessThan(
             report.hitchRatio, Self.hitchRatioBudget,
             "hitch time ratio \(report.hitchRatio): \(report.hitches) hitches, \(report.hitchSeconds) s of \(report.scrollSeconds) s")

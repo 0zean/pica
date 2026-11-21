@@ -7,6 +7,10 @@ import Testing
 
 /// PLAN.md A-01: killing the engine shows a reconnecting state and recovers within 2 s.
 @Suite(.serialized, .timeLimit(.minutes(1))) struct EngineRecoveryTests {
+    /// Recovery is mostly a new Node process starting `picad`, whose time varies with how busy the machine is, so the
+    /// check is the median of three kills (H-07, docs/performance.md); each kill restarts at once, with no backoff.
+    private static let kills = 3
+
     @MainActor @Test func killedEngineShowsReconnectingAndRecoversWithinTwoSeconds() async throws {
         let fixture = try EngineFixture()
         defer { fixture.remove() }
@@ -16,22 +20,29 @@ import Testing
         model.start()
         while let presentation = await shown.next(), presentation.style != .hidden {}
         #expect(model.engineStatus.isConnected)
-        let firstEngine = try #require(supervisor.engineProcessIdentifier)
 
-        let killed = ContinuousClock.now
-        kill(firstEngine, SIGKILL)
-        let reconnecting = await shown.next()
-        #expect(reconnecting?.title == "Reconnecting to the engine…")
-        #expect(reconnecting?.style == .banner)
-        while let presentation = await shown.next(), presentation.style != .hidden {}
-        let recovered = ContinuousClock.now - killed
-
-        #expect(recovered < .seconds(2), "recovered after \(recovered)")
-        #expect(model.engineStatus.isConnected)
-        let secondEngine = try #require(supervisor.engineProcessIdentifier)
-        #expect(secondEngine != firstEngine)
-        let health = try await supervisor.client.request(Methods.EngineHealth.self, Empty())
-        #expect(health.status == .ok)
+        var recoveries: [Duration] = []
+        for _ in 0..<Self.kills {
+            let killedEngine = try #require(supervisor.engineProcessIdentifier)
+            let killed = ContinuousClock.now
+            kill(killedEngine, SIGKILL)
+            let reconnecting = await shown.next()
+            #expect(reconnecting?.title == "Reconnecting to the engine…")
+            #expect(reconnecting?.style == .banner)
+            while let presentation = await shown.next(), presentation.style != .hidden {}
+            recoveries.append(ContinuousClock.now - killed)
+            #expect(model.engineStatus.isConnected)
+            let restarted = try #require(supervisor.engineProcessIdentifier)
+            #expect(restarted != killedEngine)
+            let health = try await supervisor.client.request(Methods.EngineHealth.self, Empty())
+            #expect(health.status == .ok)
+        }
+        let seconds = recoveries.map { Double($0.components.seconds) + Double($0.components.attoseconds) / 1e18 }
+        let recovered = median(seconds)
+        print("A-01 engine recovery (s): \(seconds), median \(recovered)")
+        BudgetRecord(id: "engine-recovery", measured: recovered * 1000, threshold: 2000, unit: "ms", samples: seconds.map { $0 * 1000 })
+            .write()
+        #expect(recovered < 2, "median recovery \(recovered) s; recoveries \(seconds)")
         await supervisor.stop()
     }
 

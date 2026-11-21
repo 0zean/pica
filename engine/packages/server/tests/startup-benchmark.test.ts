@@ -4,6 +4,7 @@ import { performance } from "node:perf_hooks";
 import { createInterface } from "node:readline";
 import { describe, expect, it } from "vitest";
 import { PROTOCOL_VERSION } from "@pica/protocol";
+import { recordBudget } from "../../../tests/support/budget-record.ts";
 import { TestClient, helloParams, makeSocketDir } from "./helpers.ts";
 
 // PLAN.md §9: engine start to `engine.hello` reply < 1.5 s.
@@ -47,6 +48,7 @@ describe("picad startup", () => {
     samples.sort((a, b) => a - b);
     const median = samples[Math.floor(RUNS / 2)] ?? Number.POSITIVE_INFINITY;
     console.log(`picad start to hello: ${samples.map((ms) => ms.toFixed(0)).join(", ")} ms; median ${median.toFixed(0)} ms`);
+    recordBudget({ id: "engine-hello", measured: median, threshold: BUDGET_MS, unit: "ms", samples });
     expect(median).toBeLessThan(BUDGET_MS);
   }, 30_000);
 });
