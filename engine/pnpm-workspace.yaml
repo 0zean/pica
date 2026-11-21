@@ -2,3 +2,4 @@ packages:
   - packages/*
 allowBuilds:
   koffi: false
+  esbuild: false

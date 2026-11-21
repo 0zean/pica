@@ -14,12 +14,14 @@
     "test": "vitest run",
     "protocol-schema": "node --experimental-strip-types --disable-warning=ExperimentalWarning tools/protocol-schema/main.ts",
     "swift-codegen": "node --experimental-strip-types --disable-warning=ExperimentalWarning tools/swift-codegen/main.ts",
-    "config-schema": "node --experimental-strip-types --disable-warning=ExperimentalWarning tools/config-schema/main.ts"
+    "config-schema": "node --experimental-strip-types --disable-warning=ExperimentalWarning tools/config-schema/main.ts",
+    "bundle": "node --experimental-strip-types --disable-warning=ExperimentalWarning tools/bundle/main.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/node": "^22.20.5",
     "@vitest/coverage-v8": "^5.1.0",
+    "esbuild": "0.28.2",
     "eslint": "^10.14.0",
     "fast-check": "^4.10.2",
     "typescript": "~6.0.3",

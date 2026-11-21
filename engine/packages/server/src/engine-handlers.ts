@@ -1,8 +1,7 @@
 import { PROTOCOL_VERSION } from "@pica/protocol";
 import { RpcFailure } from "./errors.ts";
 import type { MethodRouter } from "./router.ts";
-
-export const ENGINE_VERSION = "0.0.0";
+import { ENGINE_VERSION } from "./version.ts";
 
 export interface StoreRecoveryReport {
   readonly backupPath: string;
