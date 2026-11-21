@@ -3,6 +3,7 @@ import SwiftUI
 /// An opaque content container. Content areas stay opaque for legibility (PLAN.md §7.3).
 public struct Card<Content: View>: View {
     private let content: Content
+    @Environment(\.picaDensity) private var density
 
     public init(@ViewBuilder content: () -> Content) {
         self.content = content()
@@ -11,7 +12,7 @@ public struct Card<Content: View>: View {
     public var body: some View {
         let shape = RoundedRectangle(cornerRadius: Radius.large, style: .continuous)
         content
-            .padding(Spacing.large)
+            .padding(density.spacing(Spacing.large))
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(shape.fill(Palette.surface))
             .overlay(shape.strokeBorder(Palette.border, lineWidth: 1))

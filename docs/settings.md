@@ -5,8 +5,8 @@ it depends on `EngineClient`, `PicaProtocol` and `DesignSystem`, and on no other
 
 - the **action registry**: every command a user can run from a menu, the ⌘K palette or a shortcut;
 - the **⌘K palette** over the registry;
-- the **Settings scene**: a General pane that edits keys of the user's `config.jsonc`, and a Keyboard pane, the
-  keybinding editor.
+- the **Settings scene**: a General pane that edits keys of the user's `config.jsonc`, an Appearance pane (theme,
+  density and accent, X-01, [themes.md](themes.md)), and a Keyboard pane, the keybinding editor.
 
 The app target (`app/Pica/AppActions.swift`) builds the stores, runs the actions and shows the palette, because each
 action belongs to another feature (AppShell's navigation, AppKit's split view). The checks are `ActionRegistryTests`,
