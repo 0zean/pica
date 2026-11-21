@@ -36,6 +36,7 @@ import {
 import type { AgentRuntime, JsonObject, JsonValue, ModelCatalog, PolicyContext, SessionRoutingProfile, Store, TierSettingsInput, TokenPrices } from "@pica/core";
 import { loadEngineConfig } from "./composition-config.ts";
 import type { EngineConfig, EngineConfigOptions } from "./composition-config.ts";
+import { customizationOptions } from "./composition-customization.ts";
 import { filesOptions } from "./composition-files.ts";
 import { mcpOptions } from "./composition-mcp.ts";
 import { defaultGitHubAccess, gitHubOptions, reviewOptions, workspaceOptions } from "./composition-workspaces.ts";
@@ -100,6 +101,7 @@ export function composeEngine(options: ProductionOptions): ComposedEngine {
         review: reviewOptions({ store, env: options.env }),
         ...workspaces,
         files: filesOptions(workspaces.workspaces, options.env),
+        customization: customizationOptions({ homeDir: options.homeDir, workspaces: workspaces.workspaces, policy: config.policy }),
         github,
       },
       close: async () => {

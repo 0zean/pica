@@ -31,6 +31,12 @@ const PermissionFloor = z.strictObject({
   minimumMode: PermissionMode.optional().describe("The least strict permissions.mode allowed"),
 });
 
+const CustomizationLocks = z.strictObject({
+  locked: z
+    .array(z.enum(["agent", "skill", "instructions"]))
+    .describe("Kinds Pica may not create, edit or delete in any layer (X-02)"),
+});
+
 const ManagedRuleEntry = z.strictObject({
   id: z.string().regex(/^[A-Za-z0-9._-]+$/),
   reason: Name,
@@ -49,6 +55,7 @@ export const ManagedPolicyFile = z.strictObject({
   mcpServers: McpServerRestrictions.optional(),
   budget: BudgetCeilings.optional(),
   permissions: PermissionFloor.optional(),
+  customization: CustomizationLocks.optional(),
   rules: z.array(ManagedRuleEntry).optional().describe("Tool calls these match are always denied"),
   config: z
     .record(z.string(), z.unknown())

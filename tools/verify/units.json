@@ -979,10 +979,12 @@
   ],
   "X-02": [
     {
-      "check": "An agent created in the UI is written as a file that the C-02 loader accepts."
+      "check": "An agent created in the UI is written as a file that the C-02 loader accepts.",
+      "run": "make engine-install && (cd engine && pnpm exec vitest run packages/server/tests/customization/customization.test.ts -t 'C-02 loader') && swift test --package-path app/Packages/Customization --filter AgentDraftTests && make app-ui-test-pica UI_TEST=CustomizationUITests/testAnAgentCreatedInTheUIIsWrittenAsAFileTheLoaderAccepts"
     },
     {
-      "check": "The UI shows which layer each item comes from and which one wins."
+      "check": "The UI shows which layer each item comes from and which one wins.",
+      "run": "make engine-install && (cd engine && pnpm exec vitest run packages/core/tests/customization packages/server/tests/customization/customization.test.ts) && swift test --package-path app/Packages/Customization --filter CustomizationStoreTests && make app-ui-test-pica UI_TEST=CustomizationUITests/testTheWindowShowsEachItemsLayerAndWhichOneWins && make app-ui-test-pica UI_TEST=CustomizationUITests/testAManagedLockLeavesAgentsReadOnlyAndNamesThePolicy"
     }
   ],
   "X-03": [

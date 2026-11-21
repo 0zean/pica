@@ -4,6 +4,7 @@ import { SessionEvent } from "./events.ts";
 import { CopilotAccount } from "./dto/account.ts";
 import { AgentDef } from "./dto/agents.ts";
 import { ConfigLayer, ConfigValue } from "./dto/config.ts";
+import { CustomizationItem, CustomizationKind, CustomizationLocation } from "./dto/customization.ts";
 import { FanOut } from "./dto/fanout.ts";
 import { FileEntry, QuickOpenHit } from "./dto/files.ts";
 import { Branch, Commit, FileDiff, GitStatus } from "./dto/git.ts";
@@ -291,6 +292,34 @@ export const methods = {
     z.object({ agents: z.array(AgentDef) }),
   ),
 
+  // X-02: agents, skills and instruction files from every layer (docs/agents.md). A repo's
+  // locations need its workspace, so `repoId` is read only with `workspaceId`.
+  "customization.list": clientMethod(
+    z.object({ kind: CustomizationKind, workspaceId: Id.optional(), repoId: Id.optional() }),
+    z.object({ items: z.array(CustomizationItem), locations: z.array(CustomizationLocation) }),
+  ),
+  // `name` is left out for a single-file location. The text is validated before it is written.
+  "customization.create": clientMethod(
+    z.object({
+      kind: CustomizationKind,
+      locationId: Id,
+      name: z.string().min(1).optional(),
+      text: z.string(),
+      workspaceId: Id.optional(),
+      repoId: Id.optional(),
+    }),
+    z.object({ item: CustomizationItem }),
+  ),
+  // `path` is an item `customization.list` returns for the same kind and scope.
+  "customization.save": clientMethod(
+    z.object({ kind: CustomizationKind, path: AbsolutePath, text: z.string(), workspaceId: Id.optional(), repoId: Id.optional() }),
+    z.object({ item: CustomizationItem }),
+  ),
+  "customization.delete": clientMethod(
+    z.object({ kind: CustomizationKind, path: AbsolutePath, workspaceId: Id.optional(), repoId: Id.optional() }),
+    Ok,
+  ),
+
   "engine.account": clientMethod(Empty, z.object({ account: CopilotAccount })),
 
   "models.list": clientMethod(
@@ -355,6 +384,8 @@ export const NAMESPACES = [
   "files",
   "mcp",
   "agents",
+  // X-02: agents, skills and instruction files across layers (docs/agents.md).
+  "customization",
   "models",
   "usage",
   "config",

@@ -19,6 +19,7 @@
 		A10000000000000000A11001 /* Usage in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000A11002 /* Usage */; };
 		A10000000000000000A14001 /* PicaSettings in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000A14002 /* PicaSettings */; };
 		A10000000000000000A13001 /* McpServers in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000A13002 /* McpServers */; };
+		A10000000000000000X02001 /* Customization in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000X02002 /* Customization */; };
 		A10000000000000000A12001 /* Workspaces in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000A12002 /* Workspaces */; };
 		A10000000000000000000121 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000131 /* DesignSystem */; };
 		A10000000000000000000321 /* PicaProtocol in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000331 /* PicaProtocol */; };
@@ -91,6 +92,7 @@
 				A10000000000000000A11001 /* Usage in Frameworks */,
 				A10000000000000000A14001 /* PicaSettings in Frameworks */,
 				A10000000000000000A13001 /* McpServers in Frameworks */,
+				A10000000000000000X02001 /* Customization in Frameworks */,
 				A10000000000000000A12001 /* Workspaces in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -178,6 +180,7 @@
 				A10000000000000000A11002 /* Usage */,
 				A10000000000000000A14002 /* PicaSettings */,
 				A10000000000000000A13002 /* McpServers */,
+				A10000000000000000X02002 /* Customization */,
 				A10000000000000000A12002 /* Workspaces */,
 			);
 			productName = Pica;
@@ -303,6 +306,7 @@
 				A10000000000000000A11003 /* XCLocalSwiftPackageReference "Packages/Usage" */,
 				A10000000000000000A14003 /* XCLocalSwiftPackageReference "Packages/PicaSettings" */,
 				A10000000000000000A13003 /* XCLocalSwiftPackageReference "Packages/McpServers" */,
+				A10000000000000000X02003 /* XCLocalSwiftPackageReference "Packages/Customization" */,
 				A10000000000000000A12003 /* XCLocalSwiftPackageReference "Packages/Workspaces" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -656,6 +660,10 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/McpServers;
 		};
+		A10000000000000000X02003 /* XCLocalSwiftPackageReference "Packages/Customization" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/Customization;
+		};
 		A1000000000000000000A103 /* XCLocalSwiftPackageReference "Packages/Terminal" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/Terminal;
@@ -710,6 +718,10 @@
 		A10000000000000000A13002 /* McpServers */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = McpServers;
+		};
+		A10000000000000000X02002 /* Customization */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Customization;
 		};
 		A1000000000000000000A102 /* Terminal */ = {
 			isa = XCSwiftPackageProductDependency;

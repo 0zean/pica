@@ -468,6 +468,34 @@ public enum Methods {
         public static let direction = MethodDirection.client
     }
 
+    public enum CustomizationList: PicaMethod {
+        public typealias Params = CustomizationListParams
+        public typealias Result = CustomizationListResult
+        public static let name = "customization.list"
+        public static let direction = MethodDirection.client
+    }
+
+    public enum CustomizationCreate: PicaMethod {
+        public typealias Params = CustomizationCreateParams
+        public typealias Result = CustomizationCreateResult
+        public static let name = "customization.create"
+        public static let direction = MethodDirection.client
+    }
+
+    public enum CustomizationSave: PicaMethod {
+        public typealias Params = CustomizationSaveParams
+        public typealias Result = CustomizationSaveResult
+        public static let name = "customization.save"
+        public static let direction = MethodDirection.client
+    }
+
+    public enum CustomizationDelete: PicaMethod {
+        public typealias Params = CustomizationDeleteParams
+        public typealias Result = Ok
+        public static let name = "customization.delete"
+        public static let direction = MethodDirection.client
+    }
+
     public enum EngineAccount: PicaMethod {
         public typealias Params = Empty
         public typealias Result = EngineAccountResult
