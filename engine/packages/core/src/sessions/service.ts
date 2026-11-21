@@ -147,26 +147,25 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     return appended.ok ? ok(undefined) : storeFailure(appended.error);
   }
 
-  // H-05: the disk is full. The session's runtime is closed and the session fails with
+  // H-05: the disk is full. A live session's runtime is closed and the session fails with
   // `storage_full`; what the log already holds stays readable. Writing the failure may itself
-  // fail, so it is remembered here too.
+  // fail, so it is remembered here too. A session without a runtime (resumable, or being
+  // recovered at start) only gets the error: it can be resumed once there is space.
   async function failForStorage(sessionId: string, message: string): Promise<void> {
     const session = live.get(sessionId);
-    if (session !== undefined) {
-      live.delete(sessionId);
-      session.unsubscribe();
+    if (session === undefined) {
+      return;
     }
-    const state = stateOf(sessionId);
-    if (state !== undefined && state !== "ended" && state !== "failed") {
-      append(sessionId, { type: "session.error", payload: { code: storageFullCode, message }, timestamp: clock() });
-      const moved = move(sessionId, "fail");
-      storage.record(sessionId, message);
-      const current = moved.ok ? undefined : read(sessionId);
-      if (current?.ok === true) {
-        changed(current.value);
-      }
+    live.delete(sessionId);
+    session.unsubscribe();
+    append(sessionId, { type: "session.error", payload: { code: storageFullCode, message }, timestamp: clock() });
+    const moved = move(sessionId, "fail");
+    storage.record(sessionId, message);
+    const current = moved.ok ? undefined : read(sessionId);
+    if (current?.ok === true) {
+      changed(current.value);
     }
-    await session?.runtime.close();
+    await session.runtime.close();
   }
 
   function changed(session: Session): SessionResult<SessionInfo> {

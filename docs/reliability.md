@@ -53,6 +53,10 @@ the database passes `PRAGMA integrity_check`. If step 2 could not be written, a 
 the store last recorded it and makes it `resumable` like any session the previous engine left live (E-08); the user
 can resume it once there is space.
 
+Only a live session (one with a runtime) is failed. A write for a session without one, such as the
+`session.aborted {reason: "engine"}` a starting engine appends while recovering sessions, returns `storage_full` to
+its caller and leaves the session as it was, so it can be resumed once there is space.
+
 The failure is per session: other sessions fail only when one of their own writes hits the full disk. The usage
 ledger and the audit log are not covered here; their writes fail with their own errors.
 
