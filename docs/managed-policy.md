@@ -21,6 +21,7 @@ A source is trusted only when root owns both the file (after following symlinks)
   "budget": { "maxSessionCredits": 500, "maxWorkspaceDailyCredits": 5000 },
   "permissions": { "minimumMode": "ask" },        // the least strict permissions.mode allowed
   "rules": [{ "id": "no-push", "reason": "Pushes go through CI", "kinds": ["shell"], "commandPattern": "^git push" }],
+  "customization": { "locked": ["agent"] },       // kinds Pica may not create, edit or delete (X-02, docs/agents.md)
   "config": { "routing": { "profile": "strict" } } // any config.jsonc key; each key set here is locked
 }
 ```
