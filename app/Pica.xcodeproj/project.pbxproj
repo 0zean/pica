@@ -20,6 +20,7 @@
 		A10000000000000000A14001 /* PicaSettings in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000A14002 /* PicaSettings */; };
 		A10000000000000000A13001 /* McpServers in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000A13002 /* McpServers */; };
 		A10000000000000000A12001 /* Workspaces in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000A12002 /* Workspaces */; };
+		A10000000000000000A15001 /* Onboarding in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000A15002 /* Onboarding */; };
 		A10000000000000000000121 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000131 /* DesignSystem */; };
 		A10000000000000000000321 /* PicaProtocol in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000331 /* PicaProtocol */; };
 		A10000000000000000000322 /* EngineClient in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000332 /* EngineClient */; };
@@ -92,6 +93,7 @@
 				A10000000000000000A14001 /* PicaSettings in Frameworks */,
 				A10000000000000000A13001 /* McpServers in Frameworks */,
 				A10000000000000000A12001 /* Workspaces in Frameworks */,
+				A10000000000000000A15001 /* Onboarding in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -179,6 +181,7 @@
 				A10000000000000000A14002 /* PicaSettings */,
 				A10000000000000000A13002 /* McpServers */,
 				A10000000000000000A12002 /* Workspaces */,
+				A10000000000000000A15002 /* Onboarding */,
 			);
 			productName = Pica;
 			productReference = A10000000000000000000002 /* Pica.app */;
@@ -304,6 +307,7 @@
 				A10000000000000000A14003 /* XCLocalSwiftPackageReference "Packages/PicaSettings" */,
 				A10000000000000000A13003 /* XCLocalSwiftPackageReference "Packages/McpServers" */,
 				A10000000000000000A12003 /* XCLocalSwiftPackageReference "Packages/Workspaces" */,
+				A10000000000000000A15003 /* XCLocalSwiftPackageReference "Packages/Onboarding" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A10000000000000000000005 /* Products */;
@@ -676,6 +680,10 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/Workspaces;
 		};
+		A10000000000000000A15003 /* XCLocalSwiftPackageReference "Packages/Onboarding" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/Onboarding;
+		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -730,6 +738,10 @@
 		A10000000000000000A12002 /* Workspaces */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Workspaces;
+		};
+		A10000000000000000A15002 /* Onboarding */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Onboarding;
 		};
 		A10000000000000000000131 /* DesignSystem */ = {
 			isa = XCSwiftPackageProductDependency;

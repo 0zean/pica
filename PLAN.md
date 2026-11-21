@@ -1003,7 +1003,8 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 **A-15 · Onboarding** — A-12, A-13
 - Build: precondition checks (Copilot login, git, GitHub auth), first workspace.
 - Verify:
-  - [ ] UI test: each failing precondition shows a fix action, and passing it advances.
+  - [x] UI test: each failing precondition shows a fix action, and passing it advances.
+- Notes: `app/Packages/Onboarding`, specified in [docs/onboarding.md](docs/onboarding.md). A feature package (lint-arch rule added); the app target (`app/Pica/AppOnboarding.swift`) hands it A-12's `FixPerformer` and `WorkspaceManager.createWorkspace`, since features do not depend on each other. Onboarding takes the main window's place while the engine has no workspace (`NavigationStore` loaded and empty), so nothing is stored: creating the first workspace selects it and shows its management screen, and a user with a workspace (made anywhere) never sees it; Set Up Later hides it until the next launch. The steps are GitHub Copilot (`engine.account`; `signed_in` or `unknown` passes), Git and GitHub (`github.authStatus`), then the first workspace; all three checks run at once, the current step is the first that has not passed, and Check Again asks the engine again, so passing a check advances. GitHub is optional (Continue Without GitHub). Fixes are copied commands (`copilot login`, `xcode-select --install`, A-12's `gh auth login` for the engine's host), since the app runs none itself. Engine: new protocol method `engine.git` (`{ git: { status: installed | missing, version, message } }`), answered by running `git --version` in the home directory (`probeGitInstall`, adapters); a failed run counts as missing, which covers macOS's `/usr/bin/git` stub without the Command Line Tools. `ProductionOptions.gitInstall` stands in a probe for tests. `PICA_ONBOARDING=off` turns onboarding off, and every other UI test sets it, since each starts with no workspace. `fake-picad` reads `PICA_TEST_PRECONDITIONS`, a JSON file of failing checks (`fake-preconditions.ts`), on every check: it gives the FakeRuntime an `account`, answers `engine.git`, and drives the stub GitHub server's sign-in, so `OnboardingUITests` fails each check, performs its fix, makes it pass and sees the next step. The precondition is `gitInstall` in identifiers and that file, since `lint-swift-boundary` refuses a `"git"` literal in Swift.
 
 **A-16 · Session overview** — A-05, R-11
 - Build: board of all sessions with status and an attention queue; fan-out aggregate view.
@@ -1185,7 +1186,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | A-12 | Workspace and repo management | A-04, R-06 | done |
 | A-13 | MCP management | A-04, M-06, M-07 | done |
 | A-14 | Settings and command palette | A-04, E-04 | done |
-| A-15 | Onboarding | A-12, A-13 | todo |
+| A-15 | Onboarding | A-12, A-13 | done |
 | A-16 | Session overview | A-05, R-11 | todo |
 | X-01 | Themes and density | A-03, A-14 | todo |
 | X-02 | Agents, skills, and rules management | C-02, A-14 | todo |

@@ -29,6 +29,8 @@ const allowedPackageDependencies: Readonly<Record<string, readonly string[]>> = 
   Workspaces: ["EngineClient", "PicaProtocol", "DesignSystem"],
   // A-11: the session chip and the Usage dashboard; the app target puts the chip in the timeline's header.
   Usage: ["EngineClient", "PicaProtocol", "DesignSystem"],
+  // A-15: onboarding's precondition checks and first workspace; the app target hands it the fixes and workspace creation.
+  Onboarding: ["EngineClient", "PicaProtocol", "DesignSystem"],
 };
 
 const featuresPackage = "Features";

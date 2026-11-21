@@ -9,6 +9,7 @@ export {
   type SubmoduleChange,
 } from "./diff.ts";
 export { type GitError, type GitErrorCode } from "./errors.ts";
+export { parseGitVersion, type GitInstallation } from "./install.ts";
 export { logArgs, parseLog, type Commit } from "./log.ts";
 export { hunkPatch, type HunkPatchDirection } from "./hunk-patch.ts";
 export type { ApplyOptions, CommitOptions, DiffTarget, GitResult, GitService, GitWorkingChanges, LogOptions, PushOptions } from "./port.ts";
