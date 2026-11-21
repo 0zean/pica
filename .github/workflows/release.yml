@@ -9,9 +9,12 @@ on:
       version:
         description: "Version to build, x.y.z (the draft release is tagged v<version> when published)"
         required: true
+  # TEMPORARY (H-06 verification before the workflow is on main): removed in the next commit.
+  push:
+    branches: [dev/h-06-distribution-e32d9a]
 
 concurrency:
-  group: release-${{ inputs.version }}
+  group: release-${{ inputs.version || '0.1.0' }}
   cancel-in-progress: false
 
 permissions:
@@ -22,7 +25,7 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 45
     env:
-      VERSION: ${{ inputs.version }}
+      VERSION: ${{ inputs.version || '0.1.0' }}
       # Optional steps run only when their secrets are configured (docs/distribution.md, "Secrets").
       HAS_SPARKLE_KEY: ${{ secrets.SPARKLE_PRIVATE_ED_KEY != '' && vars.SPARKLE_PUBLIC_ED_KEY != '' }}
       HAS_DEVELOPER_ID: ${{ secrets.DEVELOPER_ID_P12 != '' && secrets.DEVELOPER_ID_P12_PASSWORD != '' }}
