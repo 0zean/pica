@@ -4,6 +4,7 @@ import EngineClient
 import McpServers
 import PicaProtocol
 import PicaSettings
+import SessionOverview
 import SwiftUI
 import Usage
 import Workspaces
@@ -25,6 +26,8 @@ final class AppActions {
     var openMcpServers: (() -> Void)?
     /// Set by the main window, which has the `openWindow` action (A-11).
     var openUsage: (() -> Void)?
+    /// Set by the main window, which has the `openWindow` action (A-16).
+    var openSessionOverview: (() -> Void)?
     private let navigation: NavigationStore
 
     init(client: EngineClient, navigation: NavigationStore) {
@@ -75,6 +78,8 @@ final class AppActions {
             }
         case .showUsage:
             openUsage?()
+        case .showSessionOverview:
+            openSessionOverview?()
         }
     }
 
@@ -123,6 +128,7 @@ struct ActionHost: ViewModifier {
                 actions.openSettings = { openSettings() }
                 actions.openMcpServers = { openWindow(id: McpServersScreen.windowId) }
                 actions.openUsage = { openWindow(id: UsageDashboardScreen.windowId) }
+                actions.openSessionOverview = { openWindow(id: SessionOverviewScreen.windowId) }
             }
             .sheet(isPresented: $palette.isPresented) {
                 CommandPaletteView(
