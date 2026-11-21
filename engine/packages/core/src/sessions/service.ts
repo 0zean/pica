@@ -21,6 +21,7 @@ import type {
 import { describeRule, matchingRule, ruleFor } from "./permission-rules.ts";
 import type { PermissionRules } from "./permission-rules.ts";
 import { withMcpServers } from "./mcp-options.ts";
+import { createStorageFailures, storageFullCode } from "./storage-full.ts";
 import type { SessionMcp } from "./mcp-options.ts";
 import { isLiveSessionState, transitionSession } from "./transitions.ts";
 import type { SessionTrigger } from "./transitions.ts";
@@ -126,10 +127,14 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
   const { store, clock } = deps;
   const rootAgent = deps.rootAgent ?? "main";
   const live = new Map<string, LiveSession>();
+  const storage = createStorageFailures((sessionId, message) => {
+    void failForStorage(sessionId, message);
+  });
+  const events = storage.watch(deps.events);
 
   function read(sessionId: string): SessionResult<Session> {
     const session = store.sessions.get(sessionId);
-    return session.ok ? session : storeFailure(session.error, `session ${sessionId}`);
+    return session.ok ? ok(storage.overlay(session.value)) : storeFailure(session.error, `session ${sessionId}`);
   }
 
   function info(session: Session): SessionResult<SessionInfo> {
@@ -138,8 +143,30 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
   }
 
   function append(sessionId: string, draft: EventDraft): SessionResult<undefined> {
-    const appended = deps.events.append(sessionId, draft);
-    return appended.ok ? ok(undefined) : sessionFailure("session.store_failed", appended.error.message);
+    const appended = events.append(sessionId, draft);
+    return appended.ok ? ok(undefined) : storeFailure(appended.error);
+  }
+
+  // H-05: the disk is full. The session's runtime is closed and the session fails with
+  // `storage_full`; what the log already holds stays readable. Writing the failure may itself
+  // fail, so it is remembered here too.
+  async function failForStorage(sessionId: string, message: string): Promise<void> {
+    const session = live.get(sessionId);
+    if (session !== undefined) {
+      live.delete(sessionId);
+      session.unsubscribe();
+    }
+    const state = stateOf(sessionId);
+    if (state !== undefined && state !== "ended" && state !== "failed") {
+      append(sessionId, { type: "session.error", payload: { code: storageFullCode, message }, timestamp: clock() });
+      const moved = move(sessionId, "fail");
+      storage.record(sessionId, message);
+      const current = moved.ok ? undefined : read(sessionId);
+      if (current?.ok === true) {
+        changed(current.value);
+      }
+    }
+    await session?.runtime.close();
   }
 
   function changed(session: Session): SessionResult<SessionInfo> {
@@ -162,6 +189,7 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     const at = clock();
     const updated = store.sessions.updateState(sessionId, next.value, at);
     if (!updated.ok) {
+      storage.notice(sessionId, updated.error);
       return storeFailure(updated.error);
     }
     const recorded = append(sessionId, stateChanged(session.value.state, next.value, at));
@@ -173,14 +201,14 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
 
   function stateOf(sessionId: string): SessionState | undefined {
     const session = store.sessions.get(sessionId);
-    return session.ok ? session.value.state : undefined;
+    return session.ok ? storage.overlay(session.value).state : undefined;
   }
 
   function attach(sessionId: string, runtime: RuntimeSession, budget: SessionBudget): LiveSession {
     const limit = budget.limit();
     const session: LiveSession = {
       runtime,
-      recorder: createRuntimeEventRecorder(deps.events, { sessionId, rootAgent }),
+      recorder: createRuntimeEventRecorder(events, { sessionId, rootAgent }),
       approvals: new Map(),
       prompts: new Map(),
       queue: [],
@@ -432,6 +460,10 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     const stored = read(sessionId);
     if (!stored.ok) {
       return stored;
+    }
+    const full = storage.reason(sessionId);
+    if (full !== undefined) {
+      return sessionFailure("session.storage_full", `session ${sessionId} failed because the disk is full: ${full}`);
     }
     const hint = stored.value.state === "resumable" ? "; resume it first" : "";
     return sessionFailure("session.invalid_state", `session ${sessionId} is ${stored.value.state}${hint}`);
@@ -858,7 +890,7 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
       if (!listed.ok) {
         return storeFailure(listed.error);
       }
-      sessions.push(...listed.value);
+      sessions.push(...listed.value.map((session) => storage.overlay(session)));
     }
     return ok(sessions);
   }
@@ -931,9 +963,12 @@ function stateChanged(from: SessionState | null, to: SessionState, timestamp: st
   return { type: "session.state_changed", payload: { from, to }, timestamp };
 }
 
-function storeFailure(error: StoreError, subject?: string): ReturnType<typeof sessionFailure> {
+function storeFailure(error: Pick<StoreError, "message"> & { readonly code: string }, subject?: string): ReturnType<typeof sessionFailure> {
   if (error.code === "store.not_found") {
     return sessionFailure("session.not_found", subject === undefined ? error.message : `${subject} not found`);
+  }
+  if (error.code === "store.full") {
+    return sessionFailure("session.storage_full", error.message);
   }
   return sessionFailure("session.store_failed", error.message);
 }

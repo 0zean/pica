@@ -11,7 +11,7 @@ import {
   createSessionArtifacts,
   fileSize,
   MarkdownAgentLoader,
-  openSqliteStore,
+  openRecoveringSqliteStore,
   probeGitInstall,
   realPath,
   sha256Hex,
@@ -77,11 +77,14 @@ export function picaDataDir(homeDir: string): string {
 export function composeEngine(options: ProductionOptions): ComposedEngine {
   const dataDir = picaDataDir(options.homeDir);
   mkdirSync(dataDir, { recursive: true, mode: 0o700 });
-  const opened = openSqliteStore(join(dataDir, "pica.db"));
+  const opened = openRecoveringSqliteStore(join(dataDir, "pica.db"), { now: () => new Date() });
   if (!opened.ok) {
     throw new Error(`store: ${opened.error.message}`);
   }
-  const store = opened.value;
+  const { store, recovery } = opened.value;
+  if (recovery !== null) {
+    options.log.warn(`store: the database was damaged (${recovery.reason}); moved it to ${recovery.backupPath} and started empty`);
+  }
   const { runtime, stopRuntime } = ownedRuntime(options.runtime);
   try {
     const config = loadEngineConfig(options);
@@ -107,6 +110,7 @@ export function composeEngine(options: ProductionOptions): ComposedEngine {
         customization: customizationOptions({ homeDir: options.homeDir, workspaces: workspaces.workspaces, policy: config.policy }),
         github,
         gitInstall: options.gitInstall ?? (() => probeGitInstall({ env: options.env, cwd: options.homeDir })),
+        storeRecovery: recovery,
       },
       close: async () => {
         await stopRuntime();

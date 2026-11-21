@@ -1063,9 +1063,11 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 
 **H-05 · Reliability** — E-08, A-01
 - Verify:
-  - [ ] Corrupt-database fixture: the engine moves it aside, starts clean, and reports the backup path.
-  - [ ] Disk-full simulation during event append fails the session with a stable error and leaves the log readable.
-  - [ ] One hundred consecutive kill-and-resume cycles lose no event.
+  - [x] Corrupt-database fixture: the engine moves it aside, starts clean, and reports the backup path.
+  - [x] Disk-full simulation during event append fails the session with a stable error and leaves the log readable.
+  - [x] One hundred consecutive kill-and-resume cycles lose no event.
+  - [x] An engine that keeps crashing soon after it starts is restarted with growing delays, then reported as `engine_crash_loop` with Try Again.
+- Notes: specified in [docs/reliability.md](docs/reliability.md). The store runs `PRAGMA quick_check` at every open; damage (`store.corrupt`) moves `pica.db` and its WAL files to `pica.db.corrupt-<UTC time>` and starts empty, and `engine.health` gains an optional `storeRecovery {backupPath, reason, at}`, which the app shows as a dismissible notice. A full disk (`SQLITE_FULL`, simulated with `PRAGMA max_page_count`) is `store.full`; the session's runtime is closed and the session fails with the new protocol error code `storage_full`, remembered in memory when the store cannot record it. The kill-and-resume test runs 100 cycles locally (about 40 s) and in `make verify UNIT=H-05`, and 25 when `CI` is set; `PICA_KILL_CYCLES` overrides both. A-01's crash backoff deferral is done here: early crashes (within 60 s of ready) wait 0, 1, 2, 4 s, and the fifth in a row stops restarting. Not covered: the usage ledger's and audit log's own writes on a full disk, and an engine left running when the app is killed rather than quit (A-01's other note).
 
 **H-06 · Distribution** — S-05, A-01
 - Build: release workflow publishing ad-hoc signed, hardened-runtime builds to GitHub Releases with a `SHA256SUMS` asset; an `install.sh` release asset that downloads with `curl`, checks the checksum and signature, and installs without quarantine (prototype in `spikes/s-05-packaging/install.sh`); Sparkle updates with an appcast served from GitHub Releases; Developer ID signing and notarization as an optional step that runs only when credentials are configured (D-17).
@@ -1198,7 +1200,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | H-02 | Audit log | C-03, E-07 | done |
 | H-03 | Redaction | M-03 | done |
 | H-04 | Observability | E-05 | done |
-| H-05 | Reliability | E-08, A-01 | todo |
+| H-05 | Reliability | E-08, A-01 | done |
 | H-06 | Distribution | S-05, A-01 | todo |
 | H-07 | Performance gate | all A units | todo |
 | H-08 | Documentation | M4 | todo |

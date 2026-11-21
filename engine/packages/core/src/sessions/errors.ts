@@ -10,6 +10,8 @@ export const sessionServiceErrorCodes = [
   "session.budget_exhausted",
   "session.runtime_failed",
   "session.store_failed",
+  // H-05: the disk is full; the session has failed.
+  "session.storage_full",
 ] as const;
 
 export type SessionServiceErrorCode = (typeof sessionServiceErrorCodes)[number];

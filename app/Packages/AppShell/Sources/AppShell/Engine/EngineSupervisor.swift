@@ -15,6 +15,13 @@ public actor EngineSupervisor {
         public var restartDelays: [Duration] = [.milliseconds(250), .milliseconds(500), .seconds(1), .seconds(2)]
         /// Starts in a row that end before the ready line, after which the supervisor reports `.failed` and waits for `retry()`.
         public var maxFailedStarts = 3
+        /// H-05: an engine that exits within this long of its ready line has crashed early; early crashes in a row back off.
+        public var crashWindow: Duration = .seconds(60)
+        /// Delay before restarting after each early crash in a row. The first is immediate, so one crash recovers
+        /// within A-01's 2 s budget. The last delay repeats.
+        public var crashRestartDelays: [Duration] = [.zero, .seconds(1), .seconds(2), .seconds(4)]
+        /// Early crashes in a row after which the supervisor reports `.failed` (`engine_crash_loop`) and waits for `retry()`.
+        public var maxEarlyCrashes = 5
 
         public init() {}
     }
@@ -37,6 +44,11 @@ public actor EngineSupervisor {
     /// Set by `stop()` and by a protocol mismatch: no more restarts.
     private var halted = false
     private var failedStarts = 0
+    private var earlyCrashes = 0
+    /// Whether the engine the client last connected to is one this supervisor started (and `watch` restarts).
+    private var startedCurrentEngine = false
+    /// Measures how long the running engine has been ready, on `clock`.
+    private let stopwatch: @Sendable () -> @Sendable () -> Duration
 
     public init(
         command: Result<EngineCommand, EngineFailure>,
@@ -52,6 +64,7 @@ public actor EngineSupervisor {
         appProtocol = clientConfiguration.protocolVersion
         self.configuration = configuration
         self.clock = clock
+        stopwatch = Self.stopwatch(on: clock)
         client = EngineClient(socketPath: socketPath, secrets: secrets, clock: clock, configuration: clientConfiguration)
     }
 
@@ -90,6 +103,7 @@ public actor EngineSupervisor {
     public func retry() {
         guard case .failed = status, !halted else { return }
         failedStarts = 0
+        earlyCrashes = 0
         publish(.starting)
         Task { await self.launch() }
     }
@@ -130,9 +144,11 @@ public actor EngineSupervisor {
                 failedStarts = 0
                 publish(.connected(hello))
             case .reconnecting:
+                // The supervisor gave up on an engine that kept crashing (H-05); the client still retries.
+                if case .failed = status { break }
                 publish(.reconnecting)
-                // An engine this supervisor did not start has gone away; start one.
-                if engineProcessIdentifier == nil {
+                // An engine this supervisor did not start has gone away; start one. `watch` restarts one it started.
+                if !startedCurrentEngine {
                     Task { await self.launch() }
                 }
             case .refused(let error):
@@ -186,9 +202,11 @@ public actor EngineSupervisor {
             return .failure(error)
         }
         owned.withLock { $0 = engine }
+        startedCurrentEngine = true
         switch await engine.waitUntilReady(timeout: configuration.startTimeout, clock: clock) {
         case .ready:
-            Task { await self.watch(engine) }
+            let uptime = stopwatch()
+            Task { await self.watch(engine, uptime: uptime) }
             return .success(())
         case .exited(let termination):
             forget(engine)
@@ -220,10 +238,39 @@ public actor EngineSupervisor {
         }
     }
 
-    private func watch(_ engine: EngineProcess) async {
-        _ = await engine.waitForExit()
+    private func watch(_ engine: EngineProcess, uptime: @Sendable () -> Duration) async {
+        let termination = await engine.waitForExit()
         guard forget(engine), !halted else { return }
+        earlyCrashes = uptime() < configuration.crashWindow ? earlyCrashes + 1 : 1
+        if earlyCrashes >= configuration.maxEarlyCrashes {
+            let last = termination.map { " The last time it \($0.described)." } ?? ""
+            publish(.failed(EngineFailure(
+                code: .engineCrashLoop,
+                message: "The engine stopped \(earlyCrashes) times in a row, each within \(configuration.crashWindow) of "
+                    + "starting, so Pica stopped restarting it.\(last) See \(logURL.path).")))
+            return
+        }
+        do {
+            try await clock.sleep(for: Self.crashRestartDelay(after: earlyCrashes, configuration))
+        } catch {
+            return
+        }
+        guard !halted else { return }
         await launch()
+    }
+
+    /// The delay before restarting after the `crashes`th early crash in a row.
+    static func crashRestartDelay(after crashes: Int, _ configuration: Configuration) -> Duration {
+        let delays = configuration.crashRestartDelays
+        guard crashes > 0, !delays.isEmpty else { return .zero }
+        return delays[min(crashes - 1, delays.count - 1)]
+    }
+
+    private static func stopwatch<C: Clock<Duration>>(on clock: C) -> @Sendable () -> @Sendable () -> Duration {
+        {
+            let start = clock.now
+            return { start.duration(to: clock.now) }
+        }
     }
 
     /// Clears `owned` if it still holds `engine`; returns whether it did.

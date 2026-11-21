@@ -1944,6 +1944,25 @@
         },
         "sessionsRunning": {
           "$ref": "#/$defs/Count"
+        },
+        "storeRecovery": {
+          "type": "object",
+          "properties": {
+            "backupPath": {
+              "$ref": "#/$defs/AbsolutePath"
+            },
+            "reason": {
+              "type": "string"
+            },
+            "at": {
+              "$ref": "#/$defs/Timestamp"
+            }
+          },
+          "required": [
+            "backupPath",
+            "reason",
+            "at"
+          ]
         }
       },
       "required": [
@@ -2044,7 +2063,8 @@
         "config_invalid",
         "secret_unresolved",
         "git_failed",
-        "runtime_failed"
+        "runtime_failed",
+        "storage_full"
       ]
     },
     "ErrorData": {

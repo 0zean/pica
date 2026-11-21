@@ -20,6 +20,7 @@ const serviceCodes: Readonly<Record<SessionServiceError["code"], ErrorCodeName>>
   "session.budget_exhausted": "budget_exhausted",
   "session.runtime_failed": "runtime_failed",
   "session.store_failed": "internal_error",
+  "session.storage_full": "storage_full",
 };
 
 export function sessionRpcFailure(error: SessionServiceError): RpcFailure {

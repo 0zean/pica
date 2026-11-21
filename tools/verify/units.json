@@ -1048,13 +1048,20 @@
   ],
   "H-05": [
     {
-      "check": "Corrupt-database fixture: the engine moves it aside, starts clean, and reports the backup path."
+      "check": "Corrupt-database fixture: the engine moves it aside, starts clean, and reports the backup path.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/store/recovery.test.ts packages/server/tests/reliability/corrupt-database.test.ts && cd .. && swift test --package-path app/Packages/AppShell --filter StoreRecoveryTests"
     },
     {
-      "check": "Disk-full simulation during event append fails the session with a stable error and leaves the log readable."
+      "check": "Disk-full simulation during event append fails the session with a stable error and leaves the log readable.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/reliability/disk-full.test.ts"
     },
     {
-      "check": "One hundred consecutive kill-and-resume cycles lose no event."
+      "check": "One hundred consecutive kill-and-resume cycles lose no event.",
+      "run": "make engine-install && cd engine && PICA_KILL_CYCLES=100 pnpm exec vitest run packages/server/tests/reliability/kill-resume-cycles.test.ts"
+    },
+    {
+      "check": "An engine that keeps crashing soon after it starts is restarted with growing delays, then reported as `engine_crash_loop` with Try Again.",
+      "run": "make engine-install && swift test --package-path app/Packages/AppShell --filter EngineCrashBackoffTests"
     }
   ],
   "H-06": [

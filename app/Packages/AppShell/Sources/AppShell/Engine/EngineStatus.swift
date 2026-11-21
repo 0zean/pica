@@ -28,6 +28,8 @@ public struct EngineFailure: Error, Equatable, Sendable {
         case engineNotFound = "engine_not_found"
         case engineStartFailed = "engine_start_failed"
         case engineStartTimeout = "engine_start_timeout"
+        /// H-05: the engine kept exiting soon after it started.
+        case engineCrashLoop = "engine_crash_loop"
     }
 
     public var code: Code
