@@ -14,7 +14,13 @@ import Testing
 /// stores apply events, so a delay covers the engine (normalizing, storing, notifying), the socket, `EngineClient`'s
 /// decoding and the hop to the main actor. As S-07 found, one run's tail is at the mercy of the scheduler on a busy
 /// machine, so the result is the median of three runs' p99s, after a warm-up run that is not counted.
-@Suite(.serialized, .timeLimit(.minutes(2))) struct EventDeliveryLatencyTests {
+///
+/// It runs only in the performance gate (`make perf` sets `PICA_PERF_GATE=1` and runs it alone): `swift test` runs
+/// a package's suites in parallel, and a tail measured while other tests share the CPU measures them, not the app.
+@Suite(
+    .serialized, .timeLimit(.minutes(2)),
+    .enabled(if: ProcessInfo.processInfo.environment["PICA_PERF_GATE"] == "1", "runs in the performance gate (make perf)")
+) struct EventDeliveryLatencyTests {
     private static let budgetMs = 5.0
     private static let entry = EngineFixture.repository
         .appending(path: "engine/packages/server/tests/processes/event-latency-picad.ts")

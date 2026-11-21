@@ -31,9 +31,12 @@ engine_benchmarks() {
     packages/server/tests/files/quick-open-benchmark.test.ts)
 }
 
+# One suite per run: `swift test` runs a package's suites in parallel.
 app_package_benchmarks() {
-  PICA_PERF_DIR="$perf_dir" swift test --package-path app/Packages/AppShell \
-    --filter 'EventDeliveryLatencyTests|EngineRecoveryTests/killedEngine'
+  PICA_PERF_GATE=1 PICA_PERF_DIR="$perf_dir" swift test --package-path app/Packages/AppShell \
+    --filter EventDeliveryLatencyTests &&
+    PICA_PERF_GATE=1 PICA_PERF_DIR="$perf_dir" swift test --package-path app/Packages/AppShell \
+      --filter 'EngineRecoveryTests/killedEngine'
 }
 
 # The UI tests that measure budgets, from budgets.json's `uiTest`. PERF_NOT_GATING names budget ids that are measured
