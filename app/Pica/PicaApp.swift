@@ -14,6 +14,7 @@ import SessionOverview
 import SwiftUI
 import Terminal
 import Timeline
+import Updates
 import Usage
 import Workspaces
 
@@ -40,6 +41,8 @@ struct PicaApp: App {
     @State private var terminals: SessionTerminals
     /// The precondition checks and first workspace, shown while the engine has no workspace (A-15).
     @State private var onboarding: OnboardingStore
+    /// Sparkle updates from the appcast on GitHub Releases; off in builds without an EdDSA key (H-06).
+    @State private var updater = AppUpdater()
 
     init() {
         guard let launch = AppLaunch.begin() else {
@@ -80,6 +83,9 @@ struct PicaApp: App {
             ActionCommands(registry: actions.registry, keybindings: actions.keybindings)
             NavigationCommands(store: launch.navigation)
             QuickOpenCommands(present: presentQuickOpen)
+            CommandGroup(after: .appInfo) {
+                CheckForUpdatesButton(updater: updater)
+            }
         }
 
         Settings {

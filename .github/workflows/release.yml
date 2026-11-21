@@ -1,0 +1,112 @@
+name: release
+
+# H-06 (docs/distribution.md): builds an ad-hoc signed, hardened-runtime Pica, checks it, and attaches it to a DRAFT
+# GitHub release. Publishing the draft (which creates the tag and makes it "latest" for install.sh and the appcast)
+# is done by a person in the GitHub UI or with `gh release edit v<version> --draft=false`.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to build, x.y.z (the draft release is tagged v<version> when published)"
+        required: true
+
+concurrency:
+  group: release-${{ inputs.version }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-26
+    timeout-minutes: 45
+    env:
+      VERSION: ${{ inputs.version }}
+      # Optional steps run only when their secrets are configured (docs/distribution.md, "Secrets").
+      HAS_SPARKLE_KEY: ${{ secrets.SPARKLE_PRIVATE_ED_KEY != '' && vars.SPARKLE_PUBLIC_ED_KEY != '' }}
+      HAS_DEVELOPER_ID: ${{ secrets.DEVELOPER_ID_P12 != '' && secrets.DEVELOPER_ID_P12_PASSWORD != '' }}
+      HAS_NOTARY: ${{ secrets.APPLE_NOTARY_KEY != '' && secrets.APPLE_NOTARY_KEY_ID != '' && secrets.APPLE_NOTARY_ISSUER != '' }}
+    steps:
+      - name: Check the version
+        run: echo "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' || { echo "version must be x.y.z, got $VERSION"; exit 1; }
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: engine/package.json
+      # This Node is copied into the app as Contents/Helpers/node; setup-node installs the nodejs.org build.
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          cache-dependency-path: engine/pnpm-lock.yaml
+      - name: Metal Toolchain
+        run: xcrun metal --version >/dev/null 2>&1 || xcodebuild -downloadComponent MetalToolchain
+
+      - name: Import the Developer ID certificate
+        if: env.HAS_DEVELOPER_ID == 'true'
+        env:
+          DEVELOPER_ID_P12: ${{ secrets.DEVELOPER_ID_P12 }}
+          DEVELOPER_ID_P12_PASSWORD: ${{ secrets.DEVELOPER_ID_P12_PASSWORD }}
+        run: |
+          keychain="$RUNNER_TEMP/release.keychain-db"
+          password=$(uuidgen)
+          echo "$DEVELOPER_ID_P12" | base64 --decode > "$RUNNER_TEMP/developer-id.p12"
+          security create-keychain -p "$password" "$keychain"
+          security set-keychain-settings -lut 21600 "$keychain"
+          security unlock-keychain -p "$password" "$keychain"
+          security import "$RUNNER_TEMP/developer-id.p12" -k "$keychain" -P "$DEVELOPER_ID_P12_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$password" "$keychain"
+          security list-keychains -d user -s "$keychain" $(security list-keychains -d user | tr -d '"')
+          rm "$RUNNER_TEMP/developer-id.p12"
+          identity=$(security find-identity -v -p codesigning "$keychain" | grep -o '"Developer ID Application: [^"]*"' | head -n 1 | tr -d '"')
+          [ -n "$identity" ] || { echo "the certificate holds no Developer ID Application identity"; exit 1; }
+          echo "PICA_SIGN_IDENTITY=$identity" >> "$GITHUB_ENV"
+      - name: Skip Developer ID signing
+        if: env.HAS_DEVELOPER_ID != 'true'
+        run: echo "No Developer ID secrets; signing ad-hoc (D-17)."
+
+      - name: Write the notary key
+        if: env.HAS_DEVELOPER_ID == 'true' && env.HAS_NOTARY == 'true'
+        env:
+          APPLE_NOTARY_KEY: ${{ secrets.APPLE_NOTARY_KEY }}
+          APPLE_NOTARY_KEY_ID: ${{ secrets.APPLE_NOTARY_KEY_ID }}
+          APPLE_NOTARY_ISSUER: ${{ secrets.APPLE_NOTARY_ISSUER }}
+        run: |
+          printf '%s\n' "$APPLE_NOTARY_KEY" > "$RUNNER_TEMP/notary.p8"
+          {
+            echo "APPLE_NOTARY_KEY_PATH=$RUNNER_TEMP/notary.p8"
+            echo "APPLE_NOTARY_KEY_ID=$APPLE_NOTARY_KEY_ID"
+            echo "APPLE_NOTARY_ISSUER=$APPLE_NOTARY_ISSUER"
+          } >> "$GITHUB_ENV"
+
+      - name: Build, sign and package
+        env:
+          SPARKLE_PUBLIC_ED_KEY: ${{ env.HAS_SPARKLE_KEY == 'true' && vars.SPARKLE_PUBLIC_ED_KEY || '' }}
+          SPARKLE_PRIVATE_ED_KEY: ${{ env.HAS_SPARKLE_KEY == 'true' && secrets.SPARKLE_PRIVATE_ED_KEY || '' }}
+        run: tools/release/build.sh --version "$VERSION" --out dist
+
+      - name: Check the zip
+        run: |
+          (cd dist && shasum -a 256 -c SHA256SUMS)
+          tools/release/check-bundle.sh "dist/Pica-$VERSION.zip"
+
+      - name: Attach to a draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="v$VERSION"
+          assets=("dist/Pica-$VERSION.zip" dist/SHA256SUMS dist/install.sh)
+          [ -f dist/appcast.xml ] && assets+=(dist/appcast.xml)
+          if existing=$(gh release view "$tag" --json isDraft --jq .isDraft 2>/dev/null); then
+            [ "$existing" = true ] || { echo "$tag is already published; refusing to change it"; exit 1; }
+            gh release upload "$tag" "${assets[@]}" --clobber
+          else
+            gh release create "$tag" "${assets[@]}" --draft --target "$GITHUB_SHA" --title "Pica $VERSION" \
+              --notes-file tools/release/release-notes.md
+          fi
+          gh release view "$tag" --json isDraft,url,assets --jq '{isDraft, url, assets: [.assets[].name]}'
+
+      - name: Remove the signing keychain
+        if: always() && env.HAS_DEVELOPER_ID == 'true'
+        run: security delete-keychain "$RUNNER_TEMP/release.keychain-db" || true
