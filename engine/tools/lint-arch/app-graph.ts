@@ -35,6 +35,8 @@ const allowedPackageDependencies: Readonly<Record<string, readonly string[]>> = 
   SessionOverview: ["EngineClient", "PicaProtocol", "DesignSystem"],
   // X-02: the Agents & Skills window over every layer's agents, skills and instruction files.
   Customization: ["EngineClient", "PicaProtocol", "DesignSystem"],
+  // H-06: Sparkle's updater and the "Check for Updates…" command; it needs nothing of the engine's.
+  Updates: [],
 };
 
 const featuresPackage = "Features";

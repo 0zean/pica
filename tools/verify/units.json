@@ -1063,18 +1063,22 @@
   ],
   "H-06": [
     {
-      "check": "The release workflow produces a zip whose app passes `codesign --verify --deep --strict` and attaches it to a draft GitHub release."
+      "check": "The release workflow produces a zip whose app passes `codesign --verify --deep --strict` and attaches it to a draft GitHub release.",
+      "run": "tools/release/check-release.sh"
     },
     {
-      "check": "An update from version N to N+1 through a local appcast succeeds and the engine version matches the app."
+      "check": "An update from version N to N+1 through a local appcast succeeds and the engine version matches the app.",
+      "run": "tools/release/check-update.sh update"
     },
     {
-      "check": "An appcast entry with a bad signature is refused."
+      "check": "An appcast entry with a bad signature is refused.",
+      "run": "tools/release/check-update.sh bad-signature"
     }
   ],
   "H-07": [
     {
-      "check": "Every row in §9 has a test with a threshold, and all pass in CI on the reference runner."
+      "check": "Every row in §9 has a test with a threshold, and all pass in CI on the reference runner.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run tools/perf-report && cd .. && make perf"
     }
   ],
   "H-08": [

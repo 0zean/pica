@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { recordBudget } from "../../../../tests/support/budget-record.ts";
 import { createPathRanker } from "../../src/index.ts";
 import { benchmarkTimeoutMs, keystrokeLimitMs, largeIndex, slowest, timeKeystrokes } from "./large-index.ts";
 
@@ -15,6 +16,7 @@ describe("quick-open ranking over 100,000 paths", () => {
     }, "cpu");
     const worst = slowest(timings);
     console.log(`slowest keystroke: ${worst.ms.toFixed(1)} ms for "${worst.query}" over ${String(timings.length)} keystrokes`);
+    recordBudget({ id: "quick-open-ranker", measured: worst.ms, threshold: keystrokeLimitMs(), unit: "ms" });
     expect(worst.ms).toBeLessThan(keystrokeLimitMs());
   }, benchmarkTimeoutMs);
 });

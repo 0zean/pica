@@ -115,6 +115,8 @@ final class ReviewUITests: XCTestCase {
         }
         let median = seconds.sorted()[1]
         print("A-08: a 5,000-line diff rendered in \(seconds.map { String(format: "%.3f", $0) }) s; median \(median)")
+        recordBudget(BudgetMeasurement(
+            id: "diff-render", measured: median * 1000, threshold: 200, unit: "ms", samples: seconds.map { $0 * 1000 }))
         XCTAssertLessThan(median, 0.2, "a 5,000-line diff took \(median) s to draw (budget 0.2 s)")
         pica.quit(app)
     }

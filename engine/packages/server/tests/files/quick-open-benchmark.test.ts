@@ -3,6 +3,7 @@ import type { Repo } from "@pica/core";
 import { describe, expect, it } from "vitest";
 import { silentLogger, startEngine } from "../../src/index.ts";
 import { benchmarkTimeoutMs, keystrokeLimitMs, largeIndex, slowest, timeKeystrokes } from "../../../core/tests/files/large-index.ts";
+import { recordBudget } from "../../../../tests/support/budget-record.ts";
 import { makeSocketDir, TestClient } from "../helpers.ts";
 
 // PLAN.md §9: quick open over 100,000 files answers in under 50 ms per keystroke, measured as a
@@ -51,6 +52,7 @@ describe("files.quickOpen over a 100,000-file workspace", () => {
         `files.quickOpen over 100,000 files: median ${(sorted[Math.floor(sorted.length / 2)] ?? 0).toFixed(1)} ms, ` +
           `slowest ${worst.ms.toFixed(1)} ms for "${worst.query}" over ${String(timings.length)} keystrokes`,
       );
+      recordBudget({ id: "quick-open", measured: worst.ms, threshold: keystrokeLimitMs(), unit: "ms" });
       expect(worst.ms).toBeLessThan(keystrokeLimitMs());
     } finally {
       client.close();

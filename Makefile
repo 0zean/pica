@@ -1,6 +1,6 @@
 SWIFT_PACKAGES := $(wildcard app/Packages/*)
 
-.PHONY: verify verify-engine verify-app lint lint-arch lint-swift-boundary typecheck test build engine-install codegen codegen-drift app-packages app-build app-ui-test app-ui-test-gallery app-ui-test-pica
+.PHONY: verify verify-engine verify-app lint lint-arch lint-swift-boundary typecheck test build engine-install codegen codegen-drift app-packages app-build app-ui-test app-ui-test-gallery app-ui-test-pica app-ui-test-pica-build perf
 
 # `make verify UNIT=<ID>` runs only that unit's checks from tools/verify/units.json (PLAN.md §8.1).
 ifdef UNIT
@@ -77,7 +77,7 @@ app-ui-test-gallery:
 # Pica's UI tests (A-01 launch performance, A-04 navigation) run Pica against `picad` with a FakeRuntime. Variables
 # prefixed TEST_RUNNER_ reach the (sandboxed) test runner, which hands Pica the Node to start the engine with and the
 # engine to start: a copy of engine/ in the stage, since Node reading a checkout under ~/Documents counts as Pica's
-# access. UI_TEST=<Class>[/<method>] runs only those tests.
+# access. UI_TEST=<Class>[/<method>] runs only those tests; UI_TESTS takes several, separated by spaces.
 app-ui-test-pica: engine-install
 	rm -rf app/.derived/pica-ui-tests.xcresult && mkdir -p app/.derived
 	xcodebuild -project app/Pica.xcodeproj -scheme Pica $(UI_TEST_DESTINATION) \
@@ -87,5 +87,21 @@ app-ui-test-pica: engine-install
 	TEST_RUNNER_PICA_NODE="$$(command -v node)" TEST_RUNNER_PICA_UI_TEST_ENGINE="$$engine" \
 		TEST_RUNNER_PICA_LAUNCH_BASELINE="$$(dirname "$$engine")/LaunchBaseline.json" \
 		xcodebuild -project app/Pica.xcodeproj -scheme Pica $(UI_TEST_DESTINATION) \
-		$(if $(UI_TEST),-only-testing:PicaUITests/$(UI_TEST)) \
+		$(if $(UI_TEST),-only-testing:PicaUITests/$(UI_TEST)) $(foreach test,$(UI_TESTS),-only-testing:PicaUITests/$(test)) \
 		-derivedDataPath "$(UI_TEST_DERIVED)" -resultBundlePath app/.derived/pica-ui-tests.xcresult test-without-building
+
+# Builds what app-ui-test-pica runs, so `make perf` can wait for the build's load to pass before measuring.
+app-ui-test-pica-build: engine-install
+	xcodebuild -project app/Pica.xcodeproj -scheme Pica $(UI_TEST_DESTINATION) \
+		-derivedDataPath "$(UI_TEST_DERIVED)" -quiet build-for-testing
+
+# H-07's performance gate: every PLAN.md §9 budget's test, then a report of each budget against its measured value
+# (docs/performance.md). Run it alone on the machine; locally under the UI-test lock.
+perf: engine-install
+	@tools/perf/run.sh
+
+# H-06: a release build into dist/ (docs/distribution.md). Install it with `sh dist/install.sh --from dist`.
+.PHONY: release
+release:
+	@test -n "$(VERSION)" || { echo "usage: make release VERSION=x.y.z"; exit 2; }
+	tools/release/build.sh --version "$(VERSION)"

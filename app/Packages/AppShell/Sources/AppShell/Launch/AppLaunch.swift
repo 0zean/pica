@@ -13,11 +13,13 @@ public final class AppLaunch {
     public let secrets: any SecretBroker
     private let lock: SingleInstanceLock?
     private let launchMetricsPath: String?
+    /// Set only when the UI tests ask for the app's idle CPU use and memory (`PICA_RESOURCE_METRICS_PATH`, H-07).
+    private let resourceMetrics: ResourceMetrics?
     private var recordedInteractive = false
 
     private init(
         model: AppModel, navigation: NavigationStore, approvalNotifier: ApprovalNotifier?, secrets: any SecretBroker,
-        lock: SingleInstanceLock?, launchMetricsPath: String?
+        lock: SingleInstanceLock?, launchMetricsPath: String?, resourceMetrics: ResourceMetrics?
     ) {
         self.model = model
         self.navigation = navigation
@@ -25,6 +27,8 @@ public final class AppLaunch {
         self.secrets = secrets
         self.lock = lock
         self.launchMetricsPath = launchMetricsPath
+        self.resourceMetrics = resourceMetrics
+        resourceMetrics?.start()
     }
 
     /// The socket `picad` listens on: `PICA_SOCKET` when set (as `picad` itself reads it), else the default the CLI also uses.
@@ -77,7 +81,8 @@ public final class AppLaunch {
         let approvalNotifier = ApprovalNotifier.live(client: supervisor.client, navigation: navigation, environment: environment)
         return AppLaunch(
             model: model, navigation: navigation, approvalNotifier: approvalNotifier, secrets: secrets, lock: lock,
-            launchMetricsPath: environment["PICA_LAUNCH_METRICS_PATH"])
+            launchMetricsPath: environment["PICA_LAUNCH_METRICS_PATH"],
+            resourceMetrics: ResourceMetrics(environment: environment))
     }
 
     /// Called once the main window can take input; records launch timing when the performance test asks for it.
