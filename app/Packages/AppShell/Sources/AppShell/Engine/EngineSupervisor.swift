@@ -41,6 +41,9 @@ public actor EngineSupervisor {
     private var statusListeners: [UUID: AsyncStream<EngineStatus>.Continuation] = [:]
     private var started = false
     private var launching = false
+    /// Set when `launch()` is called while a launch is still finishing (connecting the client): an engine that crashed
+    /// in that moment is restarted once the running launch returns, instead of being dropped.
+    private var launchRequested = false
     /// Set by `stop()` and by a protocol mismatch: no more restarts.
     private var halted = false
     private var failedStarts = 0
@@ -161,9 +164,20 @@ public actor EngineSupervisor {
 
     /// Starts engines until one prints its ready line, waiting `restartDelays` between failed starts.
     private func launch() async {
-        guard !launching, !halted else { return }
+        guard !halted else { return }
+        guard !launching else {
+            launchRequested = true
+            return
+        }
         launching = true
         defer { launching = false }
+        repeat {
+            launchRequested = false
+            await launchUntilReady()
+        } while launchRequested && !halted && engineProcessIdentifier == nil && !hasFailed
+    }
+
+    private func launchUntilReady() async {
         let command: EngineCommand
         switch self.command {
         case .failure(let failure):
@@ -294,6 +308,11 @@ public actor EngineSupervisor {
         guard let engine = owned.withLock({ $0 }) else { return }
         await engine.stop(grace: .seconds(3), clock: clock)
         forget(engine)
+    }
+
+    private var hasFailed: Bool {
+        if case .failed = status { return true }
+        return false
     }
 
     private func publish(_ newStatus: EngineStatus) {
