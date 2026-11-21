@@ -60,6 +60,8 @@ final class LaunchPerformanceTests: XCTestCase {
             "PICA_TEST_HOME": home.path,
             "PICA_SOCKET": "/tmp/\(name)/picad.sock",
             "PICA_LAUNCH_METRICS_PATH": metrics.path,
+            // A-15: the window keeps Pica's own content rather than switching to onboarding once the engine answers.
+            "PICA_ONBOARDING": "off",
         ]
         app.launch()
         let window = app.windows.firstMatch

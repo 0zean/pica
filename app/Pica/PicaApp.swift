@@ -5,6 +5,7 @@ import DesignSystem
 import EngineClient
 import Files
 import McpServers
+import Onboarding
 import PicaProtocol
 import PicaSettings
 import Review
@@ -36,6 +37,8 @@ struct PicaApp: App {
     private let overviewMetrics = OverviewMetrics(environment: ProcessInfo.processInfo.environment)
     /// Each session's terminal panel and its shell, kept while the app runs (A-10).
     @State private var terminals: SessionTerminals
+    /// The precondition checks and first workspace, shown while the engine has no workspace (A-15).
+    @State private var onboarding: OnboardingStore
 
     init() {
         guard let launch = AppLaunch.begin() else {
@@ -45,17 +48,21 @@ struct PicaApp: App {
         _launch = State(initialValue: launch)
         _quickOpen = State(initialValue: QuickOpen(client: launch.model.client))
         _terminals = State(initialValue: SessionTerminals(backend: EngineTerminalBackend(client: launch.model.client)))
-        actions = AppActions(client: launch.model.client, navigation: launch.navigation)
+        let actions = AppActions(client: launch.model.client, navigation: launch.navigation)
+        self.actions = actions
+        _onboarding = State(initialValue: AppOnboarding.makeStore(client: launch.model.client, workspaces: actions.workspaces))
         launch.model.start()
         launch.navigation.start()
     }
 
     var body: some Scene {
         Window("Pica", id: "main") {
-            RootView(
-                model: launch.model, navigation: launch.navigation, sessionContent: sessionTimeline,
-                workspaceContent: workspaceScreen, sidebarAccessory: workspaceAddMenu,
-                inspectorPanes: inspectorPanes, onInteractive: launch.windowBecameInteractive)
+            OnboardingGate(store: onboarding, isNeeded: { [navigation = launch.navigation] in AppOnboarding.isNeeded(navigation) }) {
+                RootView(
+                    model: launch.model, navigation: launch.navigation, sessionContent: sessionTimeline,
+                    workspaceContent: workspaceScreen, sidebarAccessory: workspaceAddMenu,
+                    inspectorPanes: inspectorPanes, onInteractive: launch.windowBecameInteractive)
+            }
                 .modifier(ActionHost(actions: actions))
                 .modifier(WorkspaceSheets(manager: actions.workspaces))
                 .modifier(AppearanceHost(store: actions.appearance))

@@ -52,12 +52,13 @@ function routes(): Record<string, () => StubReply> {
   return table;
 }
 
-export async function startFakeGitHub(mode: FakeGitHubMode): Promise<{ stub: StubGitHub; access: GitHubAccessSettings }> {
+// `mode` is asked on every sign-in, so onboarding's UI test can sign in while Pica runs (A-15).
+export async function startFakeGitHub(mode: () => FakeGitHubMode): Promise<{ stub: StubGitHub; access: GitHubAccessSettings }> {
   const stub = await startStubGitHub(routes());
   const host = resolveGitHubHost({ host: "ghe.example.test", apiBaseUrl: `${stub.url}/api/v3`, webBaseUrl: "https://ghe.example.test" });
   const provider: GitHubCredentialProvider = {
     kind: "gh",
-    token: () => Promise.resolve(ok(mode === "signed-in" ? fakeGitHubToken : null)),
+    token: () => Promise.resolve(ok(mode() === "signed-in" ? fakeGitHubToken : null)),
   };
   return { stub, access: { host, providers: [provider] } };
 }

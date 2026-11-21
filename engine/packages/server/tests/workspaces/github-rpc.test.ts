@@ -25,7 +25,7 @@ async function start(mode: FakeGitHubMode = "signed-in"): Promise<Running> {
   const opened = openSqliteStore(join(dir, "pica.db"));
   if (!opened.ok) throw new Error(opened.error.message);
   const store = opened.value;
-  const fake = await startFakeGitHub(mode);
+  const fake = await startFakeGitHub(() => mode);
   const github = gitHubOptions(fake.access);
   let next = 0;
   const engine = await startEngine({

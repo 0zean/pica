@@ -61,3 +61,11 @@ export const Commit = z.object({
   timestamp: z.iso.datetime({ offset: true }),
   subject: z.string(),
 });
+
+// Whether the engine can run git (A-15). `missing` covers both no git at all and macOS's `/usr/bin/git`
+// stub without the Command Line Tools; `message` then says what running it answered.
+export const GitInstall = z.object({
+  status: z.enum(["installed", "missing"]),
+  version: z.string().min(1).nullable(),
+  message: z.string().nullable(),
+});

@@ -44,11 +44,17 @@ final class PicaUnderTest {
     private let managedPolicy: String?
     /// A-12: `signed-in` or `signed-out` points `fake-picad`'s GitHub discovery at its stub server (`fake-github.ts`).
     private let github: String?
+    /// A-15: whether Pica shows onboarding; other tests start with no workspace, so it is off for them.
+    private let onboarding: Bool
     private let node: String
 
-    init(scenario: String = "empty", scrollScript: Bool = false, managedPolicy: String? = nil, github: String? = nil) throws {
+    init(
+        scenario: String = "empty", scrollScript: Bool = false, managedPolicy: String? = nil, github: String? = nil,
+        onboarding: Bool = false
+    ) throws {
         self.scenario = scenario
         self.github = github
+        self.onboarding = onboarding
         self.scrollScript = scrollScript
         self.managedPolicy = managedPolicy
         // `make app-ui-test` passes this as TEST_RUNNER_PICA_NODE.
@@ -70,6 +76,15 @@ final class PicaUnderTest {
     }
 
     var policyFile: URL { home.appending(path: "policy.jsonc") }
+
+    /// A-15: what onboarding's checks answer (`fake-preconditions.ts`), read again on every check.
+    var preconditionsFile: URL { home.appending(path: "preconditions.json") }
+
+    /// Sets what onboarding's checks answer, e.g. `["copilot": "signed_out", "gitInstall": "missing", "github": "signed-out"]`;
+    /// a precondition not named passes.
+    func setPreconditions(_ preconditions: [String: String]) throws {
+        try JSONEncoder().encode(preconditions).write(to: preconditionsFile, options: .atomic)
+    }
 
     /// The user layer `config.set` writes.
     var configFile: URL { home.appending(path: "Library/Application Support/Pica/config.jsonc") }
@@ -97,6 +112,11 @@ final class PicaUnderTest {
         ]
         if let github {
             environment["PICA_TEST_GITHUB"] = github
+        }
+        if onboarding {
+            environment["PICA_TEST_PRECONDITIONS"] = preconditionsFile.path
+        } else {
+            environment["PICA_ONBOARDING"] = "off"
         }
         if scrollScript {
             environment["PICA_TIMELINE_SCROLL_SCRIPT"] = "1"

@@ -958,7 +958,8 @@
   ],
   "A-15": [
     {
-      "check": "UI test: each failing precondition shows a fix action, and passing it advances."
+      "check": "UI test: each failing precondition shows a fix action, and passing it advances.",
+      "run": "make engine-install && (cd engine && pnpm exec vitest run packages/core/tests/git/install.test.ts packages/adapters/tests/git/probe-git.test.ts packages/server/tests/onboarding) && swift test --package-path app/Packages/Onboarding && make app-ui-test-pica UI_TEST=OnboardingUITests"
     }
   ],
   "A-16": [
