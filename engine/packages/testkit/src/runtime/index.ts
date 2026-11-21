@@ -4,6 +4,7 @@ export { sequentialIds, steppingClock } from "./deterministic.ts";
 export type { Clock, IdSource } from "./deterministic.ts";
 export { contractScenarioPath, fakeRuntimeHarness } from "./fake-harness.ts";
 export { FakeRuntime } from "./fake-runtime.ts";
+export { FakeSession } from "./fake-session.ts";
 export type { FakeRuntimeOptions } from "./fake-runtime.ts";
 export { formatScenarioError, loadScenarioFile, parseJsoncWithSchema, parseScenario } from "./scenario-loader.ts";
 export type { ScenarioError, ScenarioIssue } from "./scenario-loader.ts";

@@ -26,8 +26,8 @@ struct EngineFixture {
     var dataDirectory: URL { home.appending(path: "Library/Application Support/Pica") }
     var logURL: URL { home.appending(path: "run/picad.log") }
 
-    func command() throws -> EngineCommand {
-        var command = EngineCommand.development(node: try Self.node(), entry: Self.entry)
+    func command(entry: URL = Self.entry) throws -> EngineCommand {
+        var command = EngineCommand.development(node: try Self.node(), entry: entry)
         command.environment = ["PICA_TEST_HOME": home.path]
         return command
     }
@@ -43,6 +43,20 @@ struct EngineFixture {
 
     func remove() {
         try? FileManager.default.removeItem(at: home)
+    }
+
+    /// A git repository with an `origin`, which `repo.addPath` accepts. The few files git needs are written by hand.
+    func makeRepository(_ name: String) throws -> URL {
+        let root = home.appending(path: "repos/\(name)")
+        let git = root.appending(path: ".git")
+        for directory in ["objects", "refs/heads"] {
+            try FileManager.default.createDirectory(at: git.appending(path: directory), withIntermediateDirectories: true)
+        }
+        try Data("ref: refs/heads/main\n".utf8).write(to: git.appending(path: "HEAD"))
+        let config = "[core]\n\trepositoryformatversion = 0\n\tbare = false\n"
+            + "[remote \"origin\"]\n\turl = https://git.example.com/acme/\(name).git\n"
+        try Data(config.utf8).write(to: git.appending(path: "config"))
+        return root
     }
 
     /// `PICA_NODE`, else the first `node` on `PATH`. The engine needs Node 22.13 or later (`engine/package.json`).

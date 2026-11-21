@@ -39,6 +39,8 @@ final class PicaUnderTest {
     let fixLogPath: String
     /// Where Pica writes `OverviewMetrics`' report (A-16).
     let overviewMetricsPath: String
+    /// Where Pica writes `ResourceMetrics`' report (H-07); a request file next to it asks for one.
+    let resourceMetricsPath: String
     private let scrollScript: Bool
     /// A-14: a managed policy (docs/managed-policy.md) `fake-picad` loads as if root owned it.
     private let managedPolicy: String?
@@ -69,6 +71,7 @@ final class PicaUnderTest {
         reviewMetricsPath = home.appending(path: "review-metrics.json").path
         fixLogPath = home.appending(path: "fix-actions.log").path
         overviewMetricsPath = home.appending(path: "overview-metrics.json").path
+        resourceMetricsPath = home.appending(path: "resource-metrics.json").path
         XCTAssertLessThan(socketPath.utf8.count, 104, "\(socketPath) is longer than sun_path allows")
         if let managedPolicy {
             try Data(managedPolicy.utf8).write(to: policyFile)
@@ -109,6 +112,8 @@ final class PicaUnderTest {
             "PICA_FIX_ACTION_LOG": fixLogPath,
             // A-16: the board's idle CPU report.
             "PICA_OVERVIEW_METRICS_PATH": overviewMetricsPath,
+            // H-07: the app's idle CPU use and memory, measured when a test asks.
+            "PICA_RESOURCE_METRICS_PATH": resourceMetricsPath,
         ]
         if let github {
             environment["PICA_TEST_GITHUB"] = github

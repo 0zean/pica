@@ -1,0 +1,47 @@
+name: perf
+
+# H-07's performance gate (docs/performance.md): every PLAN.md §9 budget measured on the reference runner, a GitHub
+# macOS 26 arm64 runner, and reported against its threshold in the job summary. It runs the UI tests that measure
+# budgets, so the runner's automation mode is turned on first.
+on:
+  pull_request:
+    paths:
+      - "app/**"
+      - "engine/**"
+      - "tools/perf/**"
+      - "Makefile"
+      - ".github/workflows/perf.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: perf-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  perf-gate:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: engine/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          cache-dependency-path: engine/pnpm-lock.yaml
+      - name: Metal Toolchain
+        run: xcrun metal --version >/dev/null 2>&1 || xcodebuild -downloadComponent MetalToolchain
+      - name: Automation mode for UI tests
+        run: sudo automationmodetool enable-automationmode-without-authentication
+      - run: make perf
+      - name: Upload measurements
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: perf-report
+          path: |
+            app/.derived/perf/
+            app/.derived/pica-ui-tests.xcresult
+          if-no-files-found: ignore
