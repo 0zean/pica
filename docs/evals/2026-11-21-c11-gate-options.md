@@ -1,5 +1,7 @@
 # C-11: the 5% reasoning-input gate against run-to-run spread
 
+*Update, same day: the owner chose (b2). It is recorded in D-21, and the rerun is in [`2026-11-21-c11-b2-live.md`](2026-11-21-c11-b2-live.md).*
+
 Offline analysis, 2026-11-21. No live session was run. It uses the per-run data already committed in
 [`2026-11-16-c10-live.json`](2026-11-16-c10-live.json) and [`2026-11-17-c11-live.json`](2026-11-17-c11-live.json):
 Copilot Pro, reasoning pinned to `gpt-5.6-luna`, 3 runs of 15 tasks per profile.
