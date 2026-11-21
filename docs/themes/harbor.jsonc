@@ -1,0 +1,14 @@
+// An example theme (docs/themes.md). Copy it to ~/Library/Application Support/Pica/themes/harbor.jsonc
+// and choose Harbor in Settings ▸ Appearance. A token left out keeps Pica's own value.
+{
+  "name": "Harbor",
+  "colors": {
+    // One value for every appearance...
+    "spark": "#5F8FA8",
+    // ...or one per appearance. An increased-contrast value left out uses the standard one.
+    "accent": { "light": "#2F6F8F", "dark": "#7FB8D4", "lightIncreasedContrast": "#1D4A61", "darkIncreasedContrast": "#B5DDF0" },
+    "background": { "light": "#F6F8FA", "dark": "#14181D" },
+    "surface": { "light": "#FFFFFF", "dark": "#1C2229" },
+    "border": { "light": "#D5DCE3", "dark": "#323B45" }
+  }
+}

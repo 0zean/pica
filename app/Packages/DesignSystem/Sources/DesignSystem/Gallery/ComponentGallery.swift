@@ -17,10 +17,12 @@ public struct ComponentGallery: View {
 
 /// The gallery without its scroll view, so snapshot tests can render its full height.
 public struct GalleryContent: View {
+    @Environment(\.picaDensity) private var density
+
     public init() {}
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: Spacing.xLarge) {
+        VStack(alignment: .leading, spacing: density.spacing(Spacing.xLarge)) {
             Text("Pica design system")
                 .font(Typography.largeTitle)
                 .foregroundStyle(Palette.textPrimary)
@@ -50,6 +52,7 @@ private let sampleLabelIdentifier = "SampleLabel"
 private struct GallerySection<Content: View>: View {
     let title: String
     let content: Content
+    @Environment(\.picaDensity) private var density
 
     init(_ title: String, @ViewBuilder content: () -> Content) {
         self.title = title
@@ -57,7 +60,7 @@ private struct GallerySection<Content: View>: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Spacing.medium) {
+        VStack(alignment: .leading, spacing: density.spacing(Spacing.medium)) {
             Text(title)
                 .font(Typography.title)
                 .foregroundStyle(Palette.textPrimary)
@@ -92,7 +95,7 @@ private struct ColorSwatches: View {
                         .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 0) {
                         Text(name).font(sampleLabelFont).foregroundStyle(Palette.textPrimary)
-                        Text(color.rgb(for: Appearance(environment)).description)
+                        Text(color.rgb(in: environment).description)
                             .font(Typography.code).foregroundStyle(Palette.textSecondary)
                     }
                     .accessibilityElement(children: .combine)

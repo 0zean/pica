@@ -55,6 +55,7 @@ struct PicaApp: App {
                 inspectorPanes: inspectorPanes, onInteractive: launch.windowBecameInteractive)
                 .modifier(ActionHost(actions: actions))
                 .modifier(WorkspaceSheets(manager: actions.workspaces))
+                .modifier(AppearanceHost(store: actions.appearance))
                 .overlay {
                     if quickOpen.isPresented {
                         ZStack {
@@ -72,14 +73,16 @@ struct PicaApp: App {
 
         Settings {
             SettingsView(
-                navigation: actions.settingsNavigation, settings: actions.settings, keybindings: actions.keybindings,
-                registry: actions.registry)
+                navigation: actions.settingsNavigation, settings: actions.settings, appearance: actions.appearance,
+                keybindings: actions.keybindings, registry: actions.registry)
+            .modifier(AppearanceHost(store: actions.appearance))
         }
 
         // A-09: the read-only viewer, one window per file.
         WindowGroup("File", id: FileViewerScreen.windowId, for: FileReference.self) { $reference in
             if let reference {
                 FileViewerScreen(reference: reference, client: launch.model.client, editor: editor)
+                    .modifier(AppearanceHost(store: actions.appearance))
             }
         }
         .defaultSize(width: 760, height: 640)
@@ -90,12 +93,14 @@ struct PicaApp: App {
             McpServersScreen(
                 backend: mcpBackend, workspaces: launch.navigation.workspaces,
                 workspaceId: launch.navigation.selection.flatMap(launch.navigation.workspaceId(of:)))
+            .modifier(AppearanceHost(store: actions.appearance))
         }
         .defaultSize(width: 900, height: 560)
 
         // A-11: the Usage dashboard (⇧⌘U).
         Window("Usage", id: UsageDashboardScreen.windowId) {
             UsageDashboardScreen(client: launch.model.client)
+                .modifier(AppearanceHost(store: actions.appearance))
         }
         .defaultSize(width: 980, height: 820)
     }

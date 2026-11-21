@@ -29,6 +29,7 @@ private struct PicaButtonBody: View {
     let configuration: ButtonStyleConfiguration
     let role: PicaButtonStyle.Role
     @Environment(\.isEnabled) private var isEnabled
+    @Environment(\.picaDensity) private var density
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
@@ -36,8 +37,8 @@ private struct PicaButtonBody: View {
         configuration.label
             .font(Typography.headline)
             .foregroundStyle(foreground)
-            .padding(.horizontal, Spacing.medium)
-            .frame(minHeight: 24)
+            .padding(.horizontal, density.spacing(Spacing.medium))
+            .frame(minHeight: density.buttonHeight)
             .background(shape.fill(fill))
             .overlay(shape.strokeBorder(border, lineWidth: role == .secondary ? 1 : 0))
             .contentShape(shape)

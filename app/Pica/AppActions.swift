@@ -1,4 +1,5 @@
 import AppKit
+import DesignSystem
 import AppShell
 import EngineClient
 import McpServers
@@ -14,6 +15,8 @@ import Workspaces
 final class AppActions {
     let keybindings: KeybindingStore
     let settings: SettingsStore
+    /// Theme, density and accent, applied to every window (X-01).
+    let appearance: AppearanceStore
     let settingsNavigation = SettingsNavigation()
     /// Workspace and repo management (A-12).
     let workspaces: WorkspaceManager
@@ -32,12 +35,15 @@ final class AppActions {
         let backend = EngineConfigBackend(client: client)
         keybindings = KeybindingStore(backend: backend)
         settings = SettingsStore(backend: backend)
+        appearance = AppearanceStore(
+            backend: backend, themesDirectory: ThemeLibrary.directory(environment: ProcessInfo.processInfo.environment))
         workspaces = WorkspaceManager(
             backend: EngineWorkspacesBackend(client: client),
             fixes: FixPerformer.system(environment: ProcessInfo.processInfo.environment))
         registry = ActionRegistry { [unowned self] id in perform(id) }
         palette = CommandPaletteModel(registry: registry) { [unowned self] in sessionItems() }
         keybindings.start(client: client)
+        appearance.start(client: client)
         workspaces.onCreated = { [unowned navigation] workspace in navigation.select(.workspace(workspace.id)) }
         workspaces.openSettings = { [unowned self] in perform(.openSettings) }
     }
@@ -129,5 +135,14 @@ struct ActionHost: ViewModifier {
                     model: actions.palette, registry: actions.registry, keybindings: actions.keybindings,
                     runOther: actions.runPaletteItem)
             }
+    }
+}
+
+/// X-01: draws a window with the theme, density and accent from Settings ▸ Appearance (docs/themes.md).
+struct AppearanceHost: ViewModifier {
+    let store: AppearanceStore
+
+    func body(content: Content) -> some View {
+        content.picaAppearance(theme: store.theme, density: store.density)
     }
 }
