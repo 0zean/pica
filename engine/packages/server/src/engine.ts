@@ -27,6 +27,7 @@ import type {
   FanOutInfo,
   FilesService,
   GitHubHost,
+  GitInstallation,
   McpHealthMonitor,
   McpImportService,
   McpSecretRedactor,
@@ -73,6 +74,7 @@ import { registerUsageHandlers } from "./usage-handlers.ts";
 import { registerWorkspaceHandlers } from "./workspace-handlers.ts";
 import { registerGitHubHandlers } from "./github-handlers.ts";
 import type { EngineGitHubOptions } from "./github-handlers.ts";
+import { registerGitInstallHandlers } from "./git-install-handlers.ts";
 
 export interface EngineUsageOptions extends Partial<UsagePricing> {
   readonly reasoningPrices?: () => TokenPrices | null;
@@ -138,6 +140,8 @@ export interface EngineOptions {
   readonly review?: EngineReviewOptions;
   // A-12: answers `github.authStatus`, `github.listTeams` and `github.listTeamRepos`.
   readonly github?: EngineGitHubOptions;
+  // A-15: answers `engine.git`.
+  readonly gitInstall?: () => Promise<GitInstallation>;
 }
 
 export interface EngineMcpImportOptions {
@@ -224,6 +228,9 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
   }
   if (options.github !== undefined) {
     registerGitHubHandlers(router, options.github);
+  }
+  if (options.gitInstall !== undefined) {
+    registerGitInstallHandlers(router, options.gitInstall);
   }
   const listener = await SocketListener.start({
     socketPath: options.socketPath,

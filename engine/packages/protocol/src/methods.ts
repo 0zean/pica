@@ -6,7 +6,7 @@ import { AgentDef } from "./dto/agents.ts";
 import { ConfigLayer, ConfigValue } from "./dto/config.ts";
 import { FanOut } from "./dto/fanout.ts";
 import { FileEntry, QuickOpenHit } from "./dto/files.ts";
-import { Branch, Commit, FileDiff, GitStatus } from "./dto/git.ts";
+import { Branch, Commit, FileDiff, GitInstall, GitStatus } from "./dto/git.ts";
 import { GitHubAuthStatus, GitHubRepo, GitHubTeam, PullRequest } from "./dto/github.ts";
 import { McpAttachment, McpPreset, McpScope, McpServerDef, McpServerStatus } from "./dto/mcp.ts";
 import { McpImportNote, McpImportSelection, McpImportSnippet, McpImportSource } from "./dto/mcp-import.ts";
@@ -292,6 +292,7 @@ export const methods = {
   ),
 
   "engine.account": clientMethod(Empty, z.object({ account: CopilotAccount })),
+  "engine.git": clientMethod(Empty, z.object({ git: GitInstall })),
 
   "models.list": clientMethod(
     Empty,

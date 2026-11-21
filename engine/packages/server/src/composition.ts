@@ -12,6 +12,7 @@ import {
   fileSize,
   MarkdownAgentLoader,
   openSqliteStore,
+  probeGitInstall,
   realPath,
   sha256Hex,
   userAgentsDir,
@@ -33,7 +34,7 @@ import {
   openAuditLog,
   resolveTier,
 } from "@pica/core";
-import type { AgentRuntime, JsonObject, JsonValue, ModelCatalog, PolicyContext, SessionRoutingProfile, Store, TierSettingsInput, TokenPrices } from "@pica/core";
+import type { AgentRuntime, GitInstallation, JsonObject, JsonValue, ModelCatalog, PolicyContext, SessionRoutingProfile, Store, TierSettingsInput, TokenPrices } from "@pica/core";
 import { loadEngineConfig } from "./composition-config.ts";
 import type { EngineConfig, EngineConfigOptions } from "./composition-config.ts";
 import { filesOptions } from "./composition-files.ts";
@@ -55,6 +56,8 @@ export interface ProductionOptions {
   readonly mcpFetch?: McpHttpFetch;
   // A-12: tests point team discovery at a stub GitHub server.
   readonly github?: GitHubAccessSettings;
+  // A-15: tests answer `engine.git` without running git.
+  readonly gitInstall?: () => Promise<GitInstallation>;
 }
 
 export interface ComposedEngine {
@@ -101,6 +104,7 @@ export function composeEngine(options: ProductionOptions): ComposedEngine {
         ...workspaces,
         files: filesOptions(workspaces.workspaces, options.env),
         github,
+        gitInstall: options.gitInstall ?? (() => probeGitInstall({ env: options.env, cwd: options.homeDir })),
       },
       close: async () => {
         await stopRuntime();
