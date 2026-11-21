@@ -89,3 +89,9 @@ app-ui-test-pica: engine-install
 		xcodebuild -project app/Pica.xcodeproj -scheme Pica $(UI_TEST_DESTINATION) \
 		$(if $(UI_TEST),-only-testing:PicaUITests/$(UI_TEST)) \
 		-derivedDataPath "$(UI_TEST_DERIVED)" -resultBundlePath app/.derived/pica-ui-tests.xcresult test-without-building
+
+# H-06: a release build into dist/ (docs/distribution.md). Install it with `sh dist/install.sh --from dist`.
+.PHONY: release
+release:
+	@test -n "$(VERSION)" || { echo "usage: make release VERSION=x.y.z"; exit 2; }
+	tools/release/build.sh --version "$(VERSION)"
