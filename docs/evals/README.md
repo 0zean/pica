@@ -115,3 +115,10 @@ credits. When no worker-tier call ran on a model of its own, the report says so.
   credits and 8.4% more reasoning-tier input than `off`, so it still fails the D-21 gate on reasoning input.
   The credit result depends on the main agent editing with `sed -i` and scripts, which the C-04 shell-write
   gate does not classify (PLAN.md, C-11).
+- [`2026-11-21-c11-gate-options.md`](2026-11-21-c11-gate-options.md): offline, no new runs. From the two
+  reports' per-run data, how far `off` moves against itself, and two ways to judge D-21's 5% reasoning-input
+  limit: more runs, or a margin set from `off`'s own spread, with what each costs in credits.
+- [`2026-11-21-c11-b2-live.md`](2026-11-21-c11-b2-live.md), from [`c11-b2-off`](2026-11-21-c11-b2-off.md) and
+  [`c11-b2-balanced`](2026-11-21-c11-b2-balanced.md): the C-11 rerun under option (b2), `off` 6 runs and `balanced` 3,
+  60.9 credits. `balanced` used 6.1% more reasoning-tier input against a same-day margin of 6.46%, and 23.4% more
+  credits, with all tasks passing. It meets D-21 as amended on 2026-11-21, narrowly, and fails the original 5%.

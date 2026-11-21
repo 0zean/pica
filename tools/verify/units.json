@@ -507,6 +507,10 @@
       "run": "make engine-install && cd engine && pnpm exec vitest run packages/adapters/tests/routing/delegation-guide.test.ts packages/adapters/tests/agents/builtin-prompts.test.ts packages/core/tests/sessions/pre-tool-use.test.ts"
     },
     {
+      "check": "The first `cost.delegation-limit` denial ends that delegation: every later call in it is denied, writes under the byte limit included, with a reason that says so.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/core/tests/sessions/delegation-limits.test.ts && pnpm exec vitest run packages/adapters/tests/sessions/read-gate.test.ts -t 'ends a code-writer delegation'"
+    },
+    {
       "check": "On the C-10 suite, on the mean of 3 runs, `balanced` passes the D-21 gate against `off`. The report is committed to `docs/evals/`.",
       "live": true,
       "run": "make engine-install && cd engine && PICA_LIVE=1 pnpm exec vitest run packages/evals/tests/live-suite.test.ts"

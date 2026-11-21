@@ -165,6 +165,38 @@ describe("read delegation gate (FakeRuntime)", () => {
     expect(String(outcomes[2]?.error)).toContain("limit of 2 tool calls");
   });
 
+  it("ends a code-writer delegation at its first limit denial, however many calls it makes after (C-11)", async () => {
+    // The 2026-11-17 live run: a `license-headers` delegation hit the call limit after 12 `view`
+    // calls and kept calling `view` through 24 denials. No call past the limit runs, a write included.
+    await writeFile(workspaceConfig, '{ "routing": { "delegation": { "codeWriter": { "maxToolCalls": 2 } } } }\n');
+    const small = { type: "toolCall", name: "create", arguments: { path: join(repo, "new.ts"), file_text: "x" }, result: "ok" };
+    const ignoresDenials = [view("small.ts", [1, 5]), view("small.ts", [6, 10]), ...Array.from({ length: 6 }, () => view("small.ts", [1, 5])), small];
+    const sessions = service([
+      {
+        steps: [
+          { type: "subagent", agentName: "code-writer", model: "model-a", steps: ignoresDenials },
+          { type: "subagent", agentName: "code-writer", model: "model-a", steps: [small] },
+          view("small.ts"),
+        ],
+      },
+    ]);
+    const sessionId = await startSession(sessions);
+    await runTurn(sessions, sessionId, "ask code-writer for headers");
+
+    const outcomes = toolOutcomes(sessionId);
+    expect(outcomes.map(({ type, agent }) => ({ type, agent }))).toEqual([
+      { type: "tool.completed", agent: "code-writer" },
+      { type: "tool.completed", agent: "code-writer" },
+      ...Array.from({ length: 7 }, () => ({ type: "tool.failed", agent: "code-writer" })),
+      { type: "tool.completed", agent: "code-writer" },
+      { type: "tool.completed", agent: "main" },
+    ]);
+    expect(String(outcomes[2]?.error)).toContain("so it has ended");
+    expect(String(outcomes[3]?.error)).toContain("1 call has been denied since");
+    expect(String(outcomes[8]?.error)).toContain("6 calls have been denied since");
+    expect(String(outcomes[8]?.error)).toContain("Do not call any tool");
+  });
+
   it("lets the main agent read an excluded path whole", async () => {
     await writeFile(workspaceConfig, '{ "routing": { "delegation": { "read": { "exclude": ["*.sql"] } } } }\n');
     const sessions = service([{ steps: [view("schema.sql")] }]);
