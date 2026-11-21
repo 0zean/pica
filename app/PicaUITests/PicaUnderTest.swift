@@ -37,16 +37,24 @@ final class PicaUnderTest {
     let reviewMetricsPath: String
     /// Where Pica appends the fix actions it carries out instead of opening a browser or copying (A-12).
     let fixLogPath: String
+    /// Where Pica writes `OverviewMetrics`' report (A-16).
+    let overviewMetricsPath: String
     private let scrollScript: Bool
     /// A-14: a managed policy (docs/managed-policy.md) `fake-picad` loads as if root owned it.
     private let managedPolicy: String?
     /// A-12: `signed-in` or `signed-out` points `fake-picad`'s GitHub discovery at its stub server (`fake-github.ts`).
     private let github: String?
+    /// A-15: whether Pica shows onboarding; other tests start with no workspace, so it is off for them.
+    private let onboarding: Bool
     private let node: String
 
-    init(scenario: String = "empty", scrollScript: Bool = false, managedPolicy: String? = nil, github: String? = nil) throws {
+    init(
+        scenario: String = "empty", scrollScript: Bool = false, managedPolicy: String? = nil, github: String? = nil,
+        onboarding: Bool = false
+    ) throws {
         self.scenario = scenario
         self.github = github
+        self.onboarding = onboarding
         self.scrollScript = scrollScript
         self.managedPolicy = managedPolicy
         // `make app-ui-test` passes this as TEST_RUNNER_PICA_NODE.
@@ -60,6 +68,7 @@ final class PicaUnderTest {
         editorLogPath = home.appending(path: "external-editor.log").path
         reviewMetricsPath = home.appending(path: "review-metrics.json").path
         fixLogPath = home.appending(path: "fix-actions.log").path
+        overviewMetricsPath = home.appending(path: "overview-metrics.json").path
         XCTAssertLessThan(socketPath.utf8.count, 104, "\(socketPath) is longer than sun_path allows")
         if let managedPolicy {
             try Data(managedPolicy.utf8).write(to: policyFile)
@@ -67,6 +76,15 @@ final class PicaUnderTest {
     }
 
     var policyFile: URL { home.appending(path: "policy.jsonc") }
+
+    /// A-15: what onboarding's checks answer (`fake-preconditions.ts`), read again on every check.
+    var preconditionsFile: URL { home.appending(path: "preconditions.json") }
+
+    /// Sets what onboarding's checks answer, e.g. `["copilot": "signed_out", "gitInstall": "missing", "github": "signed-out"]`;
+    /// a precondition not named passes.
+    func setPreconditions(_ preconditions: [String: String]) throws {
+        try JSONEncoder().encode(preconditions).write(to: preconditionsFile, options: .atomic)
+    }
 
     /// The user layer `config.set` writes.
     var configFile: URL { home.appending(path: "Library/Application Support/Pica/config.jsonc") }
@@ -89,9 +107,16 @@ final class PicaUnderTest {
             "PICA_SECRETS": "memory",
             // A-12: fix actions are logged here instead of opening a browser or writing the pasteboard.
             "PICA_FIX_ACTION_LOG": fixLogPath,
+            // A-16: the board's idle CPU report.
+            "PICA_OVERVIEW_METRICS_PATH": overviewMetricsPath,
         ]
         if let github {
             environment["PICA_TEST_GITHUB"] = github
+        }
+        if onboarding {
+            environment["PICA_TEST_PRECONDITIONS"] = preconditionsFile.path
+        } else {
+            environment["PICA_ONBOARDING"] = "off"
         }
         if scrollScript {
             environment["PICA_TIMELINE_SCROLL_SCRIPT"] = "1"

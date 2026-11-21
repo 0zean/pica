@@ -23,6 +23,7 @@ public struct Chip: View {
     private let title: String
     private let systemImage: String?
     private let tone: Tone
+    @Environment(\.picaDensity) private var density
 
     public init(_ title: String, systemImage: String? = nil, tone: Tone = .neutral) {
         self.title = title
@@ -39,8 +40,8 @@ public struct Chip: View {
         }
         .font(Typography.caption.weight(.medium))
         .foregroundStyle(tone.color)
-        .padding(.horizontal, Spacing.small)
-        .padding(.vertical, Spacing.xxSmall)
+        .padding(.horizontal, density.spacing(Spacing.small))
+        .padding(.vertical, density.spacing(Spacing.xxSmall))
         .background(Capsule().fill(Palette.surface))
         .overlay(Capsule().strokeBorder(tone.color.opacity(0.5), lineWidth: 1))
         .accessibilityElement(children: .combine)

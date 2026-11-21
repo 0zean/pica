@@ -646,6 +646,15 @@
         "$ref": "#/$defs/EngineAccountResult"
       }
     },
+    "engine.git": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/Empty"
+      },
+      "result": {
+        "$ref": "#/$defs/EngineGitResult"
+      }
+    },
     "models.list": {
       "direction": "client",
       "params": {
@@ -1909,6 +1918,17 @@
         "account"
       ]
     },
+    "EngineGitResult": {
+      "type": "object",
+      "properties": {
+        "git": {
+          "$ref": "#/$defs/GitInstall"
+        }
+      },
+      "required": [
+        "git"
+      ]
+    },
     "EngineHealthResult": {
       "type": "object",
       "properties": {
@@ -2801,6 +2821,40 @@
         "org",
         "slug",
         "name"
+      ]
+    },
+    "GitInstall": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "installed",
+            "missing"
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "message": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "status",
+        "version",
+        "message"
       ]
     },
     "GitLogParams": {

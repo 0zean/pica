@@ -15,6 +15,7 @@ public enum ActionID: String, CaseIterable, Sendable, Codable {
     case importTeams
     case syncWorkspace
     case showUsage
+    case showSessionOverview
     case showCustomization
 }
 
@@ -88,6 +89,9 @@ public enum ActionCatalog {
         case .showUsage:
             ActionDefinition(id: id, title: "Usage Dashboard", menu: .window, defaultShortcut: Shortcut("shift+cmd+u"),
                 keywords: ["cost", "credits", "tokens", "budget", "savings"])
+        case .showSessionOverview:
+            ActionDefinition(id: id, title: "Session Overview", menu: .window, defaultShortcut: Shortcut("shift+cmd+o"),
+                keywords: ["board", "sessions", "attention", "approvals", "fan-out", "fanout"])
         case .showCustomization:
             ActionDefinition(id: id, title: "Agents & Skills", menu: .window, defaultShortcut: Shortcut("cmd+shift+a"),
                 keywords: ["agents", "skills", "rules", "instructions", "AGENTS.md", "prompts"])

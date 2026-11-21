@@ -1254,6 +1254,30 @@ public struct EngineAccountResult: Codable, Hashable, Sendable {
     }
 }
 
+public struct EngineGitResult: Codable, Hashable, Sendable {
+    public var git: GitInstall
+
+    public init(
+        git: GitInstall
+    ) {
+        self.git = git
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case git
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        git = try container.decode(GitInstall.self, forKey: .git)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(git, forKey: .git)
+    }
+}
+
 public struct EngineHealthResult: Codable, Hashable, Sendable {
     public var status: Status
     public var uptimeMs: Count
@@ -2718,6 +2742,47 @@ public struct GitHubTeam: Codable, Hashable, Sendable {
         try container.encode(org, forKey: .org)
         try container.encode(slug, forKey: .slug)
         try container.encode(name, forKey: .name)
+    }
+}
+
+public struct GitInstall: Codable, Hashable, Sendable {
+    public var status: Status
+    public var version: String?
+    public var message: String?
+
+    public init(
+        status: Status,
+        version: String?,
+        message: String?
+    ) {
+        self.status = status
+        self.version = version
+        self.message = message
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case status
+        case version
+        case message
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        status = try container.decode(Status.self, forKey: .status)
+        version = try container.decode(String?.self, forKey: .version)
+        message = try container.decode(String?.self, forKey: .message)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(status, forKey: .status)
+        try container.encode(version, forKey: .version)
+        try container.encode(message, forKey: .message)
+    }
+
+    public enum Status: String, CaseIterable, Codable, Hashable, Sendable {
+        case installed
+        case missing
     }
 }
 

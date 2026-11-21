@@ -5,6 +5,7 @@ public struct EmptyState<Actions: View>: View {
     private let title: String
     private let message: String
     private let actions: Actions
+    @Environment(\.picaDensity) private var density
 
     public init(_ title: String, message: String, @ViewBuilder actions: () -> Actions) {
         self.title = title
@@ -13,7 +14,7 @@ public struct EmptyState<Actions: View>: View {
     }
 
     public var body: some View {
-        VStack(spacing: Spacing.medium) {
+        VStack(spacing: density.spacing(Spacing.medium)) {
             BrandMark()
                 .frame(width: 64, height: 64)
             Text(title)
@@ -30,7 +31,7 @@ public struct EmptyState<Actions: View>: View {
             }
             .padding(.top, Spacing.xSmall)
         }
-        .padding(Spacing.xxLarge)
+        .padding(density.spacing(Spacing.xxLarge))
         .frame(maxWidth: .infinity)
         .background(BrandBackdrop())
         .clipShape(RoundedRectangle(cornerRadius: Radius.xLarge, style: .continuous))

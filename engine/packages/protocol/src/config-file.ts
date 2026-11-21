@@ -108,6 +108,25 @@ const Keybindings = z.record(
   z.string().describe('Modifiers and a key joined by "+", e.g. "cmd+shift+k"; empty for no shortcut'),
 );
 
+// X-01: the app's theme, density and accent (docs/themes.md). The app reads theme files and
+// checks that `theme` names one; an unknown theme falls back to the built-in one.
+export const Density = z.enum(["compact", "regular", "comfortable"]);
+
+const Appearance = z.strictObject({
+  theme: z
+    .string()
+    .regex(/^[A-Za-z0-9][A-Za-z0-9._-]*$/)
+    .default("pica")
+    .describe('"pica" or the name of a theme file in themes/, without .jsonc'),
+  density: Density.default("regular"),
+  accent: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/)
+    .nullable()
+    .default(null)
+    .describe("#RRGGBB in every appearance, over the theme's accent; null keeps the theme's"),
+});
+
 export const PicaConfig = z.strictObject({
   $schema: z.string().optional(),
   routing: Routing.prefault({}),
@@ -115,6 +134,7 @@ export const PicaConfig = z.strictObject({
   permissions: Permissions.prefault({}),
   hooks: UserHooks.prefault({}),
   keybindings: Keybindings.default({}),
+  appearance: Appearance.prefault({}),
 });
 
 export type PicaConfig = z.output<typeof PicaConfig>;

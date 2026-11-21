@@ -29,6 +29,10 @@ const allowedPackageDependencies: Readonly<Record<string, readonly string[]>> = 
   Workspaces: ["EngineClient", "PicaProtocol", "DesignSystem"],
   // A-11: the session chip and the Usage dashboard; the app target puts the chip in the timeline's header.
   Usage: ["EngineClient", "PicaProtocol", "DesignSystem"],
+  // A-15: onboarding's precondition checks and first workspace; the app target hands it the fixes and workspace creation.
+  Onboarding: ["EngineClient", "PicaProtocol", "DesignSystem"],
+  // A-16: the Session Overview window, the board and the fan-out aggregate; the app target passes the sessions.
+  SessionOverview: ["EngineClient", "PicaProtocol", "DesignSystem"],
   // X-02: the Agents & Skills window over every layer's agents, skills and instruction files.
   Customization: ["EngineClient", "PicaProtocol", "DesignSystem"],
 };

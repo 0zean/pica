@@ -3,3 +3,4 @@ export { createGitWorktreeService, type GitWorktreeOptions } from "./git-worktre
 export { createGitRepoRegistryOps } from "./repo-registry-git.ts";
 export { createGitRepoCardSource } from "./repo-card-git.ts";
 export { createGitRepoFiles } from "./repo-files.ts";
+export { probeGitInstall, type GitProbeOptions } from "./probe-git.ts";

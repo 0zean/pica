@@ -159,6 +159,17 @@ function usageTurns(): Turn[] {
   ];
 }
 
+/**
+ * The A-16 overview scenario: a session's first message plays a short turn that ends idle (a fan-out's prompt is
+ * one, so its runs succeed), and its second asks before running `npm test` and waits there for approval.
+ */
+function overviewTurns(): Turn[] {
+  return [
+    { steps: [streamedText("Checked the repo.", 2), toolCall("view", "README.md", "readme"), usage(300, 40)] },
+    { steps: [streamedText("Running the tests.", 2), askingShell("npm test"), streamedText("Done.", 1)] },
+  ];
+}
+
 export const fakePicadScenarios: Record<string, Scenario> = {
   empty: scenario([]),
   timeline: scenario(timelineTurns()),
@@ -168,4 +179,5 @@ export const fakePicadScenarios: Record<string, Scenario> = {
   // A-13: no turns; `fake-picad.ts` also starts a stub MCP server that the GitHub preset reaches.
   mcp: scenario([]),
   usage: scenario(usageTurns()),
+  overview: scenario(overviewTurns()),
 };

@@ -503,6 +503,13 @@ public enum Methods {
         public static let direction = MethodDirection.client
     }
 
+    public enum EngineGit: PicaMethod {
+        public typealias Params = Empty
+        public typealias Result = EngineGitResult
+        public static let name = "engine.git"
+        public static let direction = MethodDirection.client
+    }
+
     public enum ModelsList: PicaMethod {
         public typealias Params = Empty
         public typealias Result = ModelsListResult
