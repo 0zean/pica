@@ -311,6 +311,41 @@
         "type": "string",
         "description": "Modifiers and a key joined by \"+\", e.g. \"cmd+shift+k\"; empty for no shortcut"
       }
+    },
+    "appearance": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "theme": {
+          "default": "pica",
+          "description": "\"pica\" or the name of a theme file in themes/, without .jsonc",
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+        },
+        "density": {
+          "default": "regular",
+          "type": "string",
+          "enum": [
+            "compact",
+            "regular",
+            "comfortable"
+          ]
+        },
+        "accent": {
+          "default": null,
+          "description": "#RRGGBB in every appearance, over the theme's accent; null keeps the theme's",
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
     }
   },
   "additionalProperties": false,

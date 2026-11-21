@@ -24,49 +24,63 @@ public enum BrandColor {
 public enum Palette {
     public static let background = PicaColor(
         light: BrandColor.paper, dark: RGB(0x1C1E26),
-        lightIncreasedContrast: RGB(0xFFFFFF), darkIncreasedContrast: RGB(0x000000))
+        lightIncreasedContrast: RGB(0xFFFFFF), darkIncreasedContrast: RGB(0x000000),
+        token: .background)
     public static let surface = PicaColor(
         light: RGB(0xFFFFFF), dark: RGB(0x262833),
-        lightIncreasedContrast: RGB(0xFFFFFF), darkIncreasedContrast: RGB(0x14151B))
+        lightIncreasedContrast: RGB(0xFFFFFF), darkIncreasedContrast: RGB(0x14151B),
+        token: .surface)
     public static let textPrimary = PicaColor(
         light: BrandColor.ink, dark: RGB(0xF2EEE9),
-        lightIncreasedContrast: RGB(0x1A1C24), darkIncreasedContrast: RGB(0xFFFFFF))
+        lightIncreasedContrast: RGB(0x1A1C24), darkIncreasedContrast: RGB(0xFFFFFF),
+        token: .textPrimary)
     public static let textSecondary = PicaColor(
         light: RGB(0x50555F), dark: RGB(0xB9BDC8),
-        lightIncreasedContrast: BrandColor.ink, darkIncreasedContrast: RGB(0xDADDE5))
+        lightIncreasedContrast: BrandColor.ink, darkIncreasedContrast: RGB(0xDADDE5),
+        token: .textSecondary)
     public static let border = PicaColor(
         light: RGB(0xDDD8D2), dark: RGB(0x3A3D4A),
-        lightIncreasedContrast: BrandColor.ink, darkIncreasedContrast: RGB(0xC9CCD6))
+        lightIncreasedContrast: BrandColor.ink, darkIncreasedContrast: RGB(0xC9CCD6),
+        token: .border)
     /// Interactive emphasis: primary buttons, links, selection. Derived from slate.
     public static let accent = PicaColor(
         light: RGB(0x46667C), dark: RGB(0x8FB2C9),
-        lightIncreasedContrast: RGB(0x2B4558), darkIncreasedContrast: RGB(0xB9D4E6))
+        lightIncreasedContrast: RGB(0x2B4558), darkIncreasedContrast: RGB(0xB9D4E6),
+        token: .accent)
     /// Text and icons drawn on `accent`.
     public static let onAccent = PicaColor(
         light: RGB(0xFFFFFF), dark: RGB(0x1C1E26),
-        lightIncreasedContrast: RGB(0xFFFFFF), darkIncreasedContrast: RGB(0x000000))
+        lightIncreasedContrast: RGB(0xFFFFFF), darkIncreasedContrast: RGB(0x000000),
+        token: .onAccent)
     /// The activity ring. Non-text, so it needs 3:1 against the background.
     public static let ring = PicaColor(
         light: RGB(0x7E8496), dark: RGB(0x8A90A0),
-        lightIncreasedContrast: RGB(0x4A4F60), darkIncreasedContrast: RGB(0xC0C5D2))
+        lightIncreasedContrast: RGB(0x4A4F60), darkIncreasedContrast: RGB(0xC0C5D2),
+        token: .ring)
     /// The activity sparks.
     public static let spark = PicaColor(
         light: BrandColor.slate, dark: BrandColor.spark,
-        lightIncreasedContrast: RGB(0x2B4558), darkIncreasedContrast: RGB(0xD3E0EA))
+        lightIncreasedContrast: RGB(0x2B4558), darkIncreasedContrast: RGB(0xD3E0EA),
+        token: .spark)
     public static let success = PicaColor(
         light: RGB(0x2E6B4C), dark: RGB(0x7FC8A0),
-        lightIncreasedContrast: RGB(0x1F4F37), darkIncreasedContrast: RGB(0xA6E3C2))
+        lightIncreasedContrast: RGB(0x1F4F37), darkIncreasedContrast: RGB(0xA6E3C2),
+        token: .success)
     public static let warning = PicaColor(
         light: RGB(0x85570F), dark: RGB(0xE3B567),
-        lightIncreasedContrast: RGB(0x6B4409), darkIncreasedContrast: RGB(0xF2CF8F))
+        lightIncreasedContrast: RGB(0x6B4409), darkIncreasedContrast: RGB(0xF2CF8F),
+        token: .warning)
     public static let danger = PicaColor(
         light: RGB(0xA3322F), dark: RGB(0xF08C86),
-        lightIncreasedContrast: RGB(0x7F2220), darkIncreasedContrast: RGB(0xFFB3AE))
+        lightIncreasedContrast: RGB(0x7F2220), darkIncreasedContrast: RGB(0xFFB3AE),
+        token: .danger)
     /// Backdrop gradient pair. Empty states and onboarding only.
     public static let gradientStart = PicaColor(
         light: BrandColor.gradientStart, dark: RGB(0x262E40),
-        lightIncreasedContrast: RGB(0xFFFFFF), darkIncreasedContrast: RGB(0x000000))
+        lightIncreasedContrast: RGB(0xFFFFFF), darkIncreasedContrast: RGB(0x000000),
+        token: .gradientStart)
     public static let gradientEnd = PicaColor(
         light: BrandColor.gradientEnd, dark: RGB(0x3A2F2C),
-        lightIncreasedContrast: RGB(0xFFFFFF), darkIncreasedContrast: RGB(0x000000))
+        lightIncreasedContrast: RGB(0xFFFFFF), darkIncreasedContrast: RGB(0x000000),
+        token: .gradientEnd)
 }

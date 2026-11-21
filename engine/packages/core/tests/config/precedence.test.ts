@@ -110,6 +110,7 @@ describe("config precedence", () => {
       permissions: { mode: "ask" },
       hooks: { sessionStart: [], sessionEnd: [], beforeCommit: [] },
       keybindings: {},
+      appearance: { theme: "pica", density: "regular", accent: null },
     });
     expect([...resolved.values.values()].every((value) => value.layer === "default" && !value.locked)).toBe(true);
   });

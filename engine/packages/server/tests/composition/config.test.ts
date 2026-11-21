@@ -102,6 +102,24 @@ describe("A-14 config methods", () => {
     expect(await get(client, "keybindings")).toMatchObject({ value: { toggleInspector: "cmd+ctrl+j" }, layer: "user" });
   });
 
+  it("X-01: reads and writes the appearance keys, and refuses a malformed accent", async () => {
+    const client = await start();
+    expect(await get(client, "appearance")).toEqual({
+      keyPath: "appearance",
+      value: { theme: "pica", density: "regular", accent: null },
+      layer: "default",
+      locked: false,
+    });
+    await call(client, "config.set", { keyPath: "appearance.density", value: "compact", layer: "user" });
+    await call(client, "config.set", { keyPath: "appearance.accent", value: "#B4533A", layer: "user" });
+    expect(await get(client, "appearance.density")).toMatchObject({ value: "compact", layer: "user" });
+    expect(await get(client, "appearance.accent")).toMatchObject({ value: "#B4533A", layer: "user" });
+    const refused = await call(client, "config.set", { keyPath: "appearance.accent", value: "orange", layer: "user" });
+    expect(errorCode(refused)).toBe("config_invalid");
+    await call(client, "config.set", { keyPath: "appearance.accent", value: null, layer: "user" });
+    expect(await get(client, "appearance.accent")).toMatchObject({ value: null, layer: "default" });
+  });
+
   it("keeps the user's comments", async () => {
     const client = await start();
     mkdirSync(join(home, "Library", "Application Support", "Pica"), { recursive: true });

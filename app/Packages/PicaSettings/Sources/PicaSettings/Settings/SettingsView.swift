@@ -5,6 +5,7 @@ import SwiftUI
 public final class SettingsNavigation {
     public enum Pane: Hashable, Sendable {
         case general
+        case appearance
         case keyboard
     }
 
@@ -13,16 +14,22 @@ public final class SettingsNavigation {
     public init() {}
 }
 
-/// The Settings scene's content: General (config.jsonc keys) and Keyboard (the keybinding editor).
+/// The Settings scene's content: General (config.jsonc keys), Appearance (theme, density and accent, X-01) and
+/// Keyboard (the keybinding editor).
 public struct SettingsView: View {
     @Bindable private var navigation: SettingsNavigation
     private let settings: SettingsStore
     private let keybindings: KeybindingStore
     private let registry: ActionRegistry
+    private let appearance: AppearanceStore
 
-    public init(navigation: SettingsNavigation, settings: SettingsStore, keybindings: KeybindingStore, registry: ActionRegistry) {
+    public init(
+        navigation: SettingsNavigation, settings: SettingsStore, appearance: AppearanceStore, keybindings: KeybindingStore,
+        registry: ActionRegistry
+    ) {
         self.navigation = navigation
         self.settings = settings
+        self.appearance = appearance
         self.keybindings = keybindings
         self.registry = registry
     }
@@ -31,6 +38,9 @@ public struct SettingsView: View {
         TabView(selection: $navigation.pane) {
             Tab("General", systemImage: "gearshape", value: SettingsNavigation.Pane.general) {
                 GeneralSettingsView(store: settings)
+            }
+            Tab("Appearance", systemImage: "paintpalette", value: SettingsNavigation.Pane.appearance) {
+                AppearanceSettingsView(store: appearance)
             }
             Tab("Keyboard", systemImage: "keyboard", value: SettingsNavigation.Pane.keyboard) {
                 KeybindingsView(store: keybindings, registry: registry)

@@ -35,6 +35,9 @@ const configKeys: Readonly<Record<string, readonly [JsonValue, JsonValue]>> = {
   "hooks.beforeCommit": [[{ command: "true" }], [{ name: "secret scan", command: "org-scan" }]],
   // `keybindings` is a record by action id, so each action's shortcut is its own key.
   "keybindings.toggleInspector": ["cmd+j", "cmd+ctrl+i"],
+  "appearance.theme": ["harbor", "acme"],
+  "appearance.density": ["compact", "comfortable"],
+  "appearance.accent": ["#B4533A", "#1D4A61"],
 };
 
 const recordKeys = ["keybindings"];

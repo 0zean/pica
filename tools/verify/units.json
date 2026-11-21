@@ -971,10 +971,12 @@
   ],
   "X-01": [
     {
-      "check": "Snapshot tests for each density and for a custom accent."
+      "check": "Snapshot tests for each density and for a custom accent.",
+      "run": "swift test --package-path app/Packages/DesignSystem --filter ThemeSnapshotTests"
     },
     {
-      "check": "A theme file with an unknown token fails validation with the token named."
+      "check": "A theme file with an unknown token fails validation with the token named.",
+      "run": "swift test --package-path app/Packages/DesignSystem --filter ThemeFileTests && swift test --package-path app/Packages/PicaSettings --filter AppearanceStoreTests && make app-ui-test-pica UI_TEST=SettingsUITests/testTheAppearancePaneChoosesAThemeAndDensityAndNamesABadToken"
     }
   ],
   "X-02": [
