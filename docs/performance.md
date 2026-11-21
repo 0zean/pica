@@ -17,23 +17,23 @@ A-01's engine recovery).
 
 Reference Mac: Apple M2 Pro, 10 cores, 16 GB, macOS 27.2, Debug build, 2026-11-21, `lockf /tmp/pica-uitest.lock make perf`
 with other worktree sessions idle (load averages 3–10 while measuring). GitHub runner: `macos-26`, an Apple M1 virtual
-machine with 3 cores and 7 GB, two `perf` runs on this PR (load averages up to 42 when the run started).
+machine with 3 cores and 7 GB, three `perf` runs on this PR (load averages up to 42 when a run started; run 3 waited for the load to settle).
 
-| §9 budget | Test | Threshold (statistic) | Reference Mac | GitHub runner, runs 1 / 2 |
+| §9 budget | Test | Threshold (statistic) | Reference Mac | GitHub runner, runs 1 / 2 / 3 |
 |---|---|---|---|---|
-| App cold launch to interactive window | `LaunchPerformanceTests` | < 1000 ms (median of 5) | 636 ms | 1195 / 891 ms |
-| Engine start to `engine.hello` reply | `startup-benchmark.test.ts` | < 1500 ms (median of 3) | 310 ms | 704 / 477 ms |
-| Keystroke to glyph in composer | `ComposerLatencyUITests` | < 16 ms (p95 of 120) | 13.4 ms | 31.0 / 31.2 ms |
-| Open a 10,000-event session | `TimelineUITests` | < 300 ms (median of 5) | 228 ms | 912 / 514 ms |
-| Timeline scroll hitch time ratio | `TimelineUITests` | < 1% | 0.00% | 0.98 / 7.66% |
-| Render a 5,000-line diff | `ReviewUITests` | < 200 ms (median of 3) | 66 ms | 98 / 94 ms |
-| Quick open over 100,000 files | `quick-open-benchmark.test.ts` | < 50 ms (slowest keystroke) | 18.6 ms | 37.6 / 33.5 ms |
-| Event delivery engine → view, p99 | `EventDeliveryLatencyTests` | < 5 ms (median of 3 p99s) | 0.97–1.19 ms (one run at 10.5 ms, below) | 2.84 / 10.56 ms |
-| App idle CPU with 5 idle sessions | `ResourceBudgetUITests` | < 1% of a core | 0.27% | — / 0.48% |
-| App memory with 5 sessions of 2,000 events | `ResourceBudgetUITests` | < 300 MB | 83 MB | — / 61 MB |
-| Policy decision, p99 | `policy/benchmark.test.ts` | < 1 ms | 0.006 ms | 0.012 / 0.012 ms |
-| *Quick-open ranker alone (A-09)* | `files/benchmark.test.ts` | < 50 ms | 22.0 ms | 34.2 / 28.4 ms |
-| *Engine recovery (A-01)* | `EngineRecoveryTests` | < 2000 ms (median of 3) | 425–1459 ms | 630 ms / — |
+| App cold launch to interactive window | `LaunchPerformanceTests` | < 1000 ms (median of 5) | 636 ms | 1195 / 891 / 1268 ms |
+| Engine start to `engine.hello` reply | `startup-benchmark.test.ts` | < 1500 ms (median of 3) | 310 ms | 704 / 477 / 600 ms |
+| Keystroke to glyph in composer | `ComposerLatencyUITests` | < 16 ms (p95 of 120) | 13.4 ms | 31.0 / 31.2 / 33.2 ms |
+| Open a 10,000-event session | `TimelineUITests` | < 300 ms (median of 5) | 228 ms | 912 / 514 / 934 ms |
+| Timeline scroll hitch time ratio | `TimelineUITests` | < 1% | 0.00% | 0.98 / 7.66 / 4.15% |
+| Render a 5,000-line diff | `ReviewUITests` | < 200 ms (median of 3) | 66 ms | 98 / 94 / 182 ms |
+| Quick open over 100,000 files | `quick-open-benchmark.test.ts` | < 50 ms (slowest keystroke) | 18.6 ms | 37.6 / 33.5 / 31.9 ms |
+| Event delivery engine → view, p99 | `EventDeliveryLatencyTests` | < 5 ms (median of 3 p99s) | 0.97–1.19 ms (one run at 10.5 ms, below) | 2.84 / 10.56 / 2.07 ms |
+| App idle CPU with 5 idle sessions | `ResourceBudgetUITests` | < 1% of a core | 0.27% | — / 0.48 / 0.76% |
+| App memory with 5 sessions of 2,000 events | `ResourceBudgetUITests` | < 300 MB | 83 MB | — / 61 / 63 MB |
+| Policy decision, p99 | `policy/benchmark.test.ts` | < 1 ms | 0.006 ms | 0.012 / 0.012 / 0.019 ms |
+| *Quick-open ranker alone (A-09)* | `files/benchmark.test.ts` | < 50 ms | 22.0 ms | 34.2 / 28.4 / 36.2 ms |
+| *Engine recovery (A-01)* | `EngineRecoveryTests` | < 2000 ms (median of 3) | 425–1459 ms | 630 ms / — / 700 ms |
 
 Runner 1's idle CPU and memory were not measured (the test clicked a sidebar row the runner reported as not hittable;
 it now selects with ⌘1–⌘5), and run 2's engine recovery was skipped after event delivery failed (each is now its own
@@ -103,6 +103,9 @@ There are two, and only one of them can hold every budget today.
   hitch ratio and event delivery are under budget on one run and over on the next. The workflow names those five in
   `PERF_NOT_GATING`, so they are measured and shown as over budget in the summary without failing the job. The
   thresholds are unchanged, and `make perf` without that variable gates on all of them.
+
+The budgets the runner does gate are not all comfortable there: run 3's diff render (182 ms of 200) and idle CPU
+(0.76% of 1%) were close to their thresholds.
 
 **Owner decision (open).** Either keep the GitHub runner as CI's gate with that list (the reference Mac stays the
 gate for the five), add a self-hosted Apple silicon runner as the reference runner and drop the list, or measure a
