@@ -2,6 +2,7 @@ import * as z from "zod";
 import * as common from "./common.ts";
 import * as agents from "./dto/agents.ts";
 import * as config from "./dto/config.ts";
+import * as customization from "./dto/customization.ts";
 import * as fanout from "./dto/fanout.ts";
 import * as files from "./dto/files.ts";
 import * as git from "./dto/git.ts";
@@ -20,7 +21,7 @@ import { RPC_ERROR_NUMBERS } from "./jsonrpc.ts";
 import { ById, ByRepo, BySession, ByWorktree, methodNames, methods, notificationNames, notifications, Ok } from "./methods.ts";
 import { PROTOCOL_VERSION } from "./version.ts";
 
-const dtoModules = [common, agents, config, fanout, files, git, github, mcp, mcpImport, models, policy, repo, session, usage, workspace, jsonrpc];
+const dtoModules = [common, agents, config, customization, fanout, files, git, github, mcp, mcpImport, models, policy, repo, session, usage, workspace, jsonrpc];
 const sharedShapes = { ById, ByRepo, BySession, ByWorktree, Ok };
 
 // "session.state_changed" → "SessionStateChanged"

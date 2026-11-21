@@ -601,6 +601,42 @@
         "$ref": "#/$defs/AgentsListResult"
       }
     },
+    "customization.list": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/CustomizationListParams"
+      },
+      "result": {
+        "$ref": "#/$defs/CustomizationListResult"
+      }
+    },
+    "customization.create": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/CustomizationCreateParams"
+      },
+      "result": {
+        "$ref": "#/$defs/CustomizationCreateResult"
+      }
+    },
+    "customization.save": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/CustomizationSaveParams"
+      },
+      "result": {
+        "$ref": "#/$defs/CustomizationSaveResult"
+      }
+    },
+    "customization.delete": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/CustomizationDeleteParams"
+      },
+      "result": {
+        "$ref": "#/$defs/Ok"
+      }
+    },
     "engine.account": {
       "direction": "client",
       "params": {
@@ -1451,6 +1487,310 @@
     "Credits": {
       "type": "number",
       "minimum": 0
+    },
+    "CustomizationCreateParams": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/CustomizationKind"
+        },
+        "locationId": {
+          "$ref": "#/$defs/Id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "text": {
+          "type": "string"
+        },
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        },
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "kind",
+        "locationId",
+        "text"
+      ]
+    },
+    "CustomizationCreateResult": {
+      "type": "object",
+      "properties": {
+        "item": {
+          "$ref": "#/$defs/CustomizationItem"
+        }
+      },
+      "required": [
+        "item"
+      ]
+    },
+    "CustomizationDeleteParams": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/CustomizationKind"
+        },
+        "path": {
+          "$ref": "#/$defs/AbsolutePath"
+        },
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        },
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "kind",
+        "path"
+      ]
+    },
+    "CustomizationItem": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/CustomizationKind"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "locationId": {
+          "$ref": "#/$defs/Id"
+        },
+        "layer": {
+          "$ref": "#/$defs/CustomizationLayer"
+        },
+        "repoId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "path": {
+          "$ref": "#/$defs/AbsolutePath"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "text": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/CustomizationStatus"
+        },
+        "overriddenBy": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AbsolutePath"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "problems": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CustomizationProblem"
+          }
+        },
+        "writable": {
+          "type": "boolean"
+        },
+        "lockedBy": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "name",
+        "locationId",
+        "layer",
+        "repoId",
+        "path",
+        "description",
+        "text",
+        "status",
+        "overriddenBy",
+        "problems",
+        "writable"
+      ]
+    },
+    "CustomizationKind": {
+      "type": "string",
+      "enum": [
+        "agent",
+        "skill",
+        "instructions"
+      ]
+    },
+    "CustomizationLayer": {
+      "type": "string",
+      "enum": [
+        "builtin",
+        "user",
+        "workspace",
+        "repo"
+      ]
+    },
+    "CustomizationListParams": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/CustomizationKind"
+        },
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        },
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "kind"
+      ]
+    },
+    "CustomizationListResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CustomizationItem"
+          }
+        },
+        "locations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CustomizationLocation"
+          }
+        }
+      },
+      "required": [
+        "items",
+        "locations"
+      ]
+    },
+    "CustomizationLocation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "kind": {
+          "$ref": "#/$defs/CustomizationKind"
+        },
+        "layer": {
+          "$ref": "#/$defs/CustomizationLayer"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "repoId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "path": {
+          "$ref": "#/$defs/AbsolutePath"
+        },
+        "singleFile": {
+          "type": "boolean"
+        },
+        "writable": {
+          "type": "boolean"
+        },
+        "lockedBy": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "layer",
+        "label",
+        "repoId",
+        "path",
+        "singleFile",
+        "writable"
+      ]
+    },
+    "CustomizationProblem": {
+      "type": "object",
+      "properties": {
+        "field": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "field",
+        "message"
+      ]
+    },
+    "CustomizationSaveParams": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/CustomizationKind"
+        },
+        "path": {
+          "$ref": "#/$defs/AbsolutePath"
+        },
+        "text": {
+          "type": "string"
+        },
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        },
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "kind",
+        "path",
+        "text"
+      ]
+    },
+    "CustomizationSaveResult": {
+      "type": "object",
+      "properties": {
+        "item": {
+          "$ref": "#/$defs/CustomizationItem"
+        }
+      },
+      "required": [
+        "item"
+      ]
+    },
+    "CustomizationStatus": {
+      "type": "string",
+      "enum": [
+        "active",
+        "overridden",
+        "invalid"
+      ]
     },
     "DiffHunk": {
       "type": "object",

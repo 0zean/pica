@@ -19,6 +19,8 @@ export interface ManagedPolicy {
   readonly budget: BudgetCeilings;
   readonly minimumPermissionMode?: PermissionMode | undefined;
   readonly rules: readonly ManagedRule[];
+  // X-02: kinds of agents, skills and instruction files Pica may not write.
+  readonly lockedCustomizations?: readonly ("agent" | "skill" | "instructions")[] | undefined;
   // Config keys to lock, as written; passed to `resolveConfig` as the `managed` layer.
   readonly configLocks?: JsonObject | undefined;
 }
