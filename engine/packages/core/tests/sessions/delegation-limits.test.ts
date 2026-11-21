@@ -69,14 +69,31 @@ describe("delegation limits (C-11)", () => {
     expect(await call(gate, "cw-2", "code-writer", "view", view)).toBe("allow");
   });
 
-  it("denies a write that would take the delegation past maxWriteBytes; smaller ones still fit", async () => {
+  it("ends the delegation at a write past maxWriteBytes: later calls are denied, smaller writes included", async () => {
     const all: PolicyDecision[] = [];
     const gate = hooks({ maxWriteBytes: 1000 }, "balanced", all);
     expect(await call(gate, "cw-1", "code-writer", "create", create(600))).toBe("allow");
     expect(await call(gate, "cw-1", "code-writer", "create", create(600))).toBe("deny");
-    expect(await call(gate, "cw-1", "code-writer", "create", create(100))).toBe("allow");
-    expect(await call(gate, "cw-1", "code-writer", "view", view)).toBe("allow");
+    expect(await call(gate, "cw-1", "code-writer", "create", create(100))).toBe("deny");
+    expect(await call(gate, "cw-1", "code-writer", "view", view)).toBe("deny");
     expect(all.find((decision) => decision.outcome === "deny")?.reason).toContain("1000 bytes of writes");
+    expect(await call(gate, "cw-2", "code-writer", "create", create(100))).toBe("allow");
+  });
+
+  it("after the first limit denial, says on each repeat that the delegation has ended and counts the repeats", async () => {
+    const all: PolicyDecision[] = [];
+    const gate = hooks({ maxToolCalls: 1 }, "balanced", all);
+    await call(gate, "cw-1", "code-writer", "view", view);
+    for (let i = 0; i < 4; i += 1) {
+      expect(await call(gate, "cw-1", "code-writer", "view", view)).toBe("deny");
+    }
+    const reasons = all.filter((decision) => decision.outcome === "deny").map((decision) => decision.reason);
+    expect(all.filter((decision) => decision.outcome === "deny").every((decision) => decision.ruleId === "cost.delegation-limit")).toBe(true);
+    expect(reasons[0]).toContain("so it has ended");
+    expect(reasons[0]).toContain("every later one will be denied");
+    expect(reasons[1]).toContain("ended when it reached its limit of 1 tool calls, and 1 call has been denied since");
+    expect(reasons[3]).toContain("3 calls have been denied since");
+    expect(reasons[3]).toContain("Do not call any tool. Reply now, in text");
   });
 
   it("applies under strict but not under off, and not to other agents or the main agent", async () => {
