@@ -1008,8 +1008,9 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 **A-16 · Session overview** — A-05, R-11
 - Build: board of all sessions with status and an attention queue; fan-out aggregate view.
 - Verify:
-  - [ ] UI test: sessions awaiting approval appear first.
-  - [ ] Twenty live FakeRuntime sessions keep the board under the idle CPU budget when nothing changes.
+  - [x] UI test: sessions awaiting approval appear first.
+  - [x] Twenty live FakeRuntime sessions keep the board under the idle CPU budget when nothing changes.
+- Notes: `app/Packages/SessionOverview`, specified in [docs/session-overview.md](docs/session-overview.md). A feature package (lint-arch rule added). The overview is a window (Window ▸ Session Overview, ⇧⌘O, `showSessionOverview` in A-14's registry), like the Usage dashboard: a board needs more width than the session column. No engine or protocol change: sessions, workspaces and repo names come from A-04's `NavigationStore`, which the app target passes in (the board keeps no copy), and fan-outs from `fanout.list` and `fanout.changed` (`FanOutStore`, reloaded on each connection; a reload never undoes a newer change). The board's top section, Needs You, is the attention queue: `awaiting_approval` first, then `failed` (the sidebar's attention states), longest waiting first; the other sessions are in Working, Idle and Stopped lanes, most recent first. Clicking a card selects the session in the main window and brings it forward. The Fan-outs tab shows each run's aggregate: progress ring, a counts line, state, Cancel while it runs, and a row per repo with its status, error and an Open button. Nothing on the board moves while nothing changes (fixed times, the ring's `TimelineView` paused). `OverviewMetrics` (on only with `PICA_OVERVIEW_METRICS_PATH`) measures the app's own CPU time with `getrusage` over 10 s after the board has settled, and counts board changes; the UI test makes twenty live FakeRuntime sessions (four awaiting approval) through `fake-picad`'s new `overview` scenario and does not touch the app while it measures. XCUITest returns elements in no particular order, so the ordering test reads the board's order from the cards' frames. Measured on 2026-11-21 (Debug build, Apple silicon, other worktree sessions running at the time): 0.015 s CPU over 10.6 s, 0.14% of a core; no board change. Not done: cards name no repo until R-10 fills `writeRoots`, and nothing in the app or CLI starts a fan-out yet.
 
 **Milestone M4 — daily driver:** **(manual)** complete one real task end to end in the app: import a team, start a session, approve a tool call, review the diff, commit, open a pull request, and read the session's cost.
 
@@ -1187,7 +1188,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | A-13 | MCP management | A-04, M-06, M-07 | done |
 | A-14 | Settings and command palette | A-04, E-04 | done |
 | A-15 | Onboarding | A-12, A-13 | todo |
-| A-16 | Session overview | A-05, R-11 | todo |
+| A-16 | Session overview | A-05, R-11 | done |
 | X-01 | Themes and density | A-03, A-14 | done |
 | X-02 | Agents, skills, and rules management | C-02, A-14 | todo |
 | X-03 | User hooks | C-03 | done |
