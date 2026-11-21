@@ -31,6 +31,8 @@ struct ItemDetail: View {
                 .lineLimit(2)
             if let lock = presentation.lock {
                 Label(lock, systemImage: "lock.fill").font(Typography.callout).foregroundStyle(Palette.textSecondary)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(lock)
                     .accessibilityIdentifier("pica.customization.lock")
             } else if !item.writable {
                 Text("Built into Pica. Create an agent of the same name in another layer to override it.")
