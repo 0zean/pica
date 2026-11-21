@@ -47,6 +47,8 @@ copilot_package() {
 }
 
 mkdir -p "$out"
+out=$(cd "$out" && pwd)
+app_in=$(cd "$app_in" && pwd)
 app="$out/Pica.app"
 zip="$out/Pica-$version.zip"
 rm -rf "$app" "$zip"
@@ -79,6 +81,8 @@ cp "$node" "$contents/Helpers/node"
   --out "$contents/Resources/engine" --version "$version")
 # The runtime finds runtime.node, rg and tgrep relative to itself, so the package keeps its layout (S-05).
 ditto "$(copilot_package)" "$contents/Resources/copilot"
+
+[ -f "$contents/Resources/engine/picad.mjs" ] || { echo "the engine bundle is missing from $app" >&2; exit 1; }
 
 # Files copied from node_modules or a download keep xattrs, and codesign --strict rejects some of them.
 xattr -cr "$app"

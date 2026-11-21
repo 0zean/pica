@@ -24,6 +24,8 @@ if { [ -n "${SPARKLE_PUBLIC_ED_KEY:-}" ] && [ -z "${SPARKLE_PRIVATE_ED_KEY:-}" ]
   echo "set both SPARKLE_PUBLIC_ED_KEY and SPARKLE_PRIVATE_ED_KEY, or neither" >&2; exit 2
 fi
 
+mkdir -p "$out"
+out=$(cd "$out" && pwd)
 derived="$repo_root/app/.derived/release"
 make -C "$repo_root" engine-install
 # arm64 only: the bundled Copilot runtime is arm64 (S-05). Signing happens in package.sh, after the helpers are added.

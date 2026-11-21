@@ -9,7 +9,7 @@ let package = Package(
     ],
     dependencies: [
         // H-06: in-app updates from the appcast on GitHub Releases (docs/distribution.md). Pinned exactly.
-        .package(url: "https://github.com/sparkle-project/Sparkle", exact: "2.10.1"),
+        .package(url: "https://github.com/sparkle-project/Sparkle", exact: "2.10.1"),  // swift-boundary: allow (SwiftPM fetches it at build time)
     ],
     targets: [
         .target(name: "Updates", dependencies: [.product(name: "Sparkle", package: "Sparkle")]),

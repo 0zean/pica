@@ -3,7 +3,7 @@ import Testing
 @testable import Updates
 
 @Suite struct UpdateConfigurationTests {
-    private let feed = "https://github.com/0zean/pica/releases/latest/download/appcast.xml"
+    private let feed = "https://updates.example.com/appcast.xml"
 
     @Test func enabledWithFeedAndKey() {
         let configuration = UpdateConfiguration(infoDictionary: ["SUFeedURL": feed, "SUPublicEDKey": "abc="])
