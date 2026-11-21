@@ -11,6 +11,8 @@ export interface Budget {
   readonly unit: string;
   readonly statistic: string;
   readonly test: string;
+  // The UI test (`Class[/method]`) `make perf` runs for it, for budgets a UI test measures.
+  readonly uiTest?: string;
   // Not a PLAN.md §9 row: a unit's own timing check the gate also reports.
   readonly extra?: boolean;
 }
@@ -23,7 +25,8 @@ export interface Measurement {
   readonly samples?: readonly number[];
 }
 
-export type Status = "pass" | "over" | "missing" | "threshold-mismatch";
+// `not-gating`: over budget or not measured, on a runner whose PERF_NOT_GATING names the budget.
+export type Status = "pass" | "over" | "missing" | "threshold-mismatch" | "not-gating";
 
 export interface Row {
   readonly budget: Budget;
@@ -31,11 +34,17 @@ export interface Row {
   readonly status: Status;
 }
 
-export function evaluate(budgets: readonly Budget[], measurements: readonly Measurement[]): readonly Row[] {
+export function evaluate(
+  budgets: readonly Budget[],
+  measurements: readonly Measurement[],
+  notGating: ReadonlySet<string> = new Set(),
+): readonly Row[] {
   const byId = new Map(measurements.map((measurement) => [measurement.id, measurement]));
   return budgets.map((budget) => {
     const measurement = byId.get(budget.id);
-    return { budget, measurement, status: status(budget, measurement) };
+    const result = status(budget, measurement);
+    const tolerated = notGating.has(budget.id) && (result === "over" || result === "missing");
+    return { budget, measurement, status: tolerated ? "not-gating" : result };
   });
 }
 
@@ -46,7 +55,7 @@ function status(budget: Budget, measurement: Measurement | undefined): Status {
 }
 
 export function passed(rows: readonly Row[]): boolean {
-  return rows.every((row) => row.status === "pass");
+  return rows.every((row) => row.status === "pass" || row.status === "not-gating");
 }
 
 const statusText: Record<Status, string> = {
@@ -54,6 +63,7 @@ const statusText: Record<Status, string> = {
   over: "**over budget**",
   missing: "**not measured**",
   "threshold-mismatch": "**test asserts a different threshold**",
+  "not-gating": "**over budget**, not gating on this runner (PERF_NOT_GATING)",
 };
 
 export function markdown(rows: readonly Row[], heading: string): string {

@@ -57,6 +57,26 @@ describe("the gate's report", () => {
     expect(passed(rows)).toBe(false);
   });
 
+  it("reports a budget PERF_NOT_GATING names without failing the gate, but only when it misses", () => {
+    const other = { ...launch, id: "other" };
+    const rows = evaluate(
+      [launch, other],
+      [
+        { id: "launch", measured: 1200, threshold: 1000, unit: "ms" },
+        { id: "other", measured: 20, threshold: 1000, unit: "ms" },
+      ],
+      new Set(["launch", "other"]),
+    );
+    expect(rows.map((row) => row.status)).toEqual(["not-gating", "pass"]);
+    expect(passed(rows)).toBe(true);
+    expect(markdown(rows, "Budgets")).toContain("not gating on this runner");
+  });
+
+  it("still fails a not-gating budget whose test asserts another threshold", () => {
+    const rows = evaluate([launch], [{ id: "launch", measured: 1, threshold: 3000, unit: "ms" }], new Set(["launch"]));
+    expect(rows.map((row) => row.status)).toEqual(["threshold-mismatch"]);
+  });
+
   it("writes a table row per budget with the measured value and samples", () => {
     const rows = evaluate([launch], [{ id: "launch", measured: 432.5, threshold: 1000, unit: "ms", samples: [401, 432.5] }]);
     const table = markdown(rows, "Budgets");

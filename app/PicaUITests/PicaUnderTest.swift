@@ -49,12 +49,16 @@ final class PicaUnderTest {
     /// A-15: whether Pica shows onboarding; other tests start with no workspace, so it is off for them.
     private let onboarding: Bool
     private let node: String
+    /// Whether the timeline and composer measure frames. Each then runs a display link on every frame, so H-07's idle
+    /// CPU test turns them off.
+    private let frameMetrics: Bool
 
     init(
         scenario: String = "empty", scrollScript: Bool = false, managedPolicy: String? = nil, github: String? = nil,
-        onboarding: Bool = false
+        onboarding: Bool = false, frameMetrics: Bool = true
     ) throws {
         self.scenario = scenario
+        self.frameMetrics = frameMetrics
         self.github = github
         self.onboarding = onboarding
         self.scrollScript = scrollScript
@@ -99,8 +103,6 @@ final class PicaUnderTest {
             "PICA_TEST_HOME": home.path,
             "PICA_SOCKET": socketPath,
             "PICA_TEST_SCENARIO": scenario,
-            "PICA_TIMELINE_METRICS_PATH": timelineMetricsPath,
-            "PICA_COMPOSER_METRICS_PATH": composerMetricsPath,
             "PICA_REVIEW_METRICS_PATH": reviewMetricsPath,
             // A-07: no system notifications, so no test meets the permission prompt.
             "PICA_NOTIFICATIONS": "off",
@@ -122,6 +124,10 @@ final class PicaUnderTest {
             environment["PICA_TEST_PRECONDITIONS"] = preconditionsFile.path
         } else {
             environment["PICA_ONBOARDING"] = "off"
+        }
+        if frameMetrics {
+            environment["PICA_TIMELINE_METRICS_PATH"] = timelineMetricsPath
+            environment["PICA_COMPOSER_METRICS_PATH"] = composerMetricsPath
         }
         if scrollScript {
             environment["PICA_TIMELINE_SCROLL_SCRIPT"] = "1"

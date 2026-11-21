@@ -36,17 +36,26 @@ app_package_benchmarks() {
     --filter 'EventDeliveryLatencyTests|EngineRecoveryTests/killedEngine'
 }
 
-ui_benchmarks() {
-  make app-ui-test-pica UI_TESTS="LaunchPerformanceTests ComposerLatencyUITests \
-    TimelineUITests/testATenThousandEventSessionOpensInUnder300Milliseconds \
-    TimelineUITests/testScrollHitchTimeRatioIsUnderOnePercent \
-    ReviewUITests/testA5000LineDiffRendersInUnder200Milliseconds ResourceBudgetUITests"
+# The UI tests that measure budgets, from budgets.json's `uiTest`. PERF_NOT_GATING names budget ids that are measured
+# and reported but do not fail the gate (the GitHub runner's list, docs/performance.md): their tests run apart, and
+# their failures are left to the report, which marks those rows.
+ui_tests() {
+  jq -r --arg skip " ${PERF_NOT_GATING:-} " --arg want "$1" \
+    '[.[] | select(.uiTest != null) | select(.id as $id | ($skip | contains(" " + $id + " ")) == ($want == "not-gating")) | .uiTest]
+     | unique | join(" ")' tools/perf/budgets.json
 }
 
-export_ui_measurements() {
-  rm -rf "$perf_dir/ui" && mkdir -p "$perf_dir/ui"
-  xcrun xcresulttool export attachments --path app/.derived/pica-ui-tests.xcresult --output-path "$perf_dir/ui" \
-    --filter 'budget-*' >/dev/null
+ui_benchmarks() {
+  kind="$1"
+  tests=$(ui_tests "$kind")
+  rm -rf "$perf_dir/ui-$kind" && mkdir -p "$perf_dir/ui-$kind"
+  [ -n "$tests" ] || return 0
+  status=0
+  make app-ui-test-pica UI_TESTS="$tests" || status=$?
+  xcrun xcresulttool export attachments --path app/.derived/pica-ui-tests.xcresult --output-path "$perf_dir/ui-$kind" \
+    --filter 'budget-*' >/dev/null || status=1
+  cp -R app/.derived/pica-ui-tests.xcresult "$perf_dir/ui-$kind.xcresult" 2>/dev/null || true
+  [ "$kind" = not-gating ] || return "$status"
 }
 
 machine() {
@@ -59,13 +68,13 @@ machine() {
 load_before=$(sysctl -n vm.loadavg 2>/dev/null)
 step engine-benchmarks engine_benchmarks
 step app-package-benchmarks app_package_benchmarks
-step ui-benchmarks ui_benchmarks
-step export-ui-measurements export_ui_measurements
+step ui-benchmarks ui_benchmarks gating
+step ui-benchmarks-not-gating ui_benchmarks not-gating
 load_after=$(sysctl -n vm.loadavg 2>/dev/null)
 
 report_status=0
 node --experimental-strip-types --disable-warning=ExperimentalWarning engine/tools/perf-report/main.ts \
-  tools/perf/budgets.json "$perf_dir" "$perf_dir/ui" || report_status=$?
+  tools/perf/budgets.json "$perf_dir" "$perf_dir/ui-gating" "$perf_dir/ui-not-gating" || report_status=$?
 notes=$(machine "before $load_before, after $load_after")
 printf '%s\n' "$notes" | tee -a "$perf_dir/report.md"
 if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then printf '%s\n' "$notes" >> "$GITHUB_STEP_SUMMARY"; fi

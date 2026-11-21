@@ -2,6 +2,7 @@
 // Usage: perf-report <budgets.json> <measurements folder> [<xcresult attachments folder>...]
 // The measurements folder holds `<id>.json` files the engine and Swift package tests wrote
 // (PICA_PERF_DIR); each attachments folder is `xcresulttool export attachments` of a UI-test result.
+// PERF_NOT_GATING names budget ids reported without failing the gate (docs/performance.md).
 // The report also goes to `<measurements folder>/report.md` and, on GitHub Actions, the job summary.
 import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -30,7 +31,8 @@ function main(): void {
       measurements.push(readJson(join(folder, file)) as Measurement);
     }
   }
-  const rows = evaluate(readJson(budgetsPath) as Budget[], measurements);
+  const notGating = new Set((process.env["PERF_NOT_GATING"] ?? "").split(" ").filter((id) => id !== ""));
+  const rows = evaluate(readJson(budgetsPath) as Budget[], measurements, notGating);
   const report = markdown(rows, "Performance budgets (PLAN.md §9)");
   process.stdout.write(report);
   writeFileSync(join(measurementsDir, "report.md"), report);
