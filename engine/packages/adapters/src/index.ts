@@ -11,3 +11,4 @@ export * from "./mcp-client/index.ts";
 export * from "./audit/index.ts";
 export * from "./hooks/index.ts";
 export * from "./observability/index.ts";
+export * from "./customization/index.ts";

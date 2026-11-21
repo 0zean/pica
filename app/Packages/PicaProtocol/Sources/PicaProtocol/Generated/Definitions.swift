@@ -610,6 +610,481 @@ public typealias Count = Int
 
 public typealias Credits = Double
 
+public struct CustomizationCreateParams: Codable, Hashable, Sendable {
+    public var kind: CustomizationKind
+    public var locationId: Id
+    public var name: String?
+    public var text: String
+    public var workspaceId: Id?
+    public var repoId: Id?
+
+    public init(
+        kind: CustomizationKind,
+        locationId: Id,
+        name: String? = nil,
+        text: String,
+        workspaceId: Id? = nil,
+        repoId: Id? = nil
+    ) {
+        self.kind = kind
+        self.locationId = locationId
+        self.name = name
+        self.text = text
+        self.workspaceId = workspaceId
+        self.repoId = repoId
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case kind
+        case locationId
+        case name
+        case text
+        case workspaceId
+        case repoId
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        kind = try container.decode(CustomizationKind.self, forKey: .kind)
+        locationId = try container.decode(Id.self, forKey: .locationId)
+        name = try container.decodeIfPresent(String.self, forKey: .name)
+        text = try container.decode(String.self, forKey: .text)
+        workspaceId = try container.decodeIfPresent(Id.self, forKey: .workspaceId)
+        repoId = try container.decodeIfPresent(Id.self, forKey: .repoId)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(kind, forKey: .kind)
+        try container.encode(locationId, forKey: .locationId)
+        try container.encodeIfPresent(name, forKey: .name)
+        try container.encode(text, forKey: .text)
+        try container.encodeIfPresent(workspaceId, forKey: .workspaceId)
+        try container.encodeIfPresent(repoId, forKey: .repoId)
+    }
+}
+
+public struct CustomizationCreateResult: Codable, Hashable, Sendable {
+    public var item: CustomizationItem
+
+    public init(
+        item: CustomizationItem
+    ) {
+        self.item = item
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case item
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        item = try container.decode(CustomizationItem.self, forKey: .item)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(item, forKey: .item)
+    }
+}
+
+public struct CustomizationDeleteParams: Codable, Hashable, Sendable {
+    public var kind: CustomizationKind
+    public var path: AbsolutePath
+    public var workspaceId: Id?
+    public var repoId: Id?
+
+    public init(
+        kind: CustomizationKind,
+        path: AbsolutePath,
+        workspaceId: Id? = nil,
+        repoId: Id? = nil
+    ) {
+        self.kind = kind
+        self.path = path
+        self.workspaceId = workspaceId
+        self.repoId = repoId
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case kind
+        case path
+        case workspaceId
+        case repoId
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        kind = try container.decode(CustomizationKind.self, forKey: .kind)
+        path = try container.decode(AbsolutePath.self, forKey: .path)
+        workspaceId = try container.decodeIfPresent(Id.self, forKey: .workspaceId)
+        repoId = try container.decodeIfPresent(Id.self, forKey: .repoId)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(kind, forKey: .kind)
+        try container.encode(path, forKey: .path)
+        try container.encodeIfPresent(workspaceId, forKey: .workspaceId)
+        try container.encodeIfPresent(repoId, forKey: .repoId)
+    }
+}
+
+public struct CustomizationItem: Codable, Hashable, Sendable {
+    public var kind: CustomizationKind
+    public var name: String
+    public var locationId: Id
+    public var layer: CustomizationLayer
+    public var repoId: Id?
+    public var path: AbsolutePath
+    public var description: String?
+    public var text: String
+    public var status: CustomizationStatus
+    public var overriddenBy: AbsolutePath?
+    public var problems: [CustomizationProblem]
+    public var writable: Bool
+    public var lockedBy: String?
+
+    public init(
+        kind: CustomizationKind,
+        name: String,
+        locationId: Id,
+        layer: CustomizationLayer,
+        repoId: Id?,
+        path: AbsolutePath,
+        description: String?,
+        text: String,
+        status: CustomizationStatus,
+        overriddenBy: AbsolutePath?,
+        problems: [CustomizationProblem],
+        writable: Bool,
+        lockedBy: String? = nil
+    ) {
+        self.kind = kind
+        self.name = name
+        self.locationId = locationId
+        self.layer = layer
+        self.repoId = repoId
+        self.path = path
+        self.description = description
+        self.text = text
+        self.status = status
+        self.overriddenBy = overriddenBy
+        self.problems = problems
+        self.writable = writable
+        self.lockedBy = lockedBy
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case kind
+        case name
+        case locationId
+        case layer
+        case repoId
+        case path
+        case description
+        case text
+        case status
+        case overriddenBy
+        case problems
+        case writable
+        case lockedBy
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        kind = try container.decode(CustomizationKind.self, forKey: .kind)
+        name = try container.decode(String.self, forKey: .name)
+        locationId = try container.decode(Id.self, forKey: .locationId)
+        layer = try container.decode(CustomizationLayer.self, forKey: .layer)
+        repoId = try container.decode(Id?.self, forKey: .repoId)
+        path = try container.decode(AbsolutePath.self, forKey: .path)
+        description = try container.decode(String?.self, forKey: .description)
+        text = try container.decode(String.self, forKey: .text)
+        status = try container.decode(CustomizationStatus.self, forKey: .status)
+        overriddenBy = try container.decode(AbsolutePath?.self, forKey: .overriddenBy)
+        problems = try container.decode([CustomizationProblem].self, forKey: .problems)
+        writable = try container.decode(Bool.self, forKey: .writable)
+        lockedBy = try container.decodeIfPresent(String.self, forKey: .lockedBy)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(kind, forKey: .kind)
+        try container.encode(name, forKey: .name)
+        try container.encode(locationId, forKey: .locationId)
+        try container.encode(layer, forKey: .layer)
+        try container.encode(repoId, forKey: .repoId)
+        try container.encode(path, forKey: .path)
+        try container.encode(description, forKey: .description)
+        try container.encode(text, forKey: .text)
+        try container.encode(status, forKey: .status)
+        try container.encode(overriddenBy, forKey: .overriddenBy)
+        try container.encode(problems, forKey: .problems)
+        try container.encode(writable, forKey: .writable)
+        try container.encodeIfPresent(lockedBy, forKey: .lockedBy)
+    }
+}
+
+public enum CustomizationKind: String, CaseIterable, Codable, Hashable, Sendable {
+    case agent
+    case skill
+    case instructions
+}
+
+public enum CustomizationLayer: String, CaseIterable, Codable, Hashable, Sendable {
+    case builtin
+    case user
+    case workspace
+    case repo
+}
+
+public struct CustomizationListParams: Codable, Hashable, Sendable {
+    public var kind: CustomizationKind
+    public var workspaceId: Id?
+    public var repoId: Id?
+
+    public init(
+        kind: CustomizationKind,
+        workspaceId: Id? = nil,
+        repoId: Id? = nil
+    ) {
+        self.kind = kind
+        self.workspaceId = workspaceId
+        self.repoId = repoId
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case kind
+        case workspaceId
+        case repoId
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        kind = try container.decode(CustomizationKind.self, forKey: .kind)
+        workspaceId = try container.decodeIfPresent(Id.self, forKey: .workspaceId)
+        repoId = try container.decodeIfPresent(Id.self, forKey: .repoId)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(kind, forKey: .kind)
+        try container.encodeIfPresent(workspaceId, forKey: .workspaceId)
+        try container.encodeIfPresent(repoId, forKey: .repoId)
+    }
+}
+
+public struct CustomizationListResult: Codable, Hashable, Sendable {
+    public var items: [CustomizationItem]
+    public var locations: [CustomizationLocation]
+
+    public init(
+        items: [CustomizationItem],
+        locations: [CustomizationLocation]
+    ) {
+        self.items = items
+        self.locations = locations
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case items
+        case locations
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        items = try container.decode([CustomizationItem].self, forKey: .items)
+        locations = try container.decode([CustomizationLocation].self, forKey: .locations)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(items, forKey: .items)
+        try container.encode(locations, forKey: .locations)
+    }
+}
+
+public struct CustomizationLocation: Codable, Hashable, Sendable {
+    public var id: Id
+    public var kind: CustomizationKind
+    public var layer: CustomizationLayer
+    public var label: String
+    public var repoId: Id?
+    public var path: AbsolutePath
+    public var singleFile: Bool
+    public var writable: Bool
+    public var lockedBy: String?
+
+    public init(
+        id: Id,
+        kind: CustomizationKind,
+        layer: CustomizationLayer,
+        label: String,
+        repoId: Id?,
+        path: AbsolutePath,
+        singleFile: Bool,
+        writable: Bool,
+        lockedBy: String? = nil
+    ) {
+        self.id = id
+        self.kind = kind
+        self.layer = layer
+        self.label = label
+        self.repoId = repoId
+        self.path = path
+        self.singleFile = singleFile
+        self.writable = writable
+        self.lockedBy = lockedBy
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case kind
+        case layer
+        case label
+        case repoId
+        case path
+        case singleFile
+        case writable
+        case lockedBy
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(Id.self, forKey: .id)
+        kind = try container.decode(CustomizationKind.self, forKey: .kind)
+        layer = try container.decode(CustomizationLayer.self, forKey: .layer)
+        label = try container.decode(String.self, forKey: .label)
+        repoId = try container.decode(Id?.self, forKey: .repoId)
+        path = try container.decode(AbsolutePath.self, forKey: .path)
+        singleFile = try container.decode(Bool.self, forKey: .singleFile)
+        writable = try container.decode(Bool.self, forKey: .writable)
+        lockedBy = try container.decodeIfPresent(String.self, forKey: .lockedBy)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(kind, forKey: .kind)
+        try container.encode(layer, forKey: .layer)
+        try container.encode(label, forKey: .label)
+        try container.encode(repoId, forKey: .repoId)
+        try container.encode(path, forKey: .path)
+        try container.encode(singleFile, forKey: .singleFile)
+        try container.encode(writable, forKey: .writable)
+        try container.encodeIfPresent(lockedBy, forKey: .lockedBy)
+    }
+}
+
+public struct CustomizationProblem: Codable, Hashable, Sendable {
+    public var field: String
+    public var message: String
+
+    public init(
+        field: String,
+        message: String
+    ) {
+        self.field = field
+        self.message = message
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case field
+        case message
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        field = try container.decode(String.self, forKey: .field)
+        message = try container.decode(String.self, forKey: .message)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(field, forKey: .field)
+        try container.encode(message, forKey: .message)
+    }
+}
+
+public struct CustomizationSaveParams: Codable, Hashable, Sendable {
+    public var kind: CustomizationKind
+    public var path: AbsolutePath
+    public var text: String
+    public var workspaceId: Id?
+    public var repoId: Id?
+
+    public init(
+        kind: CustomizationKind,
+        path: AbsolutePath,
+        text: String,
+        workspaceId: Id? = nil,
+        repoId: Id? = nil
+    ) {
+        self.kind = kind
+        self.path = path
+        self.text = text
+        self.workspaceId = workspaceId
+        self.repoId = repoId
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case kind
+        case path
+        case text
+        case workspaceId
+        case repoId
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        kind = try container.decode(CustomizationKind.self, forKey: .kind)
+        path = try container.decode(AbsolutePath.self, forKey: .path)
+        text = try container.decode(String.self, forKey: .text)
+        workspaceId = try container.decodeIfPresent(Id.self, forKey: .workspaceId)
+        repoId = try container.decodeIfPresent(Id.self, forKey: .repoId)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(kind, forKey: .kind)
+        try container.encode(path, forKey: .path)
+        try container.encode(text, forKey: .text)
+        try container.encodeIfPresent(workspaceId, forKey: .workspaceId)
+        try container.encodeIfPresent(repoId, forKey: .repoId)
+    }
+}
+
+public struct CustomizationSaveResult: Codable, Hashable, Sendable {
+    public var item: CustomizationItem
+
+    public init(
+        item: CustomizationItem
+    ) {
+        self.item = item
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case item
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        item = try container.decode(CustomizationItem.self, forKey: .item)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(item, forKey: .item)
+    }
+}
+
+public enum CustomizationStatus: String, CaseIterable, Codable, Hashable, Sendable {
+    case active
+    case overridden
+    case invalid
+}
+
 public struct DiffHunk: Codable, Hashable, Sendable {
     public var header: String
     public var lines: [DiffLine]

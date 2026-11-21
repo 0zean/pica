@@ -1,6 +1,7 @@
 import AppKit
 import AppShell
 import Composer
+import Customization
 import DesignSystem
 import EngineClient
 import Files
@@ -106,6 +107,16 @@ struct PicaApp: App {
             .modifier(AppearanceHost(store: actions.appearance))
         }
         .defaultSize(width: 900, height: 560)
+
+        // X-02: agents, skills and instruction files from every layer, with the one that wins (⇧⌘A).
+        Window("Agents & Skills", id: CustomizationScreen.windowId) {
+            CustomizationScreen(
+                backend: EngineCustomizationBackend(client: launch.model.client), workspaces: launch.navigation.workspaces,
+                repos: launch.navigation.reposByWorkspace,
+                workspaceId: launch.navigation.selection.flatMap(launch.navigation.workspaceId(of:)))
+            .modifier(AppearanceHost(store: actions.appearance))
+        }
+        .defaultSize(width: 1000, height: 640)
 
         // A-11: the Usage dashboard (⇧⌘U).
         Window("Usage", id: UsageDashboardScreen.windowId) {

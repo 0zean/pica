@@ -16,6 +16,7 @@ public enum ActionID: String, CaseIterable, Sendable, Codable {
     case syncWorkspace
     case showUsage
     case showSessionOverview
+    case showCustomization
 }
 
 /// Where an action's menu item is.
@@ -91,6 +92,9 @@ public enum ActionCatalog {
         case .showSessionOverview:
             ActionDefinition(id: id, title: "Session Overview", menu: .window, defaultShortcut: Shortcut("shift+cmd+o"),
                 keywords: ["board", "sessions", "attention", "approvals", "fan-out", "fanout"])
+        case .showCustomization:
+            ActionDefinition(id: id, title: "Agents & Skills", menu: .window, defaultShortcut: Shortcut("cmd+shift+a"),
+                keywords: ["agents", "skills", "rules", "instructions", "AGENTS.md", "prompts"])
         }
     }
 }

@@ -33,6 +33,7 @@ export function compileManagedPolicy(source: string, value: unknown): Result<Man
     minimumPermissionMode: file.permissions?.minimumMode,
     rules,
     configLocks,
+    ...(file.customization !== undefined && { lockedCustomizations: file.customization.locked }),
   });
 }
 

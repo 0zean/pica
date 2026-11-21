@@ -33,6 +33,8 @@ const allowedPackageDependencies: Readonly<Record<string, readonly string[]>> = 
   Onboarding: ["EngineClient", "PicaProtocol", "DesignSystem"],
   // A-16: the Session Overview window, the board and the fan-out aggregate; the app target passes the sessions.
   SessionOverview: ["EngineClient", "PicaProtocol", "DesignSystem"],
+  // X-02: the Agents & Skills window over every layer's agents, skills and instruction files.
+  Customization: ["EngineClient", "PicaProtocol", "DesignSystem"],
 };
 
 const featuresPackage = "Features";

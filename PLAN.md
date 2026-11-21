@@ -205,7 +205,7 @@ Session states: `starting → idle ⇄ running ⇄ awaiting_approval`, then `end
 
 ### 4.5 Protocol shape
 
-Namespaces: `engine.*` (handshake, version, health, Copilot account), `workspace.*`, `repo.*`, `github.*`, `session.*`, `fanout.*`, `events.*`, `approval.*`, `git.*`, `files.*`, `mcp.*`, `agents.*`, `models.*`, `usage.*`, `config.*`, `secrets.*` (engine → client requests).
+Namespaces: `engine.*` (handshake, version, health, Copilot account), `workspace.*`, `repo.*`, `github.*`, `session.*`, `fanout.*`, `events.*`, `approval.*`, `git.*`, `files.*`, `mcp.*`, `agents.*`, `customization.*` (X-02), `models.*`, `usage.*`, `config.*`, `secrets.*` (engine → client requests).
 
 Rules:
 - `engine.hello` exchanges protocol versions; a major mismatch refuses the connection.
@@ -1026,8 +1026,9 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 **X-02 · Agents, skills, and rules management** — C-02, A-14
 - Build: discovery and editing UI for custom agents, skills, and instruction files from all layers.
 - Verify:
-  - [ ] An agent created in the UI is written as a file that the C-02 loader accepts.
-  - [ ] The UI shows which layer each item comes from and which one wins.
+  - [x] An agent created in the UI is written as a file that the C-02 loader accepts.
+  - [x] The UI shows which layer each item comes from and which one wins.
+- Notes: `app/Packages/Customization`, specified in [docs/agents.md](docs/agents.md). A feature package (lint-arch rule added). A window of its own (Window ▸ Agents & Skills, ⇧⌘A, `showCustomization` in A-14's registry), not a Settings pane, for the reason A-13 gave: many files at four layers need a list beside an editor and a scope. The scope is Your files, a workspace, or one of its repos (a repo's items depend on which repo). Locations, lowest first: agents as C-02 (built-in, `~/Library/Application Support/Pica/agents`, `…/Pica/workspaces/<id>/agents`, `.github/agents`, `.pica/agents`); skills `~/.copilot/skills`, `.claude/skills`, `.github/skills` (one folder with `SKILL.md` each); instructions `~/.copilot/copilot-instructions.md`, `AGENTS.md`, `.github/copilot-instructions.md`, `.github/instructions/*.instructions.md`. Of agents or skills of one name the highest location wins and the rest show "Overridden by <source>"; the engine test checks the winners are exactly what `MarkdownAgentLoader` resolves. Invalid files are listed with their problems instead of failing the listing; instruction files all apply. Engine: core `customization/` (locations, statuses, a service over a file port), adapters `customization/`, and the production composition serves the new `customization.list`, `.create`, `.save` and `.delete`. Writes are validated first with C-02's parser and `validateAgent` in the location's layer (skills: `description`, `name` equal to the folder), refused as `config_invalid` with `details.problems`; `save` and `delete` take only a path the listing returns. Managed policy gains `customization.locked` (kinds), shown as "Locked by managed policy “<id>”" and refused with `policy_denied`. The New Agent sheet writes frontmatter values as JSON strings; `AgentDraftTests` checks its text equals `fixtures/customization/ui-agent.md`, which the engine test creates through `customization.create` and loads with the loader; the UI test also relaunches and finds the agent in `agents.list`. Not done: sessions still get only built-in and user agents, loaded at engine start, so a new or edited agent applies after a restart, and workspace and `.pica/agents` agents are listed but not given to sessions yet; no file watching.
 
 **X-03 · User hooks** — C-03
 - Build: command hooks run by the engine on Pica events (session start and end, before commit), with timeouts.
@@ -1191,7 +1192,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | A-15 | Onboarding | A-12, A-13 | done |
 | A-16 | Session overview | A-05, R-11 | done |
 | X-01 | Themes and density | A-03, A-14 | done |
-| X-02 | Agents, skills, and rules management | C-02, A-14 | todo |
+| X-02 | Agents, skills, and rules management | C-02, A-14 | done |
 | X-03 | User hooks | C-03 | done |
 | H-01 | Managed policy | E-04, C-03, M-05 | done |
 | H-02 | Audit log | C-03, E-07 | done |

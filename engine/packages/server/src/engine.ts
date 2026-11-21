@@ -25,6 +25,7 @@ import type {
   Delegator,
   EventLog,
   FanOutInfo,
+  CustomizationService,
   FilesService,
   GitHubHost,
   GitInstallation,
@@ -54,6 +55,7 @@ import type { EngineConfigAccess } from "./config-handlers.ts";
 import { registerEngineHandlers } from "./engine-handlers.ts";
 import { registerFanOutHandlers, toFanOutDto } from "./fanout-handlers.ts";
 import { registerFilesHandlers } from "./files-handlers.ts";
+import { registerCustomizationHandlers } from "./customization-handlers.ts";
 import { registerGitHandlers } from "./git-handlers.ts";
 import type { EngineReviewOptions } from "./git-handlers.ts";
 import { registerMcpHealthHandlers, registerMcpPresetHandlers } from "./mcp-handlers.ts";
@@ -136,6 +138,8 @@ export interface EngineOptions {
   readonly mcpImport?: EngineMcpImportOptions;
   // A-09: answers `files.list`, `files.read` and `files.quickOpen`.
   readonly files?: FilesService;
+  // X-02: answers `customization.list`, `.create`, `.save` and `.delete`.
+  readonly customization?: CustomizationService;
   // A-08: answers `git.*` and `github.createPullRequest` for the review.
   readonly review?: EngineReviewOptions;
   // A-12: answers `github.authStatus`, `github.listTeams` and `github.listTeamRepos`.
@@ -222,6 +226,9 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
   }
   if (options.files !== undefined) {
     registerFilesHandlers(router, options.files);
+  }
+  if (options.customization !== undefined) {
+    registerCustomizationHandlers(router, options.customization);
   }
   if (options.review !== undefined) {
     registerGitHandlers(router, options.review);

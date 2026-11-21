@@ -20,6 +20,7 @@
 		A10000000000000000A16001 /* SessionOverview in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000A16002 /* SessionOverview */; };
 		A10000000000000000A14001 /* PicaSettings in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000A14002 /* PicaSettings */; };
 		A10000000000000000A13001 /* McpServers in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000A13002 /* McpServers */; };
+		A10000000000000000X02001 /* Customization in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000X02002 /* Customization */; };
 		A10000000000000000A12001 /* Workspaces in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000A12002 /* Workspaces */; };
 		A10000000000000000A15001 /* Onboarding in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000A15002 /* Onboarding */; };
 		A10000000000000000000121 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000131 /* DesignSystem */; };
@@ -94,6 +95,7 @@
 				A10000000000000000A16001 /* SessionOverview in Frameworks */,
 				A10000000000000000A14001 /* PicaSettings in Frameworks */,
 				A10000000000000000A13001 /* McpServers in Frameworks */,
+				A10000000000000000X02001 /* Customization in Frameworks */,
 				A10000000000000000A12001 /* Workspaces in Frameworks */,
 				A10000000000000000A15001 /* Onboarding in Frameworks */,
 			);
@@ -183,6 +185,7 @@
 				A10000000000000000A16002 /* SessionOverview */,
 				A10000000000000000A14002 /* PicaSettings */,
 				A10000000000000000A13002 /* McpServers */,
+				A10000000000000000X02002 /* Customization */,
 				A10000000000000000A12002 /* Workspaces */,
 				A10000000000000000A15002 /* Onboarding */,
 			);
@@ -310,6 +313,7 @@
 				A10000000000000000A16003 /* XCLocalSwiftPackageReference "Packages/SessionOverview" */,
 				A10000000000000000A14003 /* XCLocalSwiftPackageReference "Packages/PicaSettings" */,
 				A10000000000000000A13003 /* XCLocalSwiftPackageReference "Packages/McpServers" */,
+				A10000000000000000X02003 /* XCLocalSwiftPackageReference "Packages/Customization" */,
 				A10000000000000000A12003 /* XCLocalSwiftPackageReference "Packages/Workspaces" */,
 				A10000000000000000A15003 /* XCLocalSwiftPackageReference "Packages/Onboarding" */,
 			);
@@ -664,6 +668,10 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/McpServers;
 		};
+		A10000000000000000X02003 /* XCLocalSwiftPackageReference "Packages/Customization" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/Customization;
+		};
 		A1000000000000000000A103 /* XCLocalSwiftPackageReference "Packages/Terminal" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/Terminal;
@@ -726,6 +734,10 @@
 		A10000000000000000A13002 /* McpServers */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = McpServers;
+		};
+		A10000000000000000X02002 /* Customization */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Customization;
 		};
 		A1000000000000000000A102 /* Terminal */ = {
 			isa = XCSwiftPackageProductDependency;
