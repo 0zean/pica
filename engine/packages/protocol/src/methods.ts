@@ -384,6 +384,8 @@ export const NAMESPACES = [
   "files",
   "mcp",
   "agents",
+  // X-02: agents, skills and instruction files across layers (docs/agents.md).
+  "customization",
   "models",
   "usage",
   "config",

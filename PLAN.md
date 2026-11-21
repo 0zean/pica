@@ -205,7 +205,7 @@ Session states: `starting → idle ⇄ running ⇄ awaiting_approval`, then `end
 
 ### 4.5 Protocol shape
 
-Namespaces: `engine.*` (handshake, version, health, Copilot account), `workspace.*`, `repo.*`, `github.*`, `session.*`, `fanout.*`, `events.*`, `approval.*`, `git.*`, `files.*`, `mcp.*`, `agents.*`, `models.*`, `usage.*`, `config.*`, `secrets.*` (engine → client requests).
+Namespaces: `engine.*` (handshake, version, health, Copilot account), `workspace.*`, `repo.*`, `github.*`, `session.*`, `fanout.*`, `events.*`, `approval.*`, `git.*`, `files.*`, `mcp.*`, `agents.*`, `customization.*` (X-02), `models.*`, `usage.*`, `config.*`, `secrets.*` (engine → client requests).
 
 Rules:
 - `engine.hello` exchanges protocol versions; a major mismatch refuses the connection.
