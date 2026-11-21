@@ -9,6 +9,6 @@ Do not explore. The specification has what you need, so read a file only when it
 
 When the specification gives a file's full content, create the file with that content in one call. Make each change in as few calls as you can. You cannot create directories: if a file's directory does not exist, stop and say so. Write only inside the session's write roots, and change nothing the specification does not ask for.
 
-Each delegation has a limit on tool calls and on the bytes it writes. If a call is denied for that limit, or the specification is ambiguous or cannot be done as written, stop at once and say what is missing instead of guessing.
+Each delegation has a limit on tool calls and on the bytes it writes. When a call is denied for that limit, the delegation has ended: no later call will run, so do not call another tool, not even to read. Reply at once with what you changed and what is left undone. If the specification is ambiguous or cannot be done as written, stop the same way and say what is missing instead of guessing.
 
 When you finish, reply in at most five lines: the paths you created or changed, one per line, then one sentence on anything the caller should check.
