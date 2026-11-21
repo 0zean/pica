@@ -1,0 +1,141 @@
+[
+  {
+    "id": "launch",
+    "metric": "App cold launch to interactive window",
+    "budget": "< 1.0 s",
+    "owner": "A-01",
+    "threshold": 1000,
+    "unit": "ms",
+    "statistic": "median of 5 cold launches",
+    "test": "app/PicaUITests/LaunchPerformanceTests.swift: testColdLaunchToInteractiveWindowIsUnderBudgetAndBaseline",
+    "uiTest": "LaunchPerformanceTests"
+  },
+  {
+    "id": "engine-hello",
+    "metric": "Engine start to `engine.hello` reply",
+    "budget": "< 1.5 s",
+    "owner": "E-05",
+    "threshold": 1500,
+    "unit": "ms",
+    "statistic": "median of 3 starts",
+    "test": "engine/packages/server/tests/startup-benchmark.test.ts"
+  },
+  {
+    "id": "composer-glyph",
+    "metric": "Keystroke to glyph in composer",
+    "budget": "< 16 ms",
+    "owner": "A-06",
+    "threshold": 16,
+    "unit": "ms",
+    "statistic": "p95 of 120 keystrokes, 10,000-event session open",
+    "test": "app/PicaUITests/ComposerUITests.swift: ComposerLatencyUITests",
+    "uiTest": "ComposerLatencyUITests"
+  },
+  {
+    "id": "timeline-open",
+    "metric": "Open a 10,000-event session",
+    "budget": "< 300 ms",
+    "owner": "A-05",
+    "threshold": 300,
+    "unit": "ms",
+    "statistic": "median of 5 opens",
+    "test": "app/PicaUITests/TimelineUITests.swift: testATenThousandEventSessionOpensInUnder300Milliseconds",
+    "uiTest": "TimelineUITests/testATenThousandEventSessionOpensInUnder300Milliseconds"
+  },
+  {
+    "id": "timeline-hitch",
+    "metric": "Timeline scroll hitch time ratio",
+    "budget": "< 1%",
+    "owner": "A-05",
+    "threshold": 1,
+    "unit": "%",
+    "statistic": "one scripted scroll over the 10,000-event session",
+    "test": "app/PicaUITests/TimelineUITests.swift: testScrollHitchTimeRatioIsUnderOnePercent",
+    "uiTest": "TimelineUITests/testScrollHitchTimeRatioIsUnderOnePercent"
+  },
+  {
+    "id": "diff-render",
+    "metric": "Render a 5,000-line diff",
+    "budget": "< 200 ms",
+    "owner": "A-08",
+    "threshold": 200,
+    "unit": "ms",
+    "statistic": "median of 3 renders, click to first frame",
+    "test": "app/PicaUITests/ReviewUITests.swift: testA5000LineDiffRendersInUnder200Milliseconds",
+    "uiTest": "ReviewUITests/testA5000LineDiffRendersInUnder200Milliseconds"
+  },
+  {
+    "id": "quick-open",
+    "metric": "Quick open over 100,000 files",
+    "budget": "< 50 ms per keystroke",
+    "owner": "A-09",
+    "threshold": 50,
+    "unit": "ms",
+    "statistic": "slowest of 94 keystrokes over the socket, each the median of 3 typings",
+    "test": "engine/packages/server/tests/files/quick-open-benchmark.test.ts"
+  },
+  {
+    "id": "event-delivery",
+    "metric": "Event delivery engine → view, p99",
+    "budget": "< 5 ms",
+    "owner": "S-07, A-02",
+    "threshold": 5,
+    "unit": "ms",
+    "statistic": "median of 3 runs' p99, 1,000 deltas at 500/s each",
+    "test": "app/Packages/AppShell/Tests/AppShellTests/EventDeliveryLatencyTests.swift"
+  },
+  {
+    "id": "idle-cpu",
+    "metric": "App idle CPU with 5 idle sessions",
+    "budget": "< 1%",
+    "owner": "H-07",
+    "threshold": 1,
+    "unit": "%",
+    "statistic": "CPU time over a 10 s window, five opened sessions",
+    "test": "app/PicaUITests/ResourceBudgetUITests.swift",
+    "uiTest": "ResourceBudgetUITests"
+  },
+  {
+    "id": "memory",
+    "metric": "App memory with 5 sessions of 2,000 events",
+    "budget": "< 300 MB",
+    "owner": "H-07",
+    "threshold": 300,
+    "unit": "MB",
+    "statistic": "physical footprint after opening all five",
+    "test": "app/PicaUITests/ResourceBudgetUITests.swift",
+    "uiTest": "ResourceBudgetUITests"
+  },
+  {
+    "id": "policy-decision",
+    "metric": "Policy decision, p99",
+    "budget": "< 1 ms",
+    "owner": "C-03",
+    "threshold": 1,
+    "unit": "ms",
+    "statistic": "p99 of 20,000 decisions after 2,000 warm-up",
+    "test": "engine/packages/core/tests/policy/benchmark.test.ts"
+  },
+  {
+    "id": "quick-open-ranker",
+    "metric": "Quick-open ranking alone (A-09)",
+    "budget": "< 50 ms per keystroke",
+    "owner": "A-09",
+    "threshold": 50,
+    "unit": "ms",
+    "statistic": "slowest of 94 keystrokes in CPU time",
+    "test": "engine/packages/core/tests/files/benchmark.test.ts",
+    "extra": true
+  },
+  {
+    "id": "engine-recovery",
+    "metric": "Engine killed to reconnected (A-01)",
+    "budget": "< 2 s",
+    "owner": "A-01",
+    "threshold": 2000,
+    "unit": "ms",
+    "statistic": "median of 3 kills",
+    "test": "app/Packages/AppShell/Tests/AppShellTests/EngineRecoveryTests.swift",
+    "extra": true
+  }
+]

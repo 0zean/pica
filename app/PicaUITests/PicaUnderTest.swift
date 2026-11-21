@@ -39,6 +39,8 @@ final class PicaUnderTest {
     let fixLogPath: String
     /// Where Pica writes `OverviewMetrics`' report (A-16).
     let overviewMetricsPath: String
+    /// Where Pica writes `ResourceMetrics`' report (H-07); a request file next to it asks for one.
+    let resourceMetricsPath: String
     private let scrollScript: Bool
     /// A-14: a managed policy (docs/managed-policy.md) `fake-picad` loads as if root owned it.
     private let managedPolicy: String?
@@ -47,12 +49,16 @@ final class PicaUnderTest {
     /// A-15: whether Pica shows onboarding; other tests start with no workspace, so it is off for them.
     private let onboarding: Bool
     private let node: String
+    /// Whether the timeline and composer measure frames. Each then runs a display link on every frame, so H-07's idle
+    /// CPU test turns them off.
+    private let frameMetrics: Bool
 
     init(
         scenario: String = "empty", scrollScript: Bool = false, managedPolicy: String? = nil, github: String? = nil,
-        onboarding: Bool = false
+        onboarding: Bool = false, frameMetrics: Bool = true
     ) throws {
         self.scenario = scenario
+        self.frameMetrics = frameMetrics
         self.github = github
         self.onboarding = onboarding
         self.scrollScript = scrollScript
@@ -69,6 +75,7 @@ final class PicaUnderTest {
         reviewMetricsPath = home.appending(path: "review-metrics.json").path
         fixLogPath = home.appending(path: "fix-actions.log").path
         overviewMetricsPath = home.appending(path: "overview-metrics.json").path
+        resourceMetricsPath = home.appending(path: "resource-metrics.json").path
         XCTAssertLessThan(socketPath.utf8.count, 104, "\(socketPath) is longer than sun_path allows")
         if let managedPolicy {
             try Data(managedPolicy.utf8).write(to: policyFile)
@@ -96,8 +103,6 @@ final class PicaUnderTest {
             "PICA_TEST_HOME": home.path,
             "PICA_SOCKET": socketPath,
             "PICA_TEST_SCENARIO": scenario,
-            "PICA_TIMELINE_METRICS_PATH": timelineMetricsPath,
-            "PICA_COMPOSER_METRICS_PATH": composerMetricsPath,
             "PICA_REVIEW_METRICS_PATH": reviewMetricsPath,
             // A-07: no system notifications, so no test meets the permission prompt.
             "PICA_NOTIFICATIONS": "off",
@@ -109,6 +114,8 @@ final class PicaUnderTest {
             "PICA_FIX_ACTION_LOG": fixLogPath,
             // A-16: the board's idle CPU report.
             "PICA_OVERVIEW_METRICS_PATH": overviewMetricsPath,
+            // H-07: the app's idle CPU use and memory, measured when a test asks.
+            "PICA_RESOURCE_METRICS_PATH": resourceMetricsPath,
         ]
         if let github {
             environment["PICA_TEST_GITHUB"] = github
@@ -117,6 +124,10 @@ final class PicaUnderTest {
             environment["PICA_TEST_PRECONDITIONS"] = preconditionsFile.path
         } else {
             environment["PICA_ONBOARDING"] = "off"
+        }
+        if frameMetrics {
+            environment["PICA_TIMELINE_METRICS_PATH"] = timelineMetricsPath
+            environment["PICA_COMPOSER_METRICS_PATH"] = composerMetricsPath
         }
         if scrollScript {
             environment["PICA_TIMELINE_SCROLL_SCRIPT"] = "1"

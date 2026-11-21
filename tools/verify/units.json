@@ -1073,7 +1073,8 @@
   ],
   "H-07": [
     {
-      "check": "Every row in §9 has a test with a threshold, and all pass in CI on the reference runner."
+      "check": "Every row in §9 has a test with a threshold, and all pass in CI on the reference runner.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run tools/perf-report && cd .. && make perf"
     }
   ],
   "H-08": [

@@ -122,6 +122,7 @@ final class ComposerLatencyUITests: XCTestCase {
         let attachment = XCTAttachment(string: summary)
         attachment.lifetime = .keepAlways
         add(attachment)
+        recordBudget(BudgetMeasurement(id: "composer-glyph", measured: glyph.p95, threshold: Self.budgetMs, unit: "ms"))
         XCTAssertLessThan(glyph.p95, Self.budgetMs, summary)
         fixture.quit()
     }

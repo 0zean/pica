@@ -1,3 +1,5 @@
+import { perfGate } from "../../../../tests/support/budget-record.ts";
+
 // A synthetic monorepo-shaped listing of `count` paths, the same on every run.
 export function largeIndex(count: number): readonly string[] {
   const areas = ["app", "engine", "packages", "services", "tools", "docs", "web", "infra"];
@@ -27,16 +29,17 @@ export function largeIndex(count: number): readonly string[] {
 // What a user types: each prefix of these queries is one keystroke.
 export const typedQueries = ["sessiontimelinerow", "engine/server/handlers/config", "btn12", "composer picker", "app/core/views/button-list3"];
 
-// PLAN.md §9's budget for one keystroke. Locally (`make verify UNIT=A-09`, the gate per PLAN.md §8.1)
-// it is asserted as is. CI's shared Linux runners measured 2.4x slower than a developer Mac on the same
-// code (2026-11-17: 53 ms against 22 ms), so on CI the tests only catch a regression past three times it.
+// PLAN.md §9's budget for one keystroke. Locally (`make verify UNIT=A-09`) and in the H-07 performance
+// gate (`make perf`, PICA_PERF_GATE=1, which runs on the reference runner) it is asserted as is. CI's
+// shared Linux runners (`verify-engine`) measured 2.4x slower than a developer Mac on the same code
+// (2026-11-17: 53 ms against 22 ms), so there the tests only catch a regression past three times it.
 export const keystrokeBudgetMs = 50;
 export const ciSlowdown = 3;
 // A warm-up and three typings of 94 keystrokes take several seconds on a CI runner, past vitest's 5 s default.
 export const benchmarkTimeoutMs = 60_000;
 
 export function keystrokeLimitMs(env: Readonly<Record<string, string | undefined>> = process.env): number {
-  return env["CI"] === "true" ? keystrokeBudgetMs * ciSlowdown : keystrokeBudgetMs;
+  return env["CI"] === "true" && !perfGate(env) ? keystrokeBudgetMs * ciSlowdown : keystrokeBudgetMs;
 }
 
 export interface KeystrokeTiming {

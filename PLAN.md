@@ -1078,6 +1078,7 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
 **H-07 · Performance gate** — all A units
 - Verify:
   - [ ] Every row in §9 has a test with a threshold, and all pass in CI on the reference runner.
+- Notes: specified in [docs/performance.md](docs/performance.md), with the table of budget, test, threshold and measured values. Every §9 row has a test asserting its threshold, registered in `tools/perf/budgets.json` (a vitest test checks it matches §9 row for row). New tests: event delivery (`EventDeliveryLatencyTests`, AppShell: the supervisor starts `event-latency-picad.ts`, the production composition with a FakeRuntime that emits paced deltas stamped with `process.hrtime`; the main actor reads `CLOCK_MONOTONIC_RAW`, the same `mach_continuous_time`; runs only with `PICA_PERF_GATE=1`, since `swift test` runs suites in parallel), and idle CPU and memory (`ResourceBudgetUITests`: five sessions of the new `resources` scenario, about 2,000 events each, all opened; `ResourceMetrics`, on only with `PICA_RESOURCE_METRICS_PATH`, measures the app's CPU over 10 s and its physical footprint on request). `make perf` (`tools/perf/run.sh`) builds, waits for the load to settle, runs each budget's test, and reports each budget against its measured value (`engine/tools/perf-report`); it fails a budget that was not measured, is over, or whose test asserted another threshold. `PICA_PERF_GATE=1` makes A-09's tests assert 50 ms on CI too. A-01's recovery check is now the median of three kills. Workflow `perf` runs it on `macos-26` for pull requests and puts the report in the job summary. Measured on 2026-11-21: on an M2 Pro (Debug build, other sessions idle) every budget passes, event delivery after the gate's one retry (alone, median p99 about 1 ms). On the GitHub runner (M1 virtual machine, 3 cores) cold launch (0.9–1.2 s), keystroke to glyph (31 ms p95) and opening a 10,000-event session (0.5–0.9 s) are over budget on every run, and hitch ratio (0.98% / 7.66%) and event delivery (2.8 / 10.6 ms) pass on one run and fail on the next; the workflow lists those five in `PERF_NOT_GATING`, measured and reported but not failing the job. No threshold changed. Open for the owner: keep that list, add a self-hosted Apple silicon runner as the reference runner, or measure a Release build on the GitHub runner. The box stays unticked until then.
 
 **H-08 · Documentation** — M4
 - Build: user guide, administrator guide (managed policy, MCP allowlists, budgets), architecture notes.
@@ -1201,7 +1202,7 @@ Status values: `todo`, `doing`, `done`, `blocked`.
 | H-04 | Observability | E-05 | done |
 | H-05 | Reliability | E-08, A-01 | todo |
 | H-06 | Distribution | S-05, A-01 | done |
-| H-07 | Performance gate | all A units | todo |
+| H-07 | Performance gate | all A units | todo (built; five budgets not met on the GitHub runner 2026-11-21) |
 | H-08 | Documentation | M4 | todo |
 
 ### 12.1 Suggested order

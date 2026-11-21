@@ -1,5 +1,6 @@
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
+import { recordBudget } from "../../../../tests/support/budget-record.ts";
 import { decide } from "../../src/index.ts";
 import { contextArbitrary, toolCallArbitrary } from "./arbitraries.ts";
 import { baseContext } from "./fixtures.ts";
@@ -39,6 +40,7 @@ describe("decide benchmark", () => {
 
     timings.sort((a, b) => a - b);
     const p99 = timings[Math.floor(samples * 0.99)] ?? Number.POSITIVE_INFINITY;
+    recordBudget({ id: "policy-decision", measured: p99, threshold: budgetMs, unit: "ms" });
     expect(p99).toBeLessThan(budgetMs);
   });
 });
