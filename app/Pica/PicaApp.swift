@@ -9,6 +9,7 @@ import Onboarding
 import PicaProtocol
 import PicaSettings
 import Review
+import SessionOverview
 import SwiftUI
 import Terminal
 import Timeline
@@ -32,6 +33,8 @@ struct PicaApp: App {
     @State private var quickOpen: QuickOpen
     /// Opens files in the user's editor; UI tests log the paths instead (`PICA_EXTERNAL_EDITOR_LOG`).
     private let editor = ExternalEditor.system(environment: ProcessInfo.processInfo.environment)
+    /// Set only when the UI tests ask for the board's idle CPU use (`PICA_OVERVIEW_METRICS_PATH`).
+    private let overviewMetrics = OverviewMetrics(environment: ProcessInfo.processInfo.environment)
     /// Each session's terminal panel and its shell, kept while the app runs (A-10).
     @State private var terminals: SessionTerminals
     /// The precondition checks and first workspace, shown while the engine has no workspace (A-15).
@@ -62,6 +65,7 @@ struct PicaApp: App {
             }
                 .modifier(ActionHost(actions: actions))
                 .modifier(WorkspaceSheets(manager: actions.workspaces))
+                .modifier(AppearanceHost(store: actions.appearance))
                 .overlay {
                     if quickOpen.isPresented {
                         ZStack {
@@ -79,14 +83,16 @@ struct PicaApp: App {
 
         Settings {
             SettingsView(
-                navigation: actions.settingsNavigation, settings: actions.settings, keybindings: actions.keybindings,
-                registry: actions.registry)
+                navigation: actions.settingsNavigation, settings: actions.settings, appearance: actions.appearance,
+                keybindings: actions.keybindings, registry: actions.registry)
+            .modifier(AppearanceHost(store: actions.appearance))
         }
 
         // A-09: the read-only viewer, one window per file.
         WindowGroup("File", id: FileViewerScreen.windowId, for: FileReference.self) { $reference in
             if let reference {
                 FileViewerScreen(reference: reference, client: launch.model.client, editor: editor)
+                    .modifier(AppearanceHost(store: actions.appearance))
             }
         }
         .defaultSize(width: 760, height: 640)
@@ -97,14 +103,23 @@ struct PicaApp: App {
             McpServersScreen(
                 backend: mcpBackend, workspaces: launch.navigation.workspaces,
                 workspaceId: launch.navigation.selection.flatMap(launch.navigation.workspaceId(of:)))
+            .modifier(AppearanceHost(store: actions.appearance))
         }
         .defaultSize(width: 900, height: 560)
 
         // A-11: the Usage dashboard (⇧⌘U).
         Window("Usage", id: UsageDashboardScreen.windowId) {
             UsageDashboardScreen(client: launch.model.client)
+                .modifier(AppearanceHost(store: actions.appearance))
         }
         .defaultSize(width: 980, height: 820)
+
+        // A-16: the Session Overview (⇧⌘O), every session from the sidebar's store and each fan-out run.
+        Window("Session Overview", id: SessionOverviewScreen.windowId) {
+            SessionOverviewHost(navigation: launch.navigation, client: launch.model.client, metrics: overviewMetrics)
+                .modifier(AppearanceHost(store: actions.appearance))
+        }
+        .defaultSize(width: 960, height: 700)
     }
 
     private var mcpBackend: EngineMcpBackend {
@@ -237,5 +252,31 @@ private struct SessionDetail<Conversation: View, Changes: View>: View {
                 .accessibilityIdentifier("pica.toolbar.review")
             }
         }
+    }
+}
+
+/// Feeds the Session Overview from the sidebar's store; opening a session selects it in the main window.
+private struct SessionOverviewHost: View {
+    let navigation: NavigationStore
+    let client: EngineClient
+    let metrics: OverviewMetrics?
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some View {
+        SessionOverviewScreen(
+            sessions: Array(navigation.sessionsById.values), workspaces: navigation.workspaces,
+            repoNames: repoNames, client: client, metrics: metrics
+        ) { sessionId in
+            navigation.select(.session(sessionId))
+            openWindow(id: "main")
+        }
+    }
+
+    private var repoNames: [Id: String] {
+        var names: [Id: String] = [:]
+        for repo in navigation.reposByWorkspace.values.joined() {
+            names[repo.id] = repo.displayName
+        }
+        return names
     }
 }

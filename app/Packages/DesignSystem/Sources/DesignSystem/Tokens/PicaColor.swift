@@ -1,19 +1,27 @@
 import SwiftUI
 
 /// A color token with one value per appearance: light or dark, each at standard or increased contrast.
+/// A `Palette` role carries its `token`, so the theme in the environment (`\.picaTheme`) can replace its values.
 public struct PicaColor: ShapeStyle, Sendable, Equatable {
     public let light: RGB
     public let dark: RGB
     public let lightIncreasedContrast: RGB
     public let darkIncreasedContrast: RGB
+    /// The role a theme may override; nil for a color that is not a `Palette` role.
+    public let token: ThemeToken?
 
-    public init(light: RGB, dark: RGB, lightIncreasedContrast: RGB? = nil, darkIncreasedContrast: RGB? = nil) {
+    public init(
+        light: RGB, dark: RGB, lightIncreasedContrast: RGB? = nil, darkIncreasedContrast: RGB? = nil,
+        token: ThemeToken? = nil
+    ) {
         self.light = light
         self.dark = dark
         self.lightIncreasedContrast = lightIncreasedContrast ?? light
         self.darkIncreasedContrast = darkIncreasedContrast ?? dark
+        self.token = token
     }
 
+    /// The built-in value, whatever the theme.
     public func rgb(for appearance: Appearance) -> RGB {
         switch appearance {
         case .light: light
@@ -23,8 +31,18 @@ public struct PicaColor: ShapeStyle, Sendable, Equatable {
         }
     }
 
+    /// The value `theme` gives this role, or the built-in one.
+    public func rgb(for appearance: Appearance, in theme: Theme) -> RGB {
+        (token.flatMap { theme.colors[$0] } ?? self).rgb(for: appearance)
+    }
+
+    /// The value drawn in `environment`, after its theme.
+    public func rgb(in environment: EnvironmentValues) -> RGB {
+        rgb(for: Appearance(environment), in: environment.picaTheme)
+    }
+
     public func resolve(in environment: EnvironmentValues) -> Color.Resolved {
-        rgb(for: Appearance(environment)).resolved
+        rgb(in: environment).resolved
     }
 }
 
@@ -44,7 +62,7 @@ public enum Appearance: CaseIterable, Sendable {
 }
 
 /// An sRGB color written as a 24-bit hex literal, e.g. `RGB(0x3E4251)`.
-public struct RGB: Sendable, Equatable, CustomStringConvertible {
+public struct RGB: Sendable, Equatable, Hashable, CustomStringConvertible {
     public let red: Double
     public let green: Double
     public let blue: Double
@@ -53,6 +71,21 @@ public struct RGB: Sendable, Equatable, CustomStringConvertible {
         red = Double((hex >> 16) & 0xFF) / 255
         green = Double((hex >> 8) & 0xFF) / 255
         blue = Double(hex & 0xFF) / 255
+    }
+
+    /// `#RRGGBB`, as theme files and config.jsonc write colors; nil for anything else.
+    public init?(hexString: String) {
+        guard hexString.count == 7, hexString.first == "#",
+              hexString.dropFirst().allSatisfy(\.isHexDigit),
+              let value = UInt32(hexString.dropFirst(), radix: 16)
+        else { return nil }
+        self.init(value)
+    }
+
+    /// Rounds each channel to 8 bits, as a hex literal would.
+    public init(red: Double, green: Double, blue: Double) {
+        func byte(_ channel: Double) -> UInt32 { UInt32((min(max(channel, 0), 1) * 255).rounded()) }
+        self.init(byte(red) << 16 | byte(green) << 8 | byte(blue))
     }
 
     public var color: Color { Color(.sRGB, red: red, green: green, blue: blue) }

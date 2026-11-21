@@ -17,6 +17,7 @@
 		A1000000000000000000A101 /* Terminal in Frameworks */ = {isa = PBXBuildFile; productRef = A1000000000000000000A102 /* Terminal */; };
 		A1000000000000000000A801 /* Review in Frameworks */ = {isa = PBXBuildFile; productRef = A1000000000000000000A802 /* Review */; };
 		A10000000000000000A11001 /* Usage in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000A11002 /* Usage */; };
+		A10000000000000000A16001 /* SessionOverview in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000A16002 /* SessionOverview */; };
 		A10000000000000000A14001 /* PicaSettings in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000A14002 /* PicaSettings */; };
 		A10000000000000000A13001 /* McpServers in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000A13002 /* McpServers */; };
 		A10000000000000000A12001 /* Workspaces in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000A12002 /* Workspaces */; };
@@ -90,6 +91,7 @@
 				A1000000000000000000A101 /* Terminal in Frameworks */,
 				A1000000000000000000A801 /* Review in Frameworks */,
 				A10000000000000000A11001 /* Usage in Frameworks */,
+				A10000000000000000A16001 /* SessionOverview in Frameworks */,
 				A10000000000000000A14001 /* PicaSettings in Frameworks */,
 				A10000000000000000A13001 /* McpServers in Frameworks */,
 				A10000000000000000A12001 /* Workspaces in Frameworks */,
@@ -178,6 +180,7 @@
 				A1000000000000000000A102 /* Terminal */,
 				A1000000000000000000A802 /* Review */,
 				A10000000000000000A11002 /* Usage */,
+				A10000000000000000A16002 /* SessionOverview */,
 				A10000000000000000A14002 /* PicaSettings */,
 				A10000000000000000A13002 /* McpServers */,
 				A10000000000000000A12002 /* Workspaces */,
@@ -304,6 +307,7 @@
 				A1000000000000000000A103 /* XCLocalSwiftPackageReference "Packages/Terminal" */,
 				A1000000000000000000A803 /* XCLocalSwiftPackageReference "Packages/Review" */,
 				A10000000000000000A11003 /* XCLocalSwiftPackageReference "Packages/Usage" */,
+				A10000000000000000A16003 /* XCLocalSwiftPackageReference "Packages/SessionOverview" */,
 				A10000000000000000A14003 /* XCLocalSwiftPackageReference "Packages/PicaSettings" */,
 				A10000000000000000A13003 /* XCLocalSwiftPackageReference "Packages/McpServers" */,
 				A10000000000000000A12003 /* XCLocalSwiftPackageReference "Packages/Workspaces" */,
@@ -672,6 +676,10 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/Usage;
 		};
+		A10000000000000000A16003 /* XCLocalSwiftPackageReference "Packages/SessionOverview" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/SessionOverview;
+		};
 		A10000000000000000A14003 /* XCLocalSwiftPackageReference "Packages/PicaSettings" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/PicaSettings;
@@ -730,6 +738,10 @@
 		A10000000000000000A11002 /* Usage */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Usage;
+		};
+		A10000000000000000A16002 /* SessionOverview */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SessionOverview;
 		};
 		A10000000000000000A14002 /* PicaSettings */ = {
 			isa = XCSwiftPackageProductDependency;

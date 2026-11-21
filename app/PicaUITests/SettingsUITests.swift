@@ -78,6 +78,40 @@ final class SettingsUITests: XCTestCase {
         pica.quit(app)
     }
 
+    /// X-01 (docs/themes.md): Settings ▸ Appearance lists theme files, names the unknown token in a bad one, and writes
+    /// the chosen theme and density to config.jsonc.
+    @MainActor
+    func testTheAppearancePaneChoosesAThemeAndDensityAndNamesABadToken() throws {
+        let pica = try PicaUnderTest()
+        defer { pica.remove() }
+        let themes = pica.home.appending(path: "Library/Application Support/Pica/themes")
+        try FileManager.default.createDirectory(at: themes, withIntermediateDirectories: true)
+        try Data(##"{ "name": "Harbor", "colors": { "accent": "#2F6F8F" } }"##.utf8).write(to: themes.appending(path: "harbor.jsonc"))
+        try Data(##"{ "colors": { "accnet": "#2F6F8F" } }"##.utf8).write(to: themes.appending(path: "typo.jsonc"))
+        let app = pica.launch()
+        openSettings(app, pane: "Appearance")
+
+        let problem = app.descendants(matching: .any)["pica.settings.appearance.problem.typo.jsonc"]
+        XCTAssertTrue(problem.waitForExistence(timeout: 5), "the invalid theme file is not listed")
+        XCTAssertTrue("\(problem.label) \(problem.value ?? "")".contains("accnet"), "the problem does not name the token: \(problem.label)")
+
+        let theme = app.popUpButtons["pica.settings.appearance.theme"]
+        XCTAssertTrue(theme.waitForExistence(timeout: 5))
+        theme.click()
+        app.menuItems["Harbor"].click()
+        waitUntil("the theme is written", timeout: 5) {
+            (try? String(contentsOf: pica.configFile, encoding: .utf8))?.contains("\"theme\": \"harbor\"") == true
+        }
+        let compact = app.radioButtons["Compact"]
+        XCTAssertTrue(compact.waitForExistence(timeout: 5))
+        compact.click()
+        waitUntil("the density is written", timeout: 5) {
+            (try? String(contentsOf: pica.configFile, encoding: .utf8))?.contains("\"density\": \"compact\"") == true
+        }
+        app.typeKey("w", modifierFlags: .command)
+        pica.quit(app)
+    }
+
     @MainActor
     private func openSettings(_ app: XCUIApplication, pane: String) {
         app.typeKey(",", modifierFlags: .command)

@@ -31,6 +31,8 @@ const allowedPackageDependencies: Readonly<Record<string, readonly string[]>> = 
   Usage: ["EngineClient", "PicaProtocol", "DesignSystem"],
   // A-15: onboarding's precondition checks and first workspace; the app target hands it the fixes and workspace creation.
   Onboarding: ["EngineClient", "PicaProtocol", "DesignSystem"],
+  // A-16: the Session Overview window, the board and the fan-out aggregate; the app target passes the sessions.
+  SessionOverview: ["EngineClient", "PicaProtocol", "DesignSystem"],
 };
 
 const featuresPackage = "Features";

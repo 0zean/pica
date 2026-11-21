@@ -964,18 +964,22 @@
   ],
   "A-16": [
     {
-      "check": "UI test: sessions awaiting approval appear first."
+      "check": "UI test: sessions awaiting approval appear first.",
+      "run": "swift test --package-path app/Packages/SessionOverview && make engine-install && cd engine && pnpm exec vitest run packages/server/tests/composition/overview.test.ts && cd .. && make app-ui-test-pica UI_TEST=SessionOverviewUITests/testSessionsAwaitingApprovalAppearFirst"
     },
     {
-      "check": "Twenty live FakeRuntime sessions keep the board under the idle CPU budget when nothing changes."
+      "check": "Twenty live FakeRuntime sessions keep the board under the idle CPU budget when nothing changes.",
+      "run": "make app-ui-test-pica UI_TEST=SessionOverviewUITests/testTwentyIdleSessionsKeepTheBoardUnderTheIdleCPUBudget"
     }
   ],
   "X-01": [
     {
-      "check": "Snapshot tests for each density and for a custom accent."
+      "check": "Snapshot tests for each density and for a custom accent.",
+      "run": "swift test --package-path app/Packages/DesignSystem --filter ThemeSnapshotTests"
     },
     {
-      "check": "A theme file with an unknown token fails validation with the token named."
+      "check": "A theme file with an unknown token fails validation with the token named.",
+      "run": "swift test --package-path app/Packages/DesignSystem --filter ThemeFileTests && swift test --package-path app/Packages/PicaSettings --filter AppearanceStoreTests && make app-ui-test-pica UI_TEST=SettingsUITests/testTheAppearancePaneChoosesAThemeAndDensityAndNamesABadToken"
     }
   ],
   "X-02": [

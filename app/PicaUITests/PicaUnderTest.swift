@@ -37,6 +37,8 @@ final class PicaUnderTest {
     let reviewMetricsPath: String
     /// Where Pica appends the fix actions it carries out instead of opening a browser or copying (A-12).
     let fixLogPath: String
+    /// Where Pica writes `OverviewMetrics`' report (A-16).
+    let overviewMetricsPath: String
     private let scrollScript: Bool
     /// A-14: a managed policy (docs/managed-policy.md) `fake-picad` loads as if root owned it.
     private let managedPolicy: String?
@@ -66,6 +68,7 @@ final class PicaUnderTest {
         editorLogPath = home.appending(path: "external-editor.log").path
         reviewMetricsPath = home.appending(path: "review-metrics.json").path
         fixLogPath = home.appending(path: "fix-actions.log").path
+        overviewMetricsPath = home.appending(path: "overview-metrics.json").path
         XCTAssertLessThan(socketPath.utf8.count, 104, "\(socketPath) is longer than sun_path allows")
         if let managedPolicy {
             try Data(managedPolicy.utf8).write(to: policyFile)
@@ -104,6 +107,8 @@ final class PicaUnderTest {
             "PICA_SECRETS": "memory",
             // A-12: fix actions are logged here instead of opening a browser or writing the pasteboard.
             "PICA_FIX_ACTION_LOG": fixLogPath,
+            // A-16: the board's idle CPU report.
+            "PICA_OVERVIEW_METRICS_PATH": overviewMetricsPath,
         ]
         if let github {
             environment["PICA_TEST_GITHUB"] = github
