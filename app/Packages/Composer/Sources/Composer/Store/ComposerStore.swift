@@ -30,6 +30,8 @@ public final class ComposerStore {
     public enum Status: Equatable, Sendable {
         case queued
         case steered
+        /// The engine is reopening a `resumable` session before the message is sent.
+        case resuming
         case failed(String)
     }
 
@@ -83,15 +85,22 @@ public final class ComposerStore {
 
     // MARK: Sending
 
-    /// What ⌘↩ does in the session's state: send when idle, queue behind the running turn; nil when the session
-    /// cannot take a message.
+    /// What Return (and ⌘↩) does in the session's state: send when idle, queue behind the running turn, resume and
+    /// then send when the engine stopped under the session; nil when the session cannot take a message (starting,
+    /// ended, or failed: the engine cannot reopen a failed session).
     public var primaryMode: SendMode? {
         switch session.state {
-        case .idle: .send
+        case .idle, .resumable: .send
         case .running, .awaitingApproval: .queue
-        case .starting, .ended, .failed, .resumable: nil
+        case .starting, .ended, .failed: nil
         }
     }
+
+    /// Whether the session waits to be resumed (`session.resume`): the engine that ran it stopped, as when Pica quits.
+    public var needsResume: Bool { session.state == .resumable }
+
+    /// Whether Resume can be pressed now.
+    public var canResume: Bool { needsResume && !isSending }
 
     /// Whether ⇧⌘↩ steers: only while a turn runs. When idle it sends, as ⌘↩ does.
     public var canSteer: Bool {
@@ -103,14 +112,19 @@ public final class ComposerStore {
     public var canSend: Bool { !isBlank && !isSending && primaryMode != nil }
 
     /// Sends the text with `mode`, or the session's `primaryMode`. The input is cleared at once and given back if the
-    /// engine refuses the message. A `send` that loses a race with a turn starting is queued instead.
+    /// engine refuses the message. A `send` that loses a race with a turn starting is queued instead. A `resumable`
+    /// session is resumed first; if that fails the text stays in the input and the status says why.
     public func submit(_ requested: SendMode? = nil) async {
-        guard canSend, let primary = primaryMode else { return }
+        guard canSend else { return }
+        isSending = true
+        defer { isSending = false }
+        if needsResume {
+            guard await reopen() else { return }
+        }
+        guard let primary = primaryMode else { return }
         let mode = requested == .steer && !canSteer ? primary : (requested ?? primary)
         let written = text
         let message = MentionResolver(repos: repos, agents: agents.map(\.name)).message(for: written)
-        isSending = true
-        defer { isSending = false }
         replaceAll(with: "")
         do {
             var sent = mode
@@ -132,6 +146,28 @@ public final class ComposerStore {
         } catch {
             restore(written)
             status = .failed(Self.describe(error))
+        }
+    }
+
+    /// Resumes a `resumable` session without sending anything.
+    public func resume() async {
+        guard canResume else { return }
+        isSending = true
+        defer { isSending = false }
+        _ = await reopen()
+    }
+
+    /// `session.resume`; true once the session is live again. The caller sets `isSending`.
+    private func reopen() async -> Bool {
+        status = .resuming
+        do {
+            let resumed = try await backend.resume(sessionId: session.id)
+            status = nil
+            if resumed.id == session.id { update(session: resumed) }
+            return true
+        } catch {
+            status = .failed("The session could not be resumed: \(Self.describe(error))")
+            return false
         }
     }
 

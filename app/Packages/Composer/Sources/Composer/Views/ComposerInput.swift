@@ -7,8 +7,9 @@ import SwiftUI
 /// The composer's multiline text input: an `NSTextView`, for the key handling completions need (Return, Tab, arrows
 /// and Escape go to the list while it shows), mention highlighting, and a height that follows the text.
 ///
-/// Keys: ⌘↩ sends (or queues while a turn runs), ⇧⌘↩ steers, ⌘. stops the turn; Return is a new line unless the
-/// completion list is showing, when it inserts the selected item, as Tab does.
+/// Keys: Return sends (or queues while a turn runs, or resumes a stopped session and sends), as ⌘↩ does; ⇧↩ (or ⌥↩)
+/// is a new line; ⇧⌘↩ steers; ⌘. stops the turn. While the completion list shows, Return inserts the selected item,
+/// as Tab does. While an input method is composing (marked text), Return goes to it and sends nothing.
 struct ComposerInput: NSViewRepresentable {
     let store: ComposerStore
     let metrics: ComposerMetrics?
@@ -130,13 +131,7 @@ struct ComposerInput: NSViewRepresentable {
             let showing = store.completion != nil
             switch event.keyCode {
             case KeyCode.return, KeyCode.enter:
-                if command {
-                    let mode: SendMode? = flags.contains(.shift) ? .steer : nil
-                    Task { await store.submit(mode) }
-                    return true
-                }
-                if showing, flags.isDisjoint(with: [.shift, .option, .control]) { return store.acceptCompletion() }
-                return false
+                return handleReturn(flags: flags, showing: showing)
             case KeyCode.tab where showing && flags.isEmpty:
                 return store.acceptCompletion()
             case KeyCode.upArrow where showing && flags.isDisjoint(with: [.command, .shift, .option]):
@@ -154,6 +149,23 @@ struct ComposerInput: NSViewRepresentable {
             default:
                 return false
             }
+        }
+
+        /// Return: ⌘↩ sends and ⇧⌘↩ steers; a plain Return accepts the completion if one shows, else sends. Shift,
+        /// Option or Control with Return fall through to the text view, which inserts a new line.
+        private func handleReturn(flags: NSEvent.ModifierFlags, showing: Bool) -> Bool {
+            // The input method's Return commits what it is composing.
+            if textView?.hasMarkedText() == true { return false }
+            if flags.contains(.command) {
+                let mode: SendMode? = flags.contains(.shift) ? .steer : nil
+                Task { await store.submit(mode) }
+                return true
+            }
+            guard flags.isDisjoint(with: [.shift, .option, .control]) else { return false }
+            if showing { return store.acceptCompletion() }
+            // Return never adds a line, even when there is nothing to send.
+            Task { await store.submit() }
+            return true
         }
 
         /// Colors mentions and skills that name something known; others stay plain text.
@@ -212,7 +224,7 @@ enum KeyCode {
 final class ComposerTextView: NSTextView {
     var onKey: ((NSEvent) -> Bool)?
     var metrics: ComposerMetrics?
-    static let placeholder = "Message the session. @ mentions a repo, file or agent; / runs a skill; ⌘↩ sends."
+    static let placeholder = "Message the session. @ mentions a repo, file or agent; / runs a skill; ↩ sends, ⇧↩ adds a line."
 
     private var link: CADisplayLink?
 

@@ -3,8 +3,9 @@ import Foundation
 import PicaProtocol
 import XCTest
 
-/// PLAN.md A-06: `@` opens completions and Return inserts; ⌘↩ sends; sending while a turn runs queues. Sessions play
-/// the `composer` scenario of `fake-picad-scenarios.ts`, whose first turn runs until it is stopped.
+/// PLAN.md A-06: `@` opens completions and Return inserts; Return sends and ⇧↩ adds a line; ⌘↩ sends too; sending while
+/// a turn runs queues; sending to a session the engine stopped under resumes it first. Sessions play the `composer`
+/// scenario of `fake-picad-scenarios.ts`, whose first turn runs until it is stopped.
 final class ComposerUITests: XCTestCase {
     @MainActor
     func testAtOpensCompletionsAndReturnInserts() throws {
@@ -26,6 +27,7 @@ final class ComposerUITests: XCTestCase {
         XCTAssertTrue(agent.waitForExistence(timeout: 5), "typing @bulk did not offer the bulk-reader agent")
         input.typeKey(.return, modifierFlags: [])
         XCTAssertEqual(input.value as? String, "look at @atlas with @bulk-reader ")
+        XCTAssertEqual(fixture.app.buttons["pica.composer.send"].label, "Send", "accepting a completion sent the message")
         fixture.quit()
     }
 
@@ -85,6 +87,25 @@ final class ComposerUITests: XCTestCase {
     }
 
     @MainActor
+    func testReturnSendsAndShiftReturnAddsALine() throws {
+        let fixture = try ComposerFixture()
+        defer { fixture.remove() }
+        let input = fixture.focusInput()
+        input.typeText("hello")
+        input.typeKey(.return, modifierFlags: .shift)
+        input.typeText("world")
+        XCTAssertEqual(input.value as? String, "hello\nworld")
+        input.typeKey(.return, modifierFlags: [])
+        waitUntil("the input is cleared", timeout: 5) { (input.value as? String) == "" }
+
+        let messages = try fixture.userMessages(count: 1)
+        XCTAssertEqual(messages.map(\.text), ["hello\nworld"])
+        XCTAssertEqual(messages.map(\.mode), [.send])
+        fixture.stopTurn()
+        fixture.quit()
+    }
+
+    @MainActor
     func testCommandReturnSends() throws {
         let fixture = try ComposerFixture()
         defer { fixture.remove() }
@@ -96,6 +117,48 @@ final class ComposerUITests: XCTestCase {
         let messages = try fixture.userMessages(count: 1)
         XCTAssertEqual(messages.map(\.text), ["hello"])
         XCTAssertEqual(messages.map(\.mode), [.send])
+        fixture.stopTurn()
+        fixture.quit()
+    }
+
+    /// After Pica quits and opens again, the session is `resumable`: Return resumes it and sends.
+    @MainActor
+    func testReturnResumesAStoppedSessionAndSends() throws {
+        let fixture = try ComposerFixture()
+        defer { fixture.remove() }
+        fixture.relaunch(resumable: true)
+        XCTAssertTrue(fixture.app.buttons["pica.composer.resume"].waitForExistence(timeout: 10), "no Resume button")
+        let input = fixture.focusInput()
+        input.typeText("carry on")
+        input.typeKey(.return, modifierFlags: [])
+        waitUntil("the input is cleared", timeout: 10) { (input.value as? String) == "" }
+
+        let messages = try fixture.userMessages(count: 1)
+        XCTAssertEqual(messages.map(\.text), ["carry on"])
+        XCTAssertEqual(messages.map(\.mode), [.send])
+        let resume = fixture.app.buttons["pica.composer.resume"]
+        waitUntil("the Resume button goes", timeout: 5) { !resume.exists }
+        fixture.stopTurn()
+        fixture.quit()
+    }
+
+    /// A resume the engine cannot do keeps the text and says why; the session can still be resumed.
+    @MainActor
+    func testAFailedResumeKeepsTheTextAndSaysWhy() throws {
+        let fixture = try ComposerFixture()
+        defer { fixture.remove() }
+        // The relaunched runtime does not know the session, as Copilot would not after losing its state.
+        fixture.relaunch(resumable: false)
+        let input = fixture.focusInput()
+        input.typeText("keep me")
+        input.typeKey(.return, modifierFlags: [])
+        let status = fixture.app.descendants(matching: .any)["pica.composer.status"]
+        waitUntil("the status says the resume failed", timeout: 10) {
+            status.exists && ((status.value as? String) ?? status.label).contains("could not be resumed")
+        }
+        XCTAssertEqual(input.value as? String, "keep me")
+        XCTAssertTrue(fixture.app.buttons["pica.composer.resume"].exists)
+        XCTAssertTrue(fixture.app.buttons["pica.composer.send"].isEnabled)
         fixture.quit()
     }
 
@@ -105,14 +168,14 @@ final class ComposerUITests: XCTestCase {
         defer { fixture.remove() }
         let input = fixture.focusInput()
         input.typeText("start")
-        input.typeKey(.return, modifierFlags: .command)
+        input.typeKey(.return, modifierFlags: [])
         // The first turn runs until it is stopped; the send button becomes Queue.
         let send = fixture.app.buttons["pica.composer.send"]
         waitUntil("the session is running", timeout: 10) { send.label == "Queue" }
         XCTAssertTrue(fixture.app.buttons["pica.composer.steer"].exists)
 
         input.typeText("next")
-        input.typeKey(.return, modifierFlags: .command)
+        input.typeKey(.return, modifierFlags: [])
         waitUntil("the input is cleared", timeout: 5) { (input.value as? String) == "" }
         let status = fixture.app.descendants(matching: .any)["pica.composer.status"]
         XCTAssertTrue(status.waitForExistence(timeout: 5), "no status after queueing")
@@ -182,7 +245,7 @@ struct Percentiles: CustomStringConvertible {
 @MainActor
 private final class ComposerFixture {
     let pica: PicaUnderTest
-    let app: XCUIApplication
+    private(set) var app: XCUIApplication
     let session: Session
 
     init(scenario: String = "composer", prompt: String? = nil, files: [String: String] = [:]) throws {
@@ -198,6 +261,16 @@ private final class ComposerFixture {
         let row = app.descendants(matching: .any)["pica.sidebar.session.\(session.id)"]
         XCTAssertTrue(row.waitForExistence(timeout: 5), "the session is not in the sidebar")
         // ⌘1 selects the first session in sidebar order, the only one here.
+        app.typeKey("1", modifierFlags: .command)
+    }
+
+    /// Quits Pica, so its engine stops and leaves the session `resumable`, and opens it again with the session
+    /// selected. `resumable` says whether the new engine's runtime can reopen the session (`PICA_TEST_RESUMABLE`).
+    func relaunch(resumable: Bool) {
+        pica.quit(app)
+        app = pica.launch(extraEnvironment: resumable ? ["PICA_TEST_RESUMABLE": session.id] : [:])
+        let row = app.descendants(matching: .any)["pica.sidebar.session.\(session.id)"]
+        XCTAssertTrue(row.waitForExistence(timeout: 5), "the session is not in the sidebar")
         app.typeKey("1", modifierFlags: .command)
     }
 

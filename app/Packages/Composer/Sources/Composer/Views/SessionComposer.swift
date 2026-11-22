@@ -83,6 +83,13 @@ struct ComposerBar: View {
                     .layoutPriority(-1)
             }
             Spacer(minLength: 0)
+            if store.needsResume {
+                Button("Resume", systemImage: "play.fill") { Task { await store.resume() } }
+                    .buttonStyle(.pica(.secondary))
+                    .disabled(!store.canResume)
+                    .help("Reopen the session so it can take a message. Sending also resumes it.")
+                    .accessibilityIdentifier("pica.composer.resume")
+            }
             if store.isRunning {
                 Button("Stop", systemImage: "stop.fill") { Task { await store.stop() } }
                     .buttonStyle(.pica(.secondary))
@@ -97,10 +104,16 @@ struct ComposerBar: View {
             Button(store.primaryMode == .queue ? "Queue" : "Send") { Task { await store.submit() } }
                 .buttonStyle(.pica(.primary))
                 .disabled(!store.canSend)
-                .help(store.primaryMode == .queue ? "Run this message after the current turn (⌘↩)" : "Send (⌘↩)")
+                .help(sendHelp)
                 .accessibilityIdentifier("pica.composer.send")
         }
         .controlSize(.small)
+    }
+
+    private var sendHelp: String {
+        if store.primaryMode == .queue { return "Run this message after the current turn (↩)" }
+        if store.needsResume { return "Resume the session and send (↩)" }
+        return "Send (↩). ⇧↩ adds a line."
     }
 }
 
@@ -125,6 +138,7 @@ struct StatusLine: View {
         switch status {
         case .queued: "Queued. It runs after the current turn."
         case .steered: "Steering. The current turn stops and this runs next."
+        case .resuming: "Resuming the session…"
         case .failed(let message): message
         }
     }

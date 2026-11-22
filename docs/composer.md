@@ -31,13 +31,17 @@ scrolls. Smart quotes and dashes are off, since `@"…"` and `--flags` must stay
 
 | Key | While the completion list shows | Otherwise |
 |---|---|---|
-| ⌘↩ | Sends | Sends when idle; queues while a turn runs |
+| Return | Inserts the selected item | Sends when idle; queues while a turn runs; resumes a `resumable` session, then sends |
+| ⇧↩ (or ⌥↩) | New line | New line |
+| ⌘↩ | Sends | As Return |
 | ⇧⌘↩ | Steers | Steers while a turn runs; sends when idle |
 | ⌘. | Stops the turn | Stops the turn |
-| Return | Inserts the selected item | New line |
 | Tab | Inserts the selected item | Tab |
 | ↑ ↓ | Move the selection (wrapping) | Move the caret |
 | Escape | Hides the list until the caret leaves the mention | — |
+
+While an input method is composing (marked text, as for Japanese or Chinese), Return goes to the input method, which
+commits the composition; nothing is sent. Return never inserts a new line, even with nothing to send.
 
 A click on a row inserts it too. An inserted item replaces the whole mention under the caret, not just the part before
 it, and is followed by a space unless one is already there.
@@ -107,11 +111,19 @@ sent as written: Copilot's agent reads `@bulk-reader` and `/review` in the promp
 
 All three are `session.send {sessionId, text, mode}`; stopping is `session.abort`. No protocol change was needed.
 
-| Session state | ⌘↩ (primary button) | ⇧⌘↩ (Steer button) | Stop |
+| Session state | Return, ⌘↩ (primary button) | ⇧⌘↩ (Steer button) | Stop |
 |---|---|---|---|
 | `idle` | `send` ("Send") | `send` | — |
 | `running`, `awaiting_approval` | `queue` ("Queue") | `steer` | shown |
-| `starting`, `ended`, `failed`, `resumable` | disabled | disabled | — |
+| `resumable` | `session.resume`, then `send` ("Send"; a Resume button too) | as Return | — |
+| `starting`, `ended`, `failed` | disabled | disabled | — |
+
+A session is `resumable` when the engine that ran it stopped, as when Pica quits: the engine marks every live session
+so at its next start. Sending to one first calls `session.resume`, with "Resuming the session…" in the status line; the
+engine reopens the runtime with the session's MCP servers, roots, tools and budget, and Copilot restores the
+conversation from its own session store. If the resume fails the text stays in the input, the status line says why,
+and the session stays `resumable`, so it can be tried again. The Resume button resumes without sending. A `failed`
+session cannot be reopened by the engine, and an `ended` one is read-only.
 
 The input is cleared at once, and given back if the engine refuses the message or the call fails, with the reason in
 the status line. A `send` the engine does not accept because a turn started meanwhile (`accepted: false`) is sent
