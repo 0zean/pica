@@ -48,7 +48,8 @@ export function toSessionInfo(session: Session, lastSeq: number): SessionInfo {
   return {
     id: session.id,
     workspaceId: session.workspaceId,
-    title: "",
+    // No automatic title exists yet; a session the user has not named reports "" and clients name it.
+    title: session.title ?? "",
     state: session.state,
     // TODO(R-10): report the worktrees Pica creates per write root; until then sessions run in the repo itself.
     writeRoots: [],

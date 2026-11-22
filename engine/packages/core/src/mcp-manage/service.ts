@@ -61,6 +61,8 @@ export interface McpManager {
   detach(request: McpAttachRequest): Promise<Result<undefined, McpManageError>>;
   // A new session starts with its workspace's servers.
   seedSession(sessionId: string, workspaceId: string): Result<undefined, McpManageError>;
+  // A deleted session's attachments are dropped.
+  forgetSession(sessionId: string): Result<undefined, McpManageError>;
   // What the session's runtime should start with. Attachments to servers or agents that no longer
   // exist are left out rather than failing the session.
   sessionPlan(sessionId: string, workspaceId: string): Result<McpAttachmentPlan, McpManageError>;
@@ -315,6 +317,15 @@ export function createMcpManager(deps: McpManagerDeps): McpManager {
           ? { ...state, sessions: { ...state.sessions, [sessionId]: state.workspaces[workspaceId] ?? [] } }
           : state,
       );
+    },
+    forgetSession(sessionId) {
+      return updateState((state) => {
+        if (state.sessions[sessionId] === undefined) {
+          return state;
+        }
+        const sessions = Object.fromEntries(Object.entries(state.sessions).filter(([id]) => id !== sessionId));
+        return { ...state, sessions };
+      });
     },
     sessionPlan(sessionId, workspaceId) {
       const servers = definitions(workspaceId);

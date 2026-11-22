@@ -60,6 +60,11 @@ export function registerSessionHandlers(router: MethodRouter, deps: SessionHandl
     unwrap(await sessions.end(sessionId));
     return done;
   });
+  router.register("session.rename", ({ sessionId, title }) => ({ session: toSessionDto(unwrap(sessions.rename(sessionId, title))) }));
+  router.register("session.delete", async ({ sessionId }) => {
+    unwrap(await sessions.delete(sessionId));
+    return done;
+  });
   router.register("approval.list", ({ sessionId }) => ({ approvals: [...unwrap(sessions.listApprovals(sessionId))] }));
   router.register("approval.resolve", async ({ approvalId, choice, budgetCredits }) => {
     unwrap(await sessions.resolveApproval(approvalId, choice, budgetCredits));

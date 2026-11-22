@@ -86,7 +86,9 @@ metrics each run a display link on every frame; the test now turns them off, sin
   `verify-app`, `swift test` ran it beside AppShell's other suites on a 3-core runner and measured them (p99 7.6 ms).
 - **The budget as written, also on CI.** `PICA_PERF_GATE=1` makes A-09's tests assert 50 ms even with `CI=true`.
   Outside the gate, `verify-engine` on shared Linux runners still asserts three times it as a regression guard
-  (A-09's note); that is not the gate. The report fails a budget whose test recorded a different threshold or unit
+  (A-09's note); that is not the gate. A-01's engine recovery does the same in `verify-app` (3 × 2 s): on its
+  3-core macOS runners the median of three kills ran 1.6–3.4 s across branches on 2026-11-22, and failed PRs that
+  changed nothing in engine supervision. The report fails a budget whose test recorded a different threshold or unit
   than the registry, so a test cannot loosen a budget without the registry, and so the review, showing it.
 - **Locally.** Run it alone and under the UI-test lock: `lockf /tmp/pica-uitest.lock make perf`. The report ends with
   the machine and its load averages before and after the run.

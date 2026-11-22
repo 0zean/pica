@@ -18,7 +18,8 @@ async function startToHelloMs(): Promise<number> {
   const child = spawn(
     process.execPath,
     ["--experimental-strip-types", "--disable-warning=ExperimentalWarning", MAIN, "--socket", paths.socketPath],
-    { stdio: ["ignore", "pipe", "inherit"] },
+    // HOME is the temporary directory, so the engine never opens (or migrates) the developer's own database.
+    { stdio: ["ignore", "pipe", "inherit"], env: { ...process.env, HOME: join(paths.dir, "..") } },
   );
   const exited = new Promise<number | null>((resolve) => child.on("exit", resolve));
   try {

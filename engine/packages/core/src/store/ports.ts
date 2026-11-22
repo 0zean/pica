@@ -55,6 +55,11 @@ export interface SessionRepository {
   listByWorkspace(workspaceId: string): StoreResult<readonly Session[]>;
   updateState(id: string, state: SessionState, updatedAt: string): StoreResult<void>;
   updateBudget(id: string, budgetMaxCredits: number | null, updatedAt: string): StoreResult<void>;
+  // `null` clears the user's title. `updatedAt` is left alone, so renaming does not reorder sessions.
+  rename(id: string, title: string | null): StoreResult<void>;
+  // Removes the session's events and marks it deleted, in one transaction. The row stays so its
+  // usage records keep counting; its state becomes `ended`. `get` and `listByWorkspace` no longer find it.
+  delete(id: string, deletedAt: string): StoreResult<void>;
 }
 
 // PLAN.md D-06: each session's events carry their own sequence, starting at 1 with no gaps.

@@ -5894,6 +5894,30 @@ public struct SessionCreateResult: Codable, Hashable, Sendable {
     }
 }
 
+public struct SessionDeletedNotification: Codable, Hashable, Sendable {
+    public var sessionId: Id
+
+    public init(
+        sessionId: Id
+    ) {
+        self.sessionId = sessionId
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case sessionId
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        sessionId = try container.decode(Id.self, forKey: .sessionId)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(sessionId, forKey: .sessionId)
+    }
+}
+
 public struct SessionGetResult: Codable, Hashable, Sendable {
     public var session: Session
 
@@ -5963,6 +5987,60 @@ public struct SessionListResult: Codable, Hashable, Sendable {
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(sessions, forKey: .sessions)
+    }
+}
+
+public struct SessionRenameParams: Codable, Hashable, Sendable {
+    public var sessionId: Id
+    public var title: String
+
+    public init(
+        sessionId: Id,
+        title: String
+    ) {
+        self.sessionId = sessionId
+        self.title = title
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case sessionId
+        case title
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        sessionId = try container.decode(Id.self, forKey: .sessionId)
+        title = try container.decode(String.self, forKey: .title)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(sessionId, forKey: .sessionId)
+        try container.encode(title, forKey: .title)
+    }
+}
+
+public struct SessionRenameResult: Codable, Hashable, Sendable {
+    public var session: Session
+
+    public init(
+        session: Session
+    ) {
+        self.session = session
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case session
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        session = try container.decode(Session.self, forKey: .session)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(session, forKey: .session)
     }
 }
 

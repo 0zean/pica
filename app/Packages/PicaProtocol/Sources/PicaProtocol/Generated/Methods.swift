@@ -223,6 +223,20 @@ public enum Methods {
         public static let direction = MethodDirection.client
     }
 
+    public enum SessionRename: PicaMethod {
+        public typealias Params = SessionRenameParams
+        public typealias Result = SessionRenameResult
+        public static let name = "session.rename"
+        public static let direction = MethodDirection.client
+    }
+
+    public enum SessionDelete: PicaMethod {
+        public typealias Params = BySession
+        public typealias Result = Ok
+        public static let name = "session.delete"
+        public static let direction = MethodDirection.client
+    }
+
     public enum FanoutStart: PicaMethod {
         public typealias Params = FanoutStartParams
         public typealias Result = FanoutStartResult
@@ -576,6 +590,11 @@ public enum Notifications {
     public enum SessionChanged: PicaNotification {
         public typealias Params = SessionChangedNotification
         public static let name = "session.changed"
+    }
+
+    public enum SessionDeleted: PicaNotification {
+        public typealias Params = SessionDeletedNotification
+        public static let name = "session.deleted"
     }
 
     public enum WorkspaceChanged: PicaNotification {

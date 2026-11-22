@@ -93,6 +93,15 @@ export const migrations: readonly Migration[] = [
       CREATE INDEX usage_by_time ON usage_records (julianday(timestamp));
     `,
   },
+  {
+    version: 4,
+    name: "session titles and deletion",
+    // A deleted session keeps its row (and so its usage records) with deleted_at set; its events go.
+    sql: `
+      ALTER TABLE sessions ADD COLUMN title TEXT;
+      ALTER TABLE sessions ADD COLUMN deleted_at TEXT;
+    `,
+  },
 ];
 
 export const latestSchemaVersion = migrations.length;

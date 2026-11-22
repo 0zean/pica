@@ -107,6 +107,10 @@ final class AppActions {
             openSessionOverview?()
         case .showCustomization:
             openCustomization?()
+        case .renameSession:
+            if let session = navigation.selectedSession { navigation.beginRename(session.id) }
+        case .deleteSession:
+            if let session = navigation.selectedSession { navigation.beginDelete(session.id) }
         }
     }
 
@@ -125,20 +129,34 @@ final class AppActions {
         }
     }
 
-    /// Each session in the sidebar, to go to from the palette.
+    /// Each session in the sidebar, to go to, rename or delete from the palette.
     private func sessionItems() -> [PaletteItem] {
         navigation.sidebar.flatMap { workspace in
-            workspace.sessions.map { session in
-                PaletteItem(
-                    target: .other("session.\(session.id)"), title: "Go to \(session.displayTitle)",
-                    subtitle: workspace.workspace.name, keywords: ["session"])
+            workspace.sessions.flatMap { session in
+                [
+                    PaletteItem(
+                        target: .other("session.\(session.id)"), title: "Go to \(session.displayTitle)",
+                        subtitle: workspace.workspace.name, keywords: ["session"]),
+                    PaletteItem(
+                        target: .other("rename-session.\(session.id)"), title: "Rename \(session.displayTitle)…",
+                        subtitle: workspace.workspace.name, keywords: ["session", "title"]),
+                    PaletteItem(
+                        target: .other("delete-session.\(session.id)"), title: "Delete \(session.displayTitle)…",
+                        subtitle: workspace.workspace.name, keywords: ["session", "remove"]),
+                ]
             }
         }
     }
 
     func runPaletteItem(_ id: String) {
-        guard id.hasPrefix("session.") else { return }
-        navigation.select(.session(String(id.dropFirst("session.".count))))
+        for (prefix, run) in [
+            ("session.", { (id: Id) in self.navigation.select(.session(id)) }),
+            ("rename-session.", { (id: Id) in self.navigation.beginRename(id) }),
+            ("delete-session.", { (id: Id) in self.navigation.beginDelete(id) }),
+        ] where id.hasPrefix(prefix) {
+            run(String(id.dropFirst(prefix.count)))
+            return
+        }
     }
 }
 

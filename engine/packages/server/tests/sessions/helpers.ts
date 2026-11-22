@@ -2,6 +2,7 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { AgentRuntime, RuntimeHooks, Store, WorkspaceService } from "@pica/core";
+import type { EngineSessionOptions } from "../../src/engine.ts";
 import { openSqliteStore } from "@pica/adapters";
 import { scenarioSchema, sequentialIds, steppingClock } from "@pica/testkit";
 import type { Scenario } from "@pica/testkit";
@@ -57,6 +58,8 @@ export async function startSessionEngine(
   hooks?: (sessionId: string) => RuntimeHooks,
   // Serves `workspace.*` over the same store too.
   workspaces?: (store: Store) => WorkspaceService,
+  // More session options, such as an output guard writing artifacts under the engine's temporary directory.
+  extra?: (dir: string) => Partial<EngineSessionOptions>,
 ): Promise<SessionEngine> {
   const dir = await mkdtemp(join(tmpdir(), "picad-sessions-"));
   const socketPath = join(dir, "run", "picad.sock");
@@ -72,6 +75,7 @@ export async function startSessionEngine(
       clock: steppingClock("2026-11-13T09:00:00.000Z"),
       newSessionId: () => ids("session"),
       ...(hooks === undefined ? {} : { hooks }),
+      ...extra?.(dir),
     },
     ...(workspaces === undefined ? {} : { workspaces: workspaces(store) }),
   });

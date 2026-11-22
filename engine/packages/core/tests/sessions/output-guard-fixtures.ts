@@ -15,6 +15,12 @@ export function memoryArtifacts(): MemoryArtifacts {
       files.set(path, content);
       return Promise.resolve(ok({ path }));
     },
+    remove(sessionId) {
+      for (const path of [...files.keys()]) {
+        if (path.startsWith(`/artifacts/${sessionId}/`)) files.delete(path);
+      }
+      return Promise.resolve(ok(undefined));
+    },
   };
 }
 

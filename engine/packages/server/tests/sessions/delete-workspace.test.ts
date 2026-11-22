@@ -60,4 +60,16 @@ describe("workspace.delete with sessions", () => {
     const gone = await client.request("session.get", { sessionId });
     expect(gone["error"]).toMatchObject({ data: { code: "not_found" } });
   });
+
+  it("deletes a workspace whose sessions were deleted, and their kept usage with it", async () => {
+    engine = await startSessionEngine(new FakeRuntime({ scenario: scenario([]) }), undefined, workspaces);
+    const client = await engine.connect();
+    const sessionId = await createSession(client);
+    await waitForEvent(client, await subscribe(client, sessionId), isState("idle"));
+    await call(client, "session.delete", { sessionId });
+
+    await call(client, "workspace.delete", { id: workspaceId });
+    const rollup = await call(client, "usage.rollup", { groupBy: "session" });
+    expect(rollup["rows"]).toEqual([]);
+  });
 });

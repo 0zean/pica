@@ -20,6 +20,8 @@ public enum ActionID: String, CaseIterable, Sendable, Codable {
     case showUsage
     case showSessionOverview
     case showCustomization
+    case renameSession
+    case deleteSession
 }
 
 /// Where an action's menu item is.
@@ -107,6 +109,13 @@ public enum ActionCatalog {
         case .showCustomization:
             ActionDefinition(id: id, title: "Agents & Skills", menu: .window, defaultShortcut: Shortcut("cmd+shift+a"),
                 keywords: ["agents", "skills", "rules", "instructions", "AGENTS.md", "prompts"])
+        // The selected session; no default shortcut, since ⌘⌫ and the like belong to text fields.
+        case .renameSession:
+            ActionDefinition(id: id, title: "Rename Session…", menu: .file, defaultShortcut: nil,
+                keywords: ["title", "name"])
+        case .deleteSession:
+            ActionDefinition(id: id, title: "Delete Session…", menu: .file, defaultShortcut: nil,
+                keywords: ["remove", "trash", "discard"])
         }
     }
 }

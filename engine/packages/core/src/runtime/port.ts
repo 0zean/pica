@@ -144,4 +144,7 @@ export interface AgentRuntime {
   quota(): RuntimeResult<QuotaInfo | null>;
   createSession(options: SessionOptions): RuntimeResult<RuntimeSession>;
   resumeSession(options: ResumeOptions): RuntimeResult<RuntimeSession>;
+  // Removes what the runtime keeps of a closed session (its transcript and state), so it can never
+  // be resumed. Absent for runtimes that keep nothing.
+  deleteSession?(sessionId: string): RuntimeResult<undefined>;
 }

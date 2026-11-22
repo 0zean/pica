@@ -10,6 +10,16 @@ import Testing
     /// Recovery is mostly a new Node process starting `picad`, whose time varies with how busy the machine is, so the
     /// check is the median of three kills (H-07, docs/performance.md); each kill restarts at once, with no backoff.
     private static let kills = 3
+    /// PLAN.md §9's budget. Locally and in the performance gate (`make perf`, PICA_PERF_GATE=1) it is asserted as is.
+    /// CI's `verify-app` runners (3-core virtual machines) start Node much more slowly: on 2026-11-22 medians were
+    /// 1.6–3.4 s across branches with no engine change, so there the test only catches a regression past three
+    /// times it, as A-09's keystroke benchmark does on `verify-engine`.
+    static let budgetSeconds = 2.0
+    static let ciSlowdown = 3.0
+
+    static func limitSeconds(_ environment: [String: String] = ProcessInfo.processInfo.environment) -> Double {
+        environment["CI"] == "true" && environment["PICA_PERF_GATE"] != "1" ? budgetSeconds * ciSlowdown : budgetSeconds
+    }
 
     @MainActor @Test func killedEngineShowsReconnectingAndRecoversWithinTwoSeconds() async throws {
         let fixture = try EngineFixture()
@@ -40,10 +50,17 @@ import Testing
         let seconds = recoveries.map { Double($0.components.seconds) + Double($0.components.attoseconds) / 1e18 }
         let recovered = median(seconds)
         print("A-01 engine recovery (s): \(seconds), median \(recovered)")
-        BudgetRecord(id: "engine-recovery", measured: recovered * 1000, threshold: 2000, unit: "ms", samples: seconds.map { $0 * 1000 })
+        BudgetRecord(id: "engine-recovery", measured: recovered * 1000, threshold: Self.budgetSeconds * 1000, unit: "ms", samples: seconds.map { $0 * 1000 })
             .write()
-        #expect(recovered < 2, "median recovery \(recovered) s; recoveries \(seconds)")
+        let limit = Self.limitSeconds()
+        #expect(recovered < limit, "median recovery \(recovered) s against \(limit) s; recoveries \(seconds)")
         await supervisor.stop()
+    }
+
+    @Test func theBudgetIsLooserOnlyOnCIOutsideThePerformanceGate() {
+        #expect(Self.limitSeconds([:]) == 2)
+        #expect(Self.limitSeconds(["CI": "true"]) == 6)
+        #expect(Self.limitSeconds(["CI": "true", "PICA_PERF_GATE": "1"]) == 2)
     }
 
     @Test func anEngineAlreadyListeningIsUsedAndReplacedWhenItDies() async throws {
