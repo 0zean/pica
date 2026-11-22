@@ -173,10 +173,11 @@ public final class WorkspaceManager {
         pendingDeletion = WorkspaceDeletion(workspace: workspace, repos: repos(workspaceId), sessions: sessions(workspaceId))
     }
 
-    /// Deletes the confirmed workspace; returns whether it was deleted. On failure `deleteProblem` says why.
+    /// Deletes the workspace the user confirmed; returns whether it was deleted. On failure `deleteProblem` says why.
+    /// The alert has already cleared `pendingDeletion` when its button runs this, so the deletion is passed in.
     @discardableResult
-    public func confirmDelete() async -> Bool {
-        guard let deletion = pendingDeletion, !deletion.isBlocked, !isDeleting else { return false }
+    public func confirmDelete(_ deletion: WorkspaceDeletion) async -> Bool {
+        guard !deletion.isBlocked, !isDeleting else { return false }
         pendingDeletion = nil
         isDeleting = true
         defer { isDeleting = false }

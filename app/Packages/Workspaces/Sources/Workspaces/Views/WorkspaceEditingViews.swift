@@ -97,7 +97,7 @@ struct WorkspaceDeletionAlerts: ViewModifier {
                     Button("OK", role: .cancel) {}
                 } else {
                     Button("Delete Workspace", role: .destructive) {
-                        Task { await manager.confirmDelete() }
+                        Task { await manager.confirmDelete(deletion) }
                     }
                     .accessibilityIdentifier("pica.deleteWorkspace.confirm")
                     Button("Cancel", role: .cancel) {}

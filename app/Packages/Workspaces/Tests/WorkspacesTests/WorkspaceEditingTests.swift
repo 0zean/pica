@@ -17,13 +17,13 @@ private func session(_ id: Id, _ state: SessionState) -> Session {
 
 private let platform = RepoSource(id: "s1", kind: .team, org: "acme", selector: "platform", lastSyncedAt: nil)
 private let atlasClone = Repo(
-    id: "r1", remoteUrl: "https://github.com/acme/atlas", localPath: "/managed/acme/atlas", managed: true,
+    id: "r1", remoteUrl: "https://git.example.com/acme/atlas", localPath: "/managed/acme/atlas", managed: true,
     defaultBranch: "main", cloneState: .cloned)
 private let available = Repo(
-    id: "r2", remoteUrl: "https://github.com/acme/beacon", localPath: nil, managed: true, defaultBranch: "main",
+    id: "r2", remoteUrl: "https://git.example.com/acme/beacon", localPath: nil, managed: true, defaultBranch: "main",
     cloneState: .available)
 private let ownFolder = Repo(
-    id: "r3", remoteUrl: "https://github.com/acme/ledger", localPath: "/work/ledger", managed: false,
+    id: "r3", remoteUrl: "https://git.example.com/acme/ledger", localPath: "/work/ledger", managed: false,
     defaultBranch: "main", cloneState: .cloned)
 
 @Suite struct WorkspaceNamingTests {
@@ -127,31 +127,35 @@ private let ownFolder = Repo(
         return (manager, { deleted })
     }
 
-    @Test func confirmingDeletesAndHandsTheIdOn() async {
+    @Test func confirmingDeletesAndHandsTheIdOn() async throws {
         let (manager, deleted) = manager(sessions: [session("a", .ended)])
         _ = manager.store(for: "w1")
         manager.requestDelete(workspaceId: "w1")
         #expect(manager.pendingDeletion?.sessionCount == 1)
-        #expect(await manager.confirmDelete())
+        let deletion = try #require(manager.pendingDeletion)
+        // The alert clears the pending deletion as it closes, before its button's task runs.
+        manager.pendingDeletion = nil
+        #expect(await manager.confirmDelete(deletion))
         #expect(backend.calls == ["delete w1"])
         #expect(deleted() == ["w1"])
         #expect(manager.pendingDeletion == nil)
     }
 
-    @Test func aBlockedDeletionIsNeverSent() async {
+    @Test func aBlockedDeletionIsNeverSent() async throws {
         let (manager, deleted) = manager(sessions: [session("a", .running)])
         manager.requestDelete(workspaceId: "w1")
-        #expect(manager.pendingDeletion?.isBlocked == true)
-        #expect(await manager.confirmDelete() == false)
+        let deletion = try #require(manager.pendingDeletion)
+        #expect(deletion.isBlocked)
+        #expect(await manager.confirmDelete(deletion) == false)
         #expect(backend.calls.isEmpty)
         #expect(deleted().isEmpty)
     }
 
-    @Test func theEnginesRefusalIsShown() async {
+    @Test func theEnginesRefusalIsShown() async throws {
         backend.failures["deleteWorkspace"] = .sessionsBusy
         let (manager, deleted) = manager()
         manager.requestDelete(workspaceId: "w1")
-        #expect(await manager.confirmDelete() == false)
+        #expect(await manager.confirmDelete(try #require(manager.pendingDeletion)) == false)
         #expect(manager.deleteProblem?.code == .invalidState)
         #expect(deleted().isEmpty)
     }

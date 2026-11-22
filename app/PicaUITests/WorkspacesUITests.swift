@@ -166,6 +166,119 @@ final class WorkspacesUITests: XCTestCase {
             "the first prompt's turn is not in the timeline")
         fixture.quit()
     }
+
+    /// Rename… from the workspace screen's menu: another workspace's name is refused as it is typed, a new one is sent
+    /// as `workspace.update` and reaches the screen and the sidebar.
+    @MainActor
+    func testRenamingAWorkspace() throws {
+        let fixture = try WorkspacesFixture(github: "signed-in")
+        defer { fixture.remove() }
+        try fixture.openWorkspace("Payments")
+        try fixture.openWorkspace("Platform")
+
+        fixture.element("pica.workspace.menu").click()
+        let rename = fixture.app.menuItems["pica.workspaceMenu.rename"]
+        XCTAssertTrue(rename.waitForExistence(timeout: 5), "the workspace menu has no Rename…")
+        rename.click()
+        let field = fixture.app.textFields["pica.renameWorkspace.name"]
+        XCTAssertTrue(field.waitForExistence(timeout: 5), "Rename… did not open")
+        XCTAssertEqual(field.value as? String, "Platform")
+        field.typeKey("a", modifierFlags: .command)
+        field.typeText("payments")
+        let save = fixture.app.buttons["pica.renameWorkspace.save"]
+        waitUntil("a taken name is refused", timeout: 5) { !save.isEnabled }
+        XCTAssertEqual(fixture.text("pica.renameWorkspace.invalid"), "Another workspace is already named “Payments”.")
+
+        field.typeKey("a", modifierFlags: .command)
+        field.typeText("Infra\r")
+        waitUntil("the workspace screen shows the new name", timeout: 10) {
+            fixture.text("pica.session.title") == "Infra"
+        }
+        XCTAssertFalse(fixture.element("pica.renameWorkspace").exists, "Rename stayed open")
+        let names = try fixture.pica.withEngine { engine in
+            try await engine.request(Methods.WorkspaceList.self).workspaces.map(\.name)
+        }
+        XCTAssertEqual(names.sorted(), ["Infra", "Payments"])
+        fixture.quit()
+    }
+
+    /// Delete Workspace… from the sidebar row's context menu: the confirmation says what goes, the engine ends the
+    /// idle session and deletes the workspace with it, and the selection moves to the other workspace.
+    @MainActor
+    func testDeletingAWorkspaceWithAnIdleSession() throws {
+        let fixture = try WorkspacesFixture(github: "signed-in")
+        defer { fixture.remove() }
+        let path = try fixture.pica.makeRepository("atlas")
+        try fixture.openWorkspace("Atlas")
+        try fixture.openWorkspace("Beacon")
+        let (beacon, session) = try fixture.pica.withEngine { engine in
+            let beacon = try await engine.request(Methods.WorkspaceList.self).workspaces.first { $0.name == "Beacon" }!
+            let repo = try await engine.addRepo(at: path, to: beacon)
+            let session = try await engine.createSession(in: beacon, writing: repo)
+            return (beacon, try await engine.waitUntilIdle(session.id))
+        }
+        XCTAssertTrue(
+            fixture.element("pica.sidebar.session.\(session.id)").waitForExistence(timeout: 10), "the session is not in the sidebar")
+
+        fixture.element("pica.sidebar.workspace.\(beacon.id)").rightClick()
+        let delete = fixture.app.menuItems["pica.workspaceMenu.delete"]
+        XCTAssertTrue(delete.waitForExistence(timeout: 5), "the sidebar row has no Delete Workspace…")
+        delete.click()
+        let confirm = fixture.app.buttons["Delete Workspace"]
+        XCTAssertTrue(confirm.waitForExistence(timeout: 5), "no confirmation")
+        let message = fixture.app.staticTexts.containing(
+            NSPredicate(format: "value CONTAINS %@ OR label CONTAINS %@", "nothing on disk is deleted", "nothing on disk is deleted"))
+        XCTAssertTrue(message.firstMatch.exists, "the confirmation does not say what stays on disk")
+        confirm.click()
+
+        waitUntil("Beacon leaves the sidebar", timeout: 10) {
+            !fixture.element("pica.sidebar.workspace.\(beacon.id)").exists
+        }
+        XCTAssertFalse(fixture.element("pica.sidebar.session.\(session.id)").exists, "the session stayed in the sidebar")
+        waitUntil("the selection moves to Atlas", timeout: 5) { fixture.text("pica.session.title") == "Atlas" }
+        let (names, sessions) = try fixture.pica.withEngine { engine in
+            let names = try await engine.request(Methods.WorkspaceList.self).workspaces.map(\.name)
+            let sessions = try await engine.request(Methods.SessionList.self, SessionListParams()).sessions
+            return (names, sessions)
+        }
+        XCTAssertEqual(names, ["Atlas"])
+        XCTAssertEqual(sessions, [])
+        XCTAssertTrue(FileManager.default.fileExists(atPath: path.path), "the repo's folder was deleted")
+        fixture.quit()
+    }
+
+    /// Removing a repo a team brought in: the confirmation says Sync won't bring it back and nothing is on disk, and
+    /// a sync afterwards leaves it out.
+    @MainActor
+    func testRemovingATeamRepoKeepsItOutOfLaterSyncs() throws {
+        let fixture = try WorkspacesFixture(github: "signed-in")
+        defer { fixture.remove() }
+        try fixture.openWorkspace("Platform")
+        try fixture.pica.withEngine { engine in
+            let workspace = try await engine.request(Methods.WorkspaceList.self).workspaces[0]
+            _ = try await engine.request(
+                Methods.WorkspaceAddSource.self,
+                WorkspaceAddSourceParams(workspaceId: workspace.id, kind: .team, org: "acme", selector: "platform"))
+            _ = try await engine.request(Methods.WorkspaceSync.self, WorkspaceSyncParams(workspaceId: workspace.id))
+        }
+        let remove = fixture.app.buttons["pica.workspace.repo.beacon.remove"]
+        XCTAssertTrue(remove.waitForExistence(timeout: 10), "beacon has no Remove button")
+        remove.click()
+        let confirm = fixture.app.buttons["Remove from Workspace"]
+        XCTAssertTrue(confirm.waitForExistence(timeout: 5), "no confirmation")
+        XCTAssertFalse(fixture.app.buttons["Remove and Delete Clone"].exists, "an uncloned repo offers to delete a clone")
+        let message = fixture.app.staticTexts.containing(
+            NSPredicate(format: "value CONTAINS %@ OR label CONTAINS %@", "Sync won’t add it back", "Sync won’t add it back"))
+        XCTAssertTrue(message.firstMatch.exists, "the confirmation does not say Sync won't add it back")
+        confirm.click()
+
+        waitUntil("beacon leaves the workspace", timeout: 10) { !fixture.element("pica.workspace.repo.beacon").exists }
+        fixture.app.buttons["pica.workspace.sync"].click()
+        waitUntil("the sync finishes", timeout: 10) { fixture.text("pica.workspace.syncStatus") == "Up to date." }
+        XCTAssertFalse(fixture.element("pica.workspace.repo.beacon").exists, "Sync added beacon back")
+        XCTAssertTrue(fixture.element("pica.workspace.repo.atlas").exists, "atlas left the workspace too")
+        fixture.quit()
+    }
 }
 
 @MainActor
