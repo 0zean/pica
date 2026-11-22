@@ -42,6 +42,13 @@ scrolls. Smart quotes and dashes are off, since `@"…"` and `--flags` must stay
 A click on a row inserts it too. An inserted item replaces the whole mention under the caret, not just the part before
 it, and is followed by a space unless one is already there.
 
+The list opens upward from the composer's box, over the timeline (the composer has the higher `zIndex` in the session
+column). It is as tall as its rows, at most up to `Spacing.small` below the top of `ComposerView.completionBounds`, a
+coordinate space the app target declares on the session column; past that it scrolls, and ↑ ↓ scroll it just enough
+to keep the selected row in view. So it stays inside the column at any window height, and moves up as the input grows.
+Without the coordinate space, the window's top is the limit. `CompletionListLayoutTests` (in the package) checks this
+in a real window at several heights, and `ComposerUITests` checks every row is inside the window and above the input.
+
 ## Mentions and skills
 
 `MentionTokenizer` finds tokens in the text, with ranges in UTF-16 units as `NSTextView` counts them, and finds the

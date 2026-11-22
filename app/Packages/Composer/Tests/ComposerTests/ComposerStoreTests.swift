@@ -164,7 +164,8 @@ import Testing
         backend.filesFail = true
         let store = await store()
         type("@x", into: store)
-        try await Task.sleep(for: .milliseconds(150))
+        // Wait for the failure itself rather than a fixed time: other suites' windows can hold up the main actor.
+        try await waitUntil { store.filesUnavailable }
         type("y", into: store)
         try await Task.sleep(for: .milliseconds(150))
         #expect(backend.fileQueries == ["x"])
@@ -242,8 +243,10 @@ final class FakeBackend: ComposerBackend, @unchecked Sendable {
          .fixture(id: "r2", localPath: "/src/beacon")]
     }
 
+    var agentNames = ["bulk-reader", "code-writer"]
+
     nonisolated func agents(workspaceId: Id) async throws -> [AgentDef] {
-        ["bulk-reader", "code-writer"].map {
+        await MainActor.run { agentNames }.map {
             AgentDef(name: $0, description: "", tier: .worker, tools: [], prompt: "", sourceLayer: .builtin, sourcePath: nil)
         }
     }
