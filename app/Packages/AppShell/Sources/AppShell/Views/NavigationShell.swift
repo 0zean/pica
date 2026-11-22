@@ -32,6 +32,7 @@ struct NavigationShell<Banner: View>: View {
                 }
         }
         .navigationTitle(title)
+        .sessionActionDialogs(store)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button {

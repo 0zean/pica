@@ -1,8 +1,8 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { err, ok, type SessionArtifacts } from "@pica/core";
 
-// Artifacts live at <root>/<sessionId>/artifacts/<name>. Each path segment is reduced to a safe
+// Artifacts live at <root>/<sessionId>/artifacts/<name>; `remove` deletes <root>/<sessionId>. Each path segment is reduced to a safe
 // file name so an id or name can never escape the session's directory.
 export function createSessionArtifacts(root: string): SessionArtifacts {
   return {
@@ -14,6 +14,14 @@ export function createSessionArtifacts(root: string): SessionArtifacts {
         return ok({ path });
       } catch (thrown) {
         return err({ code: "artifact.write_failed", message: thrown instanceof Error ? thrown.message : String(thrown) });
+      }
+    },
+    async remove(sessionId) {
+      try {
+        await rm(join(resolve(root), safeSegment(sessionId)), { recursive: true, force: true });
+        return ok(undefined);
+      } catch (thrown) {
+        return err({ code: "artifact.remove_failed", message: thrown instanceof Error ? thrown.message : String(thrown) });
       }
     },
   };

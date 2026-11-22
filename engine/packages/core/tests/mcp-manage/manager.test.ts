@@ -92,6 +92,18 @@ describe("attaching", () => {
     expect(state().sessions["s1"]).toEqual([{ serverId: "github", agent: null }]);
   });
 
+  it("drops a deleted session's attachments and leaves the others", async () => {
+    const { deps, state } = harness("ended");
+    const manager = createMcpManager(deps);
+    await manager.attach({ serverId: "github", target: { kind: "workspace", workspaceId: "ws" }, agent: null, acknowledgeCacheReset: false });
+    manager.seedSession("s1", "ws");
+    manager.seedSession("s2", "ws");
+    expect(manager.forgetSession("s1").ok).toBe(true);
+    expect(Object.keys(state().sessions)).toEqual(["s2"]);
+    expect(state().workspaces["ws"]).toEqual([{ serverId: "github", agent: null }]);
+    expect(manager.forgetSession("s1").ok).toBe(true);
+  });
+
   it("refuses a change while a turn runs, even when acknowledged", async () => {
     const { deps, reopened } = harness("running");
     const changed = await createMcpManager(deps).attach({ serverId: "github", target: { kind: "session", sessionId: "s1" }, agent: null, acknowledgeCacheReset: true });

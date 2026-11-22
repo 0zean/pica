@@ -5,20 +5,27 @@ import SwiftUI
 /// Draws the header's usage chip from the session's summed usage.
 public typealias UsageChipView = @MainActor (SessionUsageSummary) -> AnyView
 
+/// What the header's title offers: double-click renames, and its menu renames or deletes (the app target's
+/// NavigationStore performs them).
+public struct TimelineTitleActions {
+    public let rename: @MainActor () -> Void
+    public let delete: @MainActor () -> Void
+
+    public init(rename: @escaping @MainActor () -> Void, delete: @escaping @MainActor () -> Void) {
+        self.rename = rename
+        self.delete = delete
+    }
+}
+
 struct TimelineHeader: View {
     let store: TimelineStore
     let title: String
     var usageChip: UsageChipView?
+    var titleActions: TimelineTitleActions?
 
     var body: some View {
         HStack(spacing: Spacing.small) {
-            Text(title)
-                .font(Typography.headline)
-                .foregroundStyle(Palette.textPrimary)
-                .lineLimit(1)
-                .truncationMode(.tail)
-                .accessibilityAddTraits(.isHeader)
-                .accessibilityIdentifier("pica.session.title")
+            titleText
             if let failure = store.failure {
                 Label(failure, systemImage: "exclamationmark.triangle")
                     .font(Typography.caption)
@@ -41,6 +48,28 @@ struct TimelineHeader: View {
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("pica.timeline.header")
+    }
+
+    @ViewBuilder private var titleText: some View {
+        let text = Text(title)
+            .font(Typography.headline)
+            .foregroundStyle(Palette.textPrimary)
+            .lineLimit(1)
+            .truncationMode(.tail)
+            .accessibilityAddTraits(.isHeader)
+        if let titleActions {
+            text
+                .onTapGesture(count: 2) { titleActions.rename() }
+                .contextMenu {
+                    Button("Rename…") { titleActions.rename() }
+                    Button("Delete…", role: .destructive) { titleActions.delete() }
+                }
+                .help("Double-click to rename")
+                .accessibilityAction(named: "Rename") { titleActions.rename() }
+                .accessibilityIdentifier("pica.session.title")
+        } else {
+            text.accessibilityIdentifier("pica.session.title")
+        }
     }
 }
 

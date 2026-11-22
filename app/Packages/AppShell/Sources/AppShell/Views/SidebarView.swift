@@ -21,6 +21,7 @@ struct SidebarView: View {
                     ForEach(entry.sessions, id: \.id) { session in
                         SessionRow(session: session)
                             .tag(SidebarItem.session(session.id))
+                            .contextMenu { SessionActionMenuItems(store: store, sessionId: session.id) }
                     }
                 } label: {
                     WorkspaceRow(workspace: entry.workspace)

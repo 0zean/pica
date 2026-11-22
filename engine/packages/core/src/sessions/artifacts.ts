@@ -1,7 +1,7 @@
 import type { Result } from "../result.ts";
 
 export interface SessionArtifactError {
-  readonly code: "artifact.write_failed";
+  readonly code: "artifact.write_failed" | "artifact.remove_failed";
   readonly message: string;
 }
 
@@ -9,4 +9,6 @@ export interface SessionArtifactError {
 export interface SessionArtifacts {
   /** Writes `content` as UTF-8 and returns the absolute path an agent can read it from. */
   write(sessionId: string, name: string, content: string): Promise<Result<{ readonly path: string }, SessionArtifactError>>;
+  /** Removes every file kept for the session; succeeds when there are none. */
+  remove(sessionId: string): Promise<Result<undefined, SessionArtifactError>>;
 }

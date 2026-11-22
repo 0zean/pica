@@ -136,6 +136,15 @@ export const methods = {
   "session.abort": clientMethod(BySession, Ok),
   "session.resume": clientMethod(BySession, z.object({ session: Session })),
   "session.end": clientMethod(BySession, Ok),
+  // A user title, trimmed; an empty one clears it so the session falls back to its automatic title.
+  "session.rename": clientMethod(
+    z.object({ sessionId: Id, title: z.string().max(200) }),
+    z.object({ session: Session }),
+  ),
+  // Ends the session first when it is live (a running turn is stopped), then removes its events,
+  // approvals, MCP attachments and engine-owned files. Its usage records stay, so spend totals and
+  // the daily cap are unchanged. Announced by `session.deleted`.
+  "session.delete": clientMethod(BySession, Ok),
 
   "fanout.start": clientMethod(
     z.object({
@@ -402,6 +411,7 @@ export const NAMESPACES = [
 export const notifications = {
   "events.event": z.object({ subscriptionId: Id, event: SessionEvent }),
   "session.changed": z.object({ session: Session }),
+  "session.deleted": z.object({ sessionId: Id }),
   "workspace.changed": z.object({ workspace: Workspace }),
   "fanout.changed": z.object({ fanOut: FanOut }),
   "mcp.statusChanged": z.object({ status: McpServerStatus }),

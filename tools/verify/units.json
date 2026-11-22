@@ -826,6 +826,10 @@
     {
       "check": "Every sidebar item is reachable and activatable by keyboard alone.",
       "run": "make app-ui-test-pica UI_TEST=NavigationShellUITests/testEverySidebarItemIsReachableAndActivatableByKeyboardAlone"
+    },
+    {
+      "check": "Rename and delete a session (added 2026-11-22 for M4): engine tests for `session.rename`/`session.delete`, and a UI test renames from the sidebar menu and the title, and deletes from the palette and the sidebar menu with a confirmation.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/sessions/rename-delete.test.ts packages/adapters/tests/store/migrations.test.ts && cd .. && swift test --package-path app/Packages/AppShell --filter 'SessionDeletionSelectionTests|SessionRenameDeleteEngineTests' && make app-ui-test-pica UI_TEST=SessionRenameDeleteUITests"
     }
   ],
   "A-05": [

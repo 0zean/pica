@@ -186,7 +186,10 @@ struct PicaApp: App {
                 VStack(spacing: 0) {
                     SessionTimelineScreen(
                         sessionId: session.id, title: session.displayTitle, historySeq: session.lastSeq, client: client,
-                        usageChip: { usage in usageChip(usage, session: session, client: client) }
+                        usageChip: { usage in usageChip(usage, session: session, client: client) },
+                        titleActions: TimelineTitleActions(
+                            rename: { [navigation = launch.navigation] in navigation.beginRename(session.id) },
+                            delete: { [navigation = launch.navigation] in navigation.beginDelete(session.id) })
                     )
                     .environment(timelineMetrics)
                     SessionComposer(session: session, client: client, drafts: drafts)

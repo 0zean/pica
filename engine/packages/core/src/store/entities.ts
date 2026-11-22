@@ -54,6 +54,8 @@ export interface Session {
   readonly state: SessionState;
   readonly routingProfile: string;
   readonly budgetMaxCredits: number | null;
+  // The title the user gave the session; absent when they gave none.
+  readonly title?: string;
   readonly createdAt: string;
   readonly updatedAt: string;
 }

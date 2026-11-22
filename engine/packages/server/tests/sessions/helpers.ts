@@ -2,6 +2,7 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { AgentRuntime, RuntimeHooks, Store } from "@pica/core";
+import type { EngineSessionOptions } from "../../src/engine.ts";
 import { openSqliteStore } from "@pica/adapters";
 import { scenarioSchema, sequentialIds, steppingClock } from "@pica/testkit";
 import type { Scenario } from "@pica/testkit";
@@ -55,6 +56,7 @@ export interface SessionEngine {
 export async function startSessionEngine(
   runtime: AgentRuntime,
   hooks?: (sessionId: string) => RuntimeHooks,
+  extra?: (dir: string) => Partial<EngineSessionOptions>,
 ): Promise<SessionEngine> {
   const dir = await mkdtemp(join(tmpdir(), "picad-sessions-"));
   const socketPath = join(dir, "run", "picad.sock");
@@ -70,6 +72,7 @@ export async function startSessionEngine(
       clock: steppingClock("2026-11-13T09:00:00.000Z"),
       newSessionId: () => ids("session"),
       ...(hooks === undefined ? {} : { hooks }),
+      ...extra?.(dir),
     },
   });
   const clients: TestClient[] = [];

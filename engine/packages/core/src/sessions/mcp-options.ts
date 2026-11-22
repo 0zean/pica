@@ -11,6 +11,8 @@ export interface SessionMcpOptions {
 export interface SessionMcp {
   seed(session: Session): void;
   options(session: Session): Promise<SessionMcpOptions>;
+  // Drops the session's attachments once it is deleted.
+  forget?(sessionId: string): void;
 }
 
 type AgentOptions = Pick<SessionOptions, "customAgents">;

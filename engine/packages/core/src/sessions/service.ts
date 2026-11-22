@@ -46,6 +46,9 @@ export interface SessionServiceDeps {
   // config. Without it, `defaultRoutingProfile`.
   readonly defaultProfile?: (workspaceId: string) => SessionRoutingProfile;
   readonly onChanged?: (session: SessionInfo) => void;
+  // Called once a session is deleted, for what the engine keeps outside the store (MCP
+  // attachments, artifacts) and to announce it.
+  readonly onDeleted?: (sessionId: string) => Promise<void> | void;
   // C-09: without `usage` the workspace daily cap is not checked and spend starts at zero on resume.
   readonly budget?: BudgetSettings;
   readonly usage?: Pick<UsageRepository, "rollup">;
@@ -87,6 +90,11 @@ export interface SessionService {
   abort(sessionId: string): Promise<SessionResult<undefined>>;
   resume(sessionId: string): Promise<SessionResult<SessionInfo>>;
   end(sessionId: string): Promise<SessionResult<undefined>>;
+  // Sets the user's title (trimmed); an empty one clears it. Allowed in every state.
+  rename(sessionId: string, title: string): SessionResult<SessionInfo>;
+  // Ends a live session first, stopping any turn and dropping its pending approvals, then removes
+  // its events and what the runtime keeps of it. Usage records stay. Allowed in every state.
+  delete(sessionId: string): Promise<SessionResult<undefined>>;
   listApprovals(sessionId: string): SessionResult<readonly PendingApproval[]>;
   // Each pending approval is resolved at most once; a repeat answers `session.approval_not_found`.
   // For a budget approval, allowing raises the session limit to `budgetCredits` (by default, by
@@ -767,6 +775,51 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     return ok(undefined);
   }
 
+  const maxTitleLength = 200;
+
+  function rename(sessionId: string, title: string): SessionResult<SessionInfo> {
+    const stored = read(sessionId);
+    if (!stored.ok) {
+      return stored;
+    }
+    const trimmed = title.trim();
+    if (trimmed.length > maxTitleLength) {
+      return sessionFailure("session.invalid_request", `a session title is at most ${String(maxTitleLength)} characters`);
+    }
+    const renamed = store.sessions.rename(sessionId, trimmed === "" ? null : trimmed);
+    if (!renamed.ok) {
+      storage.notice(sessionId, renamed.error);
+      return storeFailure(renamed.error, `session ${sessionId}`);
+    }
+    return changed(withTitle(stored.value, trimmed));
+  }
+
+  async function remove(sessionId: string): Promise<SessionResult<undefined>> {
+    const stored = read(sessionId);
+    if (!stored.ok) {
+      return stored;
+    }
+    const session = live.get(sessionId);
+    if (session !== undefined) {
+      live.delete(sessionId);
+      session.unsubscribe();
+      await session.runtime.close();
+    }
+    const deleted = store.sessions.delete(sessionId, clock());
+    if (!deleted.ok) {
+      storage.notice(sessionId, deleted.error);
+      return storeFailure(deleted.error, `session ${sessionId}`);
+    }
+    // The runtime may hold nothing for a session that never started; that is not a failure.
+    await deps.runtime.deleteSession?.(sessionId);
+    if (stored.value.state !== "ended" && stored.value.state !== "failed") {
+      await lifecycle("sessionEnd", stored.value);
+    }
+    deps.mcp?.forget?.(sessionId);
+    await deps.onDeleted?.(sessionId);
+    return ok(undefined);
+  }
+
   async function create(request: CreateSessionRequest): Promise<SessionResult<SessionInfo>> {
     const roots = resolveRoots(request);
     if (!roots.ok) {
@@ -820,6 +873,11 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
       ...engineTools(session),
       ...(await withSessionMcp(session, delegation.value)),
     });
+    if (opened.ok && !read(session.id).ok) {
+      // Deleted while its runtime was starting.
+      await opened.value.close();
+      return sessionFailure("session.not_found", `session ${session.id} was deleted`);
+    }
     if (!opened.ok) {
       append(session.id, { type: "session.error", payload: { code: opened.error.code, message: opened.error.message }, timestamp: clock() });
       move(session.id, "fail");
@@ -941,6 +999,8 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     abort,
     resume,
     end,
+    rename,
+    delete: remove,
     listApprovals: (sessionId) => {
       const session = read(sessionId);
       if (!session.ok) {
@@ -956,6 +1016,21 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
         return state === "running" || state === "awaiting_approval";
       }).length,
   };
+}
+
+function withTitle(session: Session, title: string): Session {
+  const untitled: Session = {
+    id: session.id,
+    workspaceId: session.workspaceId,
+    writeRoots: session.writeRoots,
+    referenceRoots: session.referenceRoots,
+    state: session.state,
+    routingProfile: session.routingProfile,
+    budgetMaxCredits: session.budgetMaxCredits,
+    createdAt: session.createdAt,
+    updatedAt: session.updatedAt,
+  };
+  return title === "" ? untitled : { ...untitled, title };
 }
 
 function stateChanged(from: SessionState | null, to: SessionState, timestamp: string): EventDraft {

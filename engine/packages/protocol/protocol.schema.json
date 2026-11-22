@@ -277,6 +277,24 @@
         "$ref": "#/$defs/Ok"
       }
     },
+    "session.rename": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/SessionRenameParams"
+      },
+      "result": {
+        "$ref": "#/$defs/SessionRenameResult"
+      }
+    },
+    "session.delete": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/BySession"
+      },
+      "result": {
+        "$ref": "#/$defs/Ok"
+      }
+    },
     "fanout.start": {
       "direction": "client",
       "params": {
@@ -728,6 +746,11 @@
     "session.changed": {
       "params": {
         "$ref": "#/$defs/SessionChangedNotification"
+      }
+    },
+    "session.deleted": {
+      "params": {
+        "$ref": "#/$defs/SessionDeletedNotification"
       }
     },
     "workspace.changed": {
@@ -4937,6 +4960,17 @@
         "session"
       ]
     },
+    "SessionDeletedNotification": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "sessionId"
+      ]
+    },
     "SessionErrorEvent": {
       "type": "object",
       "properties": {
@@ -5076,6 +5110,33 @@
       },
       "required": [
         "sessions"
+      ]
+    },
+    "SessionRenameParams": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 200
+        }
+      },
+      "required": [
+        "sessionId",
+        "title"
+      ]
+    },
+    "SessionRenameResult": {
+      "type": "object",
+      "properties": {
+        "session": {
+          "$ref": "#/$defs/Session"
+        }
+      },
+      "required": [
+        "session"
       ]
     },
     "SessionResumeResult": {
