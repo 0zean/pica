@@ -77,6 +77,32 @@ describe("gh CLI provider", () => {
     expect(gh.calls).toEqual([["gh", "auth", "token", "--hostname", "ghe.corp.example"]]);
   });
 
+  it("tries the usual install paths when gh is not on PATH", async () => {
+    const calls: string[] = [];
+    const provider = createGhCliCredentialProvider({
+      run: (command) => {
+        calls.push(command);
+        return Promise.resolve(command === "/usr/local/bin/gh" ? { exitCode: 0, stdout: "gho_brew\n" } : null);
+      },
+    });
+    const token = await provider.token(credentialRequest(resolveGitHubHost({ host: "github.com" })));
+    expect(token).toEqual({ ok: true, value: "gho_brew" });
+    expect(calls).toEqual(["gh", "/opt/homebrew/bin/gh", "/usr/local/bin/gh"]);
+  });
+
+  it("runs only the configured gh when one is given", async () => {
+    const calls: string[] = [];
+    const provider = createGhCliCredentialProvider({
+      ghPath: "/custom/gh",
+      run: (command) => {
+        calls.push(command);
+        return Promise.resolve(null);
+      },
+    });
+    expect(await provider.token(credentialRequest(resolveGitHubHost({ host: "github.com" })))).toEqual({ ok: true, value: null });
+    expect(calls).toEqual(["/custom/gh"]);
+  });
+
   it.each(["logged_out", "not_installed"] as const)("has nothing to offer when gh is %s", async (state) => {
     const provider = createGhCliCredentialProvider({ run: fakeGh(state).run });
     const token = await provider.token(credentialRequest(resolveGitHubHost({ host: "github.com" })));

@@ -25,6 +25,39 @@
 
 A missing engine is reported as `engine_not_found` without starting anything.
 
+## The engine's PATH
+
+An app opened from Finder or the Dock gets launchd's `PATH`, `/usr/bin:/bin:/usr/sbin:/sbin`, not the one the user's
+shell sets up. The engine inherits it, and so does everything it spawns (`gh`, MCP stdio servers, hooks, the tools
+of a session), so a `gh` from Homebrew was not found and GitHub showed as signed out though `gh auth status` was fine
+in a terminal. Started from a terminal or Xcode, the app had the shell's `PATH` and the problem did not show.
+
+So at launch (`AppLaunch`) the app asks the user's login shell for its `PATH`, off the main actor, while the window
+comes up (`LoginShellPath`, `AppShell/Engine/LoginShellPath.swift`):
+
+- The shell is `SHELL` if absolute, else the account's shell, else `/bin/zsh`, as the terminal picks it (A-10). It runs
+  as `<shell> -l -i -c "printf '%s' '<marker>'; /usr/bin/printenv PATH; printf '%s' '<marker>'"` in the home
+  directory, with stdin from `/dev/null`, stderr discarded and `PICA_RESOLVING_PATH=1` set, so a slow rc file can
+  skip work (`[[ -n $PICA_RESOLVING_PATH ]] && return`). Login and interactive, so `.zprofile` and `.zshrc` (or
+  `.bash_profile`) are read, where Homebrew, nvm and asdf put their directories. The marker is new for each run, and
+  whatever the rc files print around it (banners, terminal escapes) is ignored.
+- The shell has 3 s. Then, or if it cannot run or prints no answer, it is killed and the fallback is used: the
+  directories of `/opt/homebrew/bin`, `/opt/homebrew/sbin`, `/usr/local/bin` and `~/.local/bin` that exist.
+- The engine's `PATH` is the shell's (or the fallback's) entries, then those of the app's own `PATH` they lack.
+  Nothing else in the environment changes. `command.environment` is added on top as before.
+- The first engine start waits for the answer (`EngineSupervisor`'s `baseEnvironment`); restarts reuse it. The window
+  does not wait, so the cold launch budget is not affected. On the reference Mac a zsh with nvm and asdf answers in
+  about 1.1 s; a plain zsh in about 20 ms. An engine that is already listening (the CLI's) is used as it is.
+
+On the engine side, the `gh` credential provider also tries `/opt/homebrew/bin/gh`, `/usr/local/bin/gh` and
+`/opt/local/bin/gh` when `gh` is not on its `PATH` (`fallbackGhPaths`), for an engine the CLI started from a
+stripped environment. `engine.git` needs no fallback: `/usr/bin/git` is on launchd's `PATH`.
+
+Tests: `LoginShellPathTests` (AppShell) cover the parsing, the merge, the fallback, the shell order, a shell that
+prints noise, one that is too slow (killed after its timeout), a missing or failing shell, the real `/bin/zsh`, and an
+engine stand-in started from launchd's `PATH` that logs the resolved one. `credential-providers.test.ts` covers the
+`gh` fallback paths.
+
 ## Supervision
 
 1. At launch the supervisor first connects to the socket. An engine that is already listening, such as one the CLI

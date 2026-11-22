@@ -64,11 +64,14 @@ public final class AppLaunch {
         var clientConfiguration = EngineSupervisor.clientConfiguration()
         clientConfiguration.clientVersion = bundle.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0.0.0"
         let secrets: any SecretBroker = environment["PICA_SECRETS"] == "memory" ? InMemorySecretBroker() : KeychainSecretBroker()
+        // Asked now, off the main actor, so the login shell runs while the window comes up; the first start awaits it.
+        let engineEnvironment = Task.detached(priority: .userInitiated) { await LoginShellPath.engineEnvironment(environment) }
         let supervisor = EngineSupervisor(
             command: EngineCommand.resolve(environment: environment, bundle: bundle),
             socketPath: socket,
             secrets: secrets,
-            clientConfiguration: clientConfiguration)
+            clientConfiguration: clientConfiguration,
+            baseEnvironment: { await engineEnvironment.value })
         let model = AppModel(supervisor: supervisor)
         let stateFile = WindowStateFile(url: URL(filePath: socket).deletingLastPathComponent().appending(path: "window-state.json"))
         let navigation = NavigationStore(client: supervisor.client, stateFile: stateFile)
