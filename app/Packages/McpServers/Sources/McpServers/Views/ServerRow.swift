@@ -2,13 +2,22 @@ import DesignSystem
 import PicaProtocol
 import SwiftUI
 
-private enum Column {
+/// Fixed column widths shared by the header and every row. `actions` fits the widest case: Sign In, Edit and ⋯.
+enum Column {
     static let scope: CGFloat = 84
     static let health: CGFloat = 130
     static let tools: CGFloat = 56
     static let tokens: CGFloat = 110
     static let attached: CGFloat = 104
-    static let actions: CGFloat = 120
+    static let actions: CGFloat = 164
+
+    /// The window's minimum width leaves the server's name this much room.
+    static let minimumName: CGFloat = 160
+    /// Every fixed column, their spacing and the row's padding: with `minimumName`, the MCP Servers window's minimum width.
+    static var minimumRowWidth: CGFloat {
+        let fixed = scope + health + tools + tokens + attached + actions
+        return minimumName + fixed + 6 * Spacing.medium + 2 * Spacing.medium
+    }
 }
 
 struct ServerRowHeader: View {
@@ -70,7 +79,11 @@ struct ServerRow: View {
                     .frame(width: Column.attached)
                     .accessibilityIdentifier("pica.mcp.attachWorkspace.\(server.id)")
             }
-            actions.frame(width: Column.actions, alignment: .trailing)
+            ServerRowActions(
+                server: server, needsAuth: status?.state == .needsAuth, offersSignIn: offersSignIn, edit: edit,
+                signIn: signIn, recheck: recheck, remove: remove
+            )
+            .frame(width: Column.actions, alignment: .trailing)
         }
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, Spacing.small)
@@ -79,10 +92,21 @@ struct ServerRow: View {
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("pica.mcp.row.\(server.id)")
     }
+}
 
-    private var actions: some View {
+/// A row's buttons, kept on one line: their labels never wrap, whatever room the row leaves them.
+struct ServerRowActions: View {
+    let server: McpServerDef
+    let needsAuth: Bool
+    let offersSignIn: Bool
+    let edit: () -> Void
+    let signIn: () -> Void
+    let recheck: () -> Void
+    let remove: () -> Void
+
+    var body: some View {
         HStack(spacing: Spacing.xSmall) {
-            if offersSignIn && status?.state == .needsAuth {
+            if offersSignIn && needsAuth {
                 Button("Sign In", action: signIn).buttonStyle(.pica(.primary))
                     .accessibilityIdentifier("pica.mcp.signIn.\(server.id)")
             }
@@ -102,5 +126,7 @@ struct ServerRow: View {
             .accessibilityLabel("More")
             .accessibilityIdentifier("pica.mcp.more.\(server.id)")
         }
+        .lineLimit(1)
+        .fixedSize()
     }
 }

@@ -26,6 +26,8 @@ let package = Package(
                 "McpServers",
                 "PicaProtocol",
                 .product(name: "EngineClient", package: "EngineClient"),
-            ]),
+                .product(name: "DesignSystemTestSupport", package: "DesignSystem"),
+            ],
+            exclude: ["__Snapshots__"]),
     ]
 )
