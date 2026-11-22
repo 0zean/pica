@@ -22,10 +22,22 @@ public struct SessionComposer: View {
 }
 
 /// The composer: completions above the input, the input, and a bar of pickers and send controls.
+///
+/// The completion list opens upward over whatever is above the composer, and is never taller than the space between
+/// the composer and the top of `completionBounds`: a coordinate space the host declares around the composer and what
+/// sits above it (the app target declares it on the session column). Without one, the list goes up to the window's
+/// top.
 public struct ComposerView: View {
+    /// The space the completion list may grow into; see the type's documentation.
+    public nonisolated static var completionBounds: NamedCoordinateSpace { .named("pica.composer.completionBounds") }
+    /// Kept between the list and the top of `completionBounds`.
+    static let completionMargin = Spacing.small
+
     let store: ComposerStore
     @Environment(ComposerMetrics.self) private var metrics: ComposerMetrics?
     @State private var inputHeight = ComposerInput.height(forContent: ComposerInput.lineHeight)
+    /// From the top of `completionBounds` to the top of the composer's box.
+    @State private var spaceAbove: CGFloat = 0
 
     public init(store: ComposerStore) {
         self.store = store
@@ -41,11 +53,13 @@ public struct ComposerView: View {
         .padding(.vertical, Spacing.small)
         .background(RoundedRectangle(cornerRadius: Radius.large, style: .continuous).fill(Palette.surface))
         .overlay(RoundedRectangle(cornerRadius: Radius.large, style: .continuous).stroke(Palette.border))
+        .onGeometryChange(for: CGFloat.self, of: { $0.frame(in: Self.completionBounds).minY }) { spaceAbove = $0 }
+        .probedFrame("box")
+        // The guide must sit outside any `if`: SwiftUI ignores an alignment guide set inside a conditional overlay,
+        // which left the list hanging down from the composer's top, past the window.
         .overlay(alignment: .topLeading) {
-            if let completion = store.completion {
-                CompletionList(store: store, completion: completion)
-                    .alignmentGuide(.top) { $0[.bottom] + Spacing.xSmall }
-            }
+            CompletionPopup(store: store, maxHeight: spaceAbove - Spacing.xSmall - Self.completionMargin)
+                .alignmentGuide(.top) { $0[.bottom] + Spacing.xSmall }
         }
         .padding(.horizontal, Spacing.large)
         .padding(.bottom, Spacing.medium)

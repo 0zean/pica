@@ -189,9 +189,13 @@ struct PicaApp: App {
                         usageChip: { usage in usageChip(usage, session: session, client: client) }
                     )
                     .environment(timelineMetrics)
+                    // Over the timeline, so the completions it opens upward draw on top.
                     SessionComposer(session: session, client: client, drafts: drafts)
                         .environment(composerMetrics)
+                        .zIndex(1)
                 }
+                // The completions may grow up to the top of the column, and no further.
+                .coordinateSpace(ComposerView.completionBounds)
             } review: {
                 SessionReview(session: session, client: client)
                     .environment(reviewMetrics)
