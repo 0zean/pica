@@ -915,7 +915,7 @@ Units A-02 and A-03 can start as soon as E-02 is done and run in parallel with P
   - [x] Killing the engine shows a reconnecting state and recovers within 2 s.
   - [x] A protocol major mismatch shows a blocking error naming both versions.
   - [x] Cold launch to interactive window is under 1.0 s (performance test with baseline).
-- Notes: `app/Packages/AppShell`, specified in [docs/app-shell.md](docs/app-shell.md). An engine already listening (the CLI's) is reused. Tests run `picad`'s production composition with a FakeRuntime (`engine/packages/server/tests/processes/fake-picad.ts`), so `make verify-app` now needs Node and the engine's packages. Measured on 2026-11-16: recovery about 0.43 s; cold launch median 0.43 s.
+- Notes: `app/Packages/AppShell`, specified in [docs/app-shell.md](docs/app-shell.md). An engine already listening (the CLI's) is reused. Tests run `picad`'s production composition with a FakeRuntime (`engine/packages/server/tests/processes/fake-picad.ts`), so `make verify-app` now needs Node and the engine's packages. Measured on 2026-11-16: recovery about 0.43 s; cold launch median 0.43 s. 2026-11-21: opened from Finder the engine had launchd's `PATH`, so Homebrew's `gh` was not found and GitHub showed signed out (found in M4); the app now asks the login shell for its `PATH` at launch (3 s limit, else the usual Homebrew and `~/.local/bin` directories) and merges it into the engine's environment, and the `gh` provider also tries the Homebrew paths ([docs/app-shell.md](docs/app-shell.md#the-engines-path)).
 
 **A-02 · EngineClient** — E-02
 - Build: actor with typed requests and event streams as `AsyncSequence`, resuming from the last `seq`.

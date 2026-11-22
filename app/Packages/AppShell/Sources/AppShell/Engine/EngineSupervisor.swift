@@ -29,6 +29,8 @@ public actor EngineSupervisor {
     /// The client the app talks to the engine through. It outlives engine restarts, so event streams resume (A-02).
     public nonisolated let client: EngineClient
     private let command: Result<EngineCommand, EngineFailure>
+    /// The environment a started engine inherits before `command.environment` is added; awaited before each start.
+    private let baseEnvironment: @Sendable () async -> [String: String]
     private let socketPath: String
     private let logURL: URL
     private let appProtocol: ProtocolVersion
@@ -59,9 +61,11 @@ public actor EngineSupervisor {
         secrets: any SecretBroker,
         clientConfiguration: EngineClient.Configuration = EngineSupervisor.clientConfiguration(),
         configuration: Configuration = Configuration(),
-        clock: any Clock<Duration> = ContinuousClock()
+        clock: any Clock<Duration> = ContinuousClock(),
+        baseEnvironment: @escaping @Sendable () async -> [String: String] = { ProcessInfo.processInfo.environment }
     ) {
         self.command = command
+        self.baseEnvironment = baseEnvironment
         self.socketPath = socketPath
         logURL = URL(filePath: socketPath).deletingLastPathComponent().appending(path: "picad.log")
         appProtocol = clientConfiguration.protocolVersion
@@ -211,7 +215,8 @@ public actor EngineSupervisor {
     private func startOnce(_ command: EngineCommand) async -> Result<Void, EngineFailure> {
         let engine: EngineProcess
         do {
-            engine = try EngineProcess.start(command, socketPath: socketPath, logURL: logURL)
+            engine = try EngineProcess.start(
+                command, socketPath: socketPath, logURL: logURL, baseEnvironment: await baseEnvironment())
         } catch {
             return .failure(error)
         }

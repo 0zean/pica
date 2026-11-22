@@ -39,7 +39,12 @@ final class EngineProcess: Sendable {
         self.logOffset = logOffset
     }
 
-    static func start(_ command: EngineCommand, socketPath: String, logURL: URL) throws(EngineFailure) -> EngineProcess {
+    /// `baseEnvironment` is what the engine inherits before `command.environment` is added: the app passes its own
+    /// with the login shell's `PATH` (`LoginShellPath`).
+    static func start(
+        _ command: EngineCommand, socketPath: String, logURL: URL,
+        baseEnvironment: [String: String] = ProcessInfo.processInfo.environment
+    ) throws(EngineFailure) -> EngineProcess {
         let log: FileHandle
         let offset: UInt64
         do {
@@ -57,7 +62,7 @@ final class EngineProcess: Sendable {
         let process = Process()
         process.executableURL = command.executable
         process.arguments = command.arguments + ["--socket", socketPath]
-        process.environment = ProcessInfo.processInfo.environment.merging(command.environment) { _, added in added }
+        process.environment = baseEnvironment.merging(command.environment) { _, added in added }
         let stdout = Pipe()
         process.standardInput = FileHandle.nullDevice
         process.standardOutput = stdout
