@@ -29,6 +29,36 @@ final class ComposerUITests: XCTestCase {
         fixture.quit()
     }
 
+    /// The composer sits at the bottom of the window, so the list opens upward: every row is inside the window and
+    /// above the input, and a click on a row (drawn over the timeline) inserts it.
+    @MainActor
+    func testCompletionsOpenAboveTheInputInsideTheWindow() throws {
+        let fixture = try ComposerFixture()
+        defer { fixture.remove() }
+        let input = fixture.focusInput()
+        input.typeText("@")
+        let list = fixture.app.descendants(matching: .any)["pica.composer.completions"]
+        XCTAssertTrue(list.waitForExistence(timeout: 5), "typing @ did not open the completions")
+        let rows = list.descendants(matching: .any)
+            .matching(NSPredicate(format: "identifier BEGINSWITH %@", "pica.composer.completion."))
+        waitUntil("the repos and agents are offered", timeout: 5) { rows.count > 2 }
+
+        let window = fixture.app.windows.firstMatch.frame
+        XCTAssertTrue(window.contains(list.frame), "the list \(list.frame) is outside the window \(window)")
+        XCTAssertLessThanOrEqual(list.frame.maxY, input.frame.minY, "the list \(list.frame) is not above the input \(input.frame)")
+        for row in rows.allElementsBoundByIndex {
+            XCTAssertTrue(window.contains(row.frame), "\(row.identifier) at \(row.frame) is outside the window \(window)")
+            XCTAssertTrue(list.frame.contains(row.frame), "\(row.identifier) at \(row.frame) is outside the list \(list.frame)")
+        }
+
+        let row = rows.element(boundBy: 1)
+        let name = String(row.identifier.dropFirst("pica.composer.completion.".count).drop { $0 != "." }.dropFirst())
+        row.click()
+        XCTAssertEqual(input.value as? String, "@\(name) ")
+        waitUntil("the completions close", timeout: 5) { !list.exists }
+        fixture.quit()
+    }
+
     /// A-09 serves `files.quickOpen` and `files.list`, so files and skills complete too.
     @MainActor
     func testFilesAndSkillsComplete() throws {

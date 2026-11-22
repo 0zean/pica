@@ -8,6 +8,8 @@ public typealias SessionContent = @MainActor (Session, EngineClient) -> AnyView
 
 /// Draws a selected workspace in the session column, given its repos as the sidebar holds them (A-12).
 public typealias WorkspaceContent = @MainActor (Workspace, [Repo]) -> AnyView
+/// A workspace row's context menu items in the sidebar, from the app target (rename, delete).
+public typealias WorkspaceMenu = @MainActor (Workspace) -> AnyView
 
 /// The middle column: the selected session, as the app target draws it (the timeline, A-05), or what is selected
 /// when it is not a session.

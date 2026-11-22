@@ -9,14 +9,21 @@ import type {
 import type { DatabaseSync } from "node:sqlite";
 import { inTransaction } from "./database.ts";
 import { attempt, fail } from "./errors.ts";
-import { json, text } from "./rows.ts";
+import { integer, json, text } from "./rows.ts";
 import type { Row } from "./rows.ts";
 
-type StoredSource = Omit<RepoSource, "id" | "snapshot" | "repoIds"> & Partial<RepoSource>;
+type StoredSource = Omit<RepoSource, "id" | "snapshot" | "repoIds" | "excludedRemoteUrls"> & Partial<RepoSource>;
 
 // Sources saved before R-06 have no id or sync state; their position is a stable id within the workspace.
+// Sources saved before exclusions have none.
 function withSyncFields(source: StoredSource, index: number): RepoSource {
-  return { ...source, id: source.id ?? `source-${String(index)}`, snapshot: source.snapshot ?? null, repoIds: source.repoIds ?? [] };
+  return {
+    ...source,
+    id: source.id ?? `source-${String(index)}`,
+    snapshot: source.snapshot ?? null,
+    repoIds: source.repoIds ?? [],
+    excludedRemoteUrls: source.excludedRemoteUrls ?? [],
+  };
 }
 
 export function sqliteWorkspaceRepository(db: DatabaseSync): WorkspaceRepository {
@@ -38,6 +45,17 @@ export function sqliteWorkspaceRepository(db: DatabaseSync): WorkspaceRepository
     "SELECT repo_id FROM workspace_pinned_repos WHERE workspace_id = ? ORDER BY position",
   );
   const remove = db.prepare("DELETE FROM workspaces WHERE id = ?");
+  const liveSessions = db.prepare(
+    `SELECT COUNT(*) AS live FROM sessions WHERE workspace_id = ?
+      AND state IN ('starting', 'idle', 'running', 'awaiting_approval')`,
+  );
+  const removeUsage = db.prepare(
+    "DELETE FROM usage_records WHERE session_id IN (SELECT id FROM sessions WHERE workspace_id = ?)",
+  );
+  const removeEvents = db.prepare(
+    "DELETE FROM session_events WHERE session_id IN (SELECT id FROM sessions WHERE workspace_id = ?)",
+  );
+  const removeSessions = db.prepare("DELETE FROM sessions WHERE workspace_id = ?");
 
   function toWorkspace(row: Row): Workspace {
     const id = text(row, "id");
@@ -77,6 +95,20 @@ export function sqliteWorkspaceRepository(db: DatabaseSync): WorkspaceRepository
     delete: (id) =>
       attempt(() =>
         remove.run(id).changes === 0 ? fail("store.not_found", `workspace ${id} not found`) : ok(undefined),
+      ),
+    deleteWithSessions: (id) =>
+      attempt(() =>
+        inTransaction(db, () => {
+          if (byId.get(id) === undefined) return fail("store.not_found", `workspace ${id} not found`);
+          const row = liveSessions.get(id);
+          const live = row === undefined ? 0 : integer(row, "live");
+          if (live > 0) return fail("store.conflict", `workspace ${id} has ${String(live)} open session(s)`);
+          removeUsage.run(id);
+          removeEvents.run(id);
+          removeSessions.run(id);
+          remove.run(id);
+          return ok(undefined);
+        }),
       ),
   };
 }

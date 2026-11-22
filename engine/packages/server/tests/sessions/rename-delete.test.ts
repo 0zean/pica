@@ -35,7 +35,7 @@ interface Started {
 async function start(turns: unknown[] = []): Promise<Started> {
   const runtime = new FakeRuntime({ scenario: scenario(turns) });
   let artifacts: SessionArtifacts | undefined;
-  engine = await startSessionEngine(runtime, undefined, (dir) => {
+  engine = await startSessionEngine(runtime, undefined, undefined, (dir) => {
     artifacts = createSessionArtifacts(join(dir, "sessions"));
     return {
       outputGuard: {

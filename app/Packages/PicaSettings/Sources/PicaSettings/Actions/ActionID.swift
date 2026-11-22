@@ -15,6 +15,8 @@ public enum ActionID: String, CaseIterable, Sendable, Codable {
     case addRepository
     case importTeams
     case syncWorkspace
+    case renameWorkspace
+    case deleteWorkspace
     case showUsage
     case showSessionOverview
     case showCustomization
@@ -92,6 +94,12 @@ public enum ActionCatalog {
         case .syncWorkspace:
             ActionDefinition(id: id, title: "Sync Workspace", menu: .file, defaultShortcut: nil,
                 keywords: ["refresh", "github", "team"])
+        case .renameWorkspace:
+            ActionDefinition(id: id, title: "Rename Workspace…", menu: .file, defaultShortcut: nil,
+                keywords: ["name", "edit"])
+        case .deleteWorkspace:
+            ActionDefinition(id: id, title: "Delete Workspace…", menu: .file, defaultShortcut: nil,
+                keywords: ["remove", "trash"])
         case .showUsage:
             ActionDefinition(id: id, title: "Usage Dashboard", menu: .window, defaultShortcut: Shortcut("shift+cmd+u"),
                 keywords: ["cost", "credits", "tokens", "budget", "savings"])

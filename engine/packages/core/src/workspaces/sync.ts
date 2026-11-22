@@ -2,6 +2,7 @@ import type { DiscoveredRepo } from "../discovery/model.ts";
 import { selectorForSource } from "../discovery/selectors.ts";
 import { syncRepoSource } from "../discovery/sync.ts";
 import type { DiscoveryError } from "../discovery/errors.ts";
+import { normalizeRemoteUrl } from "../repos/remote-url.ts";
 import { err, ok } from "../result.ts";
 import type { Repo, RepoSource } from "../store/entities.ts";
 import { fromStore, loadWorkspace, saveWorkspace, type WorkspaceResult, type WorkspaceServiceDeps } from "./deps.ts";
@@ -44,12 +45,20 @@ export async function syncSource(deps: WorkspaceServiceDeps, source: RepoSource,
   const synced = await syncRepoSource(client.value, selector.value, source.snapshot, { filter: deps.discovery.filter, now });
   if (!synced.ok) return discoveryFailed(synced.error);
   const repoIds: string[] = [];
+  const excluded = new Set(source.excludedRemoteUrls);
   for (const discovered of synced.value.repos) {
+    if (excluded.has(remoteKey(discovered.remoteUrl))) continue;
     const repo = availableRepo(deps, discovered);
     if (!repo.ok) return repo;
     repoIds.push(repo.value.id);
   }
   return ok({ ...source, snapshot: synced.value.snapshot, repoIds, lastSyncAt: now });
+}
+
+// The form exclusions compare: the normalized remote, or the URL as given if it does not parse.
+export function remoteKey(remoteUrl: string): string {
+  const normalized = normalizeRemoteUrl(remoteUrl);
+  return normalized.ok ? normalized.value.url : remoteUrl;
 }
 
 // A repo already registered (cloned, or added by path) is reused; a new one is recorded as available.

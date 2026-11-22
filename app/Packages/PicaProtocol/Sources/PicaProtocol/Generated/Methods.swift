@@ -83,6 +83,13 @@ public enum Methods {
         public static let direction = MethodDirection.client
     }
 
+    public enum WorkspaceRemoveRepo: PicaMethod {
+        public typealias Params = WorkspaceRemoveRepoParams
+        public typealias Result = Ok
+        public static let name = "workspace.removeRepo"
+        public static let direction = MethodDirection.client
+    }
+
     public enum WorkspaceSync: PicaMethod {
         public typealias Params = WorkspaceSyncParams
         public typealias Result = WorkspaceSyncResult
@@ -593,6 +600,11 @@ public enum Notifications {
     public enum WorkspaceChanged: PicaNotification {
         public typealias Params = WorkspaceChangedNotification
         public static let name = "workspace.changed"
+    }
+
+    public enum WorkspaceDeleted: PicaNotification {
+        public typealias Params = WorkspaceDeletedNotification
+        public static let name = "workspace.deleted"
     }
 
     public enum FanoutChanged: PicaNotification {

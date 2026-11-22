@@ -64,7 +64,7 @@ struct PicaApp: App {
             OnboardingGate(store: onboarding, isNeeded: { [navigation = launch.navigation] in AppOnboarding.isNeeded(navigation) }) {
                 RootView(
                     model: launch.model, navigation: launch.navigation, sessionContent: sessionTimeline,
-                    workspaceContent: workspaceScreen, sidebarAccessory: workspaceAddMenu,
+                    workspaceContent: workspaceScreen, sidebarAccessory: workspaceAddMenu, workspaceMenu: workspaceMenu,
                     inspectorPanes: inspectorPanes, onInteractive: launch.windowBecameInteractive)
             }
                 .modifier(ActionHost(actions: actions))
@@ -166,6 +166,11 @@ struct PicaApp: App {
         AnyView(WorkspaceScreen(workspace: workspace, repos: repos, manager: actions.workspaces))
     }
 
+    /// A sidebar workspace row's context menu: Rename… and Delete Workspace….
+    private func workspaceMenu(_ workspace: Workspace) -> AnyView {
+        AnyView(WorkspaceActionsMenuItems(manager: actions.workspaces, workspaceId: workspace.id))
+    }
+
     private var workspaceAddMenu: AnyView {
         AnyView(WorkspaceAddMenu(manager: actions.workspaces, workspaceId: actions.targetWorkspaceId))
     }
@@ -192,9 +197,13 @@ struct PicaApp: App {
                             delete: { [navigation = launch.navigation] in navigation.beginDelete(session.id) })
                     )
                     .environment(timelineMetrics)
+                    // Over the timeline, so the completions it opens upward draw on top.
                     SessionComposer(session: session, client: client, drafts: drafts)
                         .environment(composerMetrics)
+                        .zIndex(1)
                 }
+                // The completions may grow up to the top of the column, and no further.
+                .coordinateSpace(ComposerView.completionBounds)
             } review: {
                 SessionReview(session: session, client: client)
                     .environment(reviewMetrics)

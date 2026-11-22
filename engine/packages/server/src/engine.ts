@@ -228,10 +228,14 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
       onChanged: (workspace) => {
         started.listener?.broadcast("workspace.changed", { workspace });
       },
+      onDeleted: (id) => {
+        started.listener?.broadcast("workspace.deleted", { id });
+      },
+      ...(sessions === undefined ? {} : { sessions }),
     });
   }
   if (options.repos !== undefined) {
-    registerRepoHandlers(router, options.repos);
+    registerRepoHandlers(router, options.repos, options.workspaces);
   }
   if (options.files !== undefined) {
     registerFilesHandlers(router, options.files);

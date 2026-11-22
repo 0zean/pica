@@ -26,6 +26,8 @@ export interface RepoSource {
   // What the last sync resolved to (R-06): the ETag snapshot to revalidate with, and the Repo ids it selected.
   readonly snapshot: DiscoverySnapshot | null;
   readonly repoIds: readonly string[];
+  // Repos removed from the workspace by hand, by normalized remote URL: a sync leaves them out.
+  readonly excludedRemoteUrls: readonly string[];
 }
 
 export interface Workspace {

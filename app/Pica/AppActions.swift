@@ -56,6 +56,12 @@ final class AppActions {
         // The engine answers before its `session.changed` arrives, so the store takes the session now and the
         // selection has a row to land on.
         workspaces.onSessionCreated = { [unowned navigation] session in navigation.sessionCreated(session) }
+        workspaces.workspaces = { [unowned navigation] in navigation.workspaces }
+        workspaces.sessions = { [unowned navigation] id in
+            navigation.sessionsById.values.filter { $0.workspaceId == id }
+        }
+        // The engine broadcasts `workspace.deleted` too; the store takes whichever comes first.
+        workspaces.onDeleted = { [unowned navigation] id in navigation.workspaceDeleted(id) }
     }
 
     private func perform(_ id: ActionID) {
@@ -91,6 +97,10 @@ final class AppActions {
                 navigation.select(.workspace(id))
                 workspaces.sync(workspaceId: id)
             }
+        case .renameWorkspace:
+            if let id = targetWorkspaceId() { workspaces.presentRename(workspaceId: id) }
+        case .deleteWorkspace:
+            if let id = targetWorkspaceId() { workspaces.requestDelete(workspaceId: id) }
         case .showUsage:
             openUsage?()
         case .showSessionOverview:

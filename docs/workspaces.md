@@ -12,9 +12,12 @@ R-04 (GitHub auth), R-05 (team discovery) and R-06 (workspace model).
   with their clone state (Available, Cloning, Cloned, Clone failed) and a pin mark for pinned repos. The `+` menu in
   the sidebar's toolbar has New Session…, then New Workspace…, Add Repository… and Import GitHub Teams…, for the
   workspace the selection is in (or the only one).
-- **Action registry (A-14).** `newSession` (⌘N), `newWorkspace` (⇧⌘N), `addRepository`, `importTeams` and
-  `syncWorkspace`, in the File menu and the ⌘K palette. All but `newWorkspace` act on the selection's workspace, or the
-  only one; with none they open New Workspace instead. Sync selects the workspace, so its status is visible.
+- **Workspace menu.** The `⋯` button beside the workspace screen's title, and the sidebar row's context menu, have
+  Rename… and Delete Workspace…. Each repo on the screen has a remove button (and a context menu item) that asks
+  before taking it out of the workspace.
+- **Action registry (A-14).** `newSession` (⌘N), `newWorkspace` (⇧⌘N), `addRepository`, `importTeams`,
+  `syncWorkspace`, `renameWorkspace` and `deleteWorkspace`, in the File menu and the ⌘K palette. All but `newWorkspace` act on the selection's workspace, or the
+  only one; with none they open New Workspace instead (Rename and Delete do nothing). Sync selects the workspace, so its status is visible.
 
 The app target owns one `WorkspaceManager` (in `AppActions`), which holds the open sheet and one `WorkspaceStore` per
 workspace, so a sync's status outlives the screen showing it. The workspace and its repos are not fetched by the
@@ -78,6 +81,65 @@ column opens its timeline and composer at once.
   a `WorkspaceProblem` banner with its fix, as below; changing a repo's role clears it. A failed clone shows its own
   banner.
 
+## Renaming and deleting
+
+### Renaming
+
+Rename… opens a sheet with the current name. As it is typed the sheet refuses an empty name ("Enter a name.") and one
+another workspace has, compared trimmed and ignoring case and diacritics ("Another workspace is already named
+“Payments”."), with Rename off. The workspace may keep or recase its own name. Rename sends the trimmed name as
+`workspace.update {id, name}`; an unchanged name closes the sheet without asking. The engine broadcasts
+`workspace.changed`, so the sidebar and the screen follow. The engine itself only refuses an empty name: uniqueness
+is the app's rule, since names are for people and ids are what everything refers to.
+
+### Deleting a workspace
+
+Delete Workspace… asks first, in an alert built from what `NavigationStore` holds (`WorkspaceDeletion`):
+
+| The workspace's sessions | The alert |
+|---|---|
+| Any starting, running or awaiting an approval | "“Platform” has sessions at work": stop them or let them finish, then delete. Only OK. |
+| Otherwise | "Delete “Platform”?": its N sessions are deleted with their transcripts and usage history; open (idle) ones are ended first; its sources and settings go too; its repos stay registered and nothing on disk is deleted. Delete Workspace / Cancel. |
+
+The engine's `workspace.delete {id}`:
+
+1. Refuses with `invalid_state` (`details.reason` `workspace.sessions_busy`, `sessionIds`) while a session is
+   `starting`, `running` or `awaiting_approval`; the app shows the message in a second alert.
+2. Ends each `idle` session (`session.end`), so no runtime is left open for a session that is about to go.
+3. In one transaction (`WorkspaceRepository.deleteWithSessions`), refusing again (`workspace.in_use`) if a session became
+   live meanwhile: deletes the workspace's usage records, session events and sessions, then the workspace and its pins.
+   Usage history goes with the sessions, so the Usage dashboard's totals drop by what they spent.
+4. Forgets the repos only it included that were never cloned (as removing a source does). Cloned and registered repos
+   stay, and no folder or clone is touched.
+5. Broadcasts `workspace.deleted {id}`.
+
+`NavigationStore.workspaceDeleted` (from the broadcast, or at once from `WorkspaceManager.onDeleted`) drops the
+workspace, its repos and its sessions; a selection in it moves to the next workspace in the sidebar, else the previous
+one, else to nothing. A `session.changed` for one of its sessions that arrives afterwards (the ended idle sessions) and
+a reload that started before the deletion do not bring them back. Workspace and session MCP attachments of a deleted
+workspace stay unused in `mcp-attachments.json`.
+
+### Removing a repo from a workspace
+
+A repo is in a workspace because it is pinned (added by path or URL) or because a team source lists it. Unpinning
+alone would leave a team repo in place, and the next sync would add a removed one back, so the screen uses one call
+for both, `workspace.removeRepo {workspaceId, repoId}`:
+
+- unpins it, and removes it from each source that listed it, adding its normalized remote URL to that source's
+  `excludedRemoteUrls` (stored in the workspace's sources JSON; older rows read as none). A sync leaves excluded remotes
+  out. Adding the repo again by path or URL pins it, and a pin counts whatever the sources say.
+- forgets the repo if it was never cloned and no workspace includes it any more; otherwise it stays registered.
+- broadcasts `workspace.changed`.
+
+The confirmation (`RepoRemoval`) says, for a repo a team brought, that Sync won't add it back, and what happens on
+disk: a folder the user added "stays where it is"; a repo never cloned has nothing on disk; a managed clone "stays on
+disk unless you choose Remove and Delete Clone". That second button, offered only for a managed clone, removes the repo
+from the workspace and then calls `repo.remove {id, force: false}`, which deletes the clone under Pica's repos folder
+and forgets the repo. The engine refuses it (and the app shows "Removed atlas from the workspace, but kept its clone:
+…") when the clone has uncommitted changes or unpushed commits (`refused_without_force`) or another workspace still
+includes the repo (`invalid_state`, `repo.in_use`, with `workspaceIds`; new, since `repo.remove` left dangling pins and
+source lists before). The app never forces it.
+
 ## Sync status
 
 Per workspace, held by its `WorkspaceStore`:
@@ -125,9 +187,10 @@ same host and provider chain as discovery (`gitHubOptions` in `composition-works
 other than that answers `invalid_params` (`github.unknown_host`, with the configured `host`). The client does not know
 which host that is, and the engine signs in to one. `GitHubAuthStatus.host` names it. Codegen regenerated.
 
-**Broadcasts.** None added. Every A-12 change already reaches the sidebar through `workspace.changed`: create, pin,
-add and remove source, and sync broadcast it. A-04's missing broadcasts (`workspace.delete`, repo registration without
-a pin, clone state changes) stay missing: A-12 deletes no workspace and always pins what it registers. A clone started
+**Broadcasts.** Every A-12 change reaches the sidebar through `workspace.changed`: create, rename, pin, add and
+remove source, remove repo, and sync broadcast it. `workspace.delete` broadcasts the new `workspace.deleted {id}`.
+A-04's other missing broadcasts (repo registration without a pin, clone state changes) stay missing: A-12 always pins
+what it registers. A clone started
 by `repo.addUrl` finishes before the answer, so the repo arrives cloned.
 
 **Host.** Production signs in to github.com through the GitHub CLI (`gh auth token`, or `GH_TOKEN`). `ProductionOptions`
@@ -150,6 +213,14 @@ settings are still a follow-up.
   sign-in fix; a repo added by path is pinned and Cloned; New Session… is off with no repos, then starts a session
   writing to the only repo with a first prompt and lands in it (composer on screen, the scenario's first turn in the
   timeline).
+- Renaming and deleting: `adapters/tests/workspaces/remove-repo.test.ts` (exclusion survives a sync, unpin, cloned
+  repos kept, delete refused while running then deleting ended sessions), the store's `deleteWithSessions`,
+  `server/tests/workspaces/rpc.test.ts` (`workspace.removeRepo`, `repo.remove` refused while included,
+  `workspace.deleted`) and `server/tests/sessions/delete-workspace.test.ts` (busy refused, idle ended). App:
+  `WorkspaceEditingTests` (naming rules, the deletion and removal wording, the flows against the fake backend),
+  AppShell's `WorkspaceDeletedTests` and `WorkspaceDeletedEngineTests`, and `WorkspacesUITests`
+  `testRenamingAWorkspace`, `testDeletingAWorkspaceWithAnIdleSession` (from the sidebar's context menu) and
+  `testRemovingATeamRepoKeepsItOutOfLaterSyncs`.
 - `NewSessionStoreTests` (defaults, the reasons Start is off, uncloned repos never sent, the daily cap with its fix,
   cloning in place, the manager handing the session on) and AppShell's `SessionCreatedTests`.
 

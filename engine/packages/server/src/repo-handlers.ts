@@ -1,4 +1,5 @@
-import type { RepoRegistry, RepoRegistryError, RepoRegistryErrorCode, Result } from "@pica/core";
+import { memberRepoIds } from "@pica/core";
+import type { RepoRegistry, RepoRegistryError, RepoRegistryErrorCode, Result, WorkspaceService } from "@pica/core";
 import { RpcFailure } from "./errors.ts";
 import type { ErrorCodeName } from "./errors.ts";
 import type { MethodRouter } from "./router.ts";
@@ -28,11 +29,21 @@ function unwrap<T>(result: Result<T, RepoRegistryError>): T {
   });
 }
 
-// R-03: register a repo in place or as a managed clone, and remove one.
-export function registerRepoHandlers(router: MethodRouter, registry: RepoRegistry): void {
+// R-03: register a repo in place or as a managed clone, and remove one. A repo a workspace still
+// includes is not removed: its pins and source lists would point at nothing.
+export function registerRepoHandlers(router: MethodRouter, registry: RepoRegistry, workspaces?: WorkspaceService): void {
   router.register("repo.addPath", async ({ path }) => ({ repo: toRepoDto(unwrap(await registry.addByPath(path))) }));
   router.register("repo.addUrl", async ({ url }) => ({ repo: toRepoDto(unwrap(await registry.addByUrl(url))) }));
   router.register("repo.remove", async ({ id, force }) => {
+    const listed = workspaces?.list();
+    const using = listed?.ok === true ? listed.value.filter((workspace) => memberRepoIds(workspace).includes(id)) : [];
+    if (using.length > 0) {
+      throw new RpcFailure(
+        "invalid_state",
+        `${using.map((workspace) => workspace.name).join(", ")} still include${using.length === 1 ? "s" : ""} this repo; remove it from ${using.length === 1 ? "that workspace" : "those workspaces"} first`,
+        { reason: "repo.in_use", workspaceIds: using.map((workspace) => workspace.id) },
+      );
+    }
     unwrap(await registry.remove(id, { force }));
     return { ok: true } as const;
   });
