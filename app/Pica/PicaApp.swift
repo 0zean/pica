@@ -64,7 +64,7 @@ struct PicaApp: App {
             OnboardingGate(store: onboarding, isNeeded: { [navigation = launch.navigation] in AppOnboarding.isNeeded(navigation) }) {
                 RootView(
                     model: launch.model, navigation: launch.navigation, sessionContent: sessionTimeline,
-                    workspaceContent: workspaceScreen, sidebarAccessory: workspaceAddMenu,
+                    workspaceContent: workspaceScreen, sidebarAccessory: workspaceAddMenu, workspaceMenu: workspaceMenu,
                     inspectorPanes: inspectorPanes, onInteractive: launch.windowBecameInteractive)
             }
                 .modifier(ActionHost(actions: actions))
@@ -164,6 +164,11 @@ struct PicaApp: App {
     /// A-12: a selected workspace's sources, sync status and repos, with its add buttons.
     private func workspaceScreen(_ workspace: Workspace, repos: [Repo]) -> AnyView {
         AnyView(WorkspaceScreen(workspace: workspace, repos: repos, manager: actions.workspaces))
+    }
+
+    /// A sidebar workspace row's context menu: Rename… and Delete Workspace….
+    private func workspaceMenu(_ workspace: Workspace) -> AnyView {
+        AnyView(WorkspaceActionsMenuItems(manager: actions.workspaces, workspaceId: workspace.id))
     }
 
     private var workspaceAddMenu: AnyView {

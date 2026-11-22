@@ -33,7 +33,12 @@ export interface WorkspaceRepository {
   save(workspace: Workspace): StoreResult<void>;
   get(id: string): StoreResult<Workspace>;
   list(): StoreResult<readonly Workspace[]>;
+  // Refuses (`store.conflict`) while the workspace has sessions.
   delete(id: string): StoreResult<void>;
+  // In one transaction: refuses (`store.conflict`) while any of its sessions is in a live state
+  // (`starting`, `idle`, `running`, `awaiting_approval`); else deletes its sessions with their
+  // events and usage records, then the workspace and its pins.
+  deleteWithSessions(id: string): StoreResult<void>;
 }
 
 export interface RepoRepository {

@@ -96,4 +96,40 @@ describe("sqlite store repositories", () => {
     expect(errorCode(store.workspaces.get(sampleWorkspace.id))).toBe("store.not_found");
     expect(errorCode(store.workspaces.delete(sampleWorkspace.id))).toBe("store.not_found");
   });
+
+  it("delete a workspace with its ended sessions, their events and usage, and refuse while one is open", () => {
+    value(store.repos.save(sampleRepo));
+    value(store.workspaces.save(sampleWorkspace));
+    value(store.sessions.create({ ...sampleSession("session-ended"), state: "ended" }));
+    value(store.sessions.create({ ...sampleSession("session-open"), state: "idle" }));
+    value(store.events.append("session-ended", { type: "t", payload: null, timestamp: "t" }));
+    value(
+      store.usage.record({
+        sessionId: "session-ended",
+        agent: "main",
+        model: "model-a",
+        inputTokens: 1,
+        cachedTokens: 0,
+        outputTokens: 1,
+        credits: 0.1,
+        tier: "reasoning",
+        timestamp: "2026-11-12T10:00:00.000Z",
+      }),
+    );
+
+    const refused = store.workspaces.deleteWithSessions(sampleWorkspace.id);
+    expect(errorCode(refused)).toBe("store.conflict");
+    expect(refused.ok ? "" : refused.error.message).toContain("1 open session");
+    expect(value(store.sessions.listByWorkspace(sampleWorkspace.id))).toHaveLength(2);
+
+    value(store.sessions.updateState("session-open", "resumable", "2026-11-12T11:00:00.000Z"));
+    value(store.workspaces.deleteWithSessions(sampleWorkspace.id));
+
+    expect(errorCode(store.workspaces.get(sampleWorkspace.id))).toBe("store.not_found");
+    expect(value(store.sessions.listByWorkspace(sampleWorkspace.id))).toEqual([]);
+    expect(value(store.events.lastSeq("session-ended"))).toBe(0);
+    expect(value(store.usage.listBySession("session-ended"))).toEqual([]);
+    expect(value(store.repos.get(sampleRepo.id))).toEqual(sampleRepo);
+    expect(errorCode(store.workspaces.deleteWithSessions(sampleWorkspace.id))).toBe("store.not_found");
+  });
 });

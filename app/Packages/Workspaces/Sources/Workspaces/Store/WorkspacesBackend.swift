@@ -6,6 +6,13 @@ import PicaProtocol
 /// over `EngineClient`; tests use a fake.
 public protocol WorkspacesBackend: Sendable {
     func createWorkspace(name: String) async throws -> Workspace
+    func renameWorkspace(_ workspaceId: Id, to name: String) async throws -> Workspace
+    /// Refused (`invalid_state`) while a session is open; otherwise deletes the workspace's sessions too.
+    func deleteWorkspace(_ workspaceId: Id) async throws
+    /// Takes the repo out of the workspace: unpins it and keeps its sources from adding it back.
+    func removeRepo(_ repoId: Id, from workspaceId: Id) async throws
+    /// `repo.remove` without force: forgets the repo and deletes its managed clone; refused with local work.
+    func forgetRepo(_ repoId: Id) async throws
     func addRepo(path: String) async throws -> Repo
     /// Clones the repo into Pica's managed directory, so it can take as long as the clone does.
     func addRepo(url: String) async throws -> Repo
@@ -29,6 +36,24 @@ public struct EngineWorkspacesBackend: WorkspacesBackend {
 
     public func createWorkspace(name: String) async throws -> Workspace {
         try await client.request(Methods.WorkspaceCreate.self, WorkspaceCreateParams(name: name)).workspace
+    }
+
+    public func renameWorkspace(_ workspaceId: Id, to name: String) async throws -> Workspace {
+        try await client.request(Methods.WorkspaceUpdate.self, WorkspaceUpdateParams(id: workspaceId, name: name)).workspace
+    }
+
+    public func deleteWorkspace(_ workspaceId: Id) async throws {
+        _ = try await client.request(Methods.WorkspaceDelete.self, ById(id: workspaceId))
+    }
+
+    public func removeRepo(_ repoId: Id, from workspaceId: Id) async throws {
+        _ = try await client.request(
+            Methods.WorkspaceRemoveRepo.self, WorkspaceRemoveRepoParams(workspaceId: workspaceId, repoId: repoId))
+    }
+
+    /// Checking for local work and deleting a clone can take a while on a big repo.
+    public func forgetRepo(_ repoId: Id) async throws {
+        _ = try await client.request(Methods.RepoRemove.self, RepoRemoveParams(id: repoId, force: false), timeout: .seconds(120))
     }
 
     public func addRepo(path: String) async throws -> Repo {

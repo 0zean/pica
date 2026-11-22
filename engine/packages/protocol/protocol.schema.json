@@ -106,6 +106,15 @@
         "$ref": "#/$defs/Ok"
       }
     },
+    "workspace.removeRepo": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/WorkspaceRemoveRepoParams"
+      },
+      "result": {
+        "$ref": "#/$defs/Ok"
+      }
+    },
     "workspace.sync": {
       "direction": "client",
       "params": {
@@ -733,6 +742,11 @@
     "workspace.changed": {
       "params": {
         "$ref": "#/$defs/WorkspaceChangedNotification"
+      }
+    },
+    "workspace.deleted": {
+      "params": {
+        "$ref": "#/$defs/WorkspaceDeletedNotification"
       }
     },
     "fanout.changed": {
@@ -6010,6 +6024,17 @@
         "workspace"
       ]
     },
+    "WorkspaceDeletedNotification": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
     "WorkspaceGetResult": {
       "type": "object",
       "properties": {
@@ -6053,6 +6078,21 @@
       }
     },
     "WorkspacePinRepoParams": {
+      "type": "object",
+      "properties": {
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        },
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "workspaceId",
+        "repoId"
+      ]
+    },
+    "WorkspaceRemoveRepoParams": {
       "type": "object",
       "properties": {
         "workspaceId": {

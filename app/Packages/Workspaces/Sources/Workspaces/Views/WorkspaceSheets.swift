@@ -1,6 +1,7 @@
 import SwiftUI
 
-/// Presents the manager's sheet over the main window, so the registry's actions open it whatever is selected.
+/// Presents the manager's sheet, and its delete confirmation, over the main window, so the registry's actions open
+/// them whatever is selected.
 public struct WorkspaceSheets: ViewModifier {
     let manager: WorkspaceManager
 
@@ -22,7 +23,10 @@ public struct WorkspaceSheets: ViewModifier {
                 if let store = manager.newSession {
                     NewSessionSheet(store: store, manager: manager)
                 }
+            case .renameWorkspace(let workspaceId):
+                RenameWorkspaceSheet(manager: manager, workspaceId: workspaceId)
             }
         }
+        .modifier(WorkspaceDeletionAlerts(manager: manager))
     }
 }
