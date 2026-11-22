@@ -71,6 +71,30 @@ import Testing
     }
 }
 
+/// New Session: the session `session.create` returned is selected before its `session.changed` arrives, and a
+/// notification that came first is not overwritten.
+@Suite @MainActor struct SessionCreatedTests {
+    private func session(_ state: SessionState) -> Session {
+        Session(
+            id: "new", workspaceId: "w", title: "", state: state, writeRoots: [], referenceRoots: [], routingProfile: .off,
+            budgetCredits: nil, lastSeq: 0, createdAt: "2026-11-21T00:00:00Z", updatedAt: "2026-11-21T00:00:00Z")
+    }
+
+    @Test func theCreatedSessionIsHeldAndSelected() async {
+        let store = NavigationStore(client: EngineClient(socketPath: "/nonexistent", secrets: InMemorySecretBroker()), stateFile: nil)
+        await store.workspaceChanged(Workspace(id: "w", name: "W", sources: [], pinnedRepoIds: [], overrides: WorkspaceOverrides()))
+        store.setExpanded(false, workspaceId: "w")
+        store.sessionCreated(session(.starting))
+        #expect(store.selection == .session("new"))
+        #expect(store.contains(.session("new")))
+        #expect(store.isExpanded("w"))
+
+        store.sessionChanged(session(.running))
+        store.sessionCreated(session(.starting))
+        #expect(store.sessionsById["new"]?.state == .running)
+    }
+}
+
 @Suite struct SessionOrderingTests {
     private func session(_ id: String, _ state: SessionState, updatedAt: String) -> Session {
         Session(

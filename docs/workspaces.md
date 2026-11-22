@@ -1,20 +1,20 @@
 # Workspace and repo management (A-12)
 
 Creating a workspace, adding a repo to it by path or URL, a team browser that imports GitHub teams with search and
-multi-select, and the sync status of a workspace's sources. Code: `engine/packages/server/src/github-handlers.ts` and
+multi-select, the sync status of a workspace's sources, and starting a session in a workspace (New Session, ⌘N). Code: `engine/packages/server/src/github-handlers.ts` and
 `composition-workspaces.ts`, and the feature package `app/Packages/Workspaces`. It builds on R-03 (repo registry),
 R-04 (GitHub auth), R-05 (team discovery) and R-06 (workspace model).
 
 ## Where it is
 
-- **Sidebar.** Selecting a workspace shows its management screen in the session column: name and counts, Add
-  Repository…, Import Teams…, Sync with its status line, the sources with their last sync, and the repos with their
-  clone state (Available, Cloning, Cloned, Clone failed) and a pin mark for pinned repos. The `+` menu in the
-  sidebar's toolbar has New Workspace…, Add Repository… and Import GitHub Teams… for the workspace the selection is in (or the
-  only one).
-- **Action registry (A-14).** `newWorkspace` (⇧⌘N), `addRepository`, `importTeams` and `syncWorkspace`, in the File
-  menu and the ⌘K palette. The last three act on the selection's workspace, or the only one; with none they open New
-  Workspace instead. Sync selects the workspace, so its status is visible.
+- **Sidebar.** Selecting a workspace shows its management screen in the session column: name and counts, New
+  Session…, Add Repository…, Import Teams…, Sync with its status line, the sources with their last sync, and the repos
+  with their clone state (Available, Cloning, Cloned, Clone failed) and a pin mark for pinned repos. The `+` menu in
+  the sidebar's toolbar has New Session…, then New Workspace…, Add Repository… and Import GitHub Teams…, for the
+  workspace the selection is in (or the only one).
+- **Action registry (A-14).** `newSession` (⌘N), `newWorkspace` (⇧⌘N), `addRepository`, `importTeams` and
+  `syncWorkspace`, in the File menu and the ⌘K palette. All but `newWorkspace` act on the selection's workspace, or the
+  only one; with none they open New Workspace instead. Sync selects the workspace, so its status is visible.
 
 The app target owns one `WorkspaceManager` (in `AppActions`), which holds the open sheet and one `WorkspaceStore` per
 workspace, so a sync's status outlives the screen showing it. The workspace and its repos are not fetched by the
@@ -51,6 +51,32 @@ not list teams. Signed in, it lists `github.listTeams` (sorted by organization, 
   `already_exists`, is skipped) and then syncs the workspace once. The new repos arrive as `available`, not cloned
   (PLAN.md §6). On success the sheet closes. If the sync fails the sheet shows the error with its fix and keeps the
   choice; the sources stay added, so Sync on the workspace screen retries them.
+
+## New session
+
+New Session… opens a sheet for the workspace (`NewSessionSheet` over a `NewSessionStore`, made afresh each time it
+opens). It lives in this package because it needs only the workspace's repos and `session.create`; the app target
+hands it the repos `NavigationStore` holds (`WorkspaceManager.repos`) and, once the engine answers, gives the session
+to `NavigationStore.sessionCreated`, which holds it before its `session.changed` arrives and selects it, so the session
+column opens its timeline and composer at once.
+
+- **Repos.** Each of the workspace's repos is a row with Not used, Write or Reference. Only a repo with a local path can
+  be a root (the engine's `session.create` refuses one that is not cloned), so a listed but uncloned repo, such as one
+  a team import added, shows Not cloned and a Clone button: `repo.addUrl` with its remote clones it in place (900 s
+  timeout), and the sheet keeps the answer, since no notification reports a clone. With exactly one usable repo the
+  sheet starts with it as Write.
+- **First prompt.** Optional; trimmed, and left out of `session.create` when empty, so the first message can be written
+  in the composer instead.
+- **Start** (⌘↩) is off, with the reason beside it, until a usable repo is Write or Reference. It calls
+  `session.create {workspaceId, writeRepoIds, referenceRepoIds, prompt}` (60 s timeout, since the runtime opens before
+  the answer), with the ids in the workspace's order. The routing profile and budget are the engine's defaults for the
+  workspace.
+- **Unavailable.** With no workspace, ⌘N opens New Workspace. With no repos the workspace screen's button and the `+`
+  menu item are disabled, with "Add a repository to this workspace first." as their help; ⌘N still opens the sheet,
+  which says so and keeps Start off.
+- **Errors.** A failed `session.create` (the daily cap's `budget_exhausted`, a repo that is gone, a lost connection) is
+  a `WorkspaceProblem` banner with its fix, as below; changing a repo's role clears it. A failed clone shows its own
+  banner.
 
 ## Sync status
 
@@ -121,7 +147,11 @@ settings are still a follow-up.
   sync wording, and each fix kind.
 - `PicaUITests/WorkspacesUITests`: imports two teams through the browser (search, ticks, import) and sees their four
   repos as Available; an SSO error shows Authorize for single sign-on and opening it logs the URL; signed out shows the
-  sign-in fix; a repo added by path is pinned and Cloned.
+  sign-in fix; a repo added by path is pinned and Cloned; New Session… is off with no repos, then starts a session
+  writing to the only repo with a first prompt and lands in it (composer on screen, the scenario's first turn in the
+  timeline).
+- `NewSessionStoreTests` (defaults, the reasons Start is off, uncloned repos never sent, the daily cap with its fix,
+  cloning in place, the manager handing the session on) and AppShell's `SessionCreatedTests`.
 
 ## For A-15 (Onboarding)
 

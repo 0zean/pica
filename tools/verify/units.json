@@ -928,6 +928,10 @@
       "run": "make engine-install && (cd engine && pnpm exec vitest run packages/server/tests/workspaces) && swift test --package-path app/Packages/Workspaces --filter 'TeamBrowserStoreTests|WorkspaceStoreTests|RepoLocationTests|SyncStatusTests' && make app-ui-test-pica UI_TEST=WorkspacesUITests/testImportingTeamsShowsTheirReposAsAvailable && make app-ui-test-pica UI_TEST=WorkspacesUITests/testAddingARepositoryByPathPinsItToTheWorkspace"
     },
     {
+      "check": "New Session (⌘N): a UI test starts a session from the sheet and lands in it.",
+      "run": "make engine-install && swift test --package-path app/Packages/Workspaces --filter NewSessionStoreTests && swift test --package-path app/Packages/AppShell --filter SessionCreatedTests && swift test --package-path app/Packages/PicaSettings --filter ActionRegistryTests && make app-ui-test-pica UI_TEST=WorkspacesUITests/testNewSessionStartsASessionAndOpensIt"
+    },
+    {
       "check": "Auth errors display their `fix` action.",
       "run": "make engine-install && (cd engine && pnpm exec vitest run packages/server/tests/workspaces/github-rpc.test.ts) && swift test --package-path app/Packages/Workspaces --filter 'FixPerformerTests|TeamBrowserStoreTests' && make app-ui-test-pica UI_TEST=WorkspacesUITests/testAnSSOErrorShowsItsFixAction && make app-ui-test-pica UI_TEST=WorkspacesUITests/testSignedOutShowsTheSignInFix"
     }

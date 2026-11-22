@@ -18,6 +18,10 @@ public struct WorkspaceSheets: ViewModifier {
                 AddRepositorySheet(workspace: manager.store(for: workspaceId), manager: manager)
             case .importTeams(let workspaceId):
                 TeamBrowserSheet(workspace: manager.store(for: workspaceId), manager: manager)
+            case .newSession:
+                if let store = manager.newSession {
+                    NewSessionSheet(store: store, manager: manager)
+                }
             }
         }
     }

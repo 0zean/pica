@@ -10,6 +10,7 @@ public enum ActionID: String, CaseIterable, Sendable, Codable {
     case selectNextSession
     case selectPreviousSession
     case showMcpServers
+    case newSession
     case newWorkspace
     case addRepository
     case importTeams
@@ -74,6 +75,9 @@ public enum ActionCatalog {
         case .showMcpServers:
             ActionDefinition(id: id, title: "MCP Servers", menu: .window, defaultShortcut: Shortcut("cmd+shift+m"),
                 keywords: ["mcp", "tools", "servers", "presets", "import"])
+        case .newSession:
+            ActionDefinition(id: id, title: "New Session…", menu: .file, defaultShortcut: Shortcut("cmd+n"),
+                keywords: ["start", "create", "prompt", "chat", "agent"])
         case .newWorkspace:
             ActionDefinition(id: id, title: "New Workspace…", menu: .file, defaultShortcut: Shortcut("cmd+shift+n"),
                 keywords: ["create"])
