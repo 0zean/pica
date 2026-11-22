@@ -61,6 +61,26 @@ describe("sqlite store repositories", () => {
     expect(errorCode(store.workspaces.delete(sampleWorkspace.id))).toBe("store.conflict");
   });
 
+  it("store a session's routing profile and per-tier models, and clear them", () => {
+    value(store.repos.save(sampleRepo));
+    value(store.workspaces.save(sampleWorkspace));
+    value(store.sessions.create({ ...sampleSession("session-1"), modelTiers: { reasoning: "model-a" } }));
+    expect(value(store.sessions.get("session-1")).modelTiers).toEqual({ reasoning: "model-a" });
+    value(store.sessions.updateRouting("session-1", "strict", { reasoning: "model-b", worker: "auto" }, "2026-11-12T12:00:00.000Z"));
+    expect(value(store.sessions.get("session-1"))).toMatchObject({
+      routingProfile: "strict",
+      modelTiers: { reasoning: "model-b", worker: "auto" },
+      updatedAt: "2026-11-12T12:00:00.000Z",
+    });
+    value(store.sessions.updateRouting("session-1", "off", null, "2026-11-12T13:00:00.000Z"));
+    const cleared = value(store.sessions.get("session-1"));
+    expect(cleared.routingProfile).toBe("off");
+    expect("modelTiers" in cleared).toBe(false);
+    value(store.sessions.updateRouting("session-1", "off", {}, "t"));
+    expect("modelTiers" in value(store.sessions.get("session-1"))).toBe(false);
+    expect(errorCode(store.sessions.updateRouting("missing", "off", null, "t"))).toBe("store.not_found");
+  });
+
   it("record usage in order and reject events for an unknown session", () => {
     value(store.repos.save(sampleRepo));
     value(store.workspaces.save(sampleWorkspace));

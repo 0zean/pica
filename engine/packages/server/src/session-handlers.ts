@@ -21,6 +21,7 @@ const serviceCodes: Readonly<Record<SessionServiceError["code"], ErrorCodeName>>
   "session.runtime_failed": "runtime_failed",
   "session.store_failed": "internal_error",
   "session.storage_full": "storage_full",
+  "session.policy_denied": "policy_denied",
 };
 
 export function sessionRpcFailure(error: SessionServiceError): RpcFailure {
@@ -61,6 +62,9 @@ export function registerSessionHandlers(router: MethodRouter, deps: SessionHandl
     return done;
   });
   router.register("session.rename", ({ sessionId, title }) => ({ session: toSessionDto(unwrap(sessions.rename(sessionId, title))) }));
+  router.register("session.setRouting", async ({ sessionId, routingProfile, modelTiers }) => ({
+    session: toSessionDto(unwrap(await sessions.setRouting({ sessionId, routingProfile, modelTiers }))),
+  }));
   router.register("session.delete", async ({ sessionId }) => {
     unwrap(await sessions.delete(sessionId));
     return done;

@@ -295,6 +295,15 @@
         "$ref": "#/$defs/SessionRenameResult"
       }
     },
+    "session.setRouting": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/SessionSetRoutingParams"
+      },
+      "result": {
+        "$ref": "#/$defs/SessionSetRoutingResult"
+      }
+    },
     "session.delete": {
       "direction": "client",
       "params": {
@@ -4838,6 +4847,9 @@
         "routingProfile": {
           "$ref": "#/$defs/RoutingProfile"
         },
+        "modelTiers": {
+          "$ref": "#/$defs/SessionModelTiers"
+        },
         "budgetCredits": {
           "anyOf": [
             {
@@ -4949,6 +4961,9 @@
         },
         "routingProfile": {
           "$ref": "#/$defs/RoutingProfile"
+        },
+        "modelTiers": {
+          "$ref": "#/$defs/SessionModelTiers"
         },
         "budgetCredits": {
           "$ref": "#/$defs/Credits"
@@ -5126,6 +5141,19 @@
         "sessions"
       ]
     },
+    "SessionModelTiers": {
+      "type": "object",
+      "properties": {
+        "reasoning": {
+          "type": "string",
+          "minLength": 1
+        },
+        "worker": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
     "SessionRenameParams": {
       "type": "object",
       "properties": {
@@ -5237,6 +5265,34 @@
       },
       "required": [
         "accepted"
+      ]
+    },
+    "SessionSetRoutingParams": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "routingProfile": {
+          "$ref": "#/$defs/RoutingProfile"
+        },
+        "modelTiers": {
+          "$ref": "#/$defs/SessionModelTiers"
+        }
+      },
+      "required": [
+        "sessionId"
+      ]
+    },
+    "SessionSetRoutingResult": {
+      "type": "object",
+      "properties": {
+        "session": {
+          "$ref": "#/$defs/Session"
+        }
+      },
+      "required": [
+        "session"
       ]
     },
     "SessionState": {

@@ -12,6 +12,8 @@ export const sessionServiceErrorCodes = [
   "session.store_failed",
   // H-05: the disk is full; the session has failed.
   "session.storage_full",
+  // H-01: managed policy locks what the request asks to change.
+  "session.policy_denied",
 ] as const;
 
 export type SessionServiceErrorCode = (typeof sessionServiceErrorCodes)[number];

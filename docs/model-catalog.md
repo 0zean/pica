@@ -23,6 +23,8 @@ Module: `engine/packages/core/src/models/`, exported from `@pica/core`. Pure: it
 | `auto` | The `auto` pick | `auto` |
 | Any, with no allowed priced model | `null`; the runtime default applies | `unresolved` |
 
+A session can set its own setting per tier (`Session.modelTiers`, from `session.create` or `session.setRouting`, D-24). The delegator then resolves that setting instead of `routing.tiers.<tier>`, by the same table and the same policy; a tier the session leaves out uses the config's. `models.tiers` still reports the config's tiers.
+
 The `auto` rule keeps model ids out of code (D-09): among allowed models with known prices, `reasoning` takes the highest input + output rate and `worker` the lowest; ties go to the smaller id. A configured model needs no price; `auto` ignores unpriced models because it cannot rank them.
 
 ## Credits

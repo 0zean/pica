@@ -3,7 +3,7 @@ import Observation
 import PicaProtocol
 
 /// New Session (docs/workspaces.md): which of the workspace's repos the session writes to and which it reads, its
-/// first prompt, and starting it with `session.create`. A repo the engine has not cloned cannot be a root, so the
+/// mode and models, its first prompt, and starting it with `session.create`. A repo the engine has not cloned cannot be a root, so the
 /// sheet offers to clone it first.
 @MainActor
 @Observable
@@ -25,6 +25,12 @@ public final class NewSessionStore {
     /// Repos this sheet cloned, as the engine answered: no notification reports a clone (docs/workspaces.md), so the
     /// list the sheet is given still says available.
     public private(set) var cloned: [Id: Repo] = [:]
+    /// The modes and models the sheet offers; nil until loaded, or when they could not be.
+    public private(set) var routing: NewSessionRouting?
+    /// The session's mode; nil leaves it to the engine's default for the workspace (until `routing` loads).
+    public private(set) var profile: RoutingProfile?
+    /// Each tier's chosen setting: a model id or "auto". A tier not here keeps the config's setting.
+    public private(set) var tierChoices: [Tier: String] = [:]
 
     @ObservationIgnored private let backend: any WorkspacesBackend
     /// Whether the roles were defaulted for the repos the sheet first saw.
@@ -59,6 +65,44 @@ public final class NewSessionStore {
     public func setRole(_ role: Role, for repoId: Id) {
         roles[repoId] = role == .unused ? nil : role
         problem = nil
+    }
+
+    /// Loads the modes and models; the mode starts as the workspace's default unless one was chosen meanwhile.
+    public func loadRouting() async {
+        guard let loaded = try? await backend.routing(workspaceId: workspaceId) else { return }
+        routing = loaded
+        if profile == nil || loaded.profileLock != nil { profile = loaded.defaultProfile }
+    }
+
+    public func setProfile(_ profile: RoutingProfile) {
+        guard routing?.profileLock == nil else { return }
+        self.profile = profile
+    }
+
+    /// The tier's setting for this session: the chosen one, else the config's.
+    public func tierSetting(_ tier: Tier) -> String {
+        tierChoices[tier] ?? routing?.setting(tier) ?? "auto"
+    }
+
+    public func setTier(_ tier: Tier, to setting: String) {
+        guard routing?.tierLocks[tier] == nil else { return }
+        tierChoices[tier] = setting
+    }
+
+    /// The tiers whose setting differs from the config's, so a session left on the defaults follows them.
+    func requestedTiers() -> SessionModelTiers? {
+        let changed = Tier.allCases.filter { tier in
+            tierChoices[tier].map { $0 != routing?.setting(tier) } ?? false
+        }
+        guard !changed.isEmpty else { return nil }
+        var tiers = SessionModelTiers()
+        for tier in changed {
+            switch tier {
+            case .reasoning: tiers.reasoning = tierChoices[tier]
+            case .worker: tiers.worker = tierChoices[tier]
+            }
+        }
+        return tiers
     }
 
     /// With one usable repo the session writes to it, so the common case needs only a prompt. Runs once.
@@ -96,7 +140,8 @@ public final class NewSessionStore {
         do {
             let session = try await backend.createSession(
                 workspaceId: workspaceId, writeRepoIds: chosen(.write, in: repos),
-                referenceRepoIds: chosen(.reference, in: repos), prompt: trimmed.isEmpty ? nil : trimmed)
+                referenceRepoIds: chosen(.reference, in: repos), routingProfile: profile, modelTiers: requestedTiers(),
+                prompt: trimmed.isEmpty ? nil : trimmed)
             problem = nil
             return session
         } catch {

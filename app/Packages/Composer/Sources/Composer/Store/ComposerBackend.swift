@@ -16,8 +16,11 @@ public protocol ComposerBackend: Sendable {
     func tiers() async throws -> [TierAssignment]
     /// The managed policy that locks `routing.tiers`, if one does (`config.get`).
     func tierLock() async throws -> String?
-    /// Sets a tier's model in the user's config.jsonc (`config.set`); "auto" lets the engine choose.
-    func setTier(_ tier: Tier, to setting: String) async throws
+    /// The managed policy that locks `routing.profile`, if one does (`config.get`).
+    func profileLock() async throws -> String?
+    /// Changes this session's mode and, when `modelTiers` is given, replaces its own tier models
+    /// (`session.setRouting`); the engine answers with the session as changed.
+    func setRouting(sessionId: Id, profile: RoutingProfile?, modelTiers: SessionModelTiers?) async throws -> Session
     func workspace(_ workspaceId: Id) async throws -> Workspace
     /// Sets the routing profile new sessions in the workspace start with.
     func setDefaultProfile(_ profile: RoutingProfile, workspaceId: Id) async throws
@@ -85,10 +88,19 @@ public struct EngineComposerBackend: ComposerBackend {
         return value.lockedBy ?? "managed policy"
     }
 
-    public func setTier(_ tier: Tier, to setting: String) async throws {
-        _ = try await client.request(
-            Methods.ConfigSet.self,
-            ConfigSetParams(keyPath: "routing.tiers.\(tier.rawValue)", value: .string(setting), layer: .user))
+    public func profileLock() async throws -> String? {
+        let value = try await client.request(Methods.ConfigGet.self, ConfigGetParams(keyPath: "routing.profile")).value
+        guard value.locked else { return nil }
+        return value.lockedBy ?? "managed policy"
+    }
+
+    public func setRouting(sessionId: Id, profile: RoutingProfile?, modelTiers: SessionModelTiers?) async throws -> Session {
+        // Reopening the session's runtime can take as long as starting it.
+        try await client.request(
+            Methods.SessionSetRouting.self,
+            SessionSetRoutingParams(sessionId: sessionId, routingProfile: profile, modelTiers: modelTiers),
+            timeout: .seconds(60)
+        ).session
     }
 
     public func workspace(_ workspaceId: Id) async throws -> Workspace {

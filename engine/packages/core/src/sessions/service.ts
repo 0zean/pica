@@ -5,7 +5,7 @@ import type { RuntimeEventRecorder } from "../events/index.ts";
 import type { AgentRuntime, EngineTool, RuntimeEvent, RuntimeHooks, RuntimeSession } from "../runtime/index.ts";
 import { err, ok } from "../result.ts";
 import type { Result } from "../result.ts";
-import type { Session, SessionState, Store, StoreError, UsageRepository } from "../store/index.ts";
+import type { Session, SessionModelTiers, SessionState, Store, StoreError, UsageRepository } from "../store/index.ts";
 import { checkWorkspaceDailyCap, createSessionBudget, sessionSpend, withinSessionCeiling } from "./budget.ts";
 import type { BudgetSettings, SessionBudget } from "./budget.ts";
 import { runtimeFailure, sessionFailure } from "./errors.ts";
@@ -19,6 +19,8 @@ import type {
   SessionSendMode,
 } from "./info.ts";
 import { describeRule, matchingRule, ruleFor } from "./permission-rules.ts";
+import { lockedRoutingChoice, normalizeModelTiers } from "./routing.ts";
+import type { SessionRoutingLocks } from "./routing.ts";
 import type { PermissionRules } from "./permission-rules.ts";
 import { withMcpServers } from "./mcp-options.ts";
 import { createStorageFailures, storageFullCode } from "./storage-full.ts";
@@ -45,6 +47,8 @@ export interface SessionServiceDeps {
   // The profile for a session created without one: the workspace's override, else the user's
   // config. Without it, `defaultRoutingProfile`.
   readonly defaultProfile?: (workspaceId: string) => SessionRoutingProfile;
+  // H-01: the routing managed policy locks; a session may not choose another profile or tier model.
+  readonly routingLocks?: () => SessionRoutingLocks;
   readonly onChanged?: (session: SessionInfo) => void;
   // Called once a session is deleted, for what the engine keeps outside the store (MCP
   // attachments, artifacts) and to announce it.
@@ -74,8 +78,17 @@ export interface CreateSessionRequest {
   readonly writeRepoIds: readonly string[];
   readonly referenceRepoIds: readonly string[];
   readonly routingProfile?: SessionRoutingProfile | undefined;
+  // The session's own model per tier; a tier left out follows the config's `routing.tiers`.
+  readonly modelTiers?: SessionModelTiers | undefined;
   readonly budgetCredits?: number | undefined;
   readonly prompt?: string | undefined;
+}
+
+export interface SetRoutingRequest {
+  readonly sessionId: string;
+  readonly routingProfile?: SessionRoutingProfile | undefined;
+  // Replaces the session's per-tier models; `{}` returns both tiers to the config. Left out, unchanged.
+  readonly modelTiers?: SessionModelTiers | undefined;
 }
 
 export interface SessionService {
@@ -92,6 +105,12 @@ export interface SessionService {
   end(sessionId: string): Promise<SessionResult<undefined>>;
   // Sets the user's title (trimmed); an empty one clears it. Allowed in every state.
   rename(sessionId: string, title: string): SessionResult<SessionInfo>;
+  // Changes the session's routing profile and per-tier models. Allowed while it is idle, when its
+  // runtime is reopened so the next turn uses them (as `reconfigure` does), or resumable, when they
+  // apply on resume. Refused while a turn runs (`session.invalid_state`) and for a value managed
+  // policy locks (`session.policy_denied`). A runtime that cannot be reopened leaves the session
+  // resumable with the new routing; any other failure keeps the old one.
+  setRouting(request: SetRoutingRequest): Promise<SessionResult<SessionInfo>>;
   // Ends a live session first, stopping any turn and dropping its pending approvals, then removes
   // its events and what the runtime keeps of it. Usage records stay. Allowed in every state.
   delete(sessionId: string): Promise<SessionResult<undefined>>;
@@ -659,7 +678,7 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     }
     const profile = session.routingProfile;
     const setup = isRoutingProfile(profile)
-      ? await deps.delegator.setup({ sessionId: session.id, routingProfile: profile })
+      ? await deps.delegator.setup({ sessionId: session.id, routingProfile: profile, modelTiers: session.modelTiers })
       : err<DelegationError>({ code: "delegation.invalid_profile", message: `unknown routing profile ${JSON.stringify(profile)}` });
     return setup.ok ? ok(setup.value.sessionOptions) : setup;
   }
@@ -794,6 +813,55 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     return changed(withTitle(stored.value, trimmed));
   }
 
+  async function setRouting(request: SetRoutingRequest): Promise<SessionResult<SessionInfo>> {
+    const { sessionId } = request;
+    const stored = read(sessionId);
+    if (!stored.ok) {
+      return stored;
+    }
+    const before = stored.value;
+    if (before.state !== "idle" && before.state !== "resumable") {
+      return sessionFailure(
+        "session.invalid_state",
+        `session ${sessionId} is ${before.state}; its mode and models change only while it is idle or stopped`,
+      );
+    }
+    const requestedTiers = request.modelTiers === undefined ? undefined : normalizeModelTiers(request.modelTiers) ?? {};
+    const denied = lockedRoutingChoice({ routingProfile: request.routingProfile, modelTiers: requestedTiers }, deps.routingLocks?.());
+    if (denied !== undefined) {
+      return sessionFailure("session.policy_denied", denied);
+    }
+    const profile = request.routingProfile ?? before.routingProfile;
+    const modelTiers = request.modelTiers === undefined ? before.modelTiers : normalizeModelTiers(request.modelTiers);
+    if (profile === before.routingProfile && sameModelTiers(modelTiers, before.modelTiers)) {
+      return info(before);
+    }
+    const written = writeRouting(sessionId, profile, modelTiers);
+    if (!written.ok) {
+      return written;
+    }
+    if (before.state === "idle" && live.has(sessionId)) {
+      const reopened = await reconfigure(sessionId);
+      if (!reopened.ok) {
+        if (stateOf(sessionId) !== "resumable") {
+          writeRouting(sessionId, before.routingProfile, before.modelTiers);
+        }
+        return reopened;
+      }
+    }
+    const current = read(sessionId);
+    return current.ok ? changed(current.value) : current;
+  }
+
+  function writeRouting(sessionId: string, profile: string, modelTiers: SessionModelTiers | undefined): SessionResult<undefined> {
+    const updated = store.sessions.updateRouting(sessionId, profile, modelTiers ?? null, clock());
+    if (!updated.ok) {
+      storage.notice(sessionId, updated.error);
+      return storeFailure(updated.error, `session ${sessionId}`);
+    }
+    return ok(undefined);
+  }
+
   async function remove(sessionId: string): Promise<SessionResult<undefined>> {
     const stored = read(sessionId);
     if (!stored.ok) {
@@ -833,6 +901,11 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     if (!capped.ok) {
       return capped;
     }
+    const modelTiers = normalizeModelTiers(request.modelTiers);
+    const denied = lockedRoutingChoice({ routingProfile: request.routingProfile, modelTiers }, deps.routingLocks?.());
+    if (denied !== undefined) {
+      return sessionFailure("session.policy_denied", denied);
+    }
     const budgetCredits = withinSessionCeiling(request.budgetCredits ?? deps.budget?.sessionCredits, deps.budget);
     const at = clock();
     const session: Session = {
@@ -841,6 +914,7 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
       ...roots.value,
       state: "starting",
       routingProfile: request.routingProfile ?? deps.defaultProfile?.(request.workspaceId) ?? defaultRoutingProfile,
+      ...(modelTiers === undefined ? {} : { modelTiers }),
       budgetMaxCredits: budgetCredits ?? null,
       createdAt: at,
       updatedAt: at,
@@ -1000,6 +1074,7 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     resume,
     end,
     rename,
+    setRouting,
     delete: remove,
     listApprovals: (sessionId) => {
       const session = read(sessionId);
@@ -1026,11 +1101,16 @@ function withTitle(session: Session, title: string): Session {
     referenceRoots: session.referenceRoots,
     state: session.state,
     routingProfile: session.routingProfile,
+    ...(session.modelTiers === undefined ? {} : { modelTiers: session.modelTiers }),
     budgetMaxCredits: session.budgetMaxCredits,
     createdAt: session.createdAt,
     updatedAt: session.updatedAt,
   };
   return title === "" ? untitled : { ...untitled, title };
+}
+
+function sameModelTiers(a: SessionModelTiers | undefined, b: SessionModelTiers | undefined): boolean {
+  return a?.reasoning === b?.reasoning && a?.worker === b?.worker;
 }
 
 function stateChanged(from: SessionState | null, to: SessionState, timestamp: string): EventDraft {

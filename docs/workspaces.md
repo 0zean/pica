@@ -68,12 +68,20 @@ column opens its timeline and composer at once.
   a team import added, shows Not cloned and a Clone button: `repo.addUrl` with its remote clones it in place (900 s
   timeout), and the sheet keeps the answer, since no notification reports a clone. With exactly one usable repo the
   sheet starts with it as Write.
+- **Mode and models.** A Mode picker (Off, Balanced, Strict) and Reasoning and Worker model pickers. They load with
+  the sheet (`NewSessionRouting`: `config.get routing.profile`, `workspace.get`, `models.list`, `models.tiers`, and
+  `config.get routing.tiers.<tier>` for locks). The mode starts as the workspace's effective default: its
+  `overrides.routingProfile`, unless managed policy locks `routing.profile`, else the config's (D-22). Each tier starts
+  on its setting in Settings, offering Auto and each model the policy allows. A choice managed policy locks is shown
+  disabled with "Locked by “policy”". Until the options load (or if they cannot), the pickers are disabled and Start
+  sends no mode, so the engine's default applies.
 - **First prompt.** Optional; trimmed, and left out of `session.create` when empty, so the first message can be written
   in the composer instead.
 - **Start** (⌘↩) is off, with the reason beside it, until a usable repo is Write or Reference. It calls
-  `session.create {workspaceId, writeRepoIds, referenceRepoIds, prompt}` (60 s timeout, since the runtime opens before
-  the answer), with the ids in the workspace's order. The routing profile and budget are the engine's defaults for the
-  workspace.
+  `session.create {workspaceId, writeRepoIds, referenceRepoIds, routingProfile, modelTiers, prompt}` (60 s timeout,
+  since the runtime opens before the answer), with the ids in the workspace's order. `modelTiers` holds only the tiers
+  whose choice differs from the setting in Settings, so a session left on the defaults keeps following them; it is
+  left out when none differ. The budget is the engine's default.
 - **Unavailable.** With no workspace, ⌘N opens New Workspace. With no repos the workspace screen's button and the `+`
   menu item are disabled, with "Add a repository to this workspace first." as their help; ⌘N still opens the sheet,
   which says so and keeps Start off.

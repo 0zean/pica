@@ -2,8 +2,8 @@ import DesignSystem
 import PicaProtocol
 import SwiftUI
 
-/// New Session (⌘N, docs/workspaces.md): each of the workspace's repos as Write, Reference or not in the session, a
-/// first prompt, and Start. A repo that is listed but not cloned has a Clone button instead of a role.
+/// New Session (⌘N, docs/workspaces.md): each of the workspace's repos as Write, Reference or not in the session, its
+/// mode and models, a first prompt, and Start. A repo that is listed but not cloned has a Clone button instead of a role.
 struct NewSessionSheet: View {
     let store: NewSessionStore
     let manager: WorkspaceManager
@@ -27,6 +27,7 @@ struct NewSessionSheet: View {
                     problem: problem, fixes: manager.fixes, identifier: "pica.newSession.cloneProblem",
                     openSettings: manager.openSettings)
             }
+            NewSessionRoutingPickers(store: store)
             VStack(alignment: .leading, spacing: Spacing.xSmall) {
                 Text("First prompt")
                     .font(Typography.headline)
@@ -73,6 +74,7 @@ struct NewSessionSheet: View {
         .padding(Spacing.xLarge)
         .frame(width: 600)
         .onAppear { store.applyDefaults(repos: repos) }
+        .task { await store.loadRouting() }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("pica.newSession")
     }
@@ -160,5 +162,98 @@ private struct NewSessionRepoRow: View {
         .padding(.vertical, Spacing.xxSmall)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("pica.newSession.repo.\(repo.name)")
+    }
+}
+
+/// The session's mode (routing profile) and the models its reasoning and worker tiers run on. They start as the
+/// workspace's default mode and the tier settings in Settings; a choice managed policy locks is shown, not offered.
+private struct NewSessionRoutingPickers: View {
+    let store: NewSessionStore
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Spacing.xSmall) {
+            Text("Mode and models")
+                .font(Typography.headline)
+                .foregroundStyle(Palette.textPrimary)
+            Grid(alignment: .leading, horizontalSpacing: Spacing.medium, verticalSpacing: Spacing.xSmall) {
+                GridRow {
+                    Text("Mode")
+                        .font(Typography.callout)
+                        .foregroundStyle(Palette.textSecondary)
+                    Picker("Mode", selection: Binding(
+                        get: { store.profile ?? store.routing?.defaultProfile ?? .off },
+                        set: { store.setProfile($0) })) {
+                        ForEach(RoutingProfile.allCases, id: \.self) { profile in
+                            Text(Self.title(profile)).tag(profile)
+                        }
+                    }
+                    .labelsHidden()
+                    .fixedSize()
+                    .disabled(store.routing == nil || store.routing?.profileLock != nil)
+                    .accessibilityLabel("Mode")
+                    .accessibilityIdentifier("pica.newSession.mode")
+                    lockNote(store.routing?.profileLock)
+                }
+                ForEach(Tier.allCases, id: \.self) { tier in
+                    GridRow {
+                        Text(tier == .reasoning ? "Reasoning model" : "Worker model")
+                            .font(Typography.callout)
+                            .foregroundStyle(Palette.textSecondary)
+                        tierPicker(tier)
+                        lockNote(store.routing?.tierLocks[tier])
+                    }
+                }
+            }
+            Text("Off runs everything on the reasoning model. Balanced and Strict hand reads and edits to sub-agents on the worker model; Strict keeps the main agent from editing files.")
+                .font(Typography.caption)
+                .foregroundStyle(Palette.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    @ViewBuilder private func tierPicker(_ tier: Tier) -> some View {
+        let routing = store.routing
+        let current = store.tierSetting(tier)
+        let models = (routing?.models ?? []).filter { $0.allowedByPolicy || $0.id == current }
+        Picker(tier == .reasoning ? "Reasoning model" : "Worker model", selection: Binding(
+            get: { current }, set: { store.setTier(tier, to: $0) })) {
+            Text(autoTitle(tier)).tag("auto")
+            ForEach(models, id: \.id) { model in
+                Text(model.name).tag(model.id)
+            }
+            if current != "auto", !models.contains(where: { $0.id == current }) {
+                Text(current).tag(current)
+            }
+        }
+        .labelsHidden()
+        .fixedSize()
+        .disabled(routing == nil || routing?.tierLocks[tier] != nil)
+        .accessibilityLabel(tier == .reasoning ? "Reasoning model" : "Worker model")
+        .accessibilityIdentifier("pica.newSession.tier.\(tier.rawValue)")
+    }
+
+    private func autoTitle(_ tier: Tier) -> String {
+        guard let routing = store.routing, routing.setting(tier) == "auto", let name = routing.resolvedName(tier) else {
+            return "Auto"
+        }
+        return "Auto (\(name))"
+    }
+
+    @ViewBuilder private func lockNote(_ policy: String?) -> some View {
+        if let policy {
+            Label("Locked by “\(policy)”", systemImage: "lock.fill")
+                .font(Typography.caption)
+                .foregroundStyle(Palette.textSecondary)
+        } else {
+            Color.clear.frame(width: 0, height: 0)
+        }
+    }
+
+    static func title(_ profile: RoutingProfile) -> String {
+        switch profile {
+        case .off: "Off"
+        case .balanced: "Balanced"
+        case .strict: "Strict"
+        }
     }
 }

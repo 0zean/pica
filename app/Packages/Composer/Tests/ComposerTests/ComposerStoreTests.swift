@@ -172,31 +172,74 @@ import Testing
         #expect(store.completion == nil)
     }
 
-    @Test func theProfilePickerSetsTheWorkspaceDefault() async {
+    @Test func theWorkspaceDefaultIsSetSeparatelyFromTheSessionsMode() async {
         let store = await store()
         #expect(store.defaultProfile == .balanced)
         await store.setDefaultProfile(.strict)
         #expect(backend.profiles == [.strict])
         #expect(store.defaultProfile == .strict)
+        #expect(store.session.routingProfile == .off)
+        #expect(backend.routingCalls.isEmpty)
+    }
+
+    /// The mode menu switches this session; the label reads the session the engine answers with.
+    @Test func theModePickerSwitchesThisSession() async {
+        let store = await store()
+        #expect(store.canChangeRouting)
+        await store.setProfile(.strict)
+        #expect(backend.routingCalls == ["s1 profile=strict tiers=-"])
+        #expect(store.session.routingProfile == .strict)
+        // Choosing the mode it has already is no call.
+        await store.setProfile(.strict)
+        #expect(backend.routingCalls.count == 1)
+    }
+
+    @Test func theModeCannotChangeDuringATurn() async {
+        let store = ComposerStore(session: .fixture(state: .running), backend: backend)
+        await store.load()
+        #expect(!store.canChangeRouting)
+        await store.setProfile(.strict)
+        #expect(backend.routingCalls.isEmpty)
+        // Stopped sessions take the change; it applies when they resume.
+        store.update(session: .fixture(state: .resumable))
+        #expect(store.canChangeRouting)
+    }
+
+    @Test func aRefusedSwitchIsShownAndTheModeStays() async {
+        backend.routingFails = true
+        let store = await store()
+        await store.setProfile(.balanced)
+        #expect(store.session.routingProfile == .off)
+        if case .failed = store.status {} else { Issue.record("expected the refusal to be shown, got \(String(describing: store.status))") }
+    }
+
+    @Test func aLockedProfileIsReported() async {
+        backend.profileLockedBy = "acme"
+        let store = await store()
+        #expect(store.profileLock == "acme")
+    }
+
+    /// The tier picker sets this session's own models; nil returns a tier to the setting in Settings.
+    @Test func theTierPickerSetsThisSessionsModels() async {
+        let store = await store()
+        #expect(store.tierLock == nil)
+        #expect(store.sessionTier(.worker) == nil)
+        await store.setTier(.worker, to: "model-a")
+        #expect(backend.routingCalls == ["s1 profile=- tiers=reasoning=- worker=model-a"])
+        #expect(store.sessionTier(.worker) == "model-a")
+        await store.setTier(.reasoning, to: "auto")
+        #expect(backend.routingCalls.last == "s1 profile=- tiers=reasoning=auto worker=model-a")
+        await store.setTier(.worker, to: nil)
+        #expect(backend.routingCalls.last == "s1 profile=- tiers=reasoning=auto worker=-")
+        #expect(store.sessionTier(.worker) == nil)
+        // The defaults in Settings are untouched.
         #expect(store.tiers.map(\.setting) == ["auto", "auto"])
     }
 
-    /// A-14: the tier picker writes `routing.tiers` and shows what the engine then resolves.
-    @Test func theTierPickerWritesTheTierSetting() async {
-        let store = await store()
-        #expect(store.tierLock == nil)
-        await store.setTier(.worker, to: "model-a")
-        #expect(store.tiers.map(\.setting) == ["auto", "model-a"])
-        #expect(store.tiers.last?.resolvedModelId == "model-a")
-    }
-
-    @Test func aLockedTierPickerNamesThePolicyAndARefusedWriteIsShown() async {
+    @Test func aLockedTierPickerNamesThePolicy() async {
         backend.lockedBy = "acme"
         let store = await store()
         #expect(store.tierLock == "acme")
-        await store.setTier(.worker, to: "model-a")
-        #expect(store.tiers.map(\.setting) == ["auto", "auto"])
-        if case .failed = store.status {} else { Issue.record("expected the refusal to be shown, got \(store.status)") }
     }
 
     private func waitUntil(_ condition: @MainActor () -> Bool) async throws {
@@ -227,6 +270,9 @@ final class FakeBackend: ComposerBackend, @unchecked Sendable {
         TierAssignment(tier: .worker, setting: "auto", resolvedModelId: "model-b"),
     ]
     var lockedBy: String?
+    var profileLockedBy: String?
+    var routingCalls: [String] = []
+    var routingFails = false
 
     nonisolated func send(sessionId: Id, text: String, mode: SendMode) async throws -> Bool {
         try await MainActor.run {
@@ -271,12 +317,17 @@ final class FakeBackend: ComposerBackend, @unchecked Sendable {
 
     nonisolated func tierLock() async throws -> String? { await MainActor.run { lockedBy } }
 
-    nonisolated func setTier(_ tier: Tier, to setting: String) async throws {
+    nonisolated func profileLock() async throws -> String? { await MainActor.run { profileLockedBy } }
+
+    nonisolated func setRouting(sessionId: Id, profile: RoutingProfile?, modelTiers: SessionModelTiers?) async throws -> Session {
         try await MainActor.run {
-            if lockedBy != nil { throw Failure() }
-            tierList = tierList.map {
-                $0.tier == tier ? TierAssignment(tier: tier, setting: setting, resolvedModelId: setting == "auto" ? "model-a" : setting) : $0
-            }
+            let tiers = modelTiers.map { "reasoning=\($0.reasoning ?? "-") worker=\($0.worker ?? "-")" } ?? "-"
+            routingCalls.append("\(sessionId) profile=\(profile?.rawValue ?? "-") tiers=\(tiers)")
+            if routingFails { throw Failure() }
+            var session = Session.fixture(state: .idle)
+            if let profile { session.routingProfile = profile }
+            if let modelTiers { session.modelTiers = modelTiers.reasoning == nil && modelTiers.worker == nil ? nil : modelTiers }
+            return session
         }
     }
 
