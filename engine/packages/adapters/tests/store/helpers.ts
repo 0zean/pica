@@ -19,7 +19,7 @@ export const sampleRepo: Repo = {
 export const sampleWorkspace: Workspace = {
   id: "ws-1",
   name: "Payments",
-  sources: [{ id: "source-0", kind: "team", org: "acme", selector: "payments", lastSyncAt: null, snapshot: null, repoIds: [] }],
+  sources: [{ id: "source-0", kind: "team", org: "acme", selector: "payments", lastSyncAt: null, snapshot: null, repoIds: [], excludedRemoteUrls: [] }],
   pinnedRepoIds: ["repo-1"],
   settingsOverrides: { routing: { default: "economy" } },
 };

@@ -66,6 +66,8 @@ export const methods = {
     z.object({ id: Id, name: z.string().min(1).optional(), overrides: WorkspaceOverrides.optional() }),
     z.object({ workspace: Workspace }),
   ),
+  // Refused (`invalid_state`, reason `workspace.in_use`) while a session is open; else deletes the
+  // workspace's sessions with their events and usage, and broadcasts `workspace.deleted`.
   "workspace.delete": clientMethod(ById, Ok),
   "workspace.addSource": clientMethod(
     z.object({
@@ -79,6 +81,8 @@ export const methods = {
   "workspace.removeSource": clientMethod(z.object({ workspaceId: Id, sourceId: Id }), Ok),
   "workspace.pinRepo": clientMethod(z.object({ workspaceId: Id, repoId: Id }), Ok),
   "workspace.unpinRepo": clientMethod(z.object({ workspaceId: Id, repoId: Id }), Ok),
+  // Unpins the repo and makes every source that listed it leave it out on later syncs. Nothing on disk changes.
+  "workspace.removeRepo": clientMethod(z.object({ workspaceId: Id, repoId: Id }), Ok),
   "workspace.sync": clientMethod(
     z.object({ workspaceId: Id }),
     z.object({ added: z.array(Id), removed: z.array(Id) }),
@@ -403,6 +407,8 @@ export const notifications = {
   "events.event": z.object({ subscriptionId: Id, event: SessionEvent }),
   "session.changed": z.object({ session: Session }),
   "workspace.changed": z.object({ workspace: Workspace }),
+  // `workspace.delete` removed the workspace and its sessions.
+  "workspace.deleted": z.object({ id: Id }),
   "fanout.changed": z.object({ fanOut: FanOut }),
   "mcp.statusChanged": z.object({ status: McpServerStatus }),
   "engine.warning": z.object({ code: z.string().min(1), message: z.string(), at: Timestamp }),

@@ -6,7 +6,7 @@ import type { Repo, RepoSource, RepoSourceKind, Workspace } from "../store/entit
 import { fromStore, loadWorkspace, saveWorkspace, type WorkspaceResult, type WorkspaceServiceDeps } from "./deps.ts";
 import { workspaceError } from "./errors.ts";
 import { departed, forgetUnused, memberRepoIds, workspaceRepos } from "./membership.ts";
-import { ensureCloned, syncWorkspace, type WorkspaceSync } from "./sync.ts";
+import { ensureCloned, remoteKey, syncWorkspace, type WorkspaceSync } from "./sync.ts";
 
 export interface WorkspaceChanges {
   readonly name?: string | undefined;
@@ -29,6 +29,10 @@ export interface WorkspaceService {
   removeSource(workspaceId: string, sourceId: string): WorkspaceResult<void>;
   pinRepo(workspaceId: string, repoId: string): WorkspaceResult<void>;
   unpinRepo(workspaceId: string, repoId: string): WorkspaceResult<void>;
+  // Takes the repo out of the workspace however it got there: unpins it, and makes each source that
+  // listed it leave it out from now on. Files on disk and the repo's registration are untouched,
+  // except that a never-cloned repo no workspace includes any more is forgotten.
+  removeRepo(workspaceId: string, repoId: string): WorkspaceResult<void>;
   // Without a workspace, every registered repo.
   repos(workspaceId?: string): WorkspaceResult<readonly Repo[]>;
   repo(id: string): WorkspaceResult<Repo>;
@@ -55,6 +59,7 @@ export function createWorkspaceService(deps: WorkspaceServiceDeps): WorkspaceSer
         ...workspace,
         pinnedRepoIds: workspace.pinnedRepoIds.filter((id) => id !== repoId),
       })),
+    removeRepo: (workspaceId, repoId) => removeRepo(deps, workspaceId, repoId),
     repos: (workspaceId) => {
       if (workspaceId === undefined) return fromStore(deps.repos.list(), "workspace.repo_not_found");
       const workspace = loadWorkspace(deps, workspaceId);
@@ -83,9 +88,11 @@ function update(deps: WorkspaceServiceDeps, id: string, changes: WorkspaceChange
 function remove(deps: WorkspaceServiceDeps, id: string): WorkspaceResult<void> {
   const workspace = loadWorkspace(deps, id);
   if (!workspace.ok) return workspace;
-  const deleted = deps.workspaces.delete(id);
+  const deleted = deps.workspaces.deleteWithSessions(id);
   if (!deleted.ok && deleted.error.code === "store.conflict") {
-    return err(workspaceError("workspace.in_use", `workspace ${id} still has sessions`));
+    return err(
+      workspaceError("workspace.in_use", `${deleted.error.message}; end them before deleting the workspace`),
+    );
   }
   const removed = fromStore(deleted, "workspace.not_found");
   return removed.ok ? forgetUnused(deps, memberRepoIds(workspace.value)) : removed;
@@ -101,6 +108,7 @@ function addSource(deps: WorkspaceServiceDeps, workspaceId: string, input: NewRe
     lastSyncAt: null,
     snapshot: null,
     repoIds: [],
+    excludedRemoteUrls: [],
   };
   if (source.kind !== "manual") {
     const selector = selectorForSource(source);
@@ -125,6 +133,33 @@ function removeSource(deps: WorkspaceServiceDeps, workspaceId: string, sourceId:
   return replace(deps, workspaceId, (current) => ({
     ...current,
     sources: current.sources.filter((source) => source.id !== sourceId),
+  }));
+}
+
+function removeRepo(deps: WorkspaceServiceDeps, workspaceId: string, repoId: string): WorkspaceResult<void> {
+  const workspace = loadWorkspace(deps, workspaceId);
+  if (!workspace.ok) return workspace;
+  if (!memberRepoIds(workspace.value).includes(repoId)) {
+    return err(workspaceError("workspace.repo_not_found", `workspace ${workspaceId} does not include repo ${repoId}`));
+  }
+  const repo = fromStore(deps.repos.get(repoId), "workspace.repo_not_found");
+  if (!repo.ok) return repo;
+  const remote = remoteKey(repo.value.remoteUrl);
+  return replace(deps, workspaceId, (current) => ({
+    ...current,
+    pinnedRepoIds: current.pinnedRepoIds.filter((id) => id !== repoId),
+    sources: current.sources.map((source) =>
+      source.repoIds.includes(repoId)
+        ? {
+            ...source,
+            repoIds: source.repoIds.filter((id) => id !== repoId),
+            excludedRemoteUrls:
+              source.kind === "manual" || source.excludedRemoteUrls.includes(remote)
+                ? source.excludedRemoteUrls
+                : [...source.excludedRemoteUrls, remote],
+          }
+        : source,
+    ),
   }));
 }
 

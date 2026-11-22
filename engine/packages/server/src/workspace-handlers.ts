@@ -10,6 +10,7 @@ type RepoDto = MethodResult<"repo.get">["repo"];
 export interface WorkspaceHandlerDeps {
   readonly workspaces: WorkspaceService;
   readonly onChanged: (workspace: WorkspaceDto) => void;
+  readonly onDeleted?: (workspaceId: string) => void;
 }
 
 const errorCodes: Readonly<Record<WorkspaceError["code"], ErrorCodeName>> = {
@@ -55,6 +56,7 @@ export function registerWorkspaceHandlers(router: MethodRouter, deps: WorkspaceH
   });
   router.register("workspace.delete", ({ id }) => {
     unwrap(workspaces.delete(id));
+    deps.onDeleted?.(id);
     return done;
   });
   router.register("workspace.addSource", ({ workspaceId, kind, org, selector }) => {
@@ -74,6 +76,11 @@ export function registerWorkspaceHandlers(router: MethodRouter, deps: WorkspaceH
   });
   router.register("workspace.unpinRepo", ({ workspaceId, repoId }) => {
     unwrap(workspaces.unpinRepo(workspaceId, repoId));
+    changed(workspaceId);
+    return done;
+  });
+  router.register("workspace.removeRepo", ({ workspaceId, repoId }) => {
+    unwrap(workspaces.removeRepo(workspaceId, repoId));
     changed(workspaceId);
     return done;
   });
