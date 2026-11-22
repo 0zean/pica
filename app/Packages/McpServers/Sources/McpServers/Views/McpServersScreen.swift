@@ -53,7 +53,7 @@ public struct McpServersScreen: View {
                 serverList
             }
         }
-        .frame(minWidth: 760, minHeight: 420)
+        .frame(minWidth: Column.minimumRowWidth, minHeight: 420)
         .background(Palette.background)
         .task(id: workspaceId) { await store.load(workspaceId: workspaceId) }
         .task { await store.watchStatuses() }

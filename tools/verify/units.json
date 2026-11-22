@@ -948,6 +948,10 @@
     {
       "check": "Changing servers on a running session shows the cache-invalidation warning first.",
       "run": "swift test --package-path app/Packages/McpServers --filter SessionMcpStoreTests && make engine-install && (cd engine && pnpm exec vitest run packages/server/tests/mcp/manage-composition.test.ts -t 'asks before changing') && make app-ui-test-pica UI_TEST=McpUITests/testChangingServersOnARunningSessionShowsTheCacheWarningFirst"
+    },
+    {
+      "check": "A server that needs sign-in shows Sign In, Edit and its menu on one line at the window's minimum width.",
+      "run": "swift test --package-path app/Packages/McpServers --filter ServerRowLayoutTests"
     }
   ],
   "A-14": [
