@@ -210,7 +210,7 @@ final class WorkspacesUITests: XCTestCase {
         XCTAssertEqual(session.modelTiers?.reasoning, "model-b")
         XCTAssertNil(session.modelTiers?.worker, "the untouched worker tier does not follow Settings")
         let label = fixture.element("pica.composer.profile")
-        waitUntil("the composer shows the Strict mode", timeout: 5) { label.label.contains("Strict") }
+        waitUntil("the composer shows the Strict mode: \(label.debugDescription)", timeout: 5) { Self.shows(label, "Strict") }
         fixture.quit()
     }
 
@@ -233,14 +233,14 @@ final class WorkspacesUITests: XCTestCase {
 
         let menu = fixture.element("pica.composer.profile")
         XCTAssertTrue(menu.waitForExistence(timeout: 10), "the composer has no mode menu")
-        waitUntil("the mode menu shows Off", timeout: 5) { menu.label.contains("Off") }
+        waitUntil("the mode menu shows Off: \(menu.debugDescription)", timeout: 5) { Self.shows(menu, "Off") }
         menu.click()
         // The first Strict is under "This session's mode"; the second sets the workspace's default.
         let strict = fixture.app.menuItems.matching(NSPredicate(format: "title == %@", "Strict")).element(boundBy: 0)
         XCTAssertTrue(strict.waitForExistence(timeout: 5), "the mode menu does not offer Strict")
         strict.click()
 
-        waitUntil("the mode menu shows Strict", timeout: 10) { menu.label.contains("Strict") }
+        waitUntil("the mode menu shows Strict: \(menu.debugDescription)", timeout: 10) { Self.shows(menu, "Strict") }
         let sessionId = session.id
         let (changed, workspace) = try fixture.pica.withEngine { engine in
             let changed = try await engine.request(Methods.SessionGet.self, BySession(sessionId: sessionId)).session
@@ -251,6 +251,12 @@ final class WorkspacesUITests: XCTestCase {
         XCTAssertEqual(changed.state, .idle)
         XCTAssertNil(workspace.overrides.routingProfile, "choosing this session's mode also set the workspace default")
         fixture.quit()
+    }
+
+    /// Whether a menu button reads `mode`, in its label, title or value.
+    @MainActor
+    private static func shows(_ element: XCUIElement, _ mode: String) -> Bool {
+        [element.label, element.title, element.value as? String ?? ""].contains { $0.contains(mode) }
     }
 
     /// Rename… from the workspace screen's menu: another workspace's name is refused as it is typed, a new one is sent
