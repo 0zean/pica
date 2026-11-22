@@ -114,6 +114,58 @@ final class WorkspacesUITests: XCTestCase {
         XCTAssertFalse(fixture.element("pica.addRepository").exists, "Add Repository stayed open")
         fixture.quit()
     }
+
+    /// M4's first step: New Session… on the workspace screen starts a session writing to the workspace's only repo
+    /// with a first prompt, then selects it, so the session column shows its timeline and composer.
+    @MainActor
+    func testNewSessionStartsASessionAndOpensIt() throws {
+        let fixture = try WorkspacesFixture(github: "signed-in", scenario: "overview")
+        defer { fixture.remove() }
+        let path = try fixture.pica.makeRepository("atlas")
+        try fixture.openWorkspace("Atlas")
+        let newSession = fixture.app.buttons["pica.workspace.newSession"]
+        XCTAssertTrue(newSession.waitForExistence(timeout: 5), "the workspace screen has no New Session button")
+        XCTAssertFalse(newSession.isEnabled, "New Session is enabled in a workspace with no repos")
+
+        let workspace = try fixture.pica.withEngine { engine in
+            let workspace = try await engine.request(Methods.WorkspaceList.self).workspaces[0]
+            _ = try await engine.addRepo(at: path, to: workspace)
+            return workspace
+        }
+        XCTAssertTrue(fixture.element("pica.workspace.repo.atlas").waitForExistence(timeout: 10), "atlas was not added")
+        waitUntil("New Session is enabled", timeout: 5) { newSession.isEnabled }
+        newSession.click()
+
+        let prompt = fixture.app.textViews["pica.newSession.prompt"]
+        XCTAssertTrue(prompt.waitForExistence(timeout: 5), "New Session did not open")
+        XCTAssertTrue(fixture.element("pica.newSession.repo.atlas.role").exists, "atlas cannot be chosen")
+        prompt.click()
+        prompt.typeText("Check the repo")
+        let start = fixture.app.buttons["pica.newSession.start"]
+        XCTAssertTrue(start.isEnabled, "Start is off: \(fixture.text("pica.newSession.reason"))")
+        start.click()
+
+        XCTAssertTrue(
+            fixture.app.textViews["pica.composer.input"].waitForExistence(timeout: 15), "the new session was not opened")
+        XCTAssertFalse(fixture.element("pica.newSession").exists, "New Session stayed open")
+        let (sessions, roots) = try fixture.pica.withEngine { engine in
+            let sessions = try await engine.request(
+                Methods.SessionList.self, SessionListParams(workspaceId: workspace.id)).sessions
+            let roots = try await engine.request(Methods.SessionRoots.self, BySession(sessionId: sessions[0].id)).roots
+            return (sessions, roots)
+        }
+        XCTAssertEqual(sessions.count, 1)
+        let session = try XCTUnwrap(sessions.first)
+        XCTAssertEqual(roots.map(\.access), [.write], "the session does not write to atlas alone")
+        XCTAssertTrue(
+            fixture.element("pica.sidebar.session.\(session.id)").waitForExistence(timeout: 5), "the session is not in the sidebar")
+        // The first prompt was sent: the scenario's first turn answers it.
+        XCTAssertTrue(
+            fixture.app.staticTexts.containing(NSPredicate(format: "label CONTAINS %@ OR value CONTAINS %@", "Checked the repo.", "Checked the repo."))
+                .firstMatch.waitForExistence(timeout: 15),
+            "the first prompt's turn is not in the timeline")
+        fixture.quit()
+    }
 }
 
 @MainActor
@@ -121,8 +173,8 @@ private final class WorkspacesFixture {
     let pica: PicaUnderTest
     let app: XCUIApplication
 
-    init(github: String) throws {
-        pica = try PicaUnderTest(github: github)
+    init(github: String, scenario: String = "empty") throws {
+        pica = try PicaUnderTest(scenario: scenario, github: github)
         app = pica.launch()
     }
 

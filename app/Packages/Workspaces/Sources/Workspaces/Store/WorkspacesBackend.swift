@@ -16,6 +16,8 @@ public protocol WorkspacesBackend: Sendable {
     func authStatus() async throws -> GitHubAuthStatus
     func teams() async throws -> [GitHubTeam]
     func teamRepos(org: String, teamSlug: String) async throws -> [GitHubRepo]
+    /// Starts a session whose roots are the given repos; it can take as long as the runtime takes to open.
+    func createSession(workspaceId: Id, writeRepoIds: [Id], referenceRepoIds: [Id], prompt: String?) async throws -> Session
 }
 
 public struct EngineWorkspacesBackend: WorkspacesBackend {
@@ -73,5 +75,16 @@ public struct EngineWorkspacesBackend: WorkspacesBackend {
             Methods.GithubListTeamRepos.self, GithubListTeamReposParams(org: org, teamSlug: teamSlug),
             timeout: .seconds(60)
         ).repos
+    }
+
+    public func createSession(
+        workspaceId: Id, writeRepoIds: [Id], referenceRepoIds: [Id], prompt: String?
+    ) async throws -> Session {
+        try await client.request(
+            Methods.SessionCreate.self,
+            SessionCreateParams(
+                workspaceId: workspaceId, writeRepoIds: writeRepoIds, referenceRepoIds: referenceRepoIds, prompt: prompt),
+            timeout: .seconds(60)
+        ).session
     }
 }

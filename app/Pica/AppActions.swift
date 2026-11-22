@@ -52,6 +52,10 @@ final class AppActions {
         appearance.start(client: client)
         workspaces.onCreated = { [unowned navigation] workspace in navigation.select(.workspace(workspace.id)) }
         workspaces.openSettings = { [unowned self] in perform(.openSettings) }
+        workspaces.repos = { [unowned navigation] id in navigation.reposByWorkspace[id] ?? [] }
+        // The engine answers before its `session.changed` arrives, so the store takes the session now and the
+        // selection has a row to land on.
+        workspaces.onSessionCreated = { [unowned navigation] session in navigation.sessionCreated(session) }
     }
 
     private func perform(_ id: ActionID) {
@@ -74,6 +78,8 @@ final class AppActions {
             navigation.selectSession(offset: -1)
         case .showMcpServers:
             openMcpServers?()
+        case .newSession:
+            withTargetWorkspace { workspaces.presentNewSession(workspaceId: $0) }
         case .newWorkspace:
             workspaces.presentNewWorkspace()
         case .addRepository:

@@ -3,7 +3,7 @@ import PicaProtocol
 import SwiftUI
 
 /// A workspace in the session column when it is selected in the sidebar (docs/workspaces.md): its sources with their
-/// sync status, its repos with their clone state, and the buttons that add repos and import teams. The app target
+/// sync status, its repos with their clone state, and the buttons that start a session, add repos and import teams. The app target
 /// passes the workspace and repos the sidebar's store holds, which follow `workspace.changed`.
 public struct WorkspaceScreen: View {
     let workspace: Workspace
@@ -49,6 +49,16 @@ public struct WorkspaceScreen: View {
 
     private func actions(_ store: WorkspaceStore) -> some View {
         HStack(spacing: Spacing.small) {
+            let unavailable = NewSessionStore.unavailableReason(workspaceId: workspace.id, repos: repos)
+            Button {
+                manager.presentNewSession(workspaceId: workspace.id)
+            } label: {
+                Label("New Session…", systemImage: "bubble.left.and.text.bubble.right")
+            }
+            .buttonStyle(.pica(.primary))
+            .disabled(unavailable != nil)
+            .help(unavailable ?? "Start a session in this workspace (⌘N)")
+            .accessibilityIdentifier("pica.workspace.newSession")
             Button {
                 manager.presentAddRepository(workspaceId: workspace.id)
             } label: {
@@ -69,7 +79,7 @@ public struct WorkspaceScreen: View {
             } label: {
                 Label("Sync", systemImage: "arrow.triangle.2.circlepath")
             }
-            .buttonStyle(.pica(.primary))
+            .buttonStyle(.pica(.secondary))
             .disabled(workspace.sources.isEmpty || store.isSyncing)
             .accessibilityIdentifier("pica.workspace.sync")
         }

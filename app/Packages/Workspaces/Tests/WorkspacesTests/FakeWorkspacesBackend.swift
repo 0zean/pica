@@ -17,6 +17,8 @@ final class FakeWorkspacesBackend: WorkspacesBackend, @unchecked Sendable {
     ]
     var syncResult = WorkspaceSyncResult(added: ["r1", "r2"], removed: [])
     var failures: [String: RpcError] = [:]
+    /// What `addRepo(url:)` answers with instead of a new repo: a registered repo cloned in place.
+    var clonedInPlace: Repo?
     private(set) var calls: [String] = []
     private var nextRepo = 0
 
@@ -42,6 +44,7 @@ final class FakeWorkspacesBackend: WorkspacesBackend, @unchecked Sendable {
     nonisolated func addRepo(url: String) async throws -> Repo {
         try await MainActor.run {
             try record("addUrl \(url)", "addRepo")
+            if let clonedInPlace { return clonedInPlace }
             return newRepo(localPath: "/managed/repo", remoteUrl: url)
         }
     }
@@ -89,6 +92,20 @@ final class FakeWorkspacesBackend: WorkspacesBackend, @unchecked Sendable {
         }
     }
 
+    nonisolated func createSession(
+        workspaceId: Id, writeRepoIds: [Id], referenceRepoIds: [Id], prompt: String?
+    ) async throws -> Session {
+        try await MainActor.run {
+            try record(
+                "createSession \(workspaceId) write=\(writeRepoIds) reference=\(referenceRepoIds) prompt=\(prompt ?? "-")",
+                "createSession")
+            return Session(
+                id: "s-new", workspaceId: workspaceId, title: "", state: .starting, writeRoots: [], referenceRoots: [],
+                routingProfile: .off, budgetCredits: nil, lastSeq: 0, createdAt: "2026-11-21T00:00:00Z",
+                updatedAt: "2026-11-21T00:00:00Z")
+        }
+    }
+
     nonisolated func teamRepos(org: String, teamSlug: String) async throws -> [GitHubRepo] {
         try await MainActor.run {
             try record("teamRepos \(org)/\(teamSlug)", "teamRepos.\(org)/\(teamSlug)")
@@ -111,6 +128,9 @@ extension RpcError {
             fix: FixAction(kind: .openUrl, label: "Authorize for single sign-on", target: "https://git.example.com/orgs/vault-corp/sso")))
     static let sourceExists = RpcError(
         code: -32000, message: "the workspace already has this source", data: ErrorData(code: .alreadyExists))
+    static let dailyCap = RpcError(
+        code: -32000, message: "workspace w1 has used 500 of its 500 daily credits; the cap resets at 2026-11-22T00:00:00Z",
+        data: ErrorData(code: .budgetExhausted, fix: FixAction(kind: .openSettings, label: "Open Budget Settings")))
     static let noRemote = RpcError(
         code: -32602, message: "/work/plain has no remote", data: ErrorData(code: .invalidParams))
 }

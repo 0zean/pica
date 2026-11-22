@@ -99,6 +99,15 @@ public final class NavigationStore {
         select(.session(sessions[next].id))
     }
 
+    /// A session this app just created: holds it as if `session.changed` had reported it, and selects it so the
+    /// session column opens its timeline and composer.
+    public func sessionCreated(_ session: Session) {
+        if sessionsById[session.id] == nil {
+            sessionChanged(session)
+        }
+        select(.session(session.id))
+    }
+
     public func workspaceId(of item: SidebarItem) -> Id? {
         switch item {
         case .workspace(let id): id

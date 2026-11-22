@@ -1,7 +1,8 @@
 import PicaProtocol
 import SwiftUI
 
-/// The sidebar toolbar's add menu: a new workspace, or a repo or teams for the workspace the selection is in.
+/// The sidebar toolbar's add menu: a new session, repo or teams for the workspace the selection is in, or a new
+/// workspace.
 public struct WorkspaceAddMenu: View {
     let manager: WorkspaceManager
     /// The workspace the sidebar's selection belongs to, else the only one.
@@ -14,9 +15,16 @@ public struct WorkspaceAddMenu: View {
 
     public var body: some View {
         Menu {
+            let target = workspaceId()
+            Button("New Session…") {
+                if let target { manager.presentNewSession(workspaceId: target) }
+            }
+            .disabled(manager.newSessionUnavailableReason(workspaceId: target) != nil)
+            .help(manager.newSessionUnavailableReason(workspaceId: target) ?? "Start a session in this workspace")
+            .accessibilityIdentifier("pica.sidebar.add.newSession")
+            Divider()
             Button("New Workspace…") { manager.presentNewWorkspace() }
                 .accessibilityIdentifier("pica.sidebar.add.newWorkspace")
-            let target = workspaceId()
             Button("Add Repository…") {
                 if let target { manager.presentAddRepository(workspaceId: target) }
             }
@@ -30,7 +38,7 @@ public struct WorkspaceAddMenu: View {
         } label: {
             Label("Add", systemImage: "plus")
         }
-        .help("New workspace, add a repository, or import GitHub teams")
+        .help("New session or workspace, add a repository, or import GitHub teams")
         .accessibilityIdentifier("pica.sidebar.add")
     }
 }

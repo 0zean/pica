@@ -36,7 +36,9 @@ waiting and failed sessions. A repo appears under every workspace that includes 
   the session column. Left and Right collapse and expand a workspace.
 - ⌘1–⌘9 (Go menu) select the first nine sessions in sidebar order, expanding a collapsed workspace.
 - ⌥⌘I shows and hides the inspector (View menu and toolbar). ⌃⌘S toggles the sidebar (`SidebarCommands`).
-- ⌘K, ⌘P and ⌘N belong to A-14, A-09 and A-06.
+- ⌘K, ⌘P and ⌘N belong to A-14, A-09 and A-12 (New Session, [workspaces.md](workspaces.md#new-session)). Selecting
+  a session that was just created goes through `NavigationStore.sessionCreated`, which holds it until its
+  `session.changed` arrives.
 
 ## Window restoration
 
