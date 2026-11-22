@@ -66,8 +66,10 @@ export const methods = {
     z.object({ id: Id, name: z.string().min(1).optional(), overrides: WorkspaceOverrides.optional() }),
     z.object({ workspace: Workspace }),
   ),
-  // Refused (`invalid_state`, reason `workspace.in_use`) while a session is open; else deletes the
-  // workspace's sessions with their events and usage, and broadcasts `workspace.deleted`.
+  // Refused (`invalid_state`, reason `workspace.sessions_busy`, with `sessionIds`) while a session is
+  // starting, running or waiting for an approval. Otherwise ends its idle sessions, deletes the workspace
+  // with all its sessions, their events and usage, and broadcasts `workspace.deleted`. Repos stay
+  // registered and nothing on disk is deleted.
   "workspace.delete": clientMethod(ById, Ok),
   "workspace.addSource": clientMethod(
     z.object({

@@ -226,6 +226,7 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
       onDeleted: (id) => {
         started.listener?.broadcast("workspace.deleted", { id });
       },
+      ...(sessions === undefined ? {} : { sessions }),
     });
   }
   if (options.repos !== undefined) {

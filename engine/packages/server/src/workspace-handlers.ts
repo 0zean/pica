@@ -1,4 +1,14 @@
-import type { JsonObject, JsonValue, Repo, RepoSource, Workspace, WorkspaceError, WorkspaceResult, WorkspaceService } from "@pica/core";
+import type {
+  JsonObject,
+  JsonValue,
+  Repo,
+  RepoSource,
+  SessionService,
+  Workspace,
+  WorkspaceError,
+  WorkspaceResult,
+  WorkspaceService,
+} from "@pica/core";
 import { RpcFailure } from "./errors.ts";
 import type { ErrorCodeName } from "./errors.ts";
 import type { MethodParams, MethodResult, MethodRouter } from "./router.ts";
@@ -11,7 +21,12 @@ export interface WorkspaceHandlerDeps {
   readonly workspaces: WorkspaceService;
   readonly onChanged: (workspace: WorkspaceDto) => void;
   readonly onDeleted?: (workspaceId: string) => void;
+  // Without it, `workspace.delete` ends no session and refuses while any is open.
+  readonly sessions?: Pick<SessionService, "list" | "end">;
 }
+
+// A session in one of these states is doing something the user would lose; deleting waits for it.
+const busyStates = new Set(["starting", "running", "awaiting_approval"]);
 
 const errorCodes: Readonly<Record<WorkspaceError["code"], ErrorCodeName>> = {
   "workspace.not_found": "not_found",
@@ -54,7 +69,9 @@ export function registerWorkspaceHandlers(router: MethodRouter, deps: WorkspaceH
     deps.onChanged(workspace);
     return { workspace };
   });
-  router.register("workspace.delete", ({ id }) => {
+  router.register("workspace.delete", async ({ id }) => {
+    unwrap(workspaces.get(id));
+    if (deps.sessions !== undefined) await endIdleSessions(deps.sessions, id);
     unwrap(workspaces.delete(id));
     deps.onDeleted?.(id);
     return done;
@@ -91,6 +108,24 @@ export function registerWorkspaceHandlers(router: MethodRouter, deps: WorkspaceH
   });
   router.register("repo.list", ({ workspaceId }) => ({ repos: unwrap(workspaces.repos(workspaceId)).map(toRepoDto) }));
   router.register("repo.get", ({ id }) => ({ repo: toRepoDto(unwrap(workspaces.repo(id))) }));
+}
+
+// Refuses while a session is busy; otherwise ends the idle ones, whose runtimes are still open.
+async function endIdleSessions(sessions: Pick<SessionService, "list" | "end">, workspaceId: string): Promise<void> {
+  const listed = sessions.list(workspaceId);
+  if (!listed.ok) throw new RpcFailure("internal_error", listed.error.message, { reason: listed.error.code });
+  const busy = listed.value.filter((session) => busyStates.has(session.state));
+  if (busy.length > 0) {
+    throw new RpcFailure(
+      "invalid_state",
+      `${String(busy.length)} session(s) in this workspace are working or waiting for an approval; stop them or let them finish, then delete the workspace`,
+      { reason: "workspace.sessions_busy", sessionIds: busy.map((session) => session.id) },
+    );
+  }
+  for (const session of listed.value.filter((candidate) => candidate.state === "idle")) {
+    const ended = await sessions.end(session.id);
+    if (!ended.ok) throw new RpcFailure("invalid_state", ended.error.message, { reason: ended.error.code, sessionId: session.id });
+  }
 }
 
 // The protocol's overrides are a view of two keys of the workspace config layer; other keys are kept.
