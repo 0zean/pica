@@ -8,6 +8,8 @@ struct SidebarView: View {
     @Bindable var store: NavigationStore
     /// In the sidebar's toolbar, from the app target: workspace management's add menu (A-12).
     var accessory: AnyView?
+    /// From the app target: a workspace row's context menu (A-12).
+    var workspaceMenu: WorkspaceMenu?
     @FocusState private var listFocused: Bool
 
     var body: some View {
@@ -21,10 +23,14 @@ struct SidebarView: View {
                     ForEach(entry.sessions, id: \.id) { session in
                         SessionRow(session: session)
                             .tag(SidebarItem.session(session.id))
+                            .contextMenu { SessionActionMenuItems(store: store, sessionId: session.id) }
                     }
                 } label: {
                     WorkspaceRow(workspace: entry.workspace)
                         .tag(SidebarItem.workspace(entry.id))
+                        .contextMenu {
+                            if let workspaceMenu { workspaceMenu(entry.workspace) }
+                        }
                 }
             }
         }

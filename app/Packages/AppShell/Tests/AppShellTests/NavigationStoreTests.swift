@@ -172,3 +172,86 @@ func eventually(_ condition: @escaping @MainActor () -> Bool) async {
         }
     }
 }
+
+/// A-12: a deleted workspace leaves the sidebar with its sessions, and a selection in it moves to a neighbour.
+@Suite @MainActor struct WorkspaceDeletedTests {
+    private func store() async -> NavigationStore {
+        let store = NavigationStore(client: EngineClient(socketPath: "/nonexistent", secrets: InMemorySecretBroker()), stateFile: nil)
+        for (id, name) in [("a", "Atlas"), ("b", "Beacon"), ("c", "Cobalt")] {
+            await store.workspaceChanged(Workspace(id: id, name: name, sources: [], pinnedRepoIds: [], overrides: WorkspaceOverrides()))
+        }
+        store.sessionChanged(session("s-b", workspaceId: "b"))
+        store.sessionChanged(session("s-c", workspaceId: "c"))
+        return store
+    }
+
+    private func session(_ id: Id, workspaceId: Id) -> Session {
+        Session(
+            id: id, workspaceId: workspaceId, title: id, state: .ended, writeRoots: [], referenceRoots: [],
+            routingProfile: .off, budgetCredits: nil, lastSeq: 0, createdAt: "2026-11-22T00:00:00Z",
+            updatedAt: "2026-11-22T00:00:00Z")
+    }
+
+    @Test func aSelectionInTheWorkspaceMovesToTheNextOne() async {
+        let store = await store()
+        store.select(.session("s-b"))
+        store.setExpanded(false, workspaceId: "b")
+        store.workspaceDeleted("b")
+        #expect(store.workspaces.map(\.id) == ["a", "c"])
+        #expect(store.sessionsById["s-b"] == nil)
+        #expect(store.sessionsById["s-c"] != nil)
+        #expect(!store.collapsedWorkspaceIds.contains("b"))
+        #expect(store.selection == .workspace("c"))
+    }
+
+    @Test func theLastWorkspaceFallsBackToThePreviousOneThenToNothing() async {
+        let store = await store()
+        store.select(.workspace("c"))
+        store.workspaceDeleted("c")
+        #expect(store.selection == .workspace("b"))
+        store.workspaceDeleted("a")
+        store.workspaceDeleted("b")
+        #expect(store.selection == nil)
+        #expect(store.workspaces.isEmpty)
+    }
+
+    @Test func aSelectionElsewhereStaysAndRepeatingDoesNothing() async {
+        let store = await store()
+        store.select(.session("s-c"))
+        store.workspaceDeleted("b")
+        store.workspaceDeleted("b")
+        #expect(store.selection == .session("s-c"))
+        #expect(store.workspaces.map(\.id) == ["a", "c"])
+    }
+
+    @Test func aLateSessionChangeDoesNotBringASessionBack() async {
+        let store = await store()
+        store.workspaceDeleted("b")
+        store.sessionChanged(session("s-b", workspaceId: "b"))
+        #expect(store.sessionsById["s-b"] == nil)
+    }
+}
+
+/// A-12: `workspace.delete` through a real `picad` reaches the sidebar as `workspace.deleted`.
+@Suite(.serialized, .timeLimit(.minutes(1))) @MainActor struct WorkspaceDeletedEngineTests {
+    @Test func aWorkspaceDeletedThroughTheEngineLeavesTheSidebar() async throws {
+        let fixture = try EngineFixture()
+        defer { fixture.remove() }
+        let supervisor = try fixture.supervisor()
+        let store = NavigationStore(client: supervisor.client, stateFile: nil)
+        store.start()
+        await supervisor.start()
+        defer { store.stop() }
+        await eventually { store.hasLoaded }
+
+        let other = EngineClient(socketPath: fixture.socketPath, secrets: InMemorySecretBroker())
+        try await other.connect()
+        let created = try await other.request(Methods.WorkspaceCreate.self, WorkspaceCreateParams(name: "Atlas")).workspace
+        await eventually { store.workspace(created.id) != nil }
+        _ = try await other.request(Methods.WorkspaceDelete.self, ById(id: created.id))
+        await eventually { store.workspace(created.id) == nil }
+        #expect(store.sidebar.isEmpty)
+        await other.close()
+        await supervisor.stop()
+    }
+}

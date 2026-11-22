@@ -826,6 +826,10 @@
     {
       "check": "Every sidebar item is reachable and activatable by keyboard alone.",
       "run": "make app-ui-test-pica UI_TEST=NavigationShellUITests/testEverySidebarItemIsReachableAndActivatableByKeyboardAlone"
+    },
+    {
+      "check": "Rename and delete a session (added 2026-11-22 for M4): engine tests for `session.rename`/`session.delete`, and a UI test renames from the sidebar menu and the title, and deletes from the palette and the sidebar menu with a confirmation.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/sessions/rename-delete.test.ts packages/adapters/tests/store/migrations.test.ts && cd .. && swift test --package-path app/Packages/AppShell --filter 'SessionDeletionSelectionTests|SessionRenameDeleteEngineTests' && make app-ui-test-pica UI_TEST=SessionRenameDeleteUITests"
     }
   ],
   "A-05": [
@@ -934,6 +938,10 @@
     {
       "check": "Auth errors display their `fix` action.",
       "run": "make engine-install && (cd engine && pnpm exec vitest run packages/server/tests/workspaces/github-rpc.test.ts) && swift test --package-path app/Packages/Workspaces --filter 'FixPerformerTests|TeamBrowserStoreTests' && make app-ui-test-pica UI_TEST=WorkspacesUITests/testAnSSOErrorShowsItsFixAction && make app-ui-test-pica UI_TEST=WorkspacesUITests/testSignedOutShowsTheSignInFix"
+    },
+    {
+      "check": "Rename and delete a workspace and remove a repo from one: the engine ends idle sessions and refuses busy ones on delete, a removed team repo stays out of later syncs, and UI tests rename, delete from the sidebar and remove a team repo.",
+      "run": "make engine-install && (cd engine && pnpm exec vitest run packages/adapters/tests/workspaces packages/adapters/tests/store/repositories.test.ts packages/server/tests/workspaces packages/server/tests/sessions/delete-workspace.test.ts) && swift test --package-path app/Packages/Workspaces --filter 'WorkspaceNamingTests|WorkspaceRenameTests|WorkspaceDeletionTests|WorkspaceDeleteFlowTests|RepoRemovalTests|RepoRemovalFlowTests' && swift test --package-path app/Packages/AppShell --filter 'WorkspaceDeleted' && swift test --package-path app/Packages/PicaSettings --filter ActionRegistryTests && make app-ui-test-pica UI_TEST=WorkspacesUITests/testRenamingAWorkspace && make app-ui-test-pica UI_TEST=WorkspacesUITests/testDeletingAWorkspaceWithAnIdleSession && make app-ui-test-pica UI_TEST=WorkspacesUITests/testRemovingATeamRepoKeepsItOutOfLaterSyncs"
     }
   ],
   "A-13": [

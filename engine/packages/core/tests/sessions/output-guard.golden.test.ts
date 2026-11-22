@@ -1,6 +1,6 @@
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { createOutputGuard, err, utf8ByteLength, withOutputGuard } from "../../src/index.ts";
+import { createOutputGuard, err, ok, utf8ByteLength, withOutputGuard } from "../../src/index.ts";
 import type { PostToolUseOutcome } from "../../src/index.ts";
 import { guardContext, memoryArtifacts, postInput } from "./output-guard-fixtures.ts";
 
@@ -88,7 +88,10 @@ describe("output guard golden cases", () => {
 
   it("still truncates when the spill fails, and says so", async () => {
     const guard = createOutputGuard({
-      artifacts: { write: () => Promise.resolve(err({ code: "artifact.write_failed", message: "disk full" })) },
+      artifacts: {
+        write: () => Promise.resolve(err({ code: "artifact.write_failed", message: "disk full" })),
+        remove: () => Promise.resolve(ok(undefined)),
+      },
       policyContext: () => guardContext(maxBytes),
     });
     const guarded = contentOf(await guard(postInput(cases["json"] ?? "")));

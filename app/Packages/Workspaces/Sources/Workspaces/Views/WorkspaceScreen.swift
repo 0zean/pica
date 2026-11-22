@@ -16,6 +16,8 @@ public struct WorkspaceScreen: View {
         self.manager = manager
     }
 
+    @State private var pendingRemoval: RepoRemoval?
+
     public var body: some View {
         let store = manager.store(for: workspace.id)
         ScrollView {
@@ -24,7 +26,7 @@ public struct WorkspaceScreen: View {
                 actions(store)
                 syncStatus(store)
                 sources(store)
-                repositories
+                repositories(store)
             }
             .padding(Spacing.xLarge)
             .frame(maxWidth: 760, alignment: .leading)
@@ -32,18 +34,54 @@ public struct WorkspaceScreen: View {
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("pica.workspace")
+        .alert(
+            pendingRemoval?.title ?? "", isPresented: removalPresented, presenting: pendingRemoval
+        ) { removal in
+            Button("Remove from Workspace", role: .destructive) { remove(removal, deletingClone: false) }
+                .accessibilityIdentifier("pica.removeRepo.confirm")
+            if removal.canDeleteClone {
+                Button("Remove and Delete Clone", role: .destructive) { remove(removal, deletingClone: true) }
+                    .accessibilityIdentifier("pica.removeRepo.deleteClone")
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: { removal in
+            Text(removal.message)
+        }
+    }
+
+    private var removalPresented: Binding<Bool> {
+        Binding(get: { pendingRemoval != nil }, set: { if !$0 { pendingRemoval = nil } })
+    }
+
+    private func remove(_ removal: RepoRemoval, deletingClone: Bool) {
+        let store = manager.store(for: workspace.id)
+        Task { await store.removeRepo(removal, deletingClone: deletingClone) }
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: Spacing.xSmall) {
-            Text(workspace.name)
-                .font(Typography.largeTitle)
-                .foregroundStyle(Palette.textPrimary)
-                .accessibilityAddTraits(.isHeader)
-                .accessibilityIdentifier("pica.session.title")
-            Text("Workspace · \(count(repos.count, "repo")) · \(count(workspace.sources.count, "source"))")
-                .font(Typography.callout)
-                .foregroundStyle(Palette.textSecondary)
+        HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
+            VStack(alignment: .leading, spacing: Spacing.xSmall) {
+                Text(workspace.name)
+                    .font(Typography.largeTitle)
+                    .foregroundStyle(Palette.textPrimary)
+                    .accessibilityAddTraits(.isHeader)
+                    .accessibilityIdentifier("pica.session.title")
+                Text("Workspace · \(count(repos.count, "repo")) · \(count(workspace.sources.count, "source"))")
+                    .font(Typography.callout)
+                    .foregroundStyle(Palette.textSecondary)
+            }
+            Spacer()
+            Menu {
+                WorkspaceActionsMenuItems(manager: manager, workspaceId: workspace.id)
+            } label: {
+                Label("Workspace Actions", systemImage: "ellipsis.circle")
+                    .labelStyle(.iconOnly)
+            }
+            .menuStyle(.borderlessButton)
+            .menuIndicator(.hidden)
+            .fixedSize()
+            .help("Rename or delete this workspace")
+            .accessibilityIdentifier("pica.workspace.menu")
         }
     }
 
@@ -125,7 +163,7 @@ public struct WorkspaceScreen: View {
         }
     }
 
-    private var repositories: some View {
+    private func repositories(_ store: WorkspaceStore) -> some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
             SectionTitle("Repositories")
             if repos.isEmpty {
@@ -135,8 +173,17 @@ public struct WorkspaceScreen: View {
             }
             VStack(alignment: .leading, spacing: Spacing.small) {
                 ForEach(repos, id: \.id) { repo in
-                    RepoManagementRow(repo: repo, pinned: workspace.pinnedRepoIds.contains(repo.id))
+                    RepoManagementRow(
+                        repo: repo, pinned: workspace.pinnedRepoIds.contains(repo.id),
+                        isRemoving: store.removingRepoId == repo.id
+                    ) {
+                        store.clearRepoProblem()
+                        pendingRemoval = RepoRemoval(repo: repo, workspace: workspace)
+                    }
                 }
+            }
+            if let problem = store.repoProblem {
+                ProblemBanner(problem: problem, fixes: manager.fixes, identifier: "pica.workspace.repoProblem")
             }
         }
     }
@@ -197,6 +244,8 @@ private struct SourceRow: View {
 private struct RepoManagementRow: View {
     let repo: Repo
     let pinned: Bool
+    let isRemoving: Bool
+    let remove: () -> Void
 
     var body: some View {
         HStack(spacing: Spacing.small) {
@@ -224,8 +273,22 @@ private struct RepoManagementRow: View {
             }
             Chip(SyncStatus.cloneLabel(repo.cloneState), tone: tone)
                 .accessibilityIdentifier("pica.workspace.repo.\(repo.name).state")
+            if isRemoving {
+                ProgressView().controlSize(.small)
+            } else {
+                Button(action: remove) {
+                    Image(systemName: "minus.circle")
+                }
+                .buttonStyle(.borderless)
+                .help("Remove from this workspace. Files on disk stay unless you choose to delete Pica’s clone.")
+                .accessibilityLabel("Remove \(repo.name)")
+                .accessibilityIdentifier("pica.workspace.repo.\(repo.name).remove")
+            }
         }
         .padding(.vertical, Spacing.xSmall)
+        .contextMenu {
+            Button("Remove from Workspace…", action: remove)
+        }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("pica.workspace.repo.\(repo.name)")
     }

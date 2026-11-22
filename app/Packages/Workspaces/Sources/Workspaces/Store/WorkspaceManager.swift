@@ -12,6 +12,7 @@ public final class WorkspaceManager {
         case addRepository(workspaceId: Id)
         case importTeams(workspaceId: Id)
         case newSession(workspaceId: Id)
+        case renameWorkspace(workspaceId: Id)
 
         public var id: String {
             switch self {
@@ -19,6 +20,7 @@ public final class WorkspaceManager {
             case .addRepository(let workspaceId): "addRepository.\(workspaceId)"
             case .importTeams(let workspaceId): "importTeams.\(workspaceId)"
             case .newSession(let workspaceId): "newSession.\(workspaceId)"
+            case .renameWorkspace(let workspaceId): "renameWorkspace.\(workspaceId)"
             }
         }
     }
@@ -37,6 +39,13 @@ public final class WorkspaceManager {
     @ObservationIgnored public var repos: @MainActor (Id) -> [Repo] = { _ in [] }
     /// Set by the app target: selects and opens a session once New Session has started it.
     @ObservationIgnored public var onSessionCreated: @MainActor (Session) -> Void = { _ in }
+    /// Set by the app target: every workspace the sidebar's store holds, to check a new name against.
+    @ObservationIgnored public var workspaces: @MainActor () -> [Workspace] = { [] }
+    /// Set by the app target: the workspace's sessions as the sidebar's store holds them.
+    @ObservationIgnored public var sessions: @MainActor (Id) -> [Session] = { _ in [] }
+    /// Set by the app target: drops the workspace from the sidebar and moves the selection, before its
+    /// `workspace.deleted` arrives.
+    @ObservationIgnored public var onDeleted: @MainActor (Id) -> Void = { _ in }
     @ObservationIgnored private var stores: [Id: WorkspaceStore] = [:]
 
     public init(backend: any WorkspacesBackend, fixes: FixPerformer) {
@@ -107,6 +116,79 @@ public final class WorkspaceManager {
             return true
         } catch {
             createProblem = WorkspaceProblem(error)
+            return false
+        }
+    }
+
+    // MARK: - Renaming
+
+    public private(set) var renameProblem: WorkspaceProblem?
+    public private(set) var isRenaming = false
+
+    public func presentRename(workspaceId: Id) {
+        guard workspaces().contains(where: { $0.id == workspaceId }) else { return }
+        renameProblem = nil
+        sheet = .renameWorkspace(workspaceId: workspaceId)
+    }
+
+    public func workspace(_ id: Id) -> Workspace? {
+        workspaces().first { $0.id == id }
+    }
+
+    /// Why the name cannot be used for this workspace, or nil.
+    public func nameProblem(_ name: String, renaming workspaceId: Id) -> String? {
+        WorkspaceNaming.problem(for: name, renaming: workspaceId, among: workspaces())
+    }
+
+    /// Returns whether the sheet can close: the workspace was renamed, or kept its name. On failure `renameProblem`
+    /// says why.
+    @discardableResult
+    public func renameWorkspace(_ workspaceId: Id, to name: String) async -> Bool {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard nameProblem(trimmed, renaming: workspaceId) == nil, !isRenaming else { return false }
+        if workspace(workspaceId)?.name == trimmed { return true }
+        isRenaming = true
+        defer { isRenaming = false }
+        do {
+            _ = try await backend.renameWorkspace(workspaceId, to: trimmed)
+            renameProblem = nil
+            return true
+        } catch {
+            renameProblem = WorkspaceProblem(error)
+            return false
+        }
+    }
+
+    // MARK: - Deleting
+
+    /// The deletion waiting for the user to confirm it, which the confirmation shows.
+    public var pendingDeletion: WorkspaceDeletion?
+    /// The last deletion the engine refused or that failed.
+    public var deleteProblem: WorkspaceProblem?
+    public private(set) var isDeleting = false
+
+    public func requestDelete(workspaceId: Id) {
+        guard let workspace = workspace(workspaceId) else { return }
+        deleteProblem = nil
+        pendingDeletion = WorkspaceDeletion(workspace: workspace, repos: repos(workspaceId), sessions: sessions(workspaceId))
+    }
+
+    /// Deletes the workspace the user confirmed; returns whether it was deleted. On failure `deleteProblem` says why.
+    /// The alert has already cleared `pendingDeletion` when its button runs this, so the deletion is passed in.
+    @discardableResult
+    public func confirmDelete(_ deletion: WorkspaceDeletion) async -> Bool {
+        guard !deletion.isBlocked, !isDeleting else { return false }
+        pendingDeletion = nil
+        isDeleting = true
+        defer { isDeleting = false }
+        do {
+            try await backend.deleteWorkspace(deletion.workspace.id)
+            stores[deletion.workspace.id] = nil
+            if case .renameWorkspace(deletion.workspace.id) = sheet { sheet = nil }
+            onDeleted(deletion.workspace.id)
+            return true
+        } catch {
+            deleteProblem = WorkspaceProblem(error)
             return false
         }
     }

@@ -56,3 +56,15 @@ extension Repo {
         return last.hasSuffix(".git") ? String(last.dropLast(4)) : last
     }
 }
+
+/// A rename or delete the window is asking the user about.
+public enum PendingSessionAction: Hashable, Sendable {
+    case rename(Id)
+    case delete(Id)
+
+    public var sessionId: Id {
+        switch self {
+        case .rename(let id), .delete(let id): id
+        }
+    }
+}

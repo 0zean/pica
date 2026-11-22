@@ -11,6 +11,7 @@ import {
   resolveGitHubHost,
   type DiscoveryResult,
   type GitHubRestClient,
+  type RepoRegistry,
   type Store,
 } from "@pica/core";
 import { afterEach, describe, expect, it } from "vitest";
@@ -40,6 +41,7 @@ const teamClient: GitHubRestClient = {
 interface Running {
   readonly client: TestClient;
   readonly store: Store;
+  readonly removedRepos: string[];
   stop(): Promise<void>;
 }
 
@@ -64,11 +66,22 @@ async function start(discover: () => DiscoveryResult<GitHubRestClient> = () => P
     newId: () => `id-${String((next += 1))}`,
     clock: () => "2026-11-14T00:00:00.000Z",
   });
-  const engine: SocketListener = await startEngine({ socketPath: join(dir, "run", "picad.sock"), log: silentLogger, workspaces });
+  const removedRepos: string[] = [];
+  const repos: RepoRegistry = {
+    addByPath: () => Promise.resolve(err(repoRegistryError("repo.not_found", "not in this test"))),
+    addByUrl: () => Promise.resolve(err(repoRegistryError("repo.not_found", "not in this test"))),
+    remove: (id) => {
+      removedRepos.push(id);
+      return Promise.resolve(ok(undefined));
+    },
+    list: () => ok([]),
+  };
+  const engine: SocketListener = await startEngine({ socketPath: join(dir, "run", "picad.sock"), log: silentLogger, workspaces, repos });
   const client = await TestClient.connectAndHello(engine.socketPath);
   return {
     client,
     store,
+    removedRepos,
     stop: async () => {
       client.close();
       await engine.close();
@@ -152,5 +165,55 @@ describe("workspace RPC", () => {
     running = await start();
     const response = await running.client.request("workspace.get", { id: "missing" });
     expect(response["error"]).toMatchObject({ data: { code: "not_found" } });
+  });
+
+  it("removes a team repo so a sync leaves it out, and refuses repo.remove while a workspace includes it", async () => {
+    running = await start();
+    const { client, removedRepos } = running;
+    const { workspace } = (await call(client, "workspace.create", { name: "Payments" })) as { workspace: { id: string } };
+    await call(client, "workspace.addSource", { workspaceId: workspace.id, kind: "team", org: "acme", selector: "platform" });
+    await call(client, "workspace.sync", { workspaceId: workspace.id });
+
+    const inUse = await client.request("repo.remove", { id: "id-3", force: false });
+    expect(inUse["error"]).toMatchObject({
+      data: { code: "invalid_state", details: { reason: "repo.in_use", workspaceIds: [workspace.id] } },
+    });
+    expect(removedRepos).toEqual([]);
+
+    expect(await call(client, "workspace.removeRepo", { workspaceId: workspace.id, repoId: "id-3" })).toEqual({ ok: true });
+    expect(await call(client, "workspace.sync", { workspaceId: workspace.id })).toEqual({ added: [], removed: [] });
+    const { repos } = (await call(client, "repo.list", { workspaceId: workspace.id })) as { repos: { id: string }[] };
+    expect(repos.map((repo) => repo.id)).toEqual(["id-4"]);
+  });
+
+  it("deletes a workspace with its ended sessions and broadcasts workspace.deleted, refusing while a session is open", async () => {
+    running = await start();
+    const { client, store } = running;
+    const { workspace } = (await call(client, "workspace.create", { name: "Payments" })) as { workspace: { id: string } };
+    const session = {
+      id: "session-1",
+      workspaceId: workspace.id,
+      writeRoots: [],
+      referenceRoots: [],
+      state: "awaiting_approval" as const,
+      routingProfile: "balanced",
+      budgetMaxCredits: null,
+      createdAt: "2026-11-14T00:00:00.000Z",
+      updatedAt: "2026-11-14T00:00:00.000Z",
+    };
+    store.sessions.create(session);
+
+    const refused = await client.request("workspace.delete", { id: workspace.id });
+    expect(refused["error"]).toMatchObject({ data: { code: "invalid_state", details: { reason: "workspace.in_use" } } });
+
+    store.sessions.updateState(session.id, "ended", "2026-11-14T00:00:01.000Z");
+    expect(await call(client, "workspace.delete", { id: workspace.id })).toEqual({ ok: true });
+
+    const deleted = client.notifications().filter((message) => message["method"] === "workspace.deleted");
+    expect(deleted.map((message) => message["params"])).toEqual([{ id: workspace.id }]);
+    const listed = (await call(client, "workspace.list", {})) as { workspaces: unknown[] };
+    expect(listed.workspaces).toEqual([]);
+    const sessions = store.sessions.listByWorkspace(workspace.id);
+    expect(sessions.ok ? sessions.value : undefined).toEqual([]);
   });
 });

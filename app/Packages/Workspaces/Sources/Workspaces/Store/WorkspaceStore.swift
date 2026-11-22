@@ -26,6 +26,10 @@ public final class WorkspaceStore {
     public private(set) var adding: AddState = .idle
     /// The last source removal that failed.
     public private(set) var sourceProblem: WorkspaceProblem?
+    /// The last repo removal that failed, or whose clone could not be deleted.
+    public private(set) var repoProblem: WorkspaceProblem?
+    /// The repo being removed.
+    public private(set) var removingRepoId: Id?
 
     @ObservationIgnored private let backend: any WorkspacesBackend
 
@@ -100,5 +104,34 @@ public final class WorkspaceStore {
         } catch {
             sourceProblem = WorkspaceProblem(error)
         }
+    }
+
+    /// Takes the repo out of the workspace (`workspace.removeRepo`) and, if asked, then forgets it and deletes its
+    /// managed clone (`repo.remove` without force, refused with local work). Returns whether it left the workspace.
+    @discardableResult
+    public func removeRepo(_ removal: RepoRemoval, deletingClone: Bool) async -> Bool {
+        guard removingRepoId == nil else { return false }
+        removingRepoId = removal.repo.id
+        defer { removingRepoId = nil }
+        do {
+            try await backend.removeRepo(removal.repo.id, from: workspaceId)
+        } catch {
+            repoProblem = WorkspaceProblem(error)
+            return false
+        }
+        repoProblem = nil
+        guard deletingClone, removal.canDeleteClone else { return true }
+        do {
+            try await backend.forgetRepo(removal.repo.id)
+        } catch {
+            var problem = WorkspaceProblem(error)
+            problem.message = "Removed \(removal.name) from the workspace, but kept its clone: \(problem.message)"
+            repoProblem = problem
+        }
+        return true
+    }
+
+    public func clearRepoProblem() {
+        repoProblem = nil
     }
 }

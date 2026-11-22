@@ -175,6 +175,17 @@ function resourcesTurns(): Turn[] {
   return [{ steps: Array.from({ length: 67 }, (_, index) => workTurn(index).steps).flat() }];
 }
 
+/**
+ * The session rename and delete scenario: a session's first message plays a short turn that ends idle; its second
+ * runs until it is stopped or the session is deleted.
+ */
+function sessionsTurns(): Turn[] {
+  return [
+    { steps: [streamedText("Checked the repo.", 2), usage(100, 20)] },
+    { steps: [streamedText("Working on it.", 2), { ...toolCall("view", "src/a.ts", "a"), hangs: true }] },
+  ];
+}
+
 export const fakePicadScenarios: Record<string, Scenario> = {
   empty: scenario([]),
   timeline: scenario(timelineTurns()),
@@ -186,4 +197,5 @@ export const fakePicadScenarios: Record<string, Scenario> = {
   usage: scenario(usageTurns()),
   overview: scenario(overviewTurns()),
   resources: scenario(resourcesTurns()),
+  sessions: scenario(sessionsTurns()),
 };

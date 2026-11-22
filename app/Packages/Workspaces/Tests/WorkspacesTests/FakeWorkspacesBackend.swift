@@ -34,6 +34,25 @@ final class FakeWorkspacesBackend: WorkspacesBackend, @unchecked Sendable {
         }
     }
 
+    nonisolated func renameWorkspace(_ workspaceId: Id, to name: String) async throws -> Workspace {
+        try await MainActor.run {
+            try record("rename \(workspaceId) \(name)", "renameWorkspace")
+            return Workspace(id: workspaceId, name: name, sources: [], pinnedRepoIds: [], overrides: WorkspaceOverrides())
+        }
+    }
+
+    nonisolated func deleteWorkspace(_ workspaceId: Id) async throws {
+        try await MainActor.run { try record("delete \(workspaceId)", "deleteWorkspace") }
+    }
+
+    nonisolated func removeRepo(_ repoId: Id, from workspaceId: Id) async throws {
+        try await MainActor.run { try record("removeRepo \(repoId) \(workspaceId)", "removeRepo") }
+    }
+
+    nonisolated func forgetRepo(_ repoId: Id) async throws {
+        try await MainActor.run { try record("forgetRepo \(repoId)", "forgetRepo") }
+    }
+
     nonisolated func addRepo(path: String) async throws -> Repo {
         try await MainActor.run {
             try record("addPath \(path)", "addRepo")
@@ -131,6 +150,12 @@ extension RpcError {
     static let dailyCap = RpcError(
         code: -32000, message: "workspace w1 has used 500 of its 500 daily credits; the cap resets at 2026-11-22T00:00:00Z",
         data: ErrorData(code: .budgetExhausted, fix: FixAction(kind: .openSettings, label: "Open Budget Settings")))
+    static let hasLocalWork = RpcError(
+        code: -32000, message: "/managed/atlas has 2 uncommitted path(s) and 0 unpushed commit(s); remove it with force to discard them",
+        data: ErrorData(code: .refusedWithoutForce))
+    static let sessionsBusy = RpcError(
+        code: -32000, message: "1 session(s) in this workspace are working or waiting for an approval",
+        data: ErrorData(code: .invalidState))
     static let noRemote = RpcError(
         code: -32602, message: "/work/plain has no remote", data: ErrorData(code: .invalidParams))
 }

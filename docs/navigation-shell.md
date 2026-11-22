@@ -5,7 +5,8 @@ inspector as SwiftUI's trailing `.inspector`, which is how a third column is mad
 `app/Packages/AppShell/Sources/AppShell/Navigation` (the store) and `Views` (the columns). The session column draws
 a selected session with the `SessionContent` the app target passes to `RootView`: the timeline (A-05,
 docs/session-timeline.md). The checks are
-`NavigationShellUITests` in `app/PicaUITests` and `NavigationStoreTests` in AppShell's tests.
+`NavigationShellUITests` and `SessionRenameDeleteUITests` in `app/PicaUITests`, `NavigationStoreTests` and
+`SessionRenameDeleteTests` in AppShell's tests, and `engine/packages/server/tests/sessions/rename-delete.test.ts`.
 
 ## Data flow
 
@@ -15,7 +16,8 @@ docs/session-timeline.md). The checks are
   workspace, and `session.list`. A reload replaces what the store holds, so a workspace deleted while the app was
   disconnected disappears.
 - `workspace.changed` upserts the workspace and reloads its repos, since pinning, unpinning and syncing change them.
-  `session.changed` upserts the session.
+  `session.changed` upserts the session. `session.deleted` removes it (see
+  [Renaming and deleting sessions](#renaming-and-deleting-sessions)).
 - It listens for both notifications before the first load. A notification that arrives while a reload is waiting
   for the engine wins over the reload's older answer.
 - A failed request is shown under the sidebar with its error code.
@@ -29,6 +31,51 @@ Each workspace is a disclosure row. Under it are its repos, in the engine's orde
 sessions. Sessions that need the user (`awaiting_approval`, `failed`) come first, then the rest, most recently
 updated first. A session row shows the activity mark (animated while starting or running) and a chip for running,
 waiting and failed sessions. A repo appears under every workspace that includes it, so its row is identified by both.
+
+## Renaming and deleting sessions
+
+A session is renamed or deleted from four places, all of which ask `NavigationStore` (`beginRename`/`beginDelete`)
+and are answered by one alert in `SessionActionDialogs`:
+
+- the sidebar row's context menu (Rename…, Delete…);
+- the timeline's title: double-click renames, and its context menu has both (`TimelineTitleActions`, which the app
+  target fills, since Timeline does not depend on AppShell);
+- File ▸ Rename Session… and Delete Session… (`renameSession`, `deleteSession` in A-14's registry), for the
+  selected session; no default shortcut, since ⌘⌫ belongs to text fields;
+- the ⌘K palette: “Rename <title>…” and “Delete <title>…” for every session, beside “Go to <title>”.
+
+Rename shows the current title in a text field; Return saves. The engine trims it and keeps at most 200 characters;
+an empty title clears it, and the session shows as “Untitled session” again (the engine has no automatic title yet;
+when one comes, a cleared title falls back to it). Renaming does not change `updatedAt`, so the session keeps its
+place in the sidebar.
+
+Delete asks first, naming the session: “Delete “<title>”?”, saying that its timeline (messages, tool calls and
+agents), pending approvals and attached MCP servers are deleted and that this cannot be undone, that the user's
+repositories are not touched, and that its credits stay in the usage totals. For a session that is working
+(starting, running or waiting for approval) it adds that deleting stops it first. Once the engine answers (or its
+`session.deleted` arrives first), the row goes; when it was selected, the next session in the same workspace in
+sidebar order is selected, else the previous one, else the workspace. ⌘1–9 and Select Next/Previous Session follow
+the sidebar as it now is. A deleted id is remembered, so a `session.changed` that was in flight, or a reload that
+started before the deletion, does not bring the row back. A refused rename or delete shows an alert with the error
+code.
+
+Engine side (protocol `session.rename {sessionId, title}` → `{session}`, `session.delete {sessionId}` → `{ok}`,
+notification `session.deleted {sessionId}`; additions, so the protocol version is unchanged and an older engine
+answers `method_not_found`):
+
+- **Live sessions are ended, not refused.** Delete works in every state: a live session's runtime is closed first
+  (a running turn stops, pending approvals are dropped), as `session.end` does, and the X-03 `sessionEnd` hook runs
+  for a session that had not ended. There is no `invalid_state` for delete.
+- **What goes:** the session's events (in the same transaction that marks it deleted), what the runtime keeps of it
+  (Copilot's `deleteSession`: transcript and state, so it can never be resumed), its MCP attachments
+  (`attachments.json`), and its engine-owned files under `<data dir>/sessions/<id>/` (C-06 artifacts). Sessions own
+  no worktrees yet (R-10 has not filled `writeRoots`); write and reference roots are the user's repositories and
+  are never touched.
+- **What stays:** the `sessions` row, with `deleted_at` set and its title cleared (store migration 4), so its usage
+  records keep their foreign key. Usage reports, the workspace daily cap and C-09 budgets therefore count what the
+  session spent; `usage.rollup` grouped by session still lists its id. The H-02 audit log is append-only and keeps
+  its entries. `session.get`, `session.list`, `events.subscribe` and every other `session.*` method answer
+  `not_found` for a deleted session.
 
 ## Keyboard
 
@@ -64,6 +111,9 @@ The sidebar's width lives in the app's real defaults domain, so the
 UI tests change it for the developer's own copy of Pica too, as the window frame already did. The test creates workspaces, repos and sessions through its own
 `EngineClient`, from a synchronous test: an async XCTest whose XCUITest call fails can hang in its tear-down. It cannot
 run git, so it writes the few files of an empty repository with an `origin` by hand.
+
+`SessionRenameDeleteUITests` uses `fake-picad`'s `sessions` scenario: a session's first message ends idle and its
+second runs until the session is stopped or deleted, so the test can delete a working session.
 
 XCUITest moves a divider only with `click(forDuration:thenDragTo:)` on the splitter element; `press(...)` does
 nothing. The first launch of a freshly built Pica can take several seconds longer, so `PicaUnderTest.launch()` allows

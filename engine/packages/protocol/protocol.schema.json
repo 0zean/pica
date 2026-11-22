@@ -106,6 +106,15 @@
         "$ref": "#/$defs/Ok"
       }
     },
+    "workspace.removeRepo": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/WorkspaceRemoveRepoParams"
+      },
+      "result": {
+        "$ref": "#/$defs/Ok"
+      }
+    },
     "workspace.sync": {
       "direction": "client",
       "params": {
@@ -269,6 +278,24 @@
       }
     },
     "session.end": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/BySession"
+      },
+      "result": {
+        "$ref": "#/$defs/Ok"
+      }
+    },
+    "session.rename": {
+      "direction": "client",
+      "params": {
+        "$ref": "#/$defs/SessionRenameParams"
+      },
+      "result": {
+        "$ref": "#/$defs/SessionRenameResult"
+      }
+    },
+    "session.delete": {
       "direction": "client",
       "params": {
         "$ref": "#/$defs/BySession"
@@ -730,9 +757,19 @@
         "$ref": "#/$defs/SessionChangedNotification"
       }
     },
+    "session.deleted": {
+      "params": {
+        "$ref": "#/$defs/SessionDeletedNotification"
+      }
+    },
     "workspace.changed": {
       "params": {
         "$ref": "#/$defs/WorkspaceChangedNotification"
+      }
+    },
+    "workspace.deleted": {
+      "params": {
+        "$ref": "#/$defs/WorkspaceDeletedNotification"
       }
     },
     "fanout.changed": {
@@ -4937,6 +4974,17 @@
         "session"
       ]
     },
+    "SessionDeletedNotification": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "sessionId"
+      ]
+    },
     "SessionErrorEvent": {
       "type": "object",
       "properties": {
@@ -5076,6 +5124,33 @@
       },
       "required": [
         "sessions"
+      ]
+    },
+    "SessionRenameParams": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 200
+        }
+      },
+      "required": [
+        "sessionId",
+        "title"
+      ]
+    },
+    "SessionRenameResult": {
+      "type": "object",
+      "properties": {
+        "session": {
+          "$ref": "#/$defs/Session"
+        }
+      },
+      "required": [
+        "session"
       ]
     },
     "SessionResumeResult": {
@@ -6010,6 +6085,17 @@
         "workspace"
       ]
     },
+    "WorkspaceDeletedNotification": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
     "WorkspaceGetResult": {
       "type": "object",
       "properties": {
@@ -6053,6 +6139,21 @@
       }
     },
     "WorkspacePinRepoParams": {
+      "type": "object",
+      "properties": {
+        "workspaceId": {
+          "$ref": "#/$defs/Id"
+        },
+        "repoId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "workspaceId",
+        "repoId"
+      ]
+    },
+    "WorkspaceRemoveRepoParams": {
       "type": "object",
       "properties": {
         "workspaceId": {

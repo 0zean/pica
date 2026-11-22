@@ -35,7 +35,8 @@ export class FakeRuntime implements AgentRuntime {
   readonly #sessions = new Map<string, FakeSession>();
   readonly #log: RuntimeEvent[] = [];
   readonly #options = new Map<string, SessionOptions>();
-  readonly #resumable: ReadonlySet<string>;
+  readonly #resumable: Set<string>;
+  readonly #deleted: string[] = [];
   readonly minSessionCredits: number | undefined;
 
   constructor(options: FakeRuntimeOptions) {
@@ -95,6 +96,22 @@ export class FakeRuntime implements AgentRuntime {
     this.#options.set(options.sessionId, options);
     session.reopen(sessionOptions(options));
     return Promise.resolve(ok(session));
+  }
+
+  deleteSession(sessionId: string): RuntimeResult<undefined> {
+    if (!this.#sessions.has(sessionId) && !this.#resumable.has(sessionId)) {
+      return Promise.resolve(err({ code: "runtime.session_not_found", message: `no session with id ${sessionId}` }));
+    }
+    this.#sessions.delete(sessionId);
+    this.#options.delete(sessionId);
+    this.#resumable.delete(sessionId);
+    this.#deleted.push(sessionId);
+    return Promise.resolve(ok(undefined));
+  }
+
+  // The ids `deleteSession` removed, in order.
+  deletedSessionIds(): readonly string[] {
+    return [...this.#deleted];
   }
 
   #adopt(options: ResumeOptions): FakeSession | undefined {

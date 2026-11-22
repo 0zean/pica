@@ -40,6 +40,14 @@ public final class NavigationStore {
     @ObservationIgnored private var changeCount = 0
     @ObservationIgnored private var workspaceChangedAt: [Id: Int] = [:]
     @ObservationIgnored private var sessionChangedAt: [Id: Int] = [:]
+    /// Sessions the engine reported deleted, so a reload that started before cannot bring them back.
+    @ObservationIgnored private var sessionDeletedAt: [Id: Int] = [:]
+
+    /// The session whose rename or delete the window is asking about (docs/navigation-shell.md).
+    public var pendingSessionAction: PendingSessionAction?
+    /// The last rename or delete the engine refused, for the window to show.
+    public var sessionActionFailure: String?
+    @ObservationIgnored private var workspaceDeletedAt: [Id: Int] = [:]
 
     public init(client: EngineClient, stateFile: WindowStateFile?, clock: any Clock<Duration> = ContinuousClock()) {
         self.client = client
@@ -134,7 +142,8 @@ public final class NavigationStore {
 
     // MARK: - Following the engine
 
-    /// Loads everything on each connection and applies `workspace.changed` and `session.changed`. Calling it again does nothing.
+    /// Loads everything on each connection and applies `workspace.changed`, `workspace.deleted` and `session.changed`.
+    /// Calling it again does nothing.
     public func start() {
         guard following == nil else { return }
         let client = client
@@ -142,6 +151,8 @@ public final class NavigationStore {
             // Listen before the first load, so no change between the load and the listening is missed.
             let workspaceChanges = await client.notifications(Notifications.WorkspaceChanged.self)
             let sessionChanges = await client.notifications(Notifications.SessionChanged.self)
+            let sessionDeletions = await client.notifications(Notifications.SessionDeleted.self)
+            let workspaceDeletions = await client.notifications(Notifications.WorkspaceDeleted.self)
             let states = await client.connectionStates()
             await withDiscardingTaskGroup { group in
                 group.addTask {
@@ -149,6 +160,12 @@ public final class NavigationStore {
                 }
                 group.addTask {
                     for await change in sessionChanges { await self.sessionChanged(change.session) }
+                }
+                group.addTask {
+                    for await deletion in sessionDeletions { await self.sessionDeleted(deletion.sessionId) }
+                }
+                group.addTask {
+                    for await deletion in workspaceDeletions { await self.workspaceDeleted(deletion.id) }
                 }
                 group.addTask {
                     for await state in states {
@@ -184,17 +201,23 @@ public final class NavigationStore {
     /// Replaces what the store holds, keeping whatever a notification changed after the reload started.
     private func apply(workspaces listed: [Workspace], repos: [Id: [Repo]], sessions: [Session], changesSince startedAt: Int) {
         let newer = Set(workspaceChangedAt.filter { $0.value > startedAt }.keys)
-        var merged = listed.map { listedWorkspace in
+        let deleted = Set(workspaceDeletedAt.filter { $0.value > startedAt }.keys)
+        var merged = listed.filter { !deleted.contains($0.id) }.map { listedWorkspace in
             newer.contains(listedWorkspace.id) ? (workspace(listedWorkspace.id) ?? listedWorkspace) : listedWorkspace
         }
         merged += workspaces.filter { newer.contains($0.id) && !listed.map(\.id).contains($0.id) }
         var mergedRepos = repos
         for id in newer { mergedRepos[id] = reposByWorkspace[id] ?? repos[id] }
-        var mergedSessions = Dictionary(sessions.map { ($0.id, $0) }, uniquingKeysWith: { _, last in last })
+        var mergedSessions = Dictionary(
+            sessions.filter { !deleted.contains($0.workspaceId) }.map { ($0.id, $0) }, uniquingKeysWith: { _, last in last })
         for (id, changedAt) in sessionChangedAt where changedAt > startedAt {
             mergedSessions[id] = sessionsById[id]
         }
+        for (id, deletedAt) in sessionDeletedAt where deletedAt > startedAt {
+            mergedSessions[id] = nil
+        }
         workspaces = merged
+        for id in deleted { mergedRepos[id] = nil }
         reposByWorkspace = mergedRepos
         sessionsById = mergedSessions
         hasLoaded = true
@@ -213,17 +236,105 @@ public final class NavigationStore {
         }
         // Pinning, unpinning and syncing change which repos the workspace has.
         do {
-            reposByWorkspace[changed.id] = try await client.request(
-                Methods.RepoList.self, RepoListParams(workspaceId: changed.id)).repos
+            let repos = try await client.request(Methods.RepoList.self, RepoListParams(workspaceId: changed.id)).repos
+            if workspace(changed.id) != nil { reposByWorkspace[changed.id] = repos }
         } catch {
             loadFailure = Self.describe(error)
         }
     }
 
+    /// The workspace is gone with its sessions (`workspace.deleted`, or this app's own `workspace.delete`). A selection
+    /// in it moves to the next workspace in the sidebar, else the previous one, else to nothing. Repeating it does
+    /// nothing.
+    public func workspaceDeleted(_ id: Id) {
+        changeCount += 1
+        workspaceDeletedAt[id] = changeCount
+        guard let index = workspaces.firstIndex(where: { $0.id == id }) else { return }
+        let selected = selection.flatMap(workspaceId(of:)) == id
+        workspaces.remove(at: index)
+        reposByWorkspace[id] = nil
+        sessionsById = sessionsById.filter { $0.value.workspaceId != id }
+        collapsedWorkspaceIds.remove(id)
+        if selected {
+            let neighbour = index < workspaces.count ? workspaces[index] : workspaces.last
+            selection = neighbour.map { .workspace($0.id) }
+        }
+    }
+
     func sessionChanged(_ changed: Session) {
+        // A change can arrive after the deletion it preceded; a deleted id never comes back. Deleting a workspace
+        // ends its idle sessions first, so their `session.changed` can also arrive after the workspace is gone.
+        guard sessionDeletedAt[changed.id] == nil, workspaceDeletedAt[changed.workspaceId] == nil else { return }
         changeCount += 1
         sessionChangedAt[changed.id] = changeCount
         sessionsById[changed.id] = changed
+    }
+
+    /// Drops the session; when it was selected, its neighbour is selected instead.
+    func sessionDeleted(_ id: Id) {
+        changeCount += 1
+        sessionDeletedAt[id] = changeCount
+        let neighbour = selection == .session(id) ? neighbour(ofDeleted: id) : nil
+        sessionsById[id] = nil
+        if selection == .session(id) {
+            selection = neighbour
+        }
+        if pendingSessionAction?.sessionId == id {
+            pendingSessionAction = nil
+        }
+    }
+
+    /// The next session in the same workspace in sidebar order, else the previous one, else the workspace itself.
+    func neighbour(ofDeleted id: Id) -> SidebarItem? {
+        guard let workspaceId = sessionsById[id]?.workspaceId,
+            let entry = sidebar.first(where: { $0.id == workspaceId }),
+            let index = entry.sessions.firstIndex(where: { $0.id == id })
+        else { return nil }
+        if index + 1 < entry.sessions.count { return .session(entry.sessions[index + 1].id) }
+        if index > 0 { return .session(entry.sessions[index - 1].id) }
+        return .workspace(workspaceId)
+    }
+
+    // MARK: - Renaming and deleting sessions
+
+    /// The selected session, for the menu and palette actions.
+    public var selectedSession: Session? {
+        if case .session(let id) = selection { sessionsById[id] } else { nil }
+    }
+
+    /// Asks the window to rename `id` (an alert with its title to edit).
+    public func beginRename(_ id: Id) {
+        guard sessionsById[id] != nil else { return }
+        sessionActionFailure = nil
+        pendingSessionAction = .rename(id)
+    }
+
+    /// Asks the window to confirm deleting `id`.
+    public func beginDelete(_ id: Id) {
+        guard sessionsById[id] != nil else { return }
+        sessionActionFailure = nil
+        pendingSessionAction = .delete(id)
+    }
+
+    /// Sets the session's title; an empty one clears it, so the session is "Untitled session" again.
+    public func rename(_ id: Id, to title: String) async {
+        do {
+            let renamed = try await client.request(
+                Methods.SessionRename.self, SessionRenameParams(sessionId: id, title: title)).session
+            sessionChanged(renamed)
+        } catch {
+            sessionActionFailure = "The session could not be renamed. \(Self.describe(error))"
+        }
+    }
+
+    /// Deletes the session in the engine, which ends it first when it is live.
+    public func delete(_ id: Id) async {
+        do {
+            _ = try await client.request(Methods.SessionDelete.self, BySession(sessionId: id))
+            sessionDeleted(id)
+        } catch {
+            sessionActionFailure = "The session could not be deleted. \(Self.describe(error))"
+        }
     }
 
     private static func describe(_ error: any Error) -> String {

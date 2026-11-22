@@ -167,6 +167,10 @@ export function composeMcp(options: EngineMcpOptions, deps: McpCompositionDeps):
       const seeded = manager.seedSession(session.id, session.workspaceId);
       if (!seeded.ok) deps.log.warn(`session ${session.id}: MCP servers not attached: ${seeded.error.message}`);
     },
+    forget(sessionId) {
+      const forgotten = manager.forgetSession(sessionId);
+      if (!forgotten.ok) deps.log.warn(`session ${sessionId}: MCP attachments not removed: ${forgotten.error.message}`);
+    },
     async options(session) {
       const plan = manager.sessionPlan(session.id, session.workspaceId);
       if (!plan.ok) {

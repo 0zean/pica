@@ -9,14 +9,16 @@ public struct RootView: View {
     private let sessionContent: SessionContent
     private let workspaceContent: WorkspaceContent?
     private let sidebarAccessory: AnyView?
+    private let workspaceMenu: WorkspaceMenu?
     private let inspectorPanes: [InspectorPane]
     private let onInteractive: @MainActor () -> Void
 
     /// `sessionContent` draws a selected session; the app target supplies the timeline, a feature of its own. It
-    /// supplies the inspector's panes, a selected workspace's view and the sidebar's accessory (A-12) the same way.
+    /// supplies the inspector's panes, a selected workspace's view, the sidebar's accessory and a workspace row's context
+    /// menu (A-12) the same way.
     public init(
         model: AppModel, navigation: NavigationStore, sessionContent: @escaping SessionContent = SessionColumn.placeholder,
-        workspaceContent: WorkspaceContent? = nil, sidebarAccessory: AnyView? = nil,
+        workspaceContent: WorkspaceContent? = nil, sidebarAccessory: AnyView? = nil, workspaceMenu: WorkspaceMenu? = nil,
         inspectorPanes: [InspectorPane] = [], onInteractive: @escaping @MainActor () -> Void = {}
     ) {
         self.model = model
@@ -24,6 +26,7 @@ public struct RootView: View {
         self.sessionContent = sessionContent
         self.workspaceContent = workspaceContent
         self.sidebarAccessory = sidebarAccessory
+        self.workspaceMenu = workspaceMenu
         self.inspectorPanes = inspectorPanes
         self.onInteractive = onInteractive
     }
@@ -34,7 +37,7 @@ public struct RootView: View {
         ZStack {
             NavigationShell(
                 store: navigation, sessionContent: sessionContent, workspaceContent: workspaceContent,
-                sidebarAccessory: sidebarAccessory, inspectorPanes: inspectorPanes
+                sidebarAccessory: sidebarAccessory, workspaceMenu: workspaceMenu, inspectorPanes: inspectorPanes
             ) {
                 if presentation.style == .banner {
                     EngineStatusBanner(presentation: presentation)

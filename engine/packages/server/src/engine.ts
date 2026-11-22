@@ -176,8 +176,13 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
   const sessions =
     options.sessions === undefined
       ? undefined
-      : startSessions(router, options.sessions, log, scrubber, (session) => {
-          started.listener?.broadcast("session.changed", { session: toSessionDto(session) });
+      : startSessions(router, options.sessions, log, scrubber, {
+          changed: (session) => {
+            started.listener?.broadcast("session.changed", { session: toSessionDto(session) });
+          },
+          deleted: (sessionId) => {
+            started.listener?.broadcast("session.deleted", { sessionId });
+          },
         }, fanOut, mcp?.sessionMcp);
   sessionsHolder.service = sessions;
   registerEngineHandlers(router, {
@@ -223,10 +228,14 @@ export async function startEngine(options: EngineOptions): Promise<SocketListene
       onChanged: (workspace) => {
         started.listener?.broadcast("workspace.changed", { workspace });
       },
+      onDeleted: (id) => {
+        started.listener?.broadcast("workspace.deleted", { id });
+      },
+      ...(sessions === undefined ? {} : { sessions }),
     });
   }
   if (options.repos !== undefined) {
-    registerRepoHandlers(router, options.repos);
+    registerRepoHandlers(router, options.repos, options.workspaces);
   }
   if (options.files !== undefined) {
     registerFilesHandlers(router, options.files);
@@ -297,7 +306,10 @@ function startSessions(
   options: EngineSessionOptions,
   log: Logger,
   scrubber: McpSecretRedactor,
-  onChanged: NonNullable<Parameters<typeof createSessionService>[0]["onChanged"]>,
+  announce: {
+    readonly changed: NonNullable<Parameters<typeof createSessionService>[0]["onChanged"]>;
+    readonly deleted: (sessionId: string) => void;
+  },
   fanOut: { readonly workspaces?: WorkspaceService; readonly onChanged: (fanOut: FanOutInfo) => void },
   mcp: SessionMcp | undefined,
 ): SessionService {
@@ -320,7 +332,14 @@ function startSessions(
     runtime: options.runtime,
     clock,
     newSessionId: options.newSessionId ?? randomUUID,
-    onChanged,
+    onChanged: announce.changed,
+    onDeleted: async (sessionId) => {
+      const removed = await options.outputGuard?.artifacts.remove(sessionId);
+      if (removed?.ok === false) {
+        log.warn(`session ${sessionId}: artifacts not removed: ${removed.error.message}`);
+      }
+      announce.deleted(sessionId);
+    },
     usage: options.store.usage,
     ...(options.budget === undefined ? {} : { budget: options.budget }),
     ...(options.delegator === undefined ? {} : { delegator: options.delegator }),

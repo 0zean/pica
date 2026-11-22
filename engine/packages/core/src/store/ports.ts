@@ -33,7 +33,12 @@ export interface WorkspaceRepository {
   save(workspace: Workspace): StoreResult<void>;
   get(id: string): StoreResult<Workspace>;
   list(): StoreResult<readonly Workspace[]>;
+  // Refuses (`store.conflict`) while the workspace has sessions.
   delete(id: string): StoreResult<void>;
+  // In one transaction: refuses (`store.conflict`) while any of its sessions is in a live state
+  // (`starting`, `idle`, `running`, `awaiting_approval`); else deletes its sessions with their
+  // events and usage records, then the workspace and its pins.
+  deleteWithSessions(id: string): StoreResult<void>;
 }
 
 export interface RepoRepository {
@@ -50,6 +55,11 @@ export interface SessionRepository {
   listByWorkspace(workspaceId: string): StoreResult<readonly Session[]>;
   updateState(id: string, state: SessionState, updatedAt: string): StoreResult<void>;
   updateBudget(id: string, budgetMaxCredits: number | null, updatedAt: string): StoreResult<void>;
+  // `null` clears the user's title. `updatedAt` is left alone, so renaming does not reorder sessions.
+  rename(id: string, title: string | null): StoreResult<void>;
+  // Removes the session's events and marks it deleted, in one transaction. The row stays so its
+  // usage records keep counting; its state becomes `ended`. `get` and `listByWorkspace` no longer find it.
+  delete(id: string, deletedAt: string): StoreResult<void>;
 }
 
 // PLAN.md D-06: each session's events carry their own sequence, starting at 1 with no gaps.

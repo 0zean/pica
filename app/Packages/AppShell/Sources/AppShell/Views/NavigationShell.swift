@@ -7,6 +7,7 @@ struct NavigationShell<Banner: View>: View {
     let sessionContent: SessionContent
     let workspaceContent: WorkspaceContent?
     let sidebarAccessory: AnyView?
+    var workspaceMenu: WorkspaceMenu?
     let inspectorPanes: [InspectorPane]
     @ViewBuilder let banner: Banner
 
@@ -16,7 +17,7 @@ struct NavigationShell<Banner: View>: View {
     var body: some View {
         NavigationSplitView {
             // AppKit saves and restores the sidebar's width in the app's defaults; `ideal` is the first launch's width.
-            SidebarView(store: store, accessory: sidebarAccessory)
+            SidebarView(store: store, accessory: sidebarAccessory, workspaceMenu: workspaceMenu)
                 .navigationSplitViewColumnWidth(
                     min: Self.sidebarWidths.min, ideal: Self.sidebarWidths.ideal, max: Self.sidebarWidths.max)
         } detail: {
@@ -32,6 +33,7 @@ struct NavigationShell<Banner: View>: View {
                 }
         }
         .navigationTitle(title)
+        .sessionActionDialogs(store)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button {

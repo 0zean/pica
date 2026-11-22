@@ -26,6 +26,8 @@ export interface RepoSource {
   // What the last sync resolved to (R-06): the ETag snapshot to revalidate with, and the Repo ids it selected.
   readonly snapshot: DiscoverySnapshot | null;
   readonly repoIds: readonly string[];
+  // Repos removed from the workspace by hand, by normalized remote URL: a sync leaves them out.
+  readonly excludedRemoteUrls: readonly string[];
 }
 
 export interface Workspace {
@@ -54,6 +56,8 @@ export interface Session {
   readonly state: SessionState;
   readonly routingProfile: string;
   readonly budgetMaxCredits: number | null;
+  // The title the user gave the session; absent when they gave none.
+  readonly title?: string;
   readonly createdAt: string;
   readonly updatedAt: string;
 }

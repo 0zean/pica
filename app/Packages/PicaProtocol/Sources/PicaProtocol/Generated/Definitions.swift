@@ -5894,6 +5894,30 @@ public struct SessionCreateResult: Codable, Hashable, Sendable {
     }
 }
 
+public struct SessionDeletedNotification: Codable, Hashable, Sendable {
+    public var sessionId: Id
+
+    public init(
+        sessionId: Id
+    ) {
+        self.sessionId = sessionId
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case sessionId
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        sessionId = try container.decode(Id.self, forKey: .sessionId)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(sessionId, forKey: .sessionId)
+    }
+}
+
 public struct SessionGetResult: Codable, Hashable, Sendable {
     public var session: Session
 
@@ -5963,6 +5987,60 @@ public struct SessionListResult: Codable, Hashable, Sendable {
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(sessions, forKey: .sessions)
+    }
+}
+
+public struct SessionRenameParams: Codable, Hashable, Sendable {
+    public var sessionId: Id
+    public var title: String
+
+    public init(
+        sessionId: Id,
+        title: String
+    ) {
+        self.sessionId = sessionId
+        self.title = title
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case sessionId
+        case title
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        sessionId = try container.decode(Id.self, forKey: .sessionId)
+        title = try container.decode(String.self, forKey: .title)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(sessionId, forKey: .sessionId)
+        try container.encode(title, forKey: .title)
+    }
+}
+
+public struct SessionRenameResult: Codable, Hashable, Sendable {
+    public var session: Session
+
+    public init(
+        session: Session
+    ) {
+        self.session = session
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case session
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        session = try container.decode(Session.self, forKey: .session)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(session, forKey: .session)
     }
 }
 
@@ -6662,6 +6740,30 @@ public struct WorkspaceCreateResult: Codable, Hashable, Sendable {
     }
 }
 
+public struct WorkspaceDeletedNotification: Codable, Hashable, Sendable {
+    public var id: Id
+
+    public init(
+        id: Id
+    ) {
+        self.id = id
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(Id.self, forKey: .id)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+    }
+}
+
 public struct WorkspaceGetResult: Codable, Hashable, Sendable {
     public var workspace: Workspace
 
@@ -6747,6 +6849,36 @@ public struct WorkspaceOverrides: Codable, Hashable, Sendable {
 }
 
 public struct WorkspacePinRepoParams: Codable, Hashable, Sendable {
+    public var workspaceId: Id
+    public var repoId: Id
+
+    public init(
+        workspaceId: Id,
+        repoId: Id
+    ) {
+        self.workspaceId = workspaceId
+        self.repoId = repoId
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case workspaceId
+        case repoId
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        workspaceId = try container.decode(Id.self, forKey: .workspaceId)
+        repoId = try container.decode(Id.self, forKey: .repoId)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(workspaceId, forKey: .workspaceId)
+        try container.encode(repoId, forKey: .repoId)
+    }
+}
+
+public struct WorkspaceRemoveRepoParams: Codable, Hashable, Sendable {
     public var workspaceId: Id
     public var repoId: Id
 

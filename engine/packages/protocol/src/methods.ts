@@ -66,6 +66,10 @@ export const methods = {
     z.object({ id: Id, name: z.string().min(1).optional(), overrides: WorkspaceOverrides.optional() }),
     z.object({ workspace: Workspace }),
   ),
+  // Refused (`invalid_state`, reason `workspace.sessions_busy`, with `sessionIds`) while a session is
+  // starting, running or waiting for an approval. Otherwise ends its idle sessions, deletes the workspace
+  // with all its sessions, their events and usage, and broadcasts `workspace.deleted`. Repos stay
+  // registered and nothing on disk is deleted.
   "workspace.delete": clientMethod(ById, Ok),
   "workspace.addSource": clientMethod(
     z.object({
@@ -79,6 +83,8 @@ export const methods = {
   "workspace.removeSource": clientMethod(z.object({ workspaceId: Id, sourceId: Id }), Ok),
   "workspace.pinRepo": clientMethod(z.object({ workspaceId: Id, repoId: Id }), Ok),
   "workspace.unpinRepo": clientMethod(z.object({ workspaceId: Id, repoId: Id }), Ok),
+  // Unpins the repo and makes every source that listed it leave it out on later syncs. Nothing on disk changes.
+  "workspace.removeRepo": clientMethod(z.object({ workspaceId: Id, repoId: Id }), Ok),
   "workspace.sync": clientMethod(
     z.object({ workspaceId: Id }),
     z.object({ added: z.array(Id), removed: z.array(Id) }),
@@ -136,6 +142,15 @@ export const methods = {
   "session.abort": clientMethod(BySession, Ok),
   "session.resume": clientMethod(BySession, z.object({ session: Session })),
   "session.end": clientMethod(BySession, Ok),
+  // A user title, trimmed; an empty one clears it so the session falls back to its automatic title.
+  "session.rename": clientMethod(
+    z.object({ sessionId: Id, title: z.string().max(200) }),
+    z.object({ session: Session }),
+  ),
+  // Ends the session first when it is live (a running turn is stopped), then removes its events,
+  // approvals, MCP attachments and engine-owned files. Its usage records stay, so spend totals and
+  // the daily cap are unchanged. Announced by `session.deleted`.
+  "session.delete": clientMethod(BySession, Ok),
 
   "fanout.start": clientMethod(
     z.object({
@@ -402,7 +417,10 @@ export const NAMESPACES = [
 export const notifications = {
   "events.event": z.object({ subscriptionId: Id, event: SessionEvent }),
   "session.changed": z.object({ session: Session }),
+  "session.deleted": z.object({ sessionId: Id }),
   "workspace.changed": z.object({ workspace: Workspace }),
+  // `workspace.delete` removed the workspace and its sessions.
+  "workspace.deleted": z.object({ id: Id }),
   "fanout.changed": z.object({ fanOut: FanOut }),
   "mcp.statusChanged": z.object({ status: McpServerStatus }),
   "engine.warning": z.object({ code: z.string().min(1), message: z.string(), at: Timestamp }),

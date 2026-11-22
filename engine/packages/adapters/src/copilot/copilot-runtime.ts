@@ -75,6 +75,11 @@ export class CopilotRuntime implements AgentRuntime {
     return this.open(options.sessionId, options, (config) => this.client.resumeSession(options.sessionId, config));
   }
 
+  async deleteSession(sessionId: string): RuntimeResult<undefined> {
+    const deleted = await this.call(() => this.client.deleteSession(sessionId));
+    return deleted.ok ? ok(undefined) : deleted;
+  }
+
   // Stops the SDK client and, when it spawned one, the runtime process.
   async stop(): Promise<void> {
     await this.client.stop();

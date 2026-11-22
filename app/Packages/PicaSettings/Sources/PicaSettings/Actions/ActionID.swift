@@ -15,9 +15,13 @@ public enum ActionID: String, CaseIterable, Sendable, Codable {
     case addRepository
     case importTeams
     case syncWorkspace
+    case renameWorkspace
+    case deleteWorkspace
     case showUsage
     case showSessionOverview
     case showCustomization
+    case renameSession
+    case deleteSession
 }
 
 /// Where an action's menu item is.
@@ -90,6 +94,12 @@ public enum ActionCatalog {
         case .syncWorkspace:
             ActionDefinition(id: id, title: "Sync Workspace", menu: .file, defaultShortcut: nil,
                 keywords: ["refresh", "github", "team"])
+        case .renameWorkspace:
+            ActionDefinition(id: id, title: "Rename Workspace…", menu: .file, defaultShortcut: nil,
+                keywords: ["name", "edit"])
+        case .deleteWorkspace:
+            ActionDefinition(id: id, title: "Delete Workspace…", menu: .file, defaultShortcut: nil,
+                keywords: ["remove", "trash"])
         case .showUsage:
             ActionDefinition(id: id, title: "Usage Dashboard", menu: .window, defaultShortcut: Shortcut("shift+cmd+u"),
                 keywords: ["cost", "credits", "tokens", "budget", "savings"])
@@ -99,6 +109,13 @@ public enum ActionCatalog {
         case .showCustomization:
             ActionDefinition(id: id, title: "Agents & Skills", menu: .window, defaultShortcut: Shortcut("cmd+shift+a"),
                 keywords: ["agents", "skills", "rules", "instructions", "AGENTS.md", "prompts"])
+        // The selected session; no default shortcut, since ⌘⌫ and the like belong to text fields.
+        case .renameSession:
+            ActionDefinition(id: id, title: "Rename Session…", menu: .file, defaultShortcut: nil,
+                keywords: ["title", "name"])
+        case .deleteSession:
+            ActionDefinition(id: id, title: "Delete Session…", menu: .file, defaultShortcut: nil,
+                keywords: ["remove", "trash", "discard"])
         }
     }
 }

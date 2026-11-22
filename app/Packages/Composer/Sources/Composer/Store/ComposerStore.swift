@@ -63,7 +63,7 @@ public final class ComposerStore {
     @ObservationIgnored private var dismissedQueryStart: Int?
     @ObservationIgnored private var fileSearch: Task<Void, Never>?
     /// Set when the engine could not search files (it does not serve `files.quickOpen` yet); no more searches are made.
-    @ObservationIgnored private var filesUnavailable = false
+    @ObservationIgnored private(set) var filesUnavailable = false
     @ObservationIgnored private var fileHits: (query: String, items: [CompletionItem])?
     @ObservationIgnored private var loadedRepos: [Repo] = []
 

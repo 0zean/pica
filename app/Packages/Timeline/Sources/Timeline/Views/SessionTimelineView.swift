@@ -6,16 +6,20 @@ public struct SessionTimelineView: View {
     private let store: TimelineStore
     private let title: String
     private let usageChip: UsageChipView?
+    private let titleActions: TimelineTitleActions?
 
-    public init(store: TimelineStore, title: String, usageChip: UsageChipView? = nil) {
+    public init(
+        store: TimelineStore, title: String, usageChip: UsageChipView? = nil, titleActions: TimelineTitleActions? = nil
+    ) {
         self.store = store
         self.title = title
         self.usageChip = usageChip
+        self.titleActions = titleActions
     }
 
     public var body: some View {
         VStack(spacing: 0) {
-            TimelineHeader(store: store, title: title, usageChip: usageChip)
+            TimelineHeader(store: store, title: title, usageChip: usageChip, titleActions: titleActions)
             if !store.hasCaughtUp {
                 ProgressView("Loading the session…")
                     .controlSize(.small)
