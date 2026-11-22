@@ -59,7 +59,7 @@ After H-05, H-06, H-07 and C-11 landed, the owner installed draft `v0.1.0` to do
   - **Repos:** no way to remove a repo from a workspace. The engine serves `workspace.unpinRepo`, `workspace.removeSource` and `repo.remove`; the app calls none.
   - **Sessions:** no way to rename or delete a session. The protocol has `session.end` but no rename or delete method, so this needs protocol, engine and app work.
   - **`@` mention list:** in the composer, the list of repos, files and agents opens downward from the input and runs past the bottom of the window, so most choices are hidden. `SessionComposer.swift` overlays `CompletionList` at `.topLeading` with an `alignmentGuide` meant to put it above the input; it should open upward (or flip to fit) and scroll within the space available.
-  - The owner's screenshot also showed "The engine stopped; the session can be resumed" on a session. Not yet looked into; check `engine.log` if it recurs.
+  - The owner's screenshot also showed "The engine stopped; the session can be resumed". The owner thinks it came from quitting Pica after a session and reopening it, which is the expected state; check `engine.log` only if it shows up without a quit.
 - **Owner steps:**
   - Reinstall and continue M4: import a team, start a session, approve a tool call, review the diff, commit, open a PR, read the session's cost. Then H-08 is unblocked.
   - **Sparkle key:** create it and set the `SPARKLE_PRIVATE_ED_KEY` secret and `SPARKLE_PUBLIC_ED_KEY` variable (`docs/distribution.md`).
@@ -69,4 +69,4 @@ After H-05, H-06, H-07 and C-11 landed, the owner installed draft `v0.1.0` to do
 - **Process:** side sessions can't be woken by CI unless the PR monitor is turned on in them; the MCP row session declined to poll `gh` after its monitor was denied, so this session relayed CI results.
 
 ## Pick up here
-The owner reinstalls the rebuilt draft and continues M4. In parallel, the new gaps above are ready to start as units: workspace rename and delete plus repo removal (app only, engine methods exist), session rename and delete (protocol, engine and app), and the `@` mention list placement in the composer.
+The owner reinstalls the rebuilt draft and continues M4. The three new gaps are running in parallel worktree sessions, each to open its own PR: workspace rename and delete plus repo removal (`local_10e08245-236a-41d0-8410-678b27fba206`), session rename and delete (`local_554a5167-94ce-4bf2-8ef3-bc8d5f49d128`), and the `@` mention list placement (`local_46393bee-a7c4-410f-9b06-a2ac0f44c915`). Merge them after CI passes, then rebuild the draft.
