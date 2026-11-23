@@ -5716,6 +5716,7 @@ public struct Session: Codable, Hashable, Sendable {
     public var writeRoots: [Worktree]
     public var referenceRoots: [AbsolutePath]
     public var routingProfile: RoutingProfile
+    public var modelTiers: SessionModelTiers?
     public var budgetCredits: Credits?
     public var lastSeq: Int
     public var createdAt: Timestamp
@@ -5729,6 +5730,7 @@ public struct Session: Codable, Hashable, Sendable {
         writeRoots: [Worktree],
         referenceRoots: [AbsolutePath],
         routingProfile: RoutingProfile,
+        modelTiers: SessionModelTiers? = nil,
         budgetCredits: Credits?,
         lastSeq: Int,
         createdAt: Timestamp,
@@ -5741,6 +5743,7 @@ public struct Session: Codable, Hashable, Sendable {
         self.writeRoots = writeRoots
         self.referenceRoots = referenceRoots
         self.routingProfile = routingProfile
+        self.modelTiers = modelTiers
         self.budgetCredits = budgetCredits
         self.lastSeq = lastSeq
         self.createdAt = createdAt
@@ -5755,6 +5758,7 @@ public struct Session: Codable, Hashable, Sendable {
         case writeRoots
         case referenceRoots
         case routingProfile
+        case modelTiers
         case budgetCredits
         case lastSeq
         case createdAt
@@ -5770,6 +5774,7 @@ public struct Session: Codable, Hashable, Sendable {
         writeRoots = try container.decode([Worktree].self, forKey: .writeRoots)
         referenceRoots = try container.decode([AbsolutePath].self, forKey: .referenceRoots)
         routingProfile = try container.decode(RoutingProfile.self, forKey: .routingProfile)
+        modelTiers = try container.decodeIfPresent(SessionModelTiers.self, forKey: .modelTiers)
         budgetCredits = try container.decode(Credits?.self, forKey: .budgetCredits)
         lastSeq = try container.decode(Int.self, forKey: .lastSeq)
         createdAt = try container.decode(Timestamp.self, forKey: .createdAt)
@@ -5785,6 +5790,7 @@ public struct Session: Codable, Hashable, Sendable {
         try container.encode(writeRoots, forKey: .writeRoots)
         try container.encode(referenceRoots, forKey: .referenceRoots)
         try container.encode(routingProfile, forKey: .routingProfile)
+        try container.encodeIfPresent(modelTiers, forKey: .modelTiers)
         try container.encode(budgetCredits, forKey: .budgetCredits)
         try container.encode(lastSeq, forKey: .lastSeq)
         try container.encode(createdAt, forKey: .createdAt)
@@ -5821,6 +5827,7 @@ public struct SessionCreateParams: Codable, Hashable, Sendable {
     public var writeRepoIds: [Id]
     public var referenceRepoIds: [Id]
     public var routingProfile: RoutingProfile?
+    public var modelTiers: SessionModelTiers?
     public var budgetCredits: Credits?
     public var prompt: String?
 
@@ -5829,6 +5836,7 @@ public struct SessionCreateParams: Codable, Hashable, Sendable {
         writeRepoIds: [Id],
         referenceRepoIds: [Id],
         routingProfile: RoutingProfile? = nil,
+        modelTiers: SessionModelTiers? = nil,
         budgetCredits: Credits? = nil,
         prompt: String? = nil
     ) {
@@ -5836,6 +5844,7 @@ public struct SessionCreateParams: Codable, Hashable, Sendable {
         self.writeRepoIds = writeRepoIds
         self.referenceRepoIds = referenceRepoIds
         self.routingProfile = routingProfile
+        self.modelTiers = modelTiers
         self.budgetCredits = budgetCredits
         self.prompt = prompt
     }
@@ -5845,6 +5854,7 @@ public struct SessionCreateParams: Codable, Hashable, Sendable {
         case writeRepoIds
         case referenceRepoIds
         case routingProfile
+        case modelTiers
         case budgetCredits
         case prompt
     }
@@ -5855,6 +5865,7 @@ public struct SessionCreateParams: Codable, Hashable, Sendable {
         writeRepoIds = try container.decode([Id].self, forKey: .writeRepoIds)
         referenceRepoIds = try container.decode([Id].self, forKey: .referenceRepoIds)
         routingProfile = try container.decodeIfPresent(RoutingProfile.self, forKey: .routingProfile)
+        modelTiers = try container.decodeIfPresent(SessionModelTiers.self, forKey: .modelTiers)
         budgetCredits = try container.decodeIfPresent(Credits.self, forKey: .budgetCredits)
         prompt = try container.decodeIfPresent(String.self, forKey: .prompt)
     }
@@ -5865,6 +5876,7 @@ public struct SessionCreateParams: Codable, Hashable, Sendable {
         try container.encode(writeRepoIds, forKey: .writeRepoIds)
         try container.encode(referenceRepoIds, forKey: .referenceRepoIds)
         try container.encodeIfPresent(routingProfile, forKey: .routingProfile)
+        try container.encodeIfPresent(modelTiers, forKey: .modelTiers)
         try container.encodeIfPresent(budgetCredits, forKey: .budgetCredits)
         try container.encodeIfPresent(prompt, forKey: .prompt)
     }
@@ -5987,6 +5999,36 @@ public struct SessionListResult: Codable, Hashable, Sendable {
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(sessions, forKey: .sessions)
+    }
+}
+
+public struct SessionModelTiers: Codable, Hashable, Sendable {
+    public var reasoning: String?
+    public var worker: String?
+
+    public init(
+        reasoning: String? = nil,
+        worker: String? = nil
+    ) {
+        self.reasoning = reasoning
+        self.worker = worker
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case reasoning
+        case worker
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        reasoning = try container.decodeIfPresent(String.self, forKey: .reasoning)
+        worker = try container.decodeIfPresent(String.self, forKey: .worker)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(reasoning, forKey: .reasoning)
+        try container.encodeIfPresent(worker, forKey: .worker)
     }
 }
 
@@ -6190,6 +6232,66 @@ public struct SessionSendResult: Codable, Hashable, Sendable {
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(accepted, forKey: .accepted)
+    }
+}
+
+public struct SessionSetRoutingParams: Codable, Hashable, Sendable {
+    public var sessionId: Id
+    public var routingProfile: RoutingProfile?
+    public var modelTiers: SessionModelTiers?
+
+    public init(
+        sessionId: Id,
+        routingProfile: RoutingProfile? = nil,
+        modelTiers: SessionModelTiers? = nil
+    ) {
+        self.sessionId = sessionId
+        self.routingProfile = routingProfile
+        self.modelTiers = modelTiers
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case sessionId
+        case routingProfile
+        case modelTiers
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        sessionId = try container.decode(Id.self, forKey: .sessionId)
+        routingProfile = try container.decodeIfPresent(RoutingProfile.self, forKey: .routingProfile)
+        modelTiers = try container.decodeIfPresent(SessionModelTiers.self, forKey: .modelTiers)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(sessionId, forKey: .sessionId)
+        try container.encodeIfPresent(routingProfile, forKey: .routingProfile)
+        try container.encodeIfPresent(modelTiers, forKey: .modelTiers)
+    }
+}
+
+public struct SessionSetRoutingResult: Codable, Hashable, Sendable {
+    public var session: Session
+
+    public init(
+        session: Session
+    ) {
+        self.session = session
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case session
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        session = try container.decode(Session.self, forKey: .session)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(session, forKey: .session)
     }
 }
 

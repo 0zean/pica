@@ -102,6 +102,14 @@ export const migrations: readonly Migration[] = [
       ALTER TABLE sessions ADD COLUMN deleted_at TEXT;
     `,
   },
+  {
+    version: 5,
+    name: "session model tiers",
+    // JSON {reasoning?, worker?}: the session's own model per tier. NULL follows the config's routing.tiers.
+    sql: `
+      ALTER TABLE sessions ADD COLUMN model_tiers TEXT;
+    `,
+  },
 ];
 
 export const latestSchemaVersion = migrations.length;

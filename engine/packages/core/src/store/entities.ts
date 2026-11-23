@@ -39,6 +39,12 @@ export interface Workspace {
   readonly settingsOverrides: JsonObject;
 }
 
+// A model id or "auto" per tier; a tier left out follows the config.
+export interface SessionModelTiers {
+  readonly reasoning?: string | undefined;
+  readonly worker?: string | undefined;
+}
+
 export type SessionState =
   | "starting"
   | "idle"
@@ -55,6 +61,8 @@ export interface Session {
   readonly referenceRoots: readonly string[];
   readonly state: SessionState;
   readonly routingProfile: string;
+  // The session's own model per tier, over the config's `routing.tiers`; absent when it has none.
+  readonly modelTiers?: SessionModelTiers;
   readonly budgetMaxCredits: number | null;
   // The title the user gave the session; absent when they gave none.
   readonly title?: string;

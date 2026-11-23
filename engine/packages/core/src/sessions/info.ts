@@ -1,4 +1,4 @@
-import type { Session, SessionState } from "../store/index.ts";
+import type { Session, SessionModelTiers, SessionState } from "../store/index.ts";
 
 export type SessionRoutingProfile = "off" | "balanced" | "strict";
 export type SessionSendMode = "send" | "steer" | "queue";
@@ -20,6 +20,8 @@ export interface SessionInfo {
   readonly writeRoots: readonly SessionWorktreeInfo[];
   readonly referenceRoots: readonly string[];
   readonly routingProfile: SessionRoutingProfile;
+  // Absent when the session follows the config's `routing.tiers` for both tiers.
+  readonly modelTiers?: SessionModelTiers;
   readonly budgetCredits: number | null;
   readonly lastSeq: number;
   readonly createdAt: string;
@@ -55,6 +57,7 @@ export function toSessionInfo(session: Session, lastSeq: number): SessionInfo {
     writeRoots: [],
     referenceRoots: session.referenceRoots,
     routingProfile: isRoutingProfile(session.routingProfile) ? session.routingProfile : defaultRoutingProfile,
+    ...(session.modelTiers === undefined ? {} : { modelTiers: session.modelTiers }),
     budgetCredits: session.budgetMaxCredits,
     lastSeq,
     createdAt: session.createdAt,

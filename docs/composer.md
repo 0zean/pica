@@ -130,22 +130,26 @@ the status line. A `send` the engine does not accept because a turn started mean
 again as `queue`. After a queue or steer the status line says what happens next ("Queued. It runs after the current
 turn."). The timeline already shows each `user.message` with its mode, so the composer keeps no list of its own.
 
-## Profile and tier pickers
+## Mode and tier pickers
 
-The engine fixes a session's routing profile and models when the session starts (`session.create`; the main session is
-created with the reasoning tier's model), and the protocol has no method to change them afterwards. So the pickers show
-what applies and set what new sessions get:
+Both pickers change **this session** with `session.setRouting {sessionId, routingProfile?, modelTiers?}` (added
+2026-11-22 for M4). The engine takes a change while the session is idle, reopening its runtime with the new excluded
+tools, delegation guide and models so the next turn uses them (the conversation continues; the prompt cache does not),
+or while it is stopped (`resumable`), when the change applies on resume. During a turn it refuses with
+`invalid_state`, so the pickers disable their choices and say "Wait for the turn to finish". The label reads the
+session the engine answers with (and its later `session.changed`), so it always shows what applies. A refusal (such as
+`policy_denied`) is shown in the status line.
 
-- **Profile.** The label is this session's profile. The menu sets the profile new sessions in the workspace start with
-  (`workspace.update` with `overrides.routingProfile`, which the engine's default profile reads).
-- **Tiers.** The label is the model the reasoning tier resolves to (`models.tiers`, names from `models.list`). The
-  menu offers Auto and each model the policy allows, per tier; choosing one writes `routing.tiers.<tier>` to the user's
-  `config.jsonc` with `config.set` (A-14, [settings.md](settings.md)) and reloads `models.tiers`. Sessions started
-  afterwards use the change. When a managed policy locks `routing.tiers` (`config.get` reports it locked), the menu only
-  shows the tiers and names the policy, and a refused write is shown in the status line.
-
-Changing a running session's profile or models needs an engine change (a `session.update`, and re-creating the
-runtime session with the new excluded tools and model); it is left for a later unit.
+- **Mode.** The label is this session's mode (routing profile). "This session’s mode" lists Off, Balanced and
+  Strict. A separate "Default for new sessions in this workspace" section sets `overrides.routingProfile`
+  (`workspace.update`), which the engine's default profile reads; it does not change this session. When managed policy
+  locks `routing.profile` (`config.get`), the menu only shows the mode and names the policy, and the default section is
+  hidden.
+- **Tiers.** Per tier: "Settings default (…)" (the session follows `routing.tiers`, shown resolved by `models.tiers`),
+  Auto, and each model the policy allows. Choosing one sets the session's `modelTiers` for that tier; Settings default
+  clears it. The label is the session's reasoning model: its own setting, else what the configured tier resolves to.
+  The defaults for new sessions are edited in Settings ([settings.md](settings.md)). When a managed policy locks
+  `routing.tiers`, the menu only shows the tiers and names the policy.
 
 ## Performance (§9)
 

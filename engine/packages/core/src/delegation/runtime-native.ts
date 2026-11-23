@@ -10,14 +10,16 @@ import type { DelegatedAgent, DelegationError, DelegationRequest, DelegationSetu
 
 export interface RuntimeNativeDelegatorDeps {
   readonly agents: AgentLoader;
-  // C-01's resolution of a tier; `resolvedModelId: null` leaves the agent on the runtime's default.
-  readonly resolveTier: (tier: Tier) => Promise<TierResolution>;
+  // C-01's resolution of a tier, from `setting` when the session sets one, else from the config;
+  // `resolvedModelId: null` leaves the agent on the runtime's default.
+  readonly resolveTier: (tier: Tier, setting?: string) => Promise<TierResolution>;
 }
 
 // D-08: sub-agents are the runtime's `customAgents`, one per resolved agent definition. Each gets
 // exactly its definition's tools and its tier's model, and no `model` when the tier resolves to none.
 // The main agent runs on the reasoning tier's model the same way; without one the runtime's default
-// model applies. It also loses the tools its routing profile hides (C-05) and gets the profile's
+// model applies. A session's own tier settings (`modelTiers`) replace the config's for that session.
+// It also loses the tools its routing profile hides (C-05) and gets the profile's
 // delegation guide; under `off` it gets neither.
 export function createRuntimeNativeDelegator(deps: RuntimeNativeDelegatorDeps): Delegator {
   return {
@@ -30,7 +32,7 @@ export function createRuntimeNativeDelegator(deps: RuntimeNativeDelegatorDeps): 
       const byName = new Map(loaded.value.map((agent) => [agent.name, agent]));
       const resolutions = new Map<Tier, TierResolution>();
       const resolved = async (tier: Tier): Promise<TierResolution> => {
-        const known = resolutions.get(tier) ?? (await deps.resolveTier(tier));
+        const known = resolutions.get(tier) ?? (await deps.resolveTier(tier, request.modelTiers?.[tier]));
         resolutions.set(tier, known);
         return known;
       };

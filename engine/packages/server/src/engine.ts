@@ -38,6 +38,7 @@ import type {
   RepoRegistry,
   RuntimeHooks,
   SessionMcp,
+  SessionRoutingLocks,
   SessionRoutingProfile,
   SessionService,
   Store,
@@ -109,6 +110,8 @@ export interface EngineSessionOptions {
   readonly delegator?: Delegator;
   // The routing profile for a session created without one (D-22); without it, `off`.
   readonly defaultProfile?: (workspaceId: string) => SessionRoutingProfile;
+  // H-01: the routing profile and tier models managed policy locks; sessions may not choose others.
+  readonly routingLocks?: () => SessionRoutingLocks;
   // A-06: answers `agents.list`, `models.list` and `models.tiers`.
   readonly catalog?: EngineCatalogOptions;
   // A-14: answers `config.get` and `config.set`.
@@ -344,6 +347,7 @@ function startSessions(
     ...(options.budget === undefined ? {} : { budget: options.budget }),
     ...(options.delegator === undefined ? {} : { delegator: options.delegator }),
     ...(options.defaultProfile === undefined ? {} : { defaultProfile: options.defaultProfile }),
+    ...(options.routingLocks === undefined ? {} : { routingLocks: options.routingLocks }),
     ...(options.permissionRules === undefined ? {} : { permissionRules: options.permissionRules }),
     ...(mcp === undefined ? {} : { mcp }),
     ...sessionHooks(options, eventLog, clock),

@@ -1,5 +1,5 @@
 import { ok } from "@pica/core";
-import type { Session, SessionRepository, SessionState, StoreResult } from "@pica/core";
+import type { Session, SessionModelTiers, SessionRepository, SessionState, StoreResult } from "@pica/core";
 import type { DatabaseSync } from "node:sqlite";
 import { inTransaction } from "./database.ts";
 import { attempt, fail } from "./errors.ts";
@@ -7,13 +7,13 @@ import { json, nullableReal, nullableText, text } from "./rows.ts";
 import type { Row } from "./rows.ts";
 
 const columns = `id, workspace_id, state, write_roots, reference_roots, routing_profile,
-  budget_max_credits, title, created_at, updated_at`;
+  model_tiers, budget_max_credits, title, created_at, updated_at`;
 
 export function sqliteSessionRepository(db: DatabaseSync): SessionRepository {
   const insert = db.prepare(`
     INSERT INTO sessions (${columns})
     VALUES (:id, :workspaceId, :state, :writeRoots, :referenceRoots, :routingProfile,
-      :budgetMaxCredits, :title, :createdAt, :updatedAt)
+      :modelTiers, :budgetMaxCredits, :title, :createdAt, :updatedAt)
   `);
   const byId = db.prepare(`SELECT ${columns} FROM sessions WHERE id = ? AND deleted_at IS NULL`);
   const byWorkspace = db.prepare(
@@ -22,6 +22,7 @@ export function sqliteSessionRepository(db: DatabaseSync): SessionRepository {
   const live = "WHERE id = ? AND deleted_at IS NULL";
   const setState = db.prepare(`UPDATE sessions SET state = ?, updated_at = ? ${live}`);
   const setBudget = db.prepare(`UPDATE sessions SET budget_max_credits = ?, updated_at = ? ${live}`);
+  const setRouting = db.prepare(`UPDATE sessions SET routing_profile = ?, model_tiers = ?, updated_at = ? ${live}`);
   const setTitle = db.prepare(`UPDATE sessions SET title = ? ${live}`);
   const markDeleted = db.prepare(`UPDATE sessions SET deleted_at = ?, title = NULL, state = 'ended', updated_at = ? ${live}`);
   const deleteEvents = db.prepare("DELETE FROM session_events WHERE session_id = ?");
@@ -32,6 +33,7 @@ export function sqliteSessionRepository(db: DatabaseSync): SessionRepository {
         insert.run({
           ...session,
           title: session.title ?? null,
+          modelTiers: modelTiersColumn(session.modelTiers ?? null),
           writeRoots: JSON.stringify(session.writeRoots),
           referenceRoots: JSON.stringify(session.referenceRoots),
         });
@@ -48,6 +50,12 @@ export function sqliteSessionRepository(db: DatabaseSync): SessionRepository {
     updateBudget: (id, budgetMaxCredits, updatedAt) =>
       attempt(() =>
         setBudget.run(budgetMaxCredits, updatedAt, id).changes === 0
+          ? fail("store.not_found", `session ${id} not found`)
+          : ok(undefined),
+      ),
+    updateRouting: (id, routingProfile, modelTiers, updatedAt) =>
+      attempt(() =>
+        setRouting.run(routingProfile, modelTiersColumn(modelTiers), updatedAt, id).changes === 0
           ? fail("store.not_found", `session ${id} not found`)
           : ok(undefined),
       ),
@@ -74,8 +82,25 @@ function found(row: Row | undefined, id: string): StoreResult<Session> {
   return row === undefined ? fail("store.not_found", `session ${id} not found`) : ok(toSession(row));
 }
 
+// An empty object is stored as NULL, so "no overrides" has one form.
+function modelTiersColumn(tiers: SessionModelTiers | null): string | null {
+  return tiers === null || Object.keys(tiers).length === 0 ? null : JSON.stringify(tiers);
+}
+
+function toModelTiers(value: string | null): SessionModelTiers | undefined {
+  if (value === null) return undefined;
+  const parsed: unknown = JSON.parse(value);
+  if (typeof parsed !== "object" || parsed === null) return undefined;
+  const record = parsed as Record<string, unknown>;
+  const tiers: { reasoning?: string; worker?: string } = {};
+  if (typeof record["reasoning"] === "string") tiers.reasoning = record["reasoning"];
+  if (typeof record["worker"] === "string") tiers.worker = record["worker"];
+  return Object.keys(tiers).length === 0 ? undefined : tiers;
+}
+
 function toSession(row: Row): Session {
   const title = nullableText(row, "title");
+  const modelTiers = toModelTiers(nullableText(row, "model_tiers"));
   return {
     id: text(row, "id"),
     workspaceId: text(row, "workspace_id"),
@@ -83,6 +108,7 @@ function toSession(row: Row): Session {
     writeRoots: json(row, "write_roots") as readonly string[],
     referenceRoots: json(row, "reference_roots") as readonly string[],
     routingProfile: text(row, "routing_profile"),
+    ...(modelTiers === undefined ? {} : { modelTiers }),
     budgetMaxCredits: nullableReal(row, "budget_max_credits"),
     ...(title === null ? {} : { title }),
     createdAt: text(row, "created_at"),

@@ -230,6 +230,13 @@ public enum Methods {
         public static let direction = MethodDirection.client
     }
 
+    public enum SessionSetRouting: PicaMethod {
+        public typealias Params = SessionSetRoutingParams
+        public typealias Result = SessionSetRoutingResult
+        public static let name = "session.setRouting"
+        public static let direction = MethodDirection.client
+    }
+
     public enum SessionDelete: PicaMethod {
         public typealias Params = BySession
         public typealias Result = Ok

@@ -4,6 +4,7 @@ import type {
   Repo,
   Session,
   SessionEvent,
+  SessionModelTiers,
   SessionState,
   UsageQuery,
   UsageRecord,
@@ -55,6 +56,8 @@ export interface SessionRepository {
   listByWorkspace(workspaceId: string): StoreResult<readonly Session[]>;
   updateState(id: string, state: SessionState, updatedAt: string): StoreResult<void>;
   updateBudget(id: string, budgetMaxCredits: number | null, updatedAt: string): StoreResult<void>;
+  // Sets the routing profile and the per-tier models (`null` clears them) together.
+  updateRouting(id: string, routingProfile: string, modelTiers: SessionModelTiers | null, updatedAt: string): StoreResult<void>;
   // `null` clears the user's title. `updatedAt` is left alone, so renaming does not reorder sessions.
   rename(id: string, title: string | null): StoreResult<void>;
   // Removes the session's events and marks it deleted, in one transaction. The row stays so its

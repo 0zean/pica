@@ -19,6 +19,16 @@ final class FakeWorkspacesBackend: WorkspacesBackend, @unchecked Sendable {
     var failures: [String: RpcError] = [:]
     /// What `addRepo(url:)` answers with instead of a new repo: a registered repo cloned in place.
     var clonedInPlace: Repo?
+    var routing = NewSessionRouting(
+        defaultProfile: .balanced,
+        models: [
+            ModelInfo(id: "big", name: "Big", prices: nil, allowedByPolicy: true),
+            ModelInfo(id: "small", name: "Small", prices: nil, allowedByPolicy: true),
+        ],
+        tiers: [
+            TierAssignment(tier: .reasoning, setting: "auto", resolvedModelId: "big"),
+            TierAssignment(tier: .worker, setting: "small", resolvedModelId: "small"),
+        ])
     private(set) var calls: [String] = []
     private var nextRepo = 0
 
@@ -111,16 +121,26 @@ final class FakeWorkspacesBackend: WorkspacesBackend, @unchecked Sendable {
         }
     }
 
+    nonisolated func routing(workspaceId: Id) async throws -> NewSessionRouting {
+        try await MainActor.run {
+            try record("routing \(workspaceId)", "routing")
+            return routing
+        }
+    }
+
     nonisolated func createSession(
-        workspaceId: Id, writeRepoIds: [Id], referenceRepoIds: [Id], prompt: String?
+        workspaceId: Id, writeRepoIds: [Id], referenceRepoIds: [Id], routingProfile: RoutingProfile?,
+        modelTiers: SessionModelTiers?, prompt: String?
     ) async throws -> Session {
         try await MainActor.run {
+            let tiers = modelTiers.map { "reasoning=\($0.reasoning ?? "-") worker=\($0.worker ?? "-")" } ?? "-"
             try record(
-                "createSession \(workspaceId) write=\(writeRepoIds) reference=\(referenceRepoIds) prompt=\(prompt ?? "-")",
+                "createSession \(workspaceId) write=\(writeRepoIds) reference=\(referenceRepoIds) "
+                    + "profile=\(routingProfile?.rawValue ?? "-") tiers=\(tiers) prompt=\(prompt ?? "-")",
                 "createSession")
             return Session(
                 id: "s-new", workspaceId: workspaceId, title: "", state: .starting, writeRoots: [], referenceRoots: [],
-                routingProfile: .off, budgetCredits: nil, lastSeq: 0, createdAt: "2026-11-21T00:00:00Z",
+                routingProfile: routingProfile ?? .off, modelTiers: modelTiers, budgetCredits: nil, lastSeq: 0, createdAt: "2026-11-21T00:00:00Z",
                 updatedAt: "2026-11-21T00:00:00Z")
         }
     }

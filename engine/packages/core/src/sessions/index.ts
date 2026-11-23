@@ -1,6 +1,8 @@
 export { runtimeFailure, sessionFailure, sessionServiceErrorCodes } from "./errors.ts";
 export type { SessionResult, SessionServiceError, SessionServiceErrorCode } from "./errors.ts";
 export { defaultRoutingProfile, isRoutingProfile, toSessionInfo } from "./info.ts";
+export { lockedRoutingChoice, normalizeModelTiers } from "./routing.ts";
+export type { SessionRoutingChoice, SessionRoutingLocks } from "./routing.ts";
 export { sessionDefaultProfile, type DefaultProfileInputs } from "./default-profile.ts";
 export type {
   PendingApproval,
@@ -17,7 +19,7 @@ export type { ReadGateDeps } from "./pre-tool-use.ts";
 export { sessionRoots } from "./roots.ts";
 export type { SessionRootInfo } from "./roots.ts";
 export { createSessionService } from "./service.ts";
-export type { CreateSessionRequest, SessionLifecycleEvent, SessionService, SessionServiceDeps } from "./service.ts";
+export type { CreateSessionRequest, SessionLifecycleEvent, SetRoutingRequest, SessionService, SessionServiceDeps } from "./service.ts";
 export { isLiveSessionState, sessionStates, sessionTransitions, sessionTriggers, transitionSession } from "./transitions.ts";
 export type { SessionTransitionError, SessionTrigger } from "./transitions.ts";
 export type { SessionArtifactError, SessionArtifacts } from "./artifacts.ts";

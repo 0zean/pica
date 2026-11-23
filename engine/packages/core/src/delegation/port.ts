@@ -3,6 +3,7 @@ import type { TierResolutionReason } from "../models/tiers.ts";
 import type { Result } from "../result.ts";
 import type { RoutingProfileName } from "../routing/profiles.ts";
 import type { SessionOptions } from "../runtime/port.ts";
+import type { SessionModelTiers } from "../store/entities.ts";
 
 // How a session's sub-agents run (D-08):
 // - `runtime_native`: the runtime's own `customAgents`; the main agent delegates through `task`.
@@ -14,6 +15,8 @@ export type DelegationMode = "runtime_native" | "child_session";
 export interface DelegationRequest {
   readonly sessionId: string;
   readonly routingProfile: RoutingProfileName;
+  // The session's own setting per tier (a model id or "auto"), over the config's `routing.tiers`.
+  readonly modelTiers?: SessionModelTiers | undefined;
 }
 
 // One agent the main agent can delegate to, as configured for the session.

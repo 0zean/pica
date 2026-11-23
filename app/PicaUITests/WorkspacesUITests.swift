@@ -167,6 +167,98 @@ final class WorkspacesUITests: XCTestCase {
         fixture.quit()
     }
 
+    /// New Session's Mode and model pickers: a Strict session on a chosen reasoning model reaches the engine as chosen,
+    /// and the composer's mode menu then shows Strict.
+    @MainActor
+    func testNewSessionStartsAStrictSessionOnTheChosenModels() throws {
+        let fixture = try WorkspacesFixture(github: "signed-in", scenario: "sessions")
+        defer { fixture.remove() }
+        let path = try fixture.pica.makeRepository("atlas")
+        try fixture.openWorkspace("Atlas")
+        let workspace = try fixture.pica.withEngine { engine in
+            let workspace = try await engine.request(Methods.WorkspaceList.self).workspaces[0]
+            _ = try await engine.addRepo(at: path, to: workspace)
+            return workspace
+        }
+        let newSession = fixture.app.buttons["pica.workspace.newSession"]
+        XCTAssertTrue(newSession.waitForExistence(timeout: 10), "the workspace screen has no New Session button")
+        waitUntil("New Session is enabled", timeout: 10) { newSession.isEnabled }
+        newSession.click()
+
+        let mode = fixture.app.popUpButtons["pica.newSession.mode"]
+        XCTAssertTrue(mode.waitForExistence(timeout: 5), "New Session has no Mode picker")
+        waitUntil("the modes and models are loaded", timeout: 10) { mode.isEnabled }
+        XCTAssertEqual(mode.value as? String, "Off", "the mode does not start as the workspace's default")
+        mode.click()
+        fixture.app.menuItems["Strict"].click()
+        let reasoning = fixture.app.popUpButtons["pica.newSession.tier.reasoning"]
+        XCTAssertTrue(reasoning.isEnabled, "the reasoning model cannot be chosen")
+        reasoning.click()
+        fixture.app.menuItems["Model B"].click()
+        XCTAssertEqual(mode.value as? String, "Strict")
+        XCTAssertEqual(reasoning.value as? String, "Model B")
+
+        let start = fixture.app.buttons["pica.newSession.start"]
+        XCTAssertTrue(start.isEnabled, "Start is off: \(fixture.text("pica.newSession.reason"))")
+        start.click()
+        XCTAssertTrue(
+            fixture.app.textViews["pica.composer.input"].waitForExistence(timeout: 15), "the new session was not opened")
+        let session = try XCTUnwrap(try fixture.pica.withEngine { engine in
+            try await engine.request(Methods.SessionList.self, SessionListParams(workspaceId: workspace.id)).sessions
+        }.first)
+        XCTAssertEqual(session.routingProfile, .strict)
+        XCTAssertEqual(session.modelTiers?.reasoning, "model-b")
+        XCTAssertNil(session.modelTiers?.worker, "the untouched worker tier does not follow Settings")
+        let label = fixture.element("pica.composer.profile")
+        waitUntil("the composer shows the Strict mode: \(label.debugDescription)", timeout: 5) { Self.shows(label, "Strict") }
+        fixture.quit()
+    }
+
+    /// The composer's mode menu switches the open session's own mode, and its label follows.
+    @MainActor
+    func testTheComposerModeMenuSwitchesTheSession() throws {
+        let fixture = try WorkspacesFixture(github: "signed-in", scenario: "sessions")
+        defer { fixture.remove() }
+        let path = try fixture.pica.makeRepository("atlas")
+        let session = try fixture.pica.withEngine { engine in
+            let workspace = try await engine.createWorkspace("Atlas")
+            let repo = try await engine.addRepo(at: path, to: workspace)
+            let created = try await engine.createSession(in: workspace, writing: repo)
+            return try await engine.waitUntilIdle(created.id)
+        }
+        XCTAssertEqual(session.routingProfile, .off)
+        XCTAssertTrue(
+            fixture.element("pica.sidebar.session.\(session.id)").waitForExistence(timeout: 10), "the session is not in the sidebar")
+        fixture.app.typeKey("1", modifierFlags: .command)
+
+        let menu = fixture.element("pica.composer.profile")
+        XCTAssertTrue(menu.waitForExistence(timeout: 10), "the composer has no mode menu")
+        waitUntil("the mode menu shows Off: \(menu.debugDescription)", timeout: 5) { Self.shows(menu, "Off") }
+        menu.click()
+        // The first Strict is under "This session's mode"; the second sets the workspace's default.
+        let strict = fixture.app.menuItems.matching(NSPredicate(format: "title == %@", "Strict")).element(boundBy: 0)
+        XCTAssertTrue(strict.waitForExistence(timeout: 5), "the mode menu does not offer Strict")
+        strict.click()
+
+        waitUntil("the mode menu shows Strict: \(menu.debugDescription)", timeout: 10) { Self.shows(menu, "Strict") }
+        let sessionId = session.id
+        let (changed, workspace) = try fixture.pica.withEngine { engine in
+            let changed = try await engine.request(Methods.SessionGet.self, BySession(sessionId: sessionId)).session
+            let workspace = try await engine.request(Methods.WorkspaceGet.self, ById(id: changed.workspaceId)).workspace
+            return (changed, workspace)
+        }
+        XCTAssertEqual(changed.routingProfile, .strict)
+        XCTAssertEqual(changed.state, .idle)
+        XCTAssertNil(workspace.overrides.routingProfile, "choosing this session's mode also set the workspace default")
+        fixture.quit()
+    }
+
+    /// Whether a menu button reads `mode`, in its label, title or value.
+    @MainActor
+    private static func shows(_ element: XCUIElement, _ mode: String) -> Bool {
+        [element.label, element.title, element.value as? String ?? ""].contains { $0.contains(mode) }
+    }
+
     /// Rename… from the workspace screen's menu: another workspace's name is refused as it is typed, a new one is sent
     /// as `workspace.update` and reaches the screen and the sidebar.
     @MainActor

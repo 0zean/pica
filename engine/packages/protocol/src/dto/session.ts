@@ -19,6 +19,13 @@ export const Worktree = z.object({
   branch: z.string().min(1),
 });
 
+// A session's own model per tier, over the config's `routing.tiers`: a model id or "auto", resolved as the
+// config's setting is (docs/model-catalog.md). A tier left out follows `routing.tiers`.
+export const SessionModelTiers = z.object({
+  reasoning: z.string().min(1).optional(),
+  worker: z.string().min(1).optional(),
+});
+
 export const Session = z.object({
   id: Id,
   workspaceId: Id,
@@ -27,6 +34,8 @@ export const Session = z.object({
   writeRoots: z.array(Worktree),
   referenceRoots: z.array(AbsolutePath),
   routingProfile: RoutingProfile,
+  // Absent when the session follows `routing.tiers` for both tiers.
+  modelTiers: SessionModelTiers.optional(),
   budgetCredits: Credits.nullable(),
   lastSeq: z.int().nonnegative(),
   createdAt: Timestamp,

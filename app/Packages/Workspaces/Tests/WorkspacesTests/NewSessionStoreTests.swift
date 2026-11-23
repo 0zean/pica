@@ -28,7 +28,7 @@ import Testing
         store.prompt = "  fix the flaky test \n"
         let session = await store.start(repos: repos)
         #expect(session?.id == "s-new")
-        #expect(backend.calls == ["createSession w1 write=[\"r-atlas\"] reference=[] prompt=fix the flaky test"])
+        #expect(backend.calls == ["createSession w1 write=[\"r-atlas\"] reference=[] profile=- tiers=- prompt=fix the flaky test"])
     }
 
     @Test func withSeveralReposNothingIsChosenAndStartSaysWhy() async {
@@ -44,7 +44,7 @@ import Testing
         #expect(store.startBlocker(repos: repos) == nil)
         _ = await store.start(repos: repos)
         // Workspace order, and an empty prompt is left out.
-        #expect(backend.calls == ["createSession w1 write=[\"r-beacon\"] reference=[\"r-atlas\"] prompt=-"])
+        #expect(backend.calls == ["createSession w1 write=[\"r-beacon\"] reference=[\"r-atlas\"] profile=- tiers=- prompt=-"])
     }
 
     @Test func aRepoThatIsNotClonedIsNeverSentEvenIfChosen() async {
@@ -53,7 +53,7 @@ import Testing
         #expect(store.startBlocker(repos: [ledger]) == "Clone a repository to start a session in it.")
         store.setRole(.write, for: atlas.id)
         _ = await store.start(repos: [atlas, ledger])
-        #expect(backend.calls == ["createSession w1 write=[\"r-atlas\"] reference=[] prompt=-"])
+        #expect(backend.calls == ["createSession w1 write=[\"r-atlas\"] reference=[] profile=- tiers=- prompt=-"])
     }
 
     @Test func noWorkspaceOrNoReposIsAReasonBeforeTheSheetOpens() {
@@ -94,6 +94,59 @@ import Testing
         await store.clone(ledger)
         #expect(store.cloneProblem?.code == .invalidParams)
         #expect(store.role(of: ledger.id) == .unused)
+    }
+
+    @Test func theModeStartsAsTheWorkspaceDefaultAndChosenModelsAreSent() async {
+        let store = NewSessionStore(workspaceId: "w1", backend: backend)
+        store.applyDefaults(repos: [atlas])
+        await store.loadRouting()
+        #expect(store.profile == .balanced)
+        #expect(store.tierSetting(.reasoning) == "auto")
+        #expect(store.tierSetting(.worker) == "small")
+
+        store.setProfile(.strict)
+        store.setTier(.reasoning, to: "big")
+        // Choosing the config's own setting is no override, so the session keeps following it.
+        store.setTier(.worker, to: "small")
+        _ = await store.start(repos: [atlas])
+        #expect(backend.calls == [
+            "routing w1", "createSession w1 write=[\"r-atlas\"] reference=[] profile=strict tiers=reasoning=big worker=- prompt=-",
+        ])
+    }
+
+    @Test func untouchedChoicesSendTheDefaultModeAndNoModels() async {
+        let store = NewSessionStore(workspaceId: "w1", backend: backend)
+        store.applyDefaults(repos: [atlas])
+        await store.loadRouting()
+        _ = await store.start(repos: [atlas])
+        #expect(backend.calls.last == "createSession w1 write=[\"r-atlas\"] reference=[] profile=balanced tiers=- prompt=-")
+    }
+
+    @Test func lockedModeAndTierCannotBeChanged() async {
+        backend.routing.profileLock = "acme"
+        backend.routing.defaultProfile = .strict
+        backend.routing.tierLocks = [.reasoning: "acme"]
+        let store = NewSessionStore(workspaceId: "w1", backend: backend)
+        store.setProfile(.off)
+        await store.loadRouting()
+        // The lock wins over a choice made before the options loaded.
+        #expect(store.profile == .strict)
+        store.setProfile(.off)
+        store.setTier(.reasoning, to: "small")
+        store.setTier(.worker, to: "big")
+        #expect(store.profile == .strict)
+        #expect(store.tierSetting(.reasoning) == "auto")
+        #expect(store.tierSetting(.worker) == "big")
+    }
+
+    @Test func optionsThatFailToLoadLeaveTheEngineDefaults() async {
+        backend.failures["routing"] = .dailyCap
+        let store = NewSessionStore(workspaceId: "w1", backend: backend)
+        store.applyDefaults(repos: [atlas])
+        await store.loadRouting()
+        #expect(store.routing == nil)
+        _ = await store.start(repos: [atlas])
+        #expect(backend.calls.last == "createSession w1 write=[\"r-atlas\"] reference=[] profile=- tiers=- prompt=-")
     }
 
     @Test func managerStartsTheSessionAndHandsItOn() async {

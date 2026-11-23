@@ -49,8 +49,12 @@ public final class ComposerStore {
     public private(set) var tiers: [TierAssignment] = []
     /// The managed policy that locks the tiers; the tier picker is then read-only.
     public private(set) var tierLock: String?
+    /// The managed policy that locks `routing.profile`; the mode picker then only shows it.
+    public private(set) var profileLock: String?
     /// The profile new sessions in this session's workspace start with.
     public private(set) var defaultProfile: RoutingProfile?
+    /// True while a change to this session's mode or models is with the engine.
+    public private(set) var isChangingRouting = false
     /// Counts the times the catalogs above were loaded.
     public private(set) var catalogRevision = 0
 
@@ -327,6 +331,7 @@ public final class ComposerStore {
         async let modelList = try? backend.models()
         async let tierList = try? backend.tiers()
         async let lock = try? backend.tierLock()
+        async let modeLock = try? backend.profileLock()
         async let workspace = try? backend.workspace(workspaceId)
         loadedRepos = await repoList ?? []
         repos = loadedRepos.map(mentionRepo)
@@ -334,6 +339,7 @@ public final class ComposerStore {
         models = await modelList ?? []
         tiers = await tierList ?? []
         tierLock = await lock ?? nil
+        profileLock = await modeLock ?? nil
         defaultProfile = await workspace?.overrides.routingProfile
         skills = Array(Set(await backend.skills(repoIds: loadedRepos.map(\.id)))).sorted()
         catalogRevision += 1
@@ -349,11 +355,45 @@ public final class ComposerStore {
         }
     }
 
-    /// Writes a tier's model to the user's config. Sessions started afterwards use it.
-    public func setTier(_ tier: Tier, to setting: String) async {
+    /// Whether this session's mode and models can change now: the engine takes a change while the session is idle
+    /// (it reopens the runtime, so the next turn uses it) or stopped (it applies on resume), not during a turn.
+    public var canChangeRouting: Bool {
+        !isChangingRouting && (session.state == .idle || session.state == .resumable)
+    }
+
+    /// Switches this session's mode (`session.setRouting`).
+    public func setProfile(_ profile: RoutingProfile) async {
+        guard profile != session.routingProfile else { return }
+        await changeRouting(profile: profile, tiers: nil)
+    }
+
+    /// This session's own setting for a tier (a model id or "auto"), or nil when it follows the one in Settings.
+    public func sessionTier(_ tier: Tier) -> String? {
+        switch tier {
+        case .reasoning: session.modelTiers?.reasoning
+        case .worker: session.modelTiers?.worker
+        }
+    }
+
+    /// Sets this session's model for a tier (`session.setRouting`); nil returns the tier to the setting in Settings.
+    public func setTier(_ tier: Tier, to setting: String?) async {
+        guard setting != sessionTier(tier) else { return }
+        var tiers = session.modelTiers ?? SessionModelTiers()
+        switch tier {
+        case .reasoning: tiers.reasoning = setting
+        case .worker: tiers.worker = setting
+        }
+        await changeRouting(profile: nil, tiers: tiers)
+    }
+
+    private func changeRouting(profile: RoutingProfile?, tiers: SessionModelTiers?) async {
+        guard canChangeRouting else { return }
+        isChangingRouting = true
+        defer { isChangingRouting = false }
         do {
-            try await backend.setTier(tier, to: setting)
-            tiers = try await backend.tiers()
+            let changed = try await backend.setRouting(sessionId: session.id, profile: profile, modelTiers: tiers)
+            update(session: changed)
+            if case .failed = status { status = nil }
         } catch {
             status = .failed(Self.describe(error))
         }

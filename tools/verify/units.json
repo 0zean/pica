@@ -862,6 +862,10 @@
     {
       "check": "Keystroke to glyph under 16 ms with a 10,000-event session open.",
       "run": "make app-ui-test-pica UI_TEST=ComposerLatencyUITests"
+    },
+    {
+      "check": "Choose a session's mode and models (added 2026-11-22 for M4, D-24): engine tests for `session.create` with `modelTiers`, store migration 5 and `session.setRouting`; Swift store tests for New Session and the composer; a UI test creates a Strict session on a chosen reasoning model, and one switches an open session's mode from the composer and sees the label change.",
+      "run": "make engine-install && cd engine && pnpm exec vitest run packages/server/tests/sessions/routing.test.ts packages/core/tests/sessions/routing.test.ts packages/adapters/tests/store/migrations.test.ts packages/adapters/tests/store/repositories.test.ts && cd .. && swift test --package-path app/Packages/Workspaces --filter NewSessionStoreTests && swift test --package-path app/Packages/Composer --filter ComposerStoreTests && make app-ui-test-pica UI_TESTS='WorkspacesUITests/testNewSessionStartsAStrictSessionOnTheChosenModels WorkspacesUITests/testTheComposerModeMenuSwitchesTheSession'"
     }
   ],
   "A-07": [

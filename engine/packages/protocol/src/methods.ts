@@ -14,7 +14,7 @@ import { McpImportNote, McpImportSelection, McpImportSnippet, McpImportSource } 
 import { ModelInfo, TierAssignment } from "./dto/models.ts";
 import { ApprovalChoice, ApprovalRequest } from "./dto/policy.ts";
 import { Repo, RepoCard, RepoSource, RepoSourceKind } from "./dto/repo.ts";
-import { SendMode, Session, SessionRoot } from "./dto/session.ts";
+import { SendMode, Session, SessionModelTiers, SessionRoot } from "./dto/session.ts";
 import { SavingsEstimate, UsageGroupBy, UsageRollupRow } from "./dto/usage.ts";
 import { RoutingProfile, Workspace, WorkspaceOverrides } from "./dto/workspace.ts";
 
@@ -126,6 +126,7 @@ export const methods = {
       writeRepoIds: z.array(Id),
       referenceRepoIds: z.array(Id),
       routingProfile: RoutingProfile.optional(),
+      modelTiers: SessionModelTiers.optional(),
       budgetCredits: Credits.optional(),
       prompt: z.string().optional(),
     }),
@@ -145,6 +146,15 @@ export const methods = {
   // A user title, trimmed; an empty one clears it so the session falls back to its automatic title.
   "session.rename": clientMethod(
     z.object({ sessionId: Id, title: z.string().max(200) }),
+    z.object({ session: Session }),
+  ),
+  // Changes the session's routing profile and, when `modelTiers` is given, replaces its per-tier models
+  // (`{}` returns both tiers to `routing.tiers`). Allowed while the session is idle (its runtime is
+  // reopened, so the next turn uses the change; the conversation continues, the prompt cache does not)
+  // or resumable (applied when it resumes); refused with `invalid_state` otherwise, and with
+  // `policy_denied` for a value managed policy locks.
+  "session.setRouting": clientMethod(
+    z.object({ sessionId: Id, routingProfile: RoutingProfile.optional(), modelTiers: SessionModelTiers.optional() }),
     z.object({ session: Session }),
   ),
   // Ends the session first when it is live (a running turn is stopped), then removes its events,

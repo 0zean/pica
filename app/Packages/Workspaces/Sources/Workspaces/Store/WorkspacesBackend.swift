@@ -23,8 +23,14 @@ public protocol WorkspacesBackend: Sendable {
     func authStatus() async throws -> GitHubAuthStatus
     func teams() async throws -> [GitHubTeam]
     func teamRepos(org: String, teamSlug: String) async throws -> [GitHubRepo]
-    /// Starts a session whose roots are the given repos; it can take as long as the runtime takes to open.
-    func createSession(workspaceId: Id, writeRepoIds: [Id], referenceRepoIds: [Id], prompt: String?) async throws -> Session
+    /// What New Session offers for the session's mode and models.
+    func routing(workspaceId: Id) async throws -> NewSessionRouting
+    /// Starts a session whose roots are the given repos; it can take as long as the runtime takes to open. A nil
+    /// profile takes the workspace's default; `modelTiers` holds only the tiers the session sets itself.
+    func createSession(
+        workspaceId: Id, writeRepoIds: [Id], referenceRepoIds: [Id], routingProfile: RoutingProfile?,
+        modelTiers: SessionModelTiers?, prompt: String?
+    ) async throws -> Session
 }
 
 public struct EngineWorkspacesBackend: WorkspacesBackend {
@@ -102,13 +108,19 @@ public struct EngineWorkspacesBackend: WorkspacesBackend {
         ).repos
     }
 
+    public func routing(workspaceId: Id) async throws -> NewSessionRouting {
+        try await Self.loadRouting(client: client, workspaceId: workspaceId)
+    }
+
     public func createSession(
-        workspaceId: Id, writeRepoIds: [Id], referenceRepoIds: [Id], prompt: String?
+        workspaceId: Id, writeRepoIds: [Id], referenceRepoIds: [Id], routingProfile: RoutingProfile?,
+        modelTiers: SessionModelTiers?, prompt: String?
     ) async throws -> Session {
         try await client.request(
             Methods.SessionCreate.self,
             SessionCreateParams(
-                workspaceId: workspaceId, writeRepoIds: writeRepoIds, referenceRepoIds: referenceRepoIds, prompt: prompt),
+                workspaceId: workspaceId, writeRepoIds: writeRepoIds, referenceRepoIds: referenceRepoIds,
+                routingProfile: routingProfile, modelTiers: modelTiers, prompt: prompt),
             timeout: .seconds(60)
         ).session
     }

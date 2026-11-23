@@ -34,7 +34,7 @@ import {
   openAuditLog,
   resolveTier,
 } from "@pica/core";
-import type { AgentRuntime, GitInstallation, JsonObject, JsonValue, ModelCatalog, PolicyContext, SessionRoutingProfile, Store, TierSettingsInput, TokenPrices } from "@pica/core";
+import type { AgentRuntime, GitInstallation, JsonObject, JsonValue, ModelCatalog, PolicyContext, SessionRoutingLocks, SessionRoutingProfile, Store, TierSettingsInput, TokenPrices } from "@pica/core";
 import { loadEngineConfig } from "./composition-config.ts";
 import type { EngineConfig, EngineConfigOptions } from "./composition-config.ts";
 import { customizationOptions } from "./composition-customization.ts";
@@ -210,6 +210,7 @@ function sessionOptions(deps: SessionComposition): EngineSessionOptions {
     audit: audit.value,
     newSessionId: randomUUID,
     defaultProfile: (workspaceId) => defaultProfileFor(store, config, workspaceId),
+    routingLocks: () => routingLocksOf(config),
     catalog: { catalog, agents: () => loadedAgents.value, tiers, models },
     config: {
       resolved: config.resolved,
@@ -234,6 +235,26 @@ function defaultProfileFor(store: Store, config: EngineConfig, workspaceId: stri
     locked: isJsonObject(lockedRouting) && "profile" in lockedRouting,
     workspaceRouting: workspace.ok ? workspace.value.settingsOverrides["routing"] : undefined,
   });
+}
+
+// The routing values managed policy locks, as the policy sets them (they win over every layer).
+function routingLocksOf(config: EngineConfig): SessionRoutingLocks {
+  const resolved = config.resolved();
+  const locked = (keyPath: string): boolean =>
+    [...resolved.values.values()].some(
+      (entry) =>
+        entry.locked &&
+        (entry.keyPath === keyPath || keyPath.startsWith(`${entry.keyPath}.`) || entry.keyPath.startsWith(`${keyPath}.`)),
+    );
+  const routing = resolved.config.routing;
+  const tiers: { reasoning?: string; worker?: string } = {};
+  if (locked("routing.tiers.reasoning")) tiers.reasoning = routing.tiers.reasoning;
+  if (locked("routing.tiers.worker")) tiers.worker = routing.tiers.worker;
+  return {
+    ...(locked("routing.profile") ? { profile: routing.profile } : {}),
+    ...(Object.keys(tiers).length === 0 ? {} : { tiers }),
+    policyId: config.policy?.id,
+  };
 }
 
 function isJsonObject(value: JsonValue | undefined): value is JsonObject {
