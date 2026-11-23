@@ -9,6 +9,8 @@
 // also starts a stub MCP server and sends the GitHub preset's endpoint to it; it asks for the bearer
 // token `fakePicadMcpToken` (A-13). PICA_TEST_PRECONDITIONS names the file onboarding's checks read
 // (`fake-preconditions.ts`, A-15); without PICA_TEST_GITHUB it also starts the stub GitHub server.
+// PICA_TEST_RESUMABLE lists, comma-separated, the session ids an earlier engine left that the runtime can resume;
+// a session not listed cannot be resumed, as after Copilot lost its state.
 import { parseArgs } from "node:util";
 import { ManagedPolicyLoader, nodeManagedPolicyFileSystem } from "@pica/adapters";
 import type { ManagedPolicyFileSystem } from "@pica/adapters";
@@ -45,7 +47,13 @@ async function main(): Promise<void> {
   const mcpFetch = scenarioName === "mcp" ? await stubMcpFetch() : undefined;
   const preconditions = process.env["PICA_TEST_PRECONDITIONS"];
   const github = await fakeGitHub(gitHubMode(process.env["PICA_TEST_GITHUB"], preconditions));
-  const runtime = new FakeRuntime({ scenario, clock: steppingClock("2026-11-16T10:00:00.000Z"), ids: sequentialIds() });
+  const resumable = process.env["PICA_TEST_RESUMABLE"];
+  const runtime = new FakeRuntime({
+    scenario,
+    clock: steppingClock("2026-11-16T10:00:00.000Z"),
+    ids: sequentialIds(),
+    ...(resumable === undefined || resumable === "" ? {} : { resumableSessionIds: resumable.split(",") }),
+  });
   // FakeRuntime has no signed-in account; onboarding's checks give it one (`engine.account`).
   if (preconditions !== undefined) Object.assign(runtime, { account: fakeCopilotAccount(preconditions) });
   const composed = composeEngine({

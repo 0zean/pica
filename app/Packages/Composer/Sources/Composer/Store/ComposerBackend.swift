@@ -7,6 +7,8 @@ public protocol ComposerBackend: Sendable {
     /// `session.send`; false when the engine did not accept it (a `send` while a turn runs).
     func send(sessionId: Id, text: String, mode: SendMode) async throws -> Bool
     func abort(sessionId: Id) async throws
+    /// `session.resume`: reopens a `resumable` session's runtime; returns the session, now idle.
+    func resume(sessionId: Id) async throws -> Session
     func repos(workspaceId: Id) async throws -> [Repo]
     func agents(workspaceId: Id) async throws -> [AgentDef]
     /// Skill names: the directories under each repo's skill folders (docs/composer.md).
@@ -42,6 +44,10 @@ public struct EngineComposerBackend: ComposerBackend {
 
     public func abort(sessionId: Id) async throws {
         _ = try await client.request(Methods.SessionAbort.self, BySession(sessionId: sessionId))
+    }
+
+    public func resume(sessionId: Id) async throws -> Session {
+        try await client.request(Methods.SessionResume.self, BySession(sessionId: sessionId)).session
     }
 
     public func repos(workspaceId: Id) async throws -> [Repo] {

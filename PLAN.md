@@ -329,7 +329,7 @@ Three columns in a `NavigationSplitView`:
 - **Session** — the timeline and composer.
 - **Inspector** (toggle) — Changes, Files, Terminal, Usage, Context.
 
-Everything reachable from the keyboard: ⌘K command palette, ⌘P quick open across workspace repos, ⌘N new session, ⌘↩ send, ⌘. stop, ⌘1–9 sessions.
+Everything reachable from the keyboard: ⌘K command palette, ⌘P quick open across workspace repos, ⌘N new session, ↩ send (⇧↩ new line, ⌘↩ also sends, ⇧⌘↩ steers), ⌘. stop, ⌘1–9 sessions.
 
 ### 7.2 Timeline
 

@@ -144,6 +144,80 @@ import Testing
         #expect(backend.sent.isEmpty)
     }
 
+    /// Return and ⌘↩ in each state: send, queue, resume then send, or nothing.
+    @Test(arguments: [
+        (SessionState.idle, SendMode?.some(.send), false, false),
+        (.running, .queue, true, false),
+        (.awaitingApproval, .queue, true, false),
+        (.resumable, .send, false, true),
+        (.starting, nil, false, false),
+        (.ended, nil, false, false),
+        (.failed, nil, false, false),
+    ])
+    func sendModeFollowsTheSessionState(state: SessionState, mode: SendMode?, steers: Bool, resumes: Bool) async {
+        let store = await store(state)
+        #expect(store.primaryMode == mode)
+        #expect(store.canSteer == steers)
+        #expect(store.needsResume == resumes)
+        #expect(store.canResume == resumes)
+        type("hi", into: store)
+        #expect(store.canSend == (mode != nil))
+    }
+
+    @Test func sendingToAResumableSessionResumesItThenSends() async {
+        let store = await store(.resumable)
+        type("carry on", into: store)
+        await store.submit()
+        #expect(backend.resumed == ["s1"])
+        #expect(backend.sent == [.init(text: "carry on", mode: .send)])
+        #expect(store.session.state == .idle)
+        #expect(!store.needsResume)
+        #expect(store.text == "")
+        #expect(store.status == nil)
+        #expect(!store.isSending)
+    }
+
+    @Test func steeringAResumableSessionSends() async {
+        let store = await store(.resumable)
+        type("go", into: store)
+        await store.submit(.steer)
+        #expect(backend.resumed == ["s1"])
+        #expect(backend.sent == [.init(text: "go", mode: .send)])
+    }
+
+    @Test func aFailedResumeKeepsTheTextAndSaysWhy() async {
+        backend.resumeFailure = FakeBackend.Failure()
+        let store = await store(.resumable)
+        type("keep me", into: store)
+        await store.submit()
+        #expect(backend.resumed == ["s1"])
+        #expect(backend.sent.isEmpty)
+        #expect(store.text == "keep me")
+        #expect(store.status == .failed("The session could not be resumed: Failure()"))
+        #expect(store.needsResume)
+        #expect(store.canSend)
+
+        // Once the cause is fixed, sending again resumes and sends.
+        backend.resumeFailure = nil
+        await store.submit()
+        #expect(backend.resumed == ["s1", "s1"])
+        #expect(backend.sent == [.init(text: "keep me", mode: .send)])
+        #expect(store.text == "")
+    }
+
+    @Test func resumeReopensTheSessionWithoutSending() async {
+        let store = await store(.resumable)
+        type("draft", into: store)
+        await store.resume()
+        #expect(backend.resumed == ["s1"])
+        #expect(backend.sent.isEmpty)
+        #expect(store.session.state == .idle)
+        #expect(store.text == "draft")
+        #expect(store.status == nil)
+        await store.resume()
+        #expect(backend.resumed == ["s1"], "an idle session is not resumed again")
+    }
+
     @Test func draftsOutliveTheComposer() async {
         let drafts = ComposerDrafts()
         let first = await store(drafts: drafts)
@@ -273,6 +347,8 @@ final class FakeBackend: ComposerBackend, @unchecked Sendable {
     var profileLockedBy: String?
     var routingCalls: [String] = []
     var routingFails = false
+    var resumed: [Id] = []
+    var resumeFailure: Failure?
 
     nonisolated func send(sessionId: Id, text: String, mode: SendMode) async throws -> Bool {
         try await MainActor.run {
@@ -283,6 +359,16 @@ final class FakeBackend: ComposerBackend, @unchecked Sendable {
     }
 
     nonisolated func abort(sessionId: Id) async throws {}
+
+    nonisolated func resume(sessionId: Id) async throws -> Session {
+        try await MainActor.run {
+            resumed.append(sessionId)
+            if let resumeFailure { throw resumeFailure }
+            var session = Session.fixture(state: .idle)
+            session.id = sessionId
+            return session
+        }
+    }
 
     nonisolated func repos(workspaceId: Id) async throws -> [Repo] {
         [.fixture(id: "r1", remoteUrl: "https://git.example.com/acme/atlas.git", localPath: "/src/atlas"),
