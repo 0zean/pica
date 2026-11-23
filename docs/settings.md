@@ -31,7 +31,7 @@ palette keywords. `ActionRegistry` runs an action through one closure the app ta
 
 `ActionCommands` puts every action in its menu with its current shortcut. It replaces the system's Settings item and
 SwiftUI's sidebar group, so those shortcuts can be rebound too. Not in the registry: ⌘1–9 (one per sidebar session,
-AppShell's Go menu) and the composer's keys (⌘↩, ⇧⌘↩, ⌘., which are keys of the input, [composer.md](composer.md)).
+AppShell's Go menu) and the composer's keys (↩, ⇧↩, ⌘↩, ⇧⌘↩, ⌘., which are keys of the input, [composer.md](composer.md)).
 
 ## Palette
 

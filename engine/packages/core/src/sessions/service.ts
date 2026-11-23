@@ -726,9 +726,12 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     }
     const directory = workingDirectory(stored.value) ?? "/";
     const limit = withinSessionCeiling(stored.value.budgetMaxCredits ?? undefined, deps.budget) ?? null;
-    const delegation = await delegationOptions(stored.value);
+    // A resume that fails leaves the session `resumable`, with the reason in its log, so it can be tried again
+    // once the cause (sign-in, network, a model, an agent definition) is fixed.
+    const delegation = await delegationSetup(stored.value);
     if (!delegation.ok) {
-      return delegation;
+      append(sessionId, { type: "session.error", payload: { code: delegation.error.code, message: delegation.error.message }, timestamp: clock() });
+      return sessionFailure("session.invalid_request", delegation.error.message);
     }
     const resumed = await deps.runtime.resumeSession({
       sessionId,
@@ -740,7 +743,6 @@ export function createSessionService(deps: SessionServiceDeps): SessionService {
     });
     if (!resumed.ok) {
       append(sessionId, { type: "session.error", payload: { code: resumed.error.code, message: resumed.error.message }, timestamp: clock() });
-      move(sessionId, "fail");
       return runtimeFailure(resumed.error);
     }
     const attached = attach(sessionId, resumed.value, budgetFor(limit, deps.usage === undefined ? 0 : sessionSpend(deps.usage, sessionId)));

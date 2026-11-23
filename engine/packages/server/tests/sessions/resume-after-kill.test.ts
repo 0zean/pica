@@ -139,4 +139,33 @@ describe("engine restart", () => {
     expect(replayed.slice(0, seenBeforeKill.length)).toEqual(seenBeforeKill);
     next.close();
   });
+
+  it("leaves a session resumable, with the reason in its log, when its runtime cannot be reopened", async () => {
+    const dir = await mkdtemp(join(tmpdir(), "picad-restart-"));
+    cleanups.push(() => rm(dir, { recursive: true, force: true }));
+    const dbPath = join(dir, "pica.db");
+    openSeededStore(dbPath).close();
+    await writeFile(join(dir, "scenario.json"), JSON.stringify(afterRestart));
+    const socket = join(dir, "run", "picad.sock");
+    const common = ["--socket", socket, "--db", dbPath, "--scenario", join(dir, "scenario.json")];
+
+    const first = await startEngineProcess(common);
+    const client = await TestClient.connectAndHello(socket);
+    const sessionId = await createSession(client);
+    first.child.kill("SIGKILL");
+    await first.exited;
+    client.close();
+
+    // The restarted runtime does not know the session, as Copilot would not after its state was removed.
+    await startEngineProcess(common);
+    const next = await TestClient.connectAndHello(socket);
+    const subscriptionId = await subscribe(next, sessionId);
+    const refused = await next.request("session.resume", { sessionId });
+    expect(refused["error"]).toMatchObject({ data: { code: "not_found" } });
+    const stored = await call(next, "session.get", { sessionId });
+    expect((stored["session"] as JsonObject)["state"]).toBe("resumable");
+    const error = await waitForEvent(next, subscriptionId, (event) => event.type === "session.error");
+    expect(error.payload["code"]).toBe("runtime.session_not_found");
+    next.close();
+  });
 });
